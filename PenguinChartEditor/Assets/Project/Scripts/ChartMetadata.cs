@@ -1,11 +1,22 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ChartMetadata : MonoBehaviour
 {
+    public string testSongName;
     /// <summary>
     /// Name of the loaded song.
     /// </summary>
-    public string Name { get; set; }
+    public string Song_name
+    {
+        get { return testSongName;}
+        set
+        {
+            testSongName = value;
+        }
+    }
+
+
 
     /// <summary>
     /// Name of the loaded song artist.
@@ -36,30 +47,30 @@ public class ChartMetadata : MonoBehaviour
     /// <summary>
     /// Length of the song in milliseconds.
     /// </summary>
-    public int SongLength { get; } // set through CalculateSongLength() in audio parser?
+    public int Song_length { get; private set; } // set through CalculateSongLength() in audio parser?
                                     // Note: set to the length of the longest audio stem
 
 
     /// All of these values store difficulties in a value from 0-6, although values higher than 6 are allowed for some niche CH uses.
-    public int DiffBand { get; set; }
-    public int DiffGuitar { get; set; }
-    public int DiffGuitarCoop { get; set; }
-    public int DiffRhythm { get; set; }
-    public int DiffBass { get; set; }
-    public int DiffDrums { get; set; }
-    public int DiffDrumsReal { get; set; }
-    public int DiffEliteDrums { get; set; } // named as such to conform with requested diff format in elite drums specifications
-    public int DiffKeys { get; set; }
-    public int DiffKeysReal { get; set; } // for planned Pro Keys
-    public int DiffGHL { get; set; }
-    public int DiffBassGHL { get; set; }
-    public int DiffVocals { get; set; } // for planned Vocals
-    public int DiffHarmonies { get; set; }
+    public int Diff_band { get; set; }
+    public int Diff_guitar { get; set; }
+    public int Diff_guitar_coop { get; set; }
+    public int Diff_rhythm { get; set; }
+    public int Diff_bass { get; set; }
+    public int Diff_drums { get; set; }
+    public int Diff_drums_real { get; set; }
+    public int Diff_elite_drums { get; set; } // named as such to conform with requested diff format in elite drums specifications
+    public int Diff_keys { get; set; }
+    public int Diff_keys_real { get; set; } // for planned Pro Keys
+    public int Diff_ghl { get; set; }
+    public int Diff_bass_ghl { get; set; }
+    public int Diff_vocals { get; set; } // for planned Vocals
+    public int Diff_vocals_harm { get; set; }
 
     /// <summary>
     /// Time to start in-game song preview in milliseconds.
     /// </summary>
-    public int PreviewStartTime { get; } // set through CalculatePreviewTime() -> take HH:MM:SS input from user, translate into ms
+    public int Preview_start_time { get; private set;} // set through CalculatePreviewTime() -> take HH:MM:SS input from user, translate into ms
     
     /// <summary>
     /// Charter Icon ID or Source ID as listed in the Clone Hero Icons and Sources gitlab repo.
@@ -70,17 +81,17 @@ public class ChartMetadata : MonoBehaviour
     /// <summary>
     /// Text meant to be shown in the "loading" screen (instrument/difficulty selection screen).
     /// </summary>
-    public string LoadingPhrase { get; set; }
+    public string Loading_phrase { get; set; }
 
     /// <summary>
     /// Position of the song in the album's ordering .
     /// </summary>
-    public int AlbumTrack { get; set; }
+    public int Album_track { get; set; }
 
     /// <summary>
     /// Position of the song in a setlist .
     /// </summary>
-    public int PlaylistTrack { get; set; }
+    public int Playlist_track { get; set; }
 
     /// <summary>
     /// Is the chart a modchart?
@@ -90,7 +101,7 @@ public class ChartMetadata : MonoBehaviour
     /// <summary>
     /// The time at which the video begins playing in the track, in milliseconds.
     /// </summary>
-    public int VideoStartTime { get; set; }
+    public int Video_start_time { get; set; }
 
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
@@ -104,4 +115,10 @@ public class ChartMetadata : MonoBehaviour
 
     // Attach to a GameObject to store metadata, create ini file from the GameObject
 
+    public static ChartMetadata metadata;
+    private void Awake()
+    {
+        metadata = this;
+        DontDestroyOnLoad(gameObject);
+    }
 }

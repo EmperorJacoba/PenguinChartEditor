@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class BasicGem : MonoBehaviour
+public class BasicGem : MonoBehaviour
 {
     /// <summary>
     /// The fret number of the gem object.
