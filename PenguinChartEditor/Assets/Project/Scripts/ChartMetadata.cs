@@ -122,3 +122,4 @@ public class ChartMetadata : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 }
+
