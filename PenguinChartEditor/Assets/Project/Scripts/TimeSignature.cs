@@ -18,7 +18,7 @@ public class TimeSignature : MonoBehaviour
     /// The location of the time signature change, in tick-time.
     /// </summary>
     public int TickPosition { get; set; }
-
+    
     /// <summary>
     /// Reformats the time signature so that it can be inserted into .chart file.
     /// </summary>
