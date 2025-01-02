@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using SFB;
+using System.IO;
+using TMPro;
 
 public class ChartMetadata : MonoBehaviour
 {
@@ -70,7 +73,7 @@ public class ChartMetadata : MonoBehaviour
     public string Icon { get; set; }
     
     /// <summary>
-    /// Text meant to be shown in the "loading" screen (instrument/difficulty selection screen).
+    /// Text shown in the "loading" screen (instrument/difficulty selection screen).
     /// </summary>
     public string Loading_phrase { get; set; }
 
@@ -99,8 +102,11 @@ public class ChartMetadata : MonoBehaviour
     /// </summary>
     public int Resolution { get; set; }
 
-    // Add album cover for exports
-        // Save as file explorer directory?
+    /// <summary>
+    /// Stores the directory of the album cover selected by the user.
+    /// </summary>
+    public string ImagePath { get; private set; } // set with SetAlbumCover()
+
     // Add video for exports
         // Save as file explorer directory?
 
@@ -112,6 +118,42 @@ public class ChartMetadata : MonoBehaviour
     {
         metadata = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    // Set up extension filters for USAC()
+    private ExtensionFilter[] imageExtensions = new [] {
+        new ExtensionFilter("Image Files", "png", "jpg", "jpeg"),
+        new ExtensionFilter("Other", "*")
+    };
+
+    // Stores button to set image of (one used to select image)
+    [SerializeField] private Button imageSelector;
+
+    /// <summary>
+    /// Used on album button select click to set the image of the button based on user selection.
+    /// </summary>
+    public void UserSetAlbumCover()
+    {
+        var tempImagePath = StandaloneFileBrowser.OpenFilePanel("Open album cover", "", imageExtensions, false); // User open image file dialog
+        ImagePath = tempImagePath[0]; // Store path for exporting chart package later
+
+        Texture2D albumCoverTexture = new(1, 1); // Set up texture, l&w args are irrelevant
+        byte[] coverInBytes = File.ReadAllBytes(ImagePath); // Convert user selection to bytes to create new Texture
+
+        if(albumCoverTexture.height != 512 || albumCoverTexture.width != 512) // Future: Automatically resize image for user
+        {
+            throw new ArgumentException("Image must be 512x512 pixels! Use a program like Photoshop or GIMP to resize the image.");
+        }
+
+        Sprite albumCoverSprite = Sprite.Create(
+            albumCoverTexture,
+            new Rect(0, 0, 512, 512),
+            new Vector2(0.5f, 0.5f)
+        ); // Create sprite from user image
+        imageSelector.GetComponent<Image>().sprite = albumCoverSprite; // Set image component of button to created sprite
+
+        GameObject tempSelectionText = imageSelector.gameObject.transform.GetChild(0).gameObject;
+        tempSelectionText.GetComponent<TextMeshProUGUI>().text = ""; // Get text child of button and set the text to empty upon image selection
     }
 }
 
