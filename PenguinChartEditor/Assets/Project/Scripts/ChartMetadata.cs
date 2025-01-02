@@ -1,22 +1,13 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ChartMetadata : MonoBehaviour
 {
-    public string testSongName;
     /// <summary>
     /// Name of the loaded song.
     /// </summary>
-    public string Song_name
-    {
-        get { return testSongName;}
-        set
-        {
-            testSongName = value;
-        }
-    }
-
-
+    public string Song_name { get; set; }
 
     /// <summary>
     /// Name of the loaded song artist.
@@ -43,7 +34,6 @@ public class ChartMetadata : MonoBehaviour
     /// </summary>
     public string Charter { get; set; }
     
-
     /// <summary>
     /// Length of the song in milliseconds.
     /// </summary>
@@ -51,7 +41,8 @@ public class ChartMetadata : MonoBehaviour
                                     // Note: set to the length of the longest audio stem
 
 
-    /// All of these values store difficulties in a value from 0-6, although values higher than 6 are allowed for some niche CH uses.
+    // All of these values store difficulties in a value from 0-6, although values higher than 6 are allowed for some niche CH uses.
+    // Set up these values in the CHART tab - no sense setting them up when you don't have the tracks charted yet!
     public int Diff_band { get; set; }
     public int Diff_guitar { get; set; }
     public int Diff_guitar_coop { get; set; }
@@ -84,19 +75,19 @@ public class ChartMetadata : MonoBehaviour
     public string Loading_phrase { get; set; }
 
     /// <summary>
-    /// Position of the song in the album's ordering .
+    /// Position of the song within the album's track ordering
     /// </summary>
-    public int Album_track { get; set; }
+    public string Album_track { get; set; } // String to work with text input
 
     /// <summary>
     /// Position of the song in a setlist .
     /// </summary>
-    public int Playlist_track { get; set; }
+    public string Playlist_track { get; set; } // String to work with text input
 
     /// <summary>
     /// Is the chart a modchart?
     /// </summary>
-    public bool Modchart { get; set; }
+    // public bool Modchart { get; set; } Not going to worry about this after all
 
     /// <summary>
     /// The time at which the video begins playing in the track, in milliseconds.
@@ -115,6 +106,7 @@ public class ChartMetadata : MonoBehaviour
 
     // Attach to a GameObject to store metadata, create ini file from the GameObject
 
+    // Use to setup DDOL & Data persistence
     public static ChartMetadata metadata;
     private void Awake()
     {
