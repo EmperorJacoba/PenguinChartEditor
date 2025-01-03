@@ -135,30 +135,34 @@ public class ChartMetadata : MonoBehaviour
     public void UserSetAlbumCover()
     {
         var tempImagePath = StandaloneFileBrowser.OpenFilePanel("Open album cover", "", imageExtensions, false); // User open image file dialog
-        ImagePath = tempImagePath[0]; // Store path for exporting chart package later
 
-        Texture2D albumCoverTexture = new(1, 1); // Set up texture, l&w args are irrelevant
-        byte[] coverInBytes = File.ReadAllBytes(ImagePath); // Convert user selection to bytes to create new Texture
-        
-        if(!albumCoverTexture.LoadImage(coverInBytes))
+        if (tempImagePath.Length != 0) // Avoid throwing error when user cancels selection
         {
-            throw new ArgumentException("Image failed to load");
-        }
-        
-        if(albumCoverTexture.height != 512 || albumCoverTexture.width != 512) // Future: Automatically resize image for user
-        {
-            throw new ArgumentException("Image must be 512x512 pixels! Use a program like Photoshop or GIMP to resize the image.");
-        }
+            ImagePath = tempImagePath[0]; // Store path for exporting chart package later
 
-        Sprite albumCoverSprite = Sprite.Create(
-            albumCoverTexture,
-            new Rect(0, 0, 512, 512),
-            new Vector2(0.5f, 0.5f)
-        ); // Create sprite from user image
-        imageSelector.GetComponent<Image>().sprite = albumCoverSprite; // Set image component of button to created sprite
+            Texture2D albumCoverTexture = new(1, 1); // Set up texture, l&w args are irrelevant
+            byte[] coverInBytes = File.ReadAllBytes(ImagePath); // Convert user selection to bytes to create new Texture
 
-        GameObject tempSelectionText = imageSelector.gameObject.transform.GetChild(0).gameObject;
-        tempSelectionText.GetComponent<TextMeshProUGUI>().text = ""; // Get text child of button and set the text to empty upon image selection
+            if (!albumCoverTexture.LoadImage(coverInBytes)) // Load image into albumCoverTexture, if it no work then throw error
+            {
+                throw new ArgumentException("Image failed to load");
+            }
+
+            if (albumCoverTexture.height != 512 || albumCoverTexture.width != 512) // Future: Automatically resize image for user
+            {
+                throw new ArgumentException("Image must be 512x512 pixels! Use a program like Photoshop or GIMP to resize the image.");
+            }
+
+            Sprite albumCoverSprite = Sprite.Create(
+                albumCoverTexture,
+                new Rect(0, 0, 512, 512),
+                new Vector2(0.5f, 0.5f)
+            ); // Create sprite from user image
+            imageSelector.GetComponent<Image>().sprite = albumCoverSprite; // Set image component of button to created sprite
+
+            GameObject tempSelectionText = imageSelector.gameObject.transform.GetChild(0).gameObject;
+            tempSelectionText.GetComponent<TextMeshProUGUI>().text = ""; // Get text child of button and set the text to empty upon image selection
+        }
     }
 }
 
