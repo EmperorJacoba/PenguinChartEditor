@@ -139,7 +139,12 @@ public class ChartMetadata : MonoBehaviour
 
         Texture2D albumCoverTexture = new(1, 1); // Set up texture, l&w args are irrelevant
         byte[] coverInBytes = File.ReadAllBytes(ImagePath); // Convert user selection to bytes to create new Texture
-
+        
+        if(!albumCoverTexture.LoadImage(coverInBytes))
+        {
+            throw new ArgumentException("Image failed to load");
+        }
+        
         if(albumCoverTexture.height != 512 || albumCoverTexture.width != 512) // Future: Automatically resize image for user
         {
             throw new ArgumentException("Image must be 512x512 pixels! Use a program like Photoshop or GIMP to resize the image.");
