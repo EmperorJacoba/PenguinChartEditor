@@ -1,9 +1,11 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using SFB;
+using SFB; // system file browser
 using System.IO;
 using TMPro;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class ChartMetadata : MonoBehaviour
 {
@@ -107,10 +109,24 @@ public class ChartMetadata : MonoBehaviour
     /// </summary>
     public string ImagePath { get; private set; } // set with SetAlbumCover()
 
-    // Add video for exports
-        // Save as file explorer directory?
+    public enum StemType
+    {
+        song,
+        guitar,
+        bass,
+        rhythm,
+        keys,
+        vocals,
+        vocals_1,
+        vocals_2,
+        drums,
+        drums_1,
+        drums_2,
+        drums_3,
+        drums_4
+    }
 
-    // Attach to a GameObject to store metadata, create ini file from the GameObject
+    public Dictionary<StemType, string> stems = new();
 
     // Use to setup DDOL & Data persistence
     public static ChartMetadata metadata;
@@ -120,10 +136,16 @@ public class ChartMetadata : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // Set up extension filters for USAC()
+    // Set up extension filters for selecting files
     private ExtensionFilter[] imageExtensions = new [] {
-        new ExtensionFilter("Image Files", "png", "jpg", "jpeg"),
-        new ExtensionFilter("Other", "*")
+        new ExtensionFilter("Image Files ", "png", "jpg", "jpeg"),
+        new ExtensionFilter("Other ", "*")
+    };
+
+    private ExtensionFilter[] audioExtensions = new []
+    {
+        new ExtensionFilter("Audio Files ", "opus", "ogg", "mp3", "wav", "flac"),
+        new ExtensionFilter("Other ", "*")
     };
 
     // Stores button to set image of (one used to select image)
@@ -134,11 +156,11 @@ public class ChartMetadata : MonoBehaviour
     /// </summary>
     public void UserSetAlbumCover()
     {
-        var tempImagePath = StandaloneFileBrowser.OpenFilePanel("Open album cover", "", imageExtensions, false); // User open image file dialog
+        var selectedImagePath = StandaloneFileBrowser.OpenFilePanel("Open album cover", "", imageExtensions, false); // User open image file dialog
 
-        if (tempImagePath.Length != 0) // Avoid throwing error when user cancels selection
+        if (selectedImagePath.Length != 0) // Avoid throwing error when user cancels selection
         {
-            ImagePath = tempImagePath[0]; // Store path for exporting chart package later
+            ImagePath = selectedImagePath[0]; // Store path for exporting chart package later
 
             Texture2D albumCoverTexture = new(1, 1); // Set up texture, l&w args are irrelevant
             byte[] coverInBytes = File.ReadAllBytes(ImagePath); // Convert user selection to bytes to create new Texture
@@ -163,6 +185,35 @@ public class ChartMetadata : MonoBehaviour
             GameObject tempSelectionText = imageSelector.gameObject.transform.GetChild(0).gameObject;
             tempSelectionText.GetComponent<TextMeshProUGUI>().text = ""; // Get text child of button and set the text to empty upon image selection
         }
+    }
+
+    public void SetAudioStem(string selectedStem)
+    {
+        var selectedAudioPath = StandaloneFileBrowser.OpenFilePanel($"Open {selectedStem} audio file", "", audioExtensions, false);
+
+        if (selectedAudioPath.Length != 0) // Avoid throwing error when user cancels selection
+        {
+            StemType selectedStemAsEnum = (StemType)Enum.Parse(typeof(StemType), selectedStem);
+            stems.Add(selectedStemAsEnum, selectedAudioPath[0]);
+            TMP_InputField filePathPreview = GetInputFieldText(selectedStem);
+            filePathPreview.text = selectedAudioPath[0];
+        }
+    }
+
+    private TMP_InputField GetInputFieldText(string selectedStem, int PathPreviewBoxIndex = 1)
+    {
+        // Find stem's parent GameObject containing the modifiers
+        GameObject inputFieldParent = GameObject.Find($"{selectedStem}_Stem_Edit"); 
+        // Get the Path_PreviewBox (change the var if you ever add more things to the parent)
+        GameObject inputField = inputFieldParent.transform.GetChild(PathPreviewBoxIndex).gameObject;
+        Debug.Log($"{inputField.gameObject.name}");
+        TMP_InputField inputFieldComponent = inputField.GetComponent<TMP_InputField>();
+        return inputFieldComponent;
+    }
+
+    public void ClearAudioStem(string selectedStem)
+    {
+
     }
 }
 

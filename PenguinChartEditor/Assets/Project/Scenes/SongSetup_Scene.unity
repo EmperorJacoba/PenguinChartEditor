@@ -1613,7 +1613,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 600235135}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.56430984
+  m_Size: 0.5645172
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2030,7 +2030,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 3
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -2563,7 +2563,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2088715016}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.99999934
+  m_Size: 0.9999993
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3854,7 +3854,7 @@ GameObject:
   m_Component:
   - component: {fileID: 718178024}
   m_Layer: 5
-  m_Name: Stem_Song_Edit
+  m_Name: song_Stem_Edit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5508,7 +5508,7 @@ MonoBehaviour:
   m_InputType: 0
   m_AsteriskChar: 42
   m_KeyboardType: 0
-  m_LineType: 0
+  m_LineType: 1
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 0
@@ -5957,7 +5957,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1153798621}
   m_TextViewport: {fileID: 67552360}
   m_TextComponent: {fileID: 1133566899}
@@ -6151,7 +6151,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1156619902}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1850527088}
+        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+        m_MethodName: SetAudioStem
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: song
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1156619902
 MonoBehaviour:
   m_ObjectHideFlags: 0
