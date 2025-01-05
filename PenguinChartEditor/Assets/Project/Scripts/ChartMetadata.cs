@@ -1,10 +1,10 @@
 using System;
+using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using SFB; // system file browser
-using System.IO;
 using TMPro;
-using System.Collections.Generic;
+using SFB; // system file browser
 
 public class ChartMetadata : MonoBehaviour
 {
@@ -123,12 +123,12 @@ public class ChartMetadata : MonoBehaviour
         }
     }
     // Set up extension filters for selecting files
-    private ExtensionFilter[] imageExtensions = new [] 
+    private readonly ExtensionFilter[] imageExtensions = new [] 
     {
         new ExtensionFilter("Image Files ", "png", "jpg", "jpeg"),
     };
 
-    private ExtensionFilter[] audioExtensions = new []
+    private readonly ExtensionFilter[] audioExtensions = new []
     {
         new ExtensionFilter("Audio Files ", "opus", "ogg", "mp3", "wav", "flac"),
     };
