@@ -145,7 +145,6 @@ public class ChartMetadata : MonoBehaviour
     private ExtensionFilter[] audioExtensions = new []
     {
         new ExtensionFilter("Audio Files ", "opus", "ogg", "mp3", "wav", "flac"),
-        new ExtensionFilter("Other ", "*")
     };
 
     // Stores button to set image of (one used to select image)
@@ -189,31 +188,40 @@ public class ChartMetadata : MonoBehaviour
 
     public void SetAudioStem(string selectedStem)
     {
-        var selectedAudioPath = StandaloneFileBrowser.OpenFilePanel($"Open {selectedStem} audio file", "", audioExtensions, false);
+        // This will be an audio file -> audioExtensions prevents user from selecting anything but an audio file
+        var selectedAudioPath = StandaloneFileBrowser.OpenFilePanel($"Open {selectedStem} audio file", "", audioExtensions, false); // User open audio dialog
 
         if (selectedAudioPath.Length != 0) // Avoid throwing error when user cancels selection
         {
-            StemType selectedStemAsEnum = (StemType)Enum.Parse(typeof(StemType), selectedStem);
+            ClearAudioStem(selectedStem); // Empty the dictionary val first to avoid throwing error
+
+            // Convert the string passed in from the button to the enum type StemType
+            StemType selectedStemAsEnum = (StemType)Enum.Parse(typeof(StemType), selectedStem); 
+            // Add the selected audio path to dictionary with key as the enum type of the string
             stems.Add(selectedStemAsEnum, selectedAudioPath[0]);
-            TMP_InputField filePathPreview = GetInputFieldText(selectedStem);
-            filePathPreview.text = selectedAudioPath[0];
+
+            GetInputField(selectedStem).text = selectedAudioPath[0]; // Change the input field preview to the path of the audio file
         }
     }
 
-    private TMP_InputField GetInputFieldText(string selectedStem, int PathPreviewBoxIndex = 1)
+    private TMP_InputField GetInputField(string selectedStem, int PathPreviewBoxIndex = 1)
     {
         // Find stem's parent GameObject containing the modifiers
         GameObject inputFieldParent = GameObject.Find($"{selectedStem}_Stem_Edit"); 
         // Get the Path_PreviewBox (change the var if you ever add more things to the parent)
         GameObject inputField = inputFieldParent.transform.GetChild(PathPreviewBoxIndex).gameObject;
-        Debug.Log($"{inputField.gameObject.name}");
-        TMP_InputField inputFieldComponent = inputField.GetComponent<TMP_InputField>();
-        return inputFieldComponent;
+        // Get the InputField component attached to the inputField GameObject
+        return inputField.GetComponent<TMP_InputField>();
     }
 
     public void ClearAudioStem(string selectedStem)
     {
-
+        StemType selectedStemAsEnum = (StemType)Enum.Parse(typeof(StemType), selectedStem);
+        if (stems.ContainsKey(selectedStemAsEnum))
+        {
+            stems.Remove(selectedStemAsEnum);
+            GetInputField(selectedStem).text = "";
+        }
     }
 }
 
