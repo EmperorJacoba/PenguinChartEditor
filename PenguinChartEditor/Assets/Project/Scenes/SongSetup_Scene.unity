@@ -515,7 +515,19 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1850527088}
         m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: set_Album
+        m_MethodName: set_CurrentInputField
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: album
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1850527088}
+        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+        m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1443,7 +1455,19 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1850527088}
         m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: set_Album_track
+        m_MethodName: set_CurrentInputField
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: album_track
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1850527088}
+        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+        m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1612,8 +1636,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 600235136}
   m_HandleRect: {fileID: 600235135}
   m_Direction: 2
-  m_Value: 0.9999998
-  m_Size: 0.5642674
+  m_Value: 1
+  m_Size: 0.564351
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3126,7 +3150,19 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1850527088}
         m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: set_Artist
+        m_MethodName: set_CurrentInputField
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: artist
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1850527088}
+        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+        m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3579,7 +3615,19 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1850527088}
         m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: set_Year
+        m_MethodName: set_CurrentInputField
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: year
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1850527088}
+        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+        m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3769,7 +3817,19 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1850527088}
         m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: set_Playlist_track
+        m_MethodName: set_CurrentInputField
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: playlist_track
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1850527088}
+        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+        m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4029,8 +4089,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1788951483}
   m_HandleRect: {fileID: 1788951482}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 1
+  m_Value: 0
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5532,7 +5592,19 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1850527088}
         m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: set_Loading_phrase
+        m_MethodName: set_CurrentInputField
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: loading_phrase
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1850527088}
+        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+        m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7881,7 +7953,19 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1850527088}
         m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: set_Charter
+        m_MethodName: set_CurrentInputField
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: charter
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1850527088}
+        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+        m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9752,7 +9836,19 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1850527088}
         m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: set_Icon
+        m_MethodName: set_CurrentInputField
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: icon
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1850527088}
+        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+        m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10178,7 +10274,19 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1850527088}
         m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: set_Song_name
+        m_MethodName: set_CurrentInputField
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: name
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1850527088}
+        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+        m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10813,7 +10921,19 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1850527088}
         m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: set_Genre
+        m_MethodName: set_CurrentInputField
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: genre
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1850527088}
+        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+        m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

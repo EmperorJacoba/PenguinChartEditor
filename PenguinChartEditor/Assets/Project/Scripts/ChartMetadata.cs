@@ -5,110 +5,59 @@ using SFB; // system file browser
 using System.IO;
 using TMPro;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 
 public class ChartMetadata : MonoBehaviour
 {
     /// <summary>
-    /// Name of the loaded song.
+    /// Stores valid song metadata fields.
     /// </summary>
-    public string Song_name { get; set; }
+    public enum MetadataType
+    {
+        name,
+        artist,
+        album,
+        genre,
+        year,
+        charter,
+        song_length,
+        preview_start_time,
+        icon,
+        loading_phrase,
+        album_track,
+        playlist_track,
+        video_start_time
+    }
 
-    /// <summary>
-    /// Name of the loaded song artist.
-    /// </summary>
-    public string Artist { get; set; }
-
-    /// <summary>
-    /// Name of the loaded song's album.
-    /// </summary>
-    public string Album { get; set; }
-
-    /// <summary>
-    /// Genre of the loaded song
-    /// </summary>
-    public string Genre { get; set; }
-
-    /// <summary>
-    /// Release year of the loaded song. 
-    /// </summary>
-    public string Year { get; set; }
-
-    /// <summary>
-    /// Name of the charter(s) who have worked on the loaded song.
-    /// </summary>
-    public string Charter { get; set; }
-    
-    /// <summary>
-    /// Length of the song in milliseconds.
-    /// </summary>
-    public int Song_length { get; private set; } // set through CalculateSongLength() in audio parser?
-                                    // Note: set to the length of the longest audio stem
-
+    public Dictionary<MetadataType, string> songInfo = new();
 
     // All of these values store difficulties in a value from 0-6, although values higher than 6 are allowed for some niche CH uses.
     // Set up these values in the CHART tab - no sense setting them up when you don't have the tracks charted yet!
-    public int Diff_band { get; set; }
-    public int Diff_guitar { get; set; }
-    public int Diff_guitar_coop { get; set; }
-    public int Diff_rhythm { get; set; }
-    public int Diff_bass { get; set; }
-    public int Diff_drums { get; set; }
-    public int Diff_drums_real { get; set; }
-    public int Diff_elite_drums { get; set; } // named as such to conform with requested diff format in elite drums specifications
-    public int Diff_keys { get; set; }
-    public int Diff_keys_real { get; set; } // for planned Pro Keys
-    public int Diff_ghl { get; set; }
-    public int Diff_bass_ghl { get; set; }
-    public int Diff_vocals { get; set; } // for planned Vocals
-    public int Diff_vocals_harm { get; set; }
+    /// <summary>
+    /// Stores valid instrument difficulties.
+    /// </summary>
+    public enum InstrumentDifficultyType
+    {
+        diff_band,
+        diff_guitar,
+        diff_guitar_coop,
+        diff_rhythm,
+        diff_bass,
+        diff_drums,
+        diff_drums_real,
+        diff_elite_drums,
+        diff_keys,
+        diff_keys_real,
+        diff_ghl,
+        diff_bass_ghl,
+        diff_vocals,
+        diff_vocals_harm
+    }
+
+    public Dictionary<InstrumentDifficultyType, int> difficulties = new();
 
     /// <summary>
-    /// Time to start in-game song preview in milliseconds.
+    /// Stores valid types of audio stems.
     /// </summary>
-    public int Preview_start_time { get; private set;} // set through CalculatePreviewTime() -> take HH:MM:SS input from user, translate into ms
-    
-    /// <summary>
-    /// Charter Icon ID or Source ID as listed in the Clone Hero Icons and Sources gitlab repo.
-    /// <para> Link: https://gitlab.com/clonehero/sources </para>
-    /// </summary>
-    public string Icon { get; set; }
-    
-    /// <summary>
-    /// Text shown in the "loading" screen (instrument/difficulty selection screen).
-    /// </summary>
-    public string Loading_phrase { get; set; }
-
-    /// <summary>
-    /// Position of the song within the album's track ordering
-    /// </summary>
-    public string Album_track { get; set; } // String to work with text input
-
-    /// <summary>
-    /// Position of the song in a setlist .
-    /// </summary>
-    public string Playlist_track { get; set; } // String to work with text input
-
-    /// <summary>
-    /// Is the chart a modchart?
-    /// </summary>
-    // public bool Modchart { get; set; } Not going to worry about this after all
-
-    /// <summary>
-    /// The time at which the video begins playing in the track, in milliseconds.
-    /// </summary>
-    public int Video_start_time { get; set; }
-
-    /// <summary>
-    /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
-    /// </summary>
-    public int Resolution { get; set; }
-
-    /// <summary>
-    /// Stores the directory of the album cover selected by the user.
-    /// </summary>
-    public string ImagePath { get; private set; } // set with SetAlbumCover()
-
     public enum StemType
     {
         song,
@@ -128,6 +77,16 @@ public class ChartMetadata : MonoBehaviour
 
     public Dictionary<StemType, string> stems = new();
 
+    /// <summary>
+    /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
+    /// </summary>
+    public int Resolution { get; set; }
+
+    /// <summary>
+    /// Stores the directory of the album cover selected by the user.
+    /// </summary>
+    public string ImagePath { get; private set; } // set with SetAlbumCover()
+
     // Use to setup DDOL & Data persistence
     public static ChartMetadata metadata;
     private void Awake()
@@ -136,10 +95,37 @@ public class ChartMetadata : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    /// <summary>
+    /// Holds the current metadata type to edit in SetSongInfo().
+    /// </summary>
+    public string CurrentInputField {private get; set;}
+
+    /// <summary>
+    /// Initializes/edits the string value associated with each metadata key in songInfo
+    /// </summary>
+    /// <param name="userInput"></param>
+    public void SetSongInfo(string userInput)
+    {
+        ClearSongInfo(CurrentInputField); // Empty the dictionary val first to avoid throwing error
+
+        // Convert the string passed in from the InputField to the enum type MetadataType
+        MetadataType selectedMetadataAsEnum = (MetadataType)Enum.Parse(typeof(MetadataType), CurrentInputField); 
+        // Add the selected audio path to dictionary with key as the enum type of the string
+        songInfo.Add(selectedMetadataAsEnum, userInput);
+    }
+
+    public void ClearSongInfo(string metadata)
+    {
+        MetadataType selectedMetadataAsEnum = (MetadataType)Enum.Parse(typeof(MetadataType), metadata); 
+        if (songInfo.ContainsKey(selectedMetadataAsEnum))
+        {
+            songInfo.Remove(selectedMetadataAsEnum);
+        }
+    }
     // Set up extension filters for selecting files
-    private ExtensionFilter[] imageExtensions = new [] {
+    private ExtensionFilter[] imageExtensions = new [] 
+    {
         new ExtensionFilter("Image Files ", "png", "jpg", "jpeg"),
-        new ExtensionFilter("Other ", "*")
     };
 
     private ExtensionFilter[] audioExtensions = new []
@@ -186,6 +172,10 @@ public class ChartMetadata : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set the audio stem of one of the eligible audio stems in StemType.
+    /// </summary>
+    /// <param name="selectedStem"></param>
     public void SetAudioStem(string selectedStem)
     {
         // This will be an audio file -> audioExtensions prevents user from selecting anything but an audio file
@@ -204,6 +194,12 @@ public class ChartMetadata : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets the Input Field in a grouped Stem_Edit GameObject.
+    /// </summary>
+    /// <param name="selectedStem"></param>
+    /// <param name="PathPreviewBoxIndex"></param>
+    /// <returns>Path_PreviewBox TMP_InputField component.</returns>
     private TMP_InputField GetInputField(string selectedStem, int PathPreviewBoxIndex = 1)
     {
         // Find stem's parent GameObject containing the modifiers
@@ -214,6 +210,10 @@ public class ChartMetadata : MonoBehaviour
         return inputField.GetComponent<TMP_InputField>();
     }
 
+    /// <summary>
+    /// Remove the audio stem associated with a key from StemType in stems dictionary.
+    /// </summary>
+    /// <param name="selectedStem"></param>
     public void ClearAudioStem(string selectedStem)
     {
         StemType selectedStemAsEnum = (StemType)Enum.Parse(typeof(StemType), selectedStem);
