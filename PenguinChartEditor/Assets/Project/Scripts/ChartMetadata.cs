@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using SFB; // system file browser
+using SFB;
+using Unity.VisualScripting; // system file browser
 
 public class ChartMetadata : MonoBehaviour
 {
@@ -25,7 +26,7 @@ public class ChartMetadata : MonoBehaviour
         loading_phrase,
         album_track,
         playlist_track,
-        video_start_time
+        video_start_time,
     }
 
     public Dictionary<MetadataType, string> songInfo = new();
@@ -77,22 +78,49 @@ public class ChartMetadata : MonoBehaviour
 
     public Dictionary<StemType, string> stems = new();
 
+    private int chartResolution;
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
     /// </summary>
-    public int Resolution { get; set; }
+    public string ChartResolution 
+    {
+        set 
+        {
+            if (!int.TryParse(value, out int tempResolution))
+            {
+                throw new ArgumentException("Resolution must be an integer!");
+            }
+
+            if (tempResolution < 192)
+            {
+                throw new ArgumentException("Chart resolution must be greater than 192 ticks per quarter note!");
+            }
+            else
+            {
+                chartResolution = tempResolution;
+            }
+        }
+    }
 
     /// <summary>
     /// Stores the directory of the album cover selected by the user.
     /// </summary>
     public string ImagePath { get; private set; } // set with SetAlbumCover()
 
+    /// <summary>
+    /// Stores the directory of the background set by the user.
+    /// </summary>
+    public string Background { get; private set;}
+
+    [SerializeField] private TMP_InputField resolutionTextBox;
     // Use to setup DDOL & Data persistence
     public static ChartMetadata metadata;
     private void Awake()
     {
         metadata = this;
         DontDestroyOnLoad(gameObject);
+        ChartResolution = Convert.ToString(UserSettings.DefaultResolution);
+        resolutionTextBox.text = Convert.ToString(chartResolution);
     }
 
     /// <summary>
@@ -122,6 +150,9 @@ public class ChartMetadata : MonoBehaviour
             songInfo.Remove(selectedMetadataAsEnum);
         }
     }
+
+
+
     // Set up extension filters for selecting files
     private readonly ExtensionFilter[] imageExtensions = new [] 
     {
