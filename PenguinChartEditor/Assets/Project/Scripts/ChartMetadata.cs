@@ -117,8 +117,11 @@ public class ChartMetadata : MonoBehaviour
     public static ChartMetadata metadata;
     private void Awake()
     {
+        if (metadata) return;
+
         metadata = this;
         DontDestroyOnLoad(gameObject);
+
         ChartResolution = Convert.ToString(UserSettings.DefaultResolution);
         resolutionTextBox.text = Convert.ToString(chartResolution);
     }
