@@ -130,7 +130,6 @@ GameObject:
   - component: {fileID: 33159344}
   - component: {fileID: 33159343}
   - component: {fileID: 33159346}
-  - component: {fileID: 33159345}
   - component: {fileID: 33159347}
   m_Layer: 0
   m_Name: TempoTrack
@@ -213,33 +212,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &33159345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 33159342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Texture: {fileID: 0}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
 --- !u!222 &33159346
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -548,8 +520,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 689573f16dab4d74cb85604d9af73e01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveformBackground: {r: 0, g: 0, b: 0, a: 0}
-  waveformDrawnColor: {r: 0, g: 0, b: 0, a: 0}
+  testWidth: 1024
+  testHeight: 64
+  waveformBackground: {r: 0, g: 0, b: 0, a: 1}
+  waveformDrawnColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1722031496
 Transform:
   m_ObjectHideFlags: 0
