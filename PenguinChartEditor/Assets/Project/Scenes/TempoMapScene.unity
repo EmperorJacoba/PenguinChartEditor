@@ -183,7 +183,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -520,8 +520,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 689573f16dab4d74cb85604d9af73e01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testWidth: 1024
-  testHeight: 64
+  width: 1024
+  height: 64
   waveformBackground: {r: 0, g: 0, b: 0, a: 1}
   waveformDrawnColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1722031496
