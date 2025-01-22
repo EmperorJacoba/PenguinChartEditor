@@ -9,26 +9,31 @@ public class PluginBassManager : MonoBehaviour
 
     private void Awake() 
     {
-        InitializeAudio();
-        //GetAudioSamples();
+        InitializeBassPlugin();
     }
 
     /// <summary>
     /// Returns a simplified float array of an audio file's sample data.
     /// </summary>
     /// <param name="songPath"></param>
+    /// <param name="normalizationFactor">This number decreases the length of the peaks of the waveform
+    /// Since the line renderer uses local positioning for easier culling & positioning, it looks super crazy without dividing by a</param>
     /// <returns>waveformData (float[]) that contains selected audio samples.</returns>
-    public float[] GetAudioSamples(string songPath = "G:/_PCE_files/TestAudioFiles/songtest.mp3") // testing path as default value
+    public float[] GetAudioSamples(string songPath = "G:/_PCE_files/TestAudioFiles/songtest.mp3", int normalizationFactor = 5) // testing path as default value
     {
         var currentTrackStream = Bass.BASS_StreamCreateFile(
             songPath, 
             0, 0, 
-            BASSFlag.BASS_SAMPLE_FLOAT | 
+            BASSFlag.BASS_SAMPLE_FLOAT |
             BASSFlag.BASS_STREAM_DECODE | 
             BASSFlag.BASS_STREAM_PRESCAN
         ); // Loads in file stream to get waveform data from
 
-        
+        if (currentTrackStream == 0)
+        {
+            throw new ArgumentException("File could not be loaded");
+        }
+
         var songLengthBytes = Bass.BASS_ChannelGetLength(currentTrackStream); // Get # of bytes in song
         var floatArrayLength = songLengthBytes/4; // # of vals in float[] array will be 1/4 of this bc 4 bytes per 32 bit float
 
@@ -36,22 +41,24 @@ public class PluginBassManager : MonoBehaviour
         var x = Bass.BASS_ChannelGetData(currentTrackStream, allSamples, (int)songLengthBytes); // Get an array of every single sample
         // This is faster than taking individual samples using setPosition and then ChannelGetData
 
-        allSamples = ConvertStereoSamplestoMono(allSamples); // Convert stereo samples to mono
+        allSamples = ConvertStereoSamplestoMono(allSamples); // Convert stereo samples to mono for better combined waveform
 
         var compressedArrayResolution = 0.001f; // Holds a value in seconds for how often to take a sample from all samples 
                                                 // needs to be reeeeeally small for a good waveform - currently too big
                                                 // Maybe just do it directly in bytes later on?
-        var sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, compressedArrayResolution) / 8; // Number of bytes in x seconds of audio
+        var sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, compressedArrayResolution) / 8; // Number of bytes in x seconds of audio (/4) - div by 2 because converted to mono audio
         var compArraySize = (int)Math.Floor((double)songLengthBytes / sampleIntervalBytes) / 8; // Number of samples to compress down to for line rendering
 
         float[] waveformData = new float[compArraySize]; // Array of vals to hold compressed data
         for (var i = 0; i < compArraySize; i++)
         {
-            waveformData[i] = Math.Abs(allSamples[i * sampleIntervalBytes]); // Select abs val of sample every 1 ms from all the samples and store it in the compressed array
+            waveformData[i] = Math.Abs(allSamples[i * sampleIntervalBytes]) / normalizationFactor; // Select abs val of sample every 1 ms from all the samples and store it in the compressed array
         }
 
+        Bass.BASS_StreamFree(currentTrackStream); // Free up the stream to prevent memory leaks
+        // Data is no longer needed now that it has been processed in waveformData
+
         return waveformData;
-        
     }
 
     /// <summary>
@@ -70,17 +77,11 @@ public class PluginBassManager : MonoBehaviour
         return monoSamples;
     }
 
-    void InitializeAudio()
+    void InitializeBassPlugin()
     {
         if (Bass.BASS_Init(-1, sampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero))
         {
             Bass.BASS_PluginLoadDirectory($"{Application.dataPath}/Plugins/Bassx64");
-
-            globalStream = Bass.BASS_StreamCreateFile("G:/_PCE_files/TestAudioFiles/songtest.mp3", 0, 0, BASSFlag.BASS_DEFAULT);
-            if (globalStream != 0)
-            {
-                //Bass.BASS_ChannelPlay(globalStream, false);
-            }
         }
         else
         {

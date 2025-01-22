@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using SFB;
-using Unity.VisualScripting; // system file browser
+using SFB; // system file browser
 
 public class ChartMetadata : MonoBehaviour
 {

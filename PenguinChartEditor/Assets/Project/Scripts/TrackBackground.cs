@@ -9,6 +9,8 @@ public class TrackBackground : MonoBehaviour
     {
         transform.localScale = screenReference.transform.
         transform.position = screenReference.transform.position;
+
+        // I have no idea why but the waveform will not show up unless the plane moves back after initializing
     }
 
 }
