@@ -4,9 +4,10 @@ using System;
 
 public class PluginBassManager : MonoBehaviour
 {
-    int globalStream;
     int sampleRate = 44100;
-
+    public float compressedArrayResolution = 0.001f; // Holds a value in seconds for how often to take a sample from all samples 
+                                                    // needs to be reeeeeally small for a good waveform - currently too big
+                                                    // Maybe just do it directly in bytes later on?
     private void Awake() 
     {
         InitializeBassPlugin();
@@ -43,10 +44,7 @@ public class PluginBassManager : MonoBehaviour
 
         allSamples = ConvertStereoSamplestoMono(allSamples); // Convert stereo samples to mono for better combined waveform
 
-        var compressedArrayResolution = 0.001f; // Holds a value in seconds for how often to take a sample from all samples 
-                                                // needs to be reeeeeally small for a good waveform - currently too big
-                                                // Maybe just do it directly in bytes later on?
-        var sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, compressedArrayResolution) / 8; // Number of bytes in x seconds of audio (/4) - div by 2 because converted to mono audio
+        var sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, compressedArrayResolution) / 8; // Number of bytes in x seconds of audio (/4) - div by extra 2 because converted to mono audio
         var compArraySize = (int)Math.Floor((double)songLengthBytes / sampleIntervalBytes) / 8; // Number of samples to compress down to for line rendering
 
         float[] waveformData = new float[compArraySize]; // Array of vals to hold compressed data

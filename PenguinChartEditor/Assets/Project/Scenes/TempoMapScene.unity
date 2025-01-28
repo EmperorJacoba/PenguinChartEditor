@@ -154,9 +154,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1, y: 1}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -3.995735}
+  m_SizeDelta: {x: 1, y: 0.7142}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &33159346
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -225,8 +225,8 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 1, y: 1, z: 0}
-  - {x: -1, y: 2, z: 0}
+  - {x: 1, y: 0, z: 0}
+  - {x: -1, y: 0.7, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.015
@@ -298,7 +298,7 @@ GameObject:
   - component: {fileID: 72448265}
   - component: {fileID: 72448264}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: TempoMapBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -321,7 +321,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0.5, y: 0}
-  m_SizeDelta: {x: -1281.0001, y: 0}
+  m_SizeDelta: {x: -1281.0001, y: 20.000008}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &72448264
 MonoBehaviour:
@@ -905,6 +905,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 689573f16dab4d74cb85604d9af73e01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  compressedArrayResolution: 0.001
 --- !u!4 &1722031496
 Transform:
   m_ObjectHideFlags: 0
