@@ -13,6 +13,18 @@ public class PluginBassManager : MonoBehaviour
         InitializeBassPlugin();
     }
 
+    void InitializeBassPlugin()
+    {
+        if (Bass.BASS_Init(-1, sampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero))
+        {
+            Bass.BASS_PluginLoadDirectory($"{Application.dataPath}/Plugins/Bassx64");
+        }
+        else
+        {
+            Debug.Log($"Init failed");
+        }
+    }
+
     /// <summary>
     /// Returns a simplified float array of an audio file's sample data.
     /// </summary>
@@ -73,18 +85,6 @@ public class PluginBassManager : MonoBehaviour
             monoSamples[i / 2] = (samples[i*2] + samples[i*2 + 1]) / 2; // average the two stereo samples to get a mono sample
         }
         return monoSamples;
-    }
-
-    void InitializeBassPlugin()
-    {
-        if (Bass.BASS_Init(-1, sampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero))
-        {
-            Bass.BASS_PluginLoadDirectory($"{Application.dataPath}/Plugins/Bassx64");
-        }
-        else
-        {
-            Debug.Log($"Init failed");
-        }
     }
 
     void OnApplicationQuit()

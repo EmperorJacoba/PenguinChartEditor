@@ -35,20 +35,36 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""PlayPauseSong"",
+                    ""type"": ""Button"",
+                    ""id"": ""c9b4e671-a4ca-4073-b643-14ddd55b6738"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MiddleMouseClick"",
+                    ""type"": ""Button"",
+                    ""id"": ""d110bbc7-5c10-45c0-8824-b962faee2a49"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MiddleScrollMousePos"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""3663ac46-a122-4900-88eb-40d832139c22"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""c5884afa-1739-45dc-8089-2342d3b0d8f3"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ScrollTrack"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
                 {
                     ""name"": """",
                     ""id"": ""08f36707-846b-4f1f-ae6d-ecfd60b8e41e"",
@@ -57,6 +73,39 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""ScrollTrack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""86e7ad09-bbfd-41dc-a685-b738ea73a2f1"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""PlayPauseSong"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a052551-3690-467a-9c0b-f2ccc89f8823"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""MiddleMouseClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""801687a5-13ed-4e19-8cc8-e306f7a2e98d"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""MiddleScrollMousePos"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1119,6 +1168,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         // Charting
         m_Charting = asset.FindActionMap("Charting", throwIfNotFound: true);
         m_Charting_ScrollTrack = m_Charting.FindAction("ScrollTrack", throwIfNotFound: true);
+        m_Charting_PlayPauseSong = m_Charting.FindAction("PlayPauseSong", throwIfNotFound: true);
+        m_Charting_MiddleMouseClick = m_Charting.FindAction("MiddleMouseClick", throwIfNotFound: true);
+        m_Charting_MiddleScrollMousePos = m_Charting.FindAction("MiddleScrollMousePos", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1211,11 +1263,17 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Charting;
     private List<IChartingActions> m_ChartingActionsCallbackInterfaces = new List<IChartingActions>();
     private readonly InputAction m_Charting_ScrollTrack;
+    private readonly InputAction m_Charting_PlayPauseSong;
+    private readonly InputAction m_Charting_MiddleMouseClick;
+    private readonly InputAction m_Charting_MiddleScrollMousePos;
     public struct ChartingActions
     {
         private @InputMap m_Wrapper;
         public ChartingActions(@InputMap wrapper) { m_Wrapper = wrapper; }
         public InputAction @ScrollTrack => m_Wrapper.m_Charting_ScrollTrack;
+        public InputAction @PlayPauseSong => m_Wrapper.m_Charting_PlayPauseSong;
+        public InputAction @MiddleMouseClick => m_Wrapper.m_Charting_MiddleMouseClick;
+        public InputAction @MiddleScrollMousePos => m_Wrapper.m_Charting_MiddleScrollMousePos;
         public InputActionMap Get() { return m_Wrapper.m_Charting; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1228,6 +1286,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @ScrollTrack.started += instance.OnScrollTrack;
             @ScrollTrack.performed += instance.OnScrollTrack;
             @ScrollTrack.canceled += instance.OnScrollTrack;
+            @PlayPauseSong.started += instance.OnPlayPauseSong;
+            @PlayPauseSong.performed += instance.OnPlayPauseSong;
+            @PlayPauseSong.canceled += instance.OnPlayPauseSong;
+            @MiddleMouseClick.started += instance.OnMiddleMouseClick;
+            @MiddleMouseClick.performed += instance.OnMiddleMouseClick;
+            @MiddleMouseClick.canceled += instance.OnMiddleMouseClick;
+            @MiddleScrollMousePos.started += instance.OnMiddleScrollMousePos;
+            @MiddleScrollMousePos.performed += instance.OnMiddleScrollMousePos;
+            @MiddleScrollMousePos.canceled += instance.OnMiddleScrollMousePos;
         }
 
         private void UnregisterCallbacks(IChartingActions instance)
@@ -1235,6 +1302,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @ScrollTrack.started -= instance.OnScrollTrack;
             @ScrollTrack.performed -= instance.OnScrollTrack;
             @ScrollTrack.canceled -= instance.OnScrollTrack;
+            @PlayPauseSong.started -= instance.OnPlayPauseSong;
+            @PlayPauseSong.performed -= instance.OnPlayPauseSong;
+            @PlayPauseSong.canceled -= instance.OnPlayPauseSong;
+            @MiddleMouseClick.started -= instance.OnMiddleMouseClick;
+            @MiddleMouseClick.performed -= instance.OnMiddleMouseClick;
+            @MiddleMouseClick.canceled -= instance.OnMiddleMouseClick;
+            @MiddleScrollMousePos.started -= instance.OnMiddleScrollMousePos;
+            @MiddleScrollMousePos.performed -= instance.OnMiddleScrollMousePos;
+            @MiddleScrollMousePos.canceled -= instance.OnMiddleScrollMousePos;
         }
 
         public void RemoveCallbacks(IChartingActions instance)
@@ -1528,6 +1604,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     public interface IChartingActions
     {
         void OnScrollTrack(InputAction.CallbackContext context);
+        void OnPlayPauseSong(InputAction.CallbackContext context);
+        void OnMiddleMouseClick(InputAction.CallbackContext context);
+        void OnMiddleScrollMousePos(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

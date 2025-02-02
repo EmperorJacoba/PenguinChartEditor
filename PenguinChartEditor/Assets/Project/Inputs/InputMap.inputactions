@@ -13,20 +13,36 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "PlayPauseSong",
+                    "type": "Button",
+                    "id": "c9b4e671-a4ca-4073-b643-14ddd55b6738",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MiddleMouseClick",
+                    "type": "Button",
+                    "id": "d110bbc7-5c10-45c0-8824-b962faee2a49",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MiddleScrollMousePos",
+                    "type": "PassThrough",
+                    "id": "3663ac46-a122-4900-88eb-40d832139c22",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
-                {
-                    "name": "",
-                    "id": "c5884afa-1739-45dc-8089-2342d3b0d8f3",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ScrollTrack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
                 {
                     "name": "",
                     "id": "08f36707-846b-4f1f-ae6d-ecfd60b8e41e",
@@ -35,6 +51,39 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "ScrollTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "86e7ad09-bbfd-41dc-a685-b738ea73a2f1",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "PlayPauseSong",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6a052551-3690-467a-9c0b-f2ccc89f8823",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "MiddleMouseClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "801687a5-13ed-4e19-8cc8-e306f7a2e98d",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "MiddleScrollMousePos",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
