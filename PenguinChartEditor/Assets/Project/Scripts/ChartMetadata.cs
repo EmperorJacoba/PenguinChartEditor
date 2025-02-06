@@ -129,6 +129,7 @@ public class ChartMetadata : MonoBehaviour
     /// Holds the current metadata type to edit in SetSongInfo().
     /// </summary>
     public string CurrentInputField {private get; set;}
+    // No idea why but I can't pass in two values from an input field to the same function?? so i have to do this
 
     /// <summary>
     /// Initializes/edits the string value associated with each metadata key in songInfo
