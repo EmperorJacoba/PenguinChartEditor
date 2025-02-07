@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -32,7 +33,7 @@ public class WaveformManager : MonoBehaviour
     // long is just what Bass returns and I don't want to do a million casts just to make this a regular int
     // 64 bit values are actually kinda baller in my opinion so i'm not opposed 
 
-    public static int currentWFDataPosition = 0; // Where the user is by *sample count* -> this corresponds to an index in the masterWaveformData array
+    public static int currentWFDataPosition = 0; // Where the user is by *sample count* -> this corresponds to an index in waveformData arrays
 
     readonly int scrollSkip = 100; // How many array indexes to skip when scrolling - this is a "mechanical advantage" for scrolling
 
@@ -128,7 +129,8 @@ public class WaveformManager : MonoBehaviour
     {
         for (var i = 0; i < samples.Length; i++)
         {
-            samples[i] /= normalizationChange; // Select abs val of sample every 1 ms from all the samples and store it in the compressed array
+            samples[i] /= normalizationChange; // Change sample value b/c line render uses local positioning
+            // If original values are used, waveform looks crazy by default
         }
         return samples;
     }
@@ -140,6 +142,7 @@ public class WaveformManager : MonoBehaviour
     /// <param name="isMiddleScroll"/> Used to correctly scroll with the middle mouse button </param>
     public void UpdateWaveformSegment(float scrollChange, bool isMiddleScroll)
     {
+        // Change scrolling so that it scales with shrink factor (not always so large comparative to the # of samples on screen)
         // Step 1: Load in data to use to generate the waveform
         float[] masterWaveformData = waveformData[currentWaveform].Item1;
 
@@ -154,40 +157,44 @@ public class WaveformManager : MonoBehaviour
         scrollChange = Mathf.Round(scrollChange); // Round to int to avoid decimal array positions
         currentWFDataPosition += (int)scrollChange; // Add scrollChange (which is now a # of data points to ffw by) to modify array position
 
+        var samplesPerScreen = (int)Mathf.Round(rtHeight / shrinkFactor);
         // Step 3: Check to make sure r/w request is within the bounds of the array
         if (currentWFDataPosition < 0)
         {
             currentWFDataPosition = 0;
+            return;
         }
-        else if (currentWFDataPosition > masterWaveformData.Length)
+        else if (currentWFDataPosition + samplesPerScreen > masterWaveformData.Length)
         {
-            // Edit this so this don't look super weird at the end of the scroll
-            currentWFDataPosition = masterWaveformData.Length;
+            currentWFDataPosition = masterWaveformData.Length - samplesPerScreen;
+            return;
         }
 
-        // Step 4: Reset line renderer
-        lineRenderer.positionCount = 0; // This happens after the bound checks to avoid "flickering" of the drawn array
+        // Step 4: Reset Line Renderer
+        lineRenderer.positionCount = samplesPerScreen; // Tell the line renderer that displayedDataPoints is the # of points to draw
+        // ^^ Line renderer needs an array initialization in order to draw the correct # of points
 
         // Step 5: Set up start and end points of data to draw
-        var displayedDataPoints = currentWFDataPosition + (int)Mathf.Round(rtHeight / shrinkFactor); 
+        var displayedDataPoints = currentWFDataPosition + samplesPerScreen; 
         // ^^ Start from where we are, draw points shrinkFactor distance apart until we hit end of screen (rtHeight)
-
-        lineRenderer.positionCount = displayedDataPoints; // Tell the line renderer that displayedDataPoints is the # of points to draw
-        // ^^ Line renderer needs an array initialization in order to draw the correct # of points
 
         // Step 6: Put points on screen
         float currentYValue = 0;
+        int lineRendererIndex = 0;
         for (var i = currentWFDataPosition; i < displayedDataPoints; i++) // i represents index in masterWaveformData, get data from mWD until screen ends
         {
+
             if (i % 2 == 0) // Since waveform has abs vals, alternate displaying left and right of waveform midline to get centered-esque waveform
             {
-                lineRenderer.SetPosition(i, new Vector2(masterWaveformData[i], currentYValue));
+                lineRenderer.SetPosition(lineRendererIndex, new Vector2(masterWaveformData[i], currentYValue));
             }
             else
             {
-                lineRenderer.SetPosition(i, new Vector2(-masterWaveformData[i], currentYValue));
+                lineRenderer.SetPosition(lineRendererIndex, new Vector2(-masterWaveformData[i], currentYValue));
             }
+            lineRendererIndex++;
             currentYValue += shrinkFactor; 
+
             // ^^ Since shrinkFactor represents the y-distance between two drawn waveform points
             // add shrinkFactor to currentYValue to set the next point to be drawn at the next y position
         }

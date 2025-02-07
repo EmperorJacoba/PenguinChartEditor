@@ -10,6 +10,7 @@ public class PluginBassManager : MonoBehaviour
                                                     // needs to be reeeeeally small for a good waveform - currently too big
                                                     // Maybe just do it directly in bytes later on?
     string testSongPath = "G:/_PCE_files/TestAudioFiles/song.opus";
+    bool playing = false;
     private void Awake() 
     {
         InitializeBassPlugin();
@@ -102,14 +103,24 @@ public class PluginBassManager : MonoBehaviour
     }
 
     // This function has not yet been tested!!
-    public void PlayAudio()
+    public void PlayPauseAudio()
     {
         Bass.BASS_ChannelSetPosition
         (
             stemStreams[ChartMetadata.StemType.song], 
             WaveformManager.currentWFDataPosition * WaveformManager.waveformData[ChartMetadata.StemType.song].Item2
         );
-        Bass.BASS_ChannelPlay(stemStreams[ChartMetadata.StemType.song], false);
+        if (!playing)
+        {
+            Bass.BASS_ChannelPlay(stemStreams[ChartMetadata.StemType.song], false);
+            playing = true;
+        }
+        else
+        {
+            Bass.BASS_ChannelPause(stemStreams[ChartMetadata.StemType.song]);
+            playing = false;
+        }
+
     }
 
     /// <summary>
@@ -121,9 +132,9 @@ public class PluginBassManager : MonoBehaviour
     {
         var monoSamples = new float[samples.Length / 2]; // stereo samples have two data points for every sample (L+R track)
                                                          // so mono will have half the number of samples
-        for (var i = 0; i < samples.Length / 2; i ++)
+        for (var i = 0; i < monoSamples.Length; i++)
         {
-            monoSamples[i / 2] = (samples[i*2] + samples[i*2 + 1]) / 2; // average the two stereo samples to get a mono sample
+            monoSamples[i] = (samples[i*2] + samples[i*2 + 1]) / 2;
         }
         return monoSamples;
     }
