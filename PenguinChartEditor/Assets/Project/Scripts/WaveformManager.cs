@@ -71,7 +71,7 @@ public class WaveformManager : MonoBehaviour
         rt.pivot = screenReference.GetComponent<RectTransform>().pivot;
         rtHeight = rt.rect.height;
 
-        currentWaveform = ChartMetadata.StemType.song;
+        currentWaveform = ChartMetadata.StemType.song; // testing
         UpdateWaveformData(ChartMetadata.StemType.song);
         UpdateWaveformSegment(0, false);
     }
@@ -113,23 +113,23 @@ public class WaveformManager : MonoBehaviour
     /// <param name="audioStem">The BASS stream to get audio samples of.</param>
     public void UpdateWaveformData(ChartMetadata.StemType stem) // pass in file path here later
     {
-        float[] stemWaveformData = pluginBassManager.GetAudioSamples("", out long bytesPerSample); // Load in audio samples from PluginBassManager - use param here later
-        stemWaveformData = Normalize(stemWaveformData, 5);
+        float[] stemWaveformData = pluginBassManager.GetAudioSamples("", out long bytesPerSample); 
+        stemWaveformData = Normalize(stemWaveformData, 5); // Modify obtained data to reduce peaks
 
         if (waveformData.ContainsKey(stem))
         {
             waveformData.Remove(stem);
-        }
+        } // Flush current value to allow for new one
 
         waveformData.Add(stem, (stemWaveformData, bytesPerSample));
     }
 
     // This is here so that waveform peak lengths can be changed by user later on
-    float[] Normalize(float[] samples, float normalizationChange)
+    float[] Normalize(float[] samples, float divideBy)
     {
         for (var i = 0; i < samples.Length; i++)
         {
-            samples[i] /= normalizationChange; // Change sample value b/c line render uses local positioning
+            samples[i] /= divideBy; // Change sample value b/c line render uses local positioning and w/o this the peaks are too big
             // If original values are used, waveform looks crazy by default
         }
         return samples;
@@ -146,7 +146,7 @@ public class WaveformManager : MonoBehaviour
         // Step 1: Load in data to use to generate the waveform
         float[] masterWaveformData = waveformData[currentWaveform].Item1;
 
-        // Scroll change can be float from click + drag, int from scroll wheel => must scale up with scrollSkip to get a sort of "mechanical advantage" with scrolling
+        // Scroll change can be float from click + drag, int from scroll wheel => int must scale up with scrollSkip to get a sort of "mechanical advantage" with scrolling
         // Step 2: Get position of array to start r/w from
         if (!isMiddleScroll) // Cursor delta is based on pixels so this upscaling isn't really needed for a non-MMB scroll
         {
@@ -159,6 +159,7 @@ public class WaveformManager : MonoBehaviour
 
         var samplesPerScreen = (int)Mathf.Round(rtHeight / shrinkFactor);
         // Step 3: Check to make sure r/w request is within the bounds of the array
+        // returns because no need to rerender lol
         if (currentWFDataPosition < 0)
         {
             currentWFDataPosition = 0;
@@ -166,22 +167,24 @@ public class WaveformManager : MonoBehaviour
         }
         else if (currentWFDataPosition + samplesPerScreen > masterWaveformData.Length)
         {
-            currentWFDataPosition = masterWaveformData.Length - samplesPerScreen;
+            currentWFDataPosition = masterWaveformData.Length - samplesPerScreen; 
+            // position is from bottom of screen so position should never allow for an index that promises more samples than available
             return;
         }
 
         // Step 4: Reset Line Renderer
-        lineRenderer.positionCount = samplesPerScreen; // Tell the line renderer that displayedDataPoints is the # of points to draw
+        lineRenderer.positionCount = samplesPerScreen; // Tell the line renderer that it will need to draw the amount of points that will fit on screen with current settings
         // ^^ Line renderer needs an array initialization in order to draw the correct # of points
 
         // Step 5: Set up start and end points of data to draw
-        var displayedDataPoints = currentWFDataPosition + samplesPerScreen; 
+        var dataPointsToDisplay = currentWFDataPosition + samplesPerScreen; 
         // ^^ Start from where we are, draw points shrinkFactor distance apart until we hit end of screen (rtHeight)
 
         // Step 6: Put points on screen
         float currentYValue = 0;
-        int lineRendererIndex = 0;
-        for (var i = currentWFDataPosition; i < displayedDataPoints; i++) // i represents index in masterWaveformData, get data from mWD until screen ends
+        int lineRendererIndex = 0; // This must be seperate because line renderer index is NOT the same as either i comparison variable
+        // theoretically you could do some subtraction to figure out the index but this is just simpler & easier
+        for (var i = currentWFDataPosition; i < dataPointsToDisplay; i++) // i represents index in masterWaveformData, get data from mWD until screen ends
         {
 
             if (i % 2 == 0) // Since waveform has abs vals, alternate displaying left and right of waveform midline to get centered-esque waveform
@@ -194,7 +197,6 @@ public class WaveformManager : MonoBehaviour
             }
             lineRendererIndex++;
             currentYValue += shrinkFactor; 
-
             // ^^ Since shrinkFactor represents the y-distance between two drawn waveform points
             // add shrinkFactor to currentYValue to set the next point to be drawn at the next y position
         }

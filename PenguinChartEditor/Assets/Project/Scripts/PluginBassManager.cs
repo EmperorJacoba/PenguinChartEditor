@@ -11,6 +11,7 @@ public class PluginBassManager : MonoBehaviour
                                                     // Maybe just do it directly in bytes later on?
     string testSongPath = "G:/_PCE_files/TestAudioFiles/song.opus";
     bool playing = false;
+    
     private void Awake() 
     {
         InitializeBassPlugin();
@@ -55,6 +56,8 @@ public class PluginBassManager : MonoBehaviour
     {
         // Step 1: Make BASS stream of song path
         songPath = testSongPath;
+        // Use ChartMetadata.StemTypes & stem dictionary in future
+
         // GetAudioSamples() uses a different one-time stream from stemStreams{} because it needs decoded stream
         var currentTrackStream = Bass.BASS_StreamCreateFile(
             songPath, 
@@ -128,13 +131,13 @@ public class PluginBassManager : MonoBehaviour
     /// </summary>
     /// <param name="samples"></param>
     /// <returns></returns>
-    public float[] ConvertStereoSamplestoMono(float[] samples) 
+    private float[] ConvertStereoSamplestoMono(float[] samples) 
     {
         var monoSamples = new float[samples.Length / 2]; // stereo samples have two data points for every sample (L+R track)
                                                          // so mono will have half the number of samples
         for (var i = 0; i < monoSamples.Length; i++)
         {
-            monoSamples[i] = (samples[i*2] + samples[i*2 + 1]) / 2;
+            monoSamples[i] = (samples[i*2] + samples[i*2 + 1]) / 2; // average both stereo samples
         }
         return monoSamples;
     }
