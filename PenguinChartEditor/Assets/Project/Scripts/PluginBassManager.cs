@@ -10,13 +10,17 @@ public class PluginBassManager : MonoBehaviour
                                                     // needs to be reeeeeally small for a good waveform - currently too big
                                                     // Maybe just do it directly in bytes later on?
     string testSongPath = "G:/_PCE_files/TestAudioFiles/song.opus";
-    bool playing = false;
-    
+    public bool audioPlaying = false;
+
+    WaveformManager waveformManager;
+
     private void Awake() 
     {
         InitializeBassPlugin();
         testSongPath = "G:/_PCE_files/TestAudioFiles/song.opus";
         UpdateAudioStream(ChartMetadata.StemType.song, testSongPath);
+
+        waveformManager = GameObject.Find("WaveformManager").gameObject.GetComponent<WaveformManager>();
     }
 
     public void UpdateAudioStream(ChartMetadata.StemType stemType, string songPath)
@@ -83,12 +87,14 @@ public class PluginBassManager : MonoBehaviour
         // This is faster than taking individual samples using setPosition and then ChannelGetData
 
         // Step 4: Convert the stereo track to mono so that the waveform is taking samples from an average of both channels
-        // Default BASS mono flag only works with MPX files so a manual function is needed
+        // Default BASS mono flag only works with MP3 files so a manual function is needed
         allSamples = ConvertStereoSamplestoMono(allSamples);
 
         // Step 5: Calculate number of samples to take and how long each sample is in bytes
         long sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, compressedArrayResolution) / 8; // Number of bytes in x seconds of audio (/4) - div by extra 2 because converted to mono audio
-        bytesPerSample = sampleIntervalBytes;
+        bytesPerSample = sampleIntervalBytes * 4; // multiply by 4 to undo /2 for floats and /2 for mono 
+        // ^ this is used to play/pause the audio which uses 16-bit (not 32-bit) & stereo
+        // ^ this is *4 and not *8 because 16 bit is still 2 bytes
         var compArraySize = (int)Math.Floor((double)songLengthBytes / sampleIntervalBytes) / 8; // Number of samples to compress down to for line rendering
 
         // Step 6: Pick data from full array to put in compressed array
@@ -112,16 +118,21 @@ public class PluginBassManager : MonoBehaviour
         (
             stemStreams[ChartMetadata.StemType.song], 
             WaveformManager.currentWFDataPosition * WaveformManager.waveformData[ChartMetadata.StemType.song].Item2
+            // ^ Item2 holds how many bytes are held for each second of audio
+            // this rate will vary based on audio formats and stuff
         );
-        if (!playing)
+        if (!audioPlaying)
         {
             Bass.BASS_ChannelPlay(stemStreams[ChartMetadata.StemType.song], false);
-            playing = true;
+            audioPlaying = true;
+            waveformManager.ToggleCharting();
+            waveformManager.ChunkWaveformSegment();
         }
         else
         {
             Bass.BASS_ChannelPause(stemStreams[ChartMetadata.StemType.song]);
-            playing = false;
+            audioPlaying = false;
+            waveformManager.ToggleCharting();
         }
 
     }

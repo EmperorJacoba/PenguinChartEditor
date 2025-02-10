@@ -1,5 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using Un4seen.Bass;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -16,7 +17,7 @@ public class WaveformManager : MonoBehaviour
 
     float rtHeight;
 
-    InputMap inputMap;
+    private InputMap inputMap;
     
     readonly float defaultShrinkFactor = 0.0001f;
     float shrinkFactor = 0.0001f; // Needed to compress the points into something legible (y value * shrinkFactor = y position)
@@ -26,8 +27,8 @@ public class WaveformManager : MonoBehaviour
     ChartMetadata.StemType currentWaveform;  
     public static Dictionary<ChartMetadata.StemType, (float[], long)> waveformData = new();
     // This dictionary holds all the different waveform data in case different stems want to be shown on the waveform
-    // ChartMetadata.StemType is the identifier for which stem the data belongs to
-    // The tuple in the value holds the data (float[]) and the number of bytes per sample
+    // ChartMetadata.StemType is the identifier for which audio stem the data belongs to
+    // The tuple in the value holds the data (float[]) and the number of bytes per sample (long)
     // The number of bytes per sample is needed in order to accurately play and seek through the track in PluginBassManager
     // The number of bytes can vary based on the type of audio file the user inputs, like if they use .opus, .mp3 together, etc.
     // long is just what Bass returns and I don't want to do a million casts just to make this a regular int
@@ -36,6 +37,8 @@ public class WaveformManager : MonoBehaviour
     public static int currentWFDataPosition = 0; // Where the user is by *sample count* -> this corresponds to an index in waveformData arrays
 
     readonly int scrollSkip = 100; // How many array indexes to skip when scrolling - this is a "mechanical advantage" for scrolling
+
+    int chunkSamples = 2000;
 
     // Needed for delta calculations when scrolling using MMB
     private float initialMouseY = float.NaN;
@@ -46,7 +49,7 @@ public class WaveformManager : MonoBehaviour
         inputMap = new();
         inputMap.Enable();
 
-        inputMap.Charting.ScrollTrack.performed += scrollChange => UpdateWaveformSegment(scrollChange.ReadValue<float>(), false);
+        inputMap.Charting.ScrollTrack.performed += scrollChange => ScrollWaveformSegment(scrollChange.ReadValue<float>(), false);
 
         inputMap.Charting.MiddleScrollMousePos.performed += x => currentMouseY = x.ReadValue<Vector2>().y;
         inputMap.Charting.MiddleScrollMousePos.Disable(); // This is disabled immediately so that it's not running when it's not needed
@@ -57,7 +60,19 @@ public class WaveformManager : MonoBehaviour
         // Put all this input map stuff in a seperate file later on
     }
 
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public void ToggleCharting()
+    {
+        if (inputMap.Charting.enabled)
+        {
+            inputMap.Charting.Disable();
+        }
+        else
+        {
+            inputMap.Charting.Enable();
+        }
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         lineRenderer = GetComponent<LineRenderer>();
@@ -73,16 +88,29 @@ public class WaveformManager : MonoBehaviour
 
         currentWaveform = ChartMetadata.StemType.song; // testing
         UpdateWaveformData(ChartMetadata.StemType.song);
-        UpdateWaveformSegment(0, false);
+        ScrollWaveformSegment(0, false);
     }
 
+    double lastAudioPosition = -1;
+    double audioPosition = -1;
     void Update()
     {
         if (inputMap.Charting.MiddleScrollMousePos.enabled)
         {
-            UpdateWaveformSegment(currentMouseY - initialMouseY, true);
+            ScrollWaveformSegment(currentMouseY - initialMouseY, true);
             // This runs every frame to get that smooth scrolling effect like on webpages and such
             // If this ran when the mouse was moved then it would be super jumpy
+        }
+
+        if (pluginBassManager.audioPlaying) // Playing functionality, edit here
+        {
+            audioPosition = Bass.BASS_ChannelBytes2Seconds(pluginBassManager.stemStreams[ChartMetadata.StemType.song], Bass.BASS_ChannelGetPosition(pluginBassManager.stemStreams[ChartMetadata.StemType.song]));
+            if (lastAudioPosition == -1)
+            {
+                lastAudioPosition = audioPosition;
+            }
+            gameObject.transform.position += Vector3.down * (float)(audioPosition - lastAudioPosition);
+            lastAudioPosition = audioPosition;
         }
     }
 
@@ -140,11 +168,12 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     /// <param name="scrollChange"> Input from scroll method used to move visible parts of waveform </param>
     /// <param name="isMiddleScroll"/> Used to correctly scroll with the middle mouse button </param>
-    public void UpdateWaveformSegment(float scrollChange, bool isMiddleScroll)
+    public void ScrollWaveformSegment(float scrollChange, bool isMiddleScroll)
     {
         // Change scrolling so that it scales with shrink factor (not always so large comparative to the # of samples on screen)
-        // Step 1: Load in data to use to generate the waveform
-        float[] masterWaveformData = waveformData[currentWaveform].Item1;
+
+        // Step 1: Get data and sample calculations
+        SetUpWaveformChange(out var masterWaveformData, out var samplesPerScreen);
 
         // Scroll change can be float from click + drag, int from scroll wheel => int must scale up with scrollSkip to get a sort of "mechanical advantage" with scrolling
         // Step 2: Get position of array to start r/w from
@@ -157,7 +186,6 @@ public class WaveformManager : MonoBehaviour
         scrollChange = Mathf.Round(scrollChange); // Round to int to avoid decimal array positions
         currentWFDataPosition += (int)scrollChange; // Add scrollChange (which is now a # of data points to ffw by) to modify array position
 
-        var samplesPerScreen = (int)Mathf.Round(rtHeight / shrinkFactor);
         // Step 3: Check to make sure r/w request is within the bounds of the array
         // returns because no need to rerender lol
         if (currentWFDataPosition < 0)
@@ -172,21 +200,27 @@ public class WaveformManager : MonoBehaviour
             return;
         }
 
-        // Step 4: Reset Line Renderer
+        // Step 4: Reset Line Renderer (this seems to be redundant at the moment, need to fix so that it scales with screen size)
         lineRenderer.positionCount = samplesPerScreen; // Tell the line renderer that it will need to draw the amount of points that will fit on screen with current settings
         // ^^ Line renderer needs an array initialization in order to draw the correct # of points
 
-        // Step 5: Set up start and end points of data to draw
-        var dataPointsToDisplay = currentWFDataPosition + samplesPerScreen; 
-        // ^^ Start from where we are, draw points shrinkFactor distance apart until we hit end of screen (rtHeight)
+        // Step 5: Generate points
+        GenerateWaveformPoints(masterWaveformData, currentWFDataPosition + samplesPerScreen);
+    }
 
-        // Step 6: Put points on screen
+    private void SetUpWaveformChange(out float[] masterWaveformData, out int samplesPerScreen)
+    {
+        masterWaveformData = waveformData[currentWaveform].Item1;
+        samplesPerScreen = (int)Mathf.Round(rtHeight / shrinkFactor);
+    }
+
+    private void GenerateWaveformPoints(float[] masterWaveformData, int dataPointsToDisplay)
+    {
         float currentYValue = 0;
         int lineRendererIndex = 0; // This must be seperate because line renderer index is NOT the same as either i comparison variable
         // theoretically you could do some subtraction to figure out the index but this is just simpler & easier
         for (var i = currentWFDataPosition; i < dataPointsToDisplay; i++) // i represents index in masterWaveformData, get data from mWD until screen ends
         {
-
             if (i % 2 == 0) // Since waveform has abs vals, alternate displaying left and right of waveform midline to get centered-esque waveform
             {
                 lineRenderer.SetPosition(lineRendererIndex, new Vector2(masterWaveformData[i], currentYValue));
@@ -202,11 +236,21 @@ public class WaveformManager : MonoBehaviour
         }
     }
 
+    public void ChunkWaveformSegment()
+    {
+        SetUpWaveformChange(out var masterWaveformData, out var samplesPerScreen);
+
+        lineRenderer.positionCount = samplesPerScreen + chunkSamples;
+
+        GenerateWaveformPoints(masterWaveformData, currentWFDataPosition + samplesPerScreen + chunkSamples);
+    }
+
+
     // Just testing for now
     public void ChangeShrinkFactor(float scrollbarPosition)
     {
         shrinkFactor = defaultShrinkFactor + 0.0001f*scrollbarPosition*20;
-        UpdateWaveformSegment(0, false);
+        ScrollWaveformSegment(0, false);
     }
 }
 
