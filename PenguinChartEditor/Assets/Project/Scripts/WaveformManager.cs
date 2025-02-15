@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mono.Cecil.Cil;
 using Un4seen.Bass;
 using UnityEngine;
 
@@ -91,8 +93,8 @@ public class WaveformManager : MonoBehaviour
         ScrollWaveformSegment(0, false);
     }
 
-    double lastAudioPosition = -1;
     double audioPosition = -1;
+    double lastAudioPosition = -1;
     void Update()
     {
         if (inputMap.Charting.MiddleScrollMousePos.enabled)
@@ -102,14 +104,22 @@ public class WaveformManager : MonoBehaviour
             // If this ran when the mouse was moved then it would be super jumpy
         }
 
-        if (pluginBassManager.audioPlaying) // Playing functionality, edit here
+        if (pluginBassManager.audioPlaying)
         {
-            audioPosition = Bass.BASS_ChannelBytes2Seconds(pluginBassManager.stemStreams[ChartMetadata.StemType.song], Bass.BASS_ChannelGetPosition(pluginBassManager.stemStreams[ChartMetadata.StemType.song]));
+            audioPosition = Bass.BASS_ChannelBytes2Seconds(pluginBassManager.stemStreams[ChartMetadata.StemType.song], Bass.BASS_ChannelGetPosition(pluginBassManager.stemStreams[ChartMetadata.StemType.song])); 
             if (lastAudioPosition == -1)
             {
                 lastAudioPosition = audioPosition;
             }
-            gameObject.transform.position += Vector3.down * (float)(audioPosition - lastAudioPosition);
+            var localYChange = ((float)(audioPosition - lastAudioPosition) / pluginBassManager.compressedArrayResolution) * shrinkFactor;
+
+            Vector3[] test = new Vector3[lineRenderer.positionCount];
+            lineRenderer.GetPositions(test);
+            for (int i = 0; i < lineRenderer.positionCount; i++)
+            {
+                lineRenderer.SetPosition(i, test[i] - new Vector3(0, localYChange, 0));
+            }
+
             lastAudioPosition = audioPosition;
         }
     }
@@ -201,9 +211,8 @@ public class WaveformManager : MonoBehaviour
         }
 
         // Step 4: Reset Line Renderer (this seems to be redundant at the moment, need to fix so that it scales with screen size)
-        lineRenderer.positionCount = samplesPerScreen; // Tell the line renderer that it will need to draw the amount of points that will fit on screen with current settings
-        // ^^ Line renderer needs an array initialization in order to draw the correct # of points
-
+        // Tell the line renderer that it will need to draw the amount of points that will fit on screen with current settings
+        lineRenderer.positionCount = samplesPerScreen;
         // Step 5: Generate points
         GenerateWaveformPoints(masterWaveformData, currentWFDataPosition + samplesPerScreen);
     }
@@ -216,6 +225,7 @@ public class WaveformManager : MonoBehaviour
 
     private void GenerateWaveformPoints(float[] masterWaveformData, int dataPointsToDisplay)
     {
+        // ^^ Line renderer needs an array initialization in order to draw the correct # of points
         float currentYValue = 0;
         int lineRendererIndex = 0; // This must be seperate because line renderer index is NOT the same as either i comparison variable
         // theoretically you could do some subtraction to figure out the index but this is just simpler & easier
@@ -234,16 +244,17 @@ public class WaveformManager : MonoBehaviour
             // ^^ Since shrinkFactor represents the y-distance between two drawn waveform points
             // add shrinkFactor to currentYValue to set the next point to be drawn at the next y position
         }
+
     }
 
-    public void ChunkWaveformSegment()
+    /* public void ChunkWaveformSegment()
     {
         SetUpWaveformChange(out var masterWaveformData, out var samplesPerScreen);
 
         lineRenderer.positionCount = samplesPerScreen + chunkSamples;
 
         GenerateWaveformPoints(masterWaveformData, currentWFDataPosition + samplesPerScreen + chunkSamples);
-    }
+    } */
 
 
     // Just testing for now

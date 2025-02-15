@@ -9,7 +9,7 @@ public class PluginBassManager : MonoBehaviour
     public float compressedArrayResolution = 0.001f; // Holds a value in seconds for how often to take a sample from all samples 
                                                     // needs to be reeeeeally small for a good waveform - currently too big
                                                     // Maybe just do it directly in bytes later on?
-    string testSongPath = "G:/_PCE_files/TestAudioFiles/song.opus";
+    string testSongPath = "G:/_PCE_files/TestAudioFiles/120BPMTestTrack.opus";
     public bool audioPlaying = false;
 
     WaveformManager waveformManager;
@@ -17,7 +17,7 @@ public class PluginBassManager : MonoBehaviour
     private void Awake() 
     {
         InitializeBassPlugin();
-        testSongPath = "G:/_PCE_files/TestAudioFiles/song.opus";
+        testSongPath = "G:/_PCE_files/TestAudioFiles/120BPMTestTrack.opus";
         UpdateAudioStream(ChartMetadata.StemType.song, testSongPath);
 
         waveformManager = GameObject.Find("WaveformManager").gameObject.GetComponent<WaveformManager>();
@@ -125,16 +125,14 @@ public class PluginBassManager : MonoBehaviour
         {
             Bass.BASS_ChannelPlay(stemStreams[ChartMetadata.StemType.song], false);
             audioPlaying = true;
-            waveformManager.ToggleCharting();
-            waveformManager.ChunkWaveformSegment();
+            //waveformManager.StartCoroutine(waveformManager.PlayWaveform());
         }
         else
         {
             Bass.BASS_ChannelPause(stemStreams[ChartMetadata.StemType.song]);
             audioPlaying = false;
-            waveformManager.ToggleCharting();
         }
-
+        waveformManager.ToggleCharting();
     }
 
     /// <summary>
