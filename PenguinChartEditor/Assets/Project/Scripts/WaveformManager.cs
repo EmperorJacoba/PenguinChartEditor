@@ -106,22 +106,83 @@ public class WaveformManager : MonoBehaviour
 
         if (pluginBassManager.audioPlaying)
         {
+            // This if block (which should be refactored later) plays the waveform in sync with the audio
+            // "strikeline" is currently at bottom of screen
+
+            // Step: Get audio delta
+            // Time.deltaTime or a coroutine don't work properly for some reason 
+            // (probably due to difference between song timing & frame timing idk)
+            // a time delta is needed to move the waveform and this is the most reliable way to do it afaik
             audioPosition = Bass.BASS_ChannelBytes2Seconds(pluginBassManager.stemStreams[ChartMetadata.StemType.song], Bass.BASS_ChannelGetPosition(pluginBassManager.stemStreams[ChartMetadata.StemType.song])); 
             if (lastAudioPosition == -1)
             {
-                lastAudioPosition = audioPosition;
+                lastAudioPosition = audioPosition; // avoids some funky math and also holdovers from last time audio is played
             }
-            var localYChange = ((float)(audioPosition - lastAudioPosition) / pluginBassManager.compressedArrayResolution) * shrinkFactor;
+            
+            // ask me about this (localYChange) and i will rant at you about the NONSENSE that requires this
+            // unity coordinate systems are just...not consistent? between world, local, and line renderer spaces
+            // for some odd reason if you want to move them all down at once by moving the container there is ZERO way to convert between
+            // a line renderer/local coordinate and world space coordinate shift...or maybe there is and i'm just blind?
+            // this was just what worked the easiest, sigh - here as a warning to future me, 
+            // don't try to work the chunking system because this is miles simpler
 
-            Vector3[] test = new Vector3[lineRenderer.positionCount];
-            lineRenderer.GetPositions(test);
-            for (int i = 0; i < lineRenderer.positionCount; i++)
+            // anyways this is just how much to subtract from the y-pos of each line renderer point each frame to move at the pace of the audio
+            // since y distance between points is based on a (time) value, the audio delta 
+            // divided by the y-distance between two points yields the corresponding distance delta to an audio delta 
+            var localYChange = (float)(audioPosition - lastAudioPosition) / pluginBassManager.compressedArrayResolution * shrinkFactor;
+            
+            // this picks the good points out of the current array of points 
+            // and discards the old ones that fall below the screen
+            Vector3[] currentPositions = new Vector3[lineRenderer.positionCount];
+            Vector3[] modifiedPositions = new Vector3[lineRenderer.positionCount]; // # of points is stil the same by the time this is done
+            lineRenderer.GetPositions(currentPositions);
+
+            int leftOutPoints = 0; 
+            int modifiedArrayStopPoint = 0; // add these two vals up and you get the length of the array btw
+
+            for (int i = 0; i < currentPositions.Length; i++)
             {
-                lineRenderer.SetPosition(i, test[i] - new Vector3(0, localYChange, 0));
+                var vectorChange = currentPositions[i] - new Vector3(0, localYChange, 0);
+                if (vectorChange.y < 0) // weed out anything below bottom of screen -> pivot is at bottom of screen
+                {
+                    leftOutPoints++;
+                }
+                else
+                {
+                    modifiedPositions[modifiedArrayStopPoint] = vectorChange;
+                    modifiedArrayStopPoint++;
+                }
             }
 
-            lastAudioPosition = audioPosition;
+            currentWFDataPosition += leftOutPoints; // advance array by # of points destroyed
+            float startingY = modifiedPositions[modifiedArrayStopPoint - 1].y + shrinkFactor; 
+            // ^^ start drawing more points where the last valid position of the point migration left off 
+            // ^^ if you don't start with a shrinkFactor points will crush themselves (gets smaller every loop)
+            float[] masterWaveformData = waveformData[currentWaveform].Item1;
+
+            // add on extra points to replace the ones that fell below the screen
+            for (int i = 0; i < leftOutPoints; i++)
+            {
+                var pullPoint = modifiedArrayStopPoint + i;
+                if ((currentWFDataPosition + pullPoint) % 2 == 0) // sign of pull point in masterWaveformData has to match that in GenerateWaveformPoints()
+                {
+                    modifiedPositions[pullPoint] = new Vector3(masterWaveformData[currentWFDataPosition + pullPoint], startingY, 0);
+                }
+                else
+                {
+                    modifiedPositions[pullPoint] = new Vector3(-masterWaveformData[currentWFDataPosition + pullPoint], startingY, 0);
+                }
+                startingY += shrinkFactor;
+            }
+            lineRenderer.SetPositions(modifiedPositions); // cave johnson, we're done here, throw it on the screen
+            lastAudioPosition = audioPosition; // set up stuff for next loop
         }
+    }
+
+    public void ResetAudioPositions()
+    {
+        audioPosition = -1;
+        lastAudioPosition = -1;
     }
 
     void ChangeMiddleClick(bool clickStatus)
@@ -201,13 +262,11 @@ public class WaveformManager : MonoBehaviour
         if (currentWFDataPosition < 0)
         {
             currentWFDataPosition = 0;
-            return;
         }
         else if (currentWFDataPosition + samplesPerScreen > masterWaveformData.Length)
         {
             currentWFDataPosition = masterWaveformData.Length - samplesPerScreen; 
             // position is from bottom of screen so position should never allow for an index that promises more samples than available
-            return;
         }
 
         // Step 4: Reset Line Renderer (this seems to be redundant at the moment, need to fix so that it scales with screen size)
@@ -246,16 +305,6 @@ public class WaveformManager : MonoBehaviour
         }
 
     }
-
-    /* public void ChunkWaveformSegment()
-    {
-        SetUpWaveformChange(out var masterWaveformData, out var samplesPerScreen);
-
-        lineRenderer.positionCount = samplesPerScreen + chunkSamples;
-
-        GenerateWaveformPoints(masterWaveformData, currentWFDataPosition + samplesPerScreen + chunkSamples);
-    } */
-
 
     // Just testing for now
     public void ChangeShrinkFactor(float scrollbarPosition)

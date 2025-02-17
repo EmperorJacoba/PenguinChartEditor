@@ -6,9 +6,8 @@ using System.Collections.Generic;
 public class PluginBassManager : MonoBehaviour
 {
     int sampleRate = 44100;
-    public float compressedArrayResolution = 0.001f; // Holds a value in seconds for how often to take a sample from all samples 
-                                                    // needs to be reeeeeally small for a good waveform - currently too big
-                                                    // Maybe just do it directly in bytes later on?
+    public float compressedArrayResolution = 0.001f; // Holds a value in seconds for how often to take a sample from all samples - currently 1ms, seems fine enough
+    
     string testSongPath = "G:/_PCE_files/TestAudioFiles/120BPMTestTrack.opus";
     public bool audioPlaying = false;
 
@@ -125,12 +124,12 @@ public class PluginBassManager : MonoBehaviour
         {
             Bass.BASS_ChannelPlay(stemStreams[ChartMetadata.StemType.song], false);
             audioPlaying = true;
-            //waveformManager.StartCoroutine(waveformManager.PlayWaveform());
         }
         else
         {
             Bass.BASS_ChannelPause(stemStreams[ChartMetadata.StemType.song]);
             audioPlaying = false;
+            waveformManager.ResetAudioPositions();
         }
         waveformManager.ToggleCharting();
     }
