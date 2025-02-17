@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Mono.Cecil.Cil;
 using Un4seen.Bass;
 using UnityEngine;
 
@@ -10,7 +8,8 @@ public class WaveformManager : MonoBehaviour
 {
     [SerializeField] PluginBassManager pluginBassManager;
 
-    LineRenderer lineRenderer;
+    LineRenderer lineRendererMain;
+    LineRenderer lineRendererMirror;
     // Note: Line renderer uses local positioning to more easily align with the screen and cull points off-screen
     
     RectTransform rt;
@@ -39,8 +38,6 @@ public class WaveformManager : MonoBehaviour
     public static int currentWFDataPosition = 0; // Where the user is by *sample count* -> this corresponds to an index in waveformData arrays
 
     readonly int scrollSkip = 100; // How many array indexes to skip when scrolling - this is a "mechanical advantage" for scrolling
-
-    int chunkSamples = 2000;
 
     // Needed for delta calculations when scrolling using MMB
     private float initialMouseY = float.NaN;
@@ -77,7 +74,8 @@ public class WaveformManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        lineRenderer = GetComponent<LineRenderer>();
+        lineRendererMain = GetComponent<LineRenderer>();
+        lineRendererMirror = transform.GetChild(0).gameObject.GetComponent<LineRenderer>();
         rt = gameObject.GetComponent<RectTransform>();
         screenReference = GameObject.Find("ScreenReference");
 
@@ -133,9 +131,9 @@ public class WaveformManager : MonoBehaviour
             
             // this picks the good points out of the current array of points 
             // and discards the old ones that fall below the screen
-            Vector3[] currentPositions = new Vector3[lineRenderer.positionCount];
-            Vector3[] modifiedPositions = new Vector3[lineRenderer.positionCount]; // # of points is stil the same by the time this is done
-            lineRenderer.GetPositions(currentPositions);
+            Vector3[] currentPositions = new Vector3[lineRendererMain.positionCount];
+            Vector3[] modifiedPositions = new Vector3[lineRendererMain.positionCount]; // # of points is stil the same by the time this is done
+            lineRendererMain.GetPositions(currentPositions);
 
             int leftOutPoints = 0; 
             int modifiedArrayStopPoint = 0; // add these two vals up and you get the length of the array btw
@@ -164,17 +162,17 @@ public class WaveformManager : MonoBehaviour
             for (int i = 0; i < leftOutPoints; i++)
             {
                 var pullPoint = modifiedArrayStopPoint + i;
-                if ((currentWFDataPosition + pullPoint) % 2 == 0) // sign of pull point in masterWaveformData has to match that in GenerateWaveformPoints()
+                try
                 {
-                    modifiedPositions[pullPoint] = new Vector3(masterWaveformData[currentWFDataPosition + pullPoint], startingY, 0);
+                    modifiedPositions[pullPoint] = new Vector3(masterWaveformData[currentWFDataPosition + pullPoint], startingY);
+                    startingY += shrinkFactor;
                 }
-                else
+                catch // this is if there is no more data to pull but the waveform is still physically playing
                 {
-                    modifiedPositions[pullPoint] = new Vector3(-masterWaveformData[currentWFDataPosition + pullPoint], startingY, 0);
+                    modifiedPositions[pullPoint] = new Vector3(0, startingY);
                 }
-                startingY += shrinkFactor;
             }
-            lineRenderer.SetPositions(modifiedPositions); // cave johnson, we're done here, throw it on the screen
+            MirrorWavePoints(modifiedPositions); // cave johnson, we're done here, throw it on the screen
             lastAudioPosition = audioPosition; // set up stuff for next loop
         }
     }
@@ -258,7 +256,6 @@ public class WaveformManager : MonoBehaviour
         currentWFDataPosition += (int)scrollChange; // Add scrollChange (which is now a # of data points to ffw by) to modify array position
 
         // Step 3: Check to make sure r/w request is within the bounds of the array
-        // returns because no need to rerender lol
         if (currentWFDataPosition < 0)
         {
             currentWFDataPosition = 0;
@@ -271,9 +268,10 @@ public class WaveformManager : MonoBehaviour
 
         // Step 4: Reset Line Renderer (this seems to be redundant at the moment, need to fix so that it scales with screen size)
         // Tell the line renderer that it will need to draw the amount of points that will fit on screen with current settings
-        lineRenderer.positionCount = samplesPerScreen;
+        lineRendererMain.positionCount = samplesPerScreen;
+        lineRendererMirror.positionCount = samplesPerScreen;
         // Step 5: Generate points
-        GenerateWaveformPoints(masterWaveformData, currentWFDataPosition + samplesPerScreen);
+        GenerateWaveformPoints(masterWaveformData, samplesPerScreen);
     }
 
     private void SetUpWaveformChange(out float[] masterWaveformData, out int samplesPerScreen)
@@ -282,28 +280,29 @@ public class WaveformManager : MonoBehaviour
         samplesPerScreen = (int)Mathf.Round(rtHeight / shrinkFactor);
     }
 
-    private void GenerateWaveformPoints(float[] masterWaveformData, int dataPointsToDisplay)
+    private void GenerateWaveformPoints(float[] masterWaveformData, int samplesPerScreen)
     {
-        // ^^ Line renderer needs an array initialization in order to draw the correct # of points
         float currentYValue = 0;
         int lineRendererIndex = 0; // This must be seperate because line renderer index is NOT the same as either i comparison variable
         // theoretically you could do some subtraction to figure out the index but this is just simpler & easier
-        for (var i = currentWFDataPosition; i < dataPointsToDisplay; i++) // i represents index in masterWaveformData, get data from mWD until screen ends
+        Vector3[] lineRendererPositions = new Vector3[lineRendererMain.positionCount];
+        
+        for (var i = currentWFDataPosition; i < currentWFDataPosition + samplesPerScreen; i++)
         {
-            if (i % 2 == 0) // Since waveform has abs vals, alternate displaying left and right of waveform midline to get centered-esque waveform
-            {
-                lineRenderer.SetPosition(lineRendererIndex, new Vector2(masterWaveformData[i], currentYValue));
-            }
-            else
-            {
-                lineRenderer.SetPosition(lineRendererIndex, new Vector2(-masterWaveformData[i], currentYValue));
-            }
+            lineRendererPositions[lineRendererIndex] = new Vector3(masterWaveformData[i], currentYValue);
             lineRendererIndex++;
             currentYValue += shrinkFactor; 
             // ^^ Since shrinkFactor represents the y-distance between two drawn waveform points
             // add shrinkFactor to currentYValue to set the next point to be drawn at the next y position
         }
+        MirrorWavePoints(lineRendererPositions);
+    }
 
+    private void MirrorWavePoints(Vector3[] positions)
+    {
+        lineRendererMain.SetPositions(positions);
+        positions = Array.ConvertAll(positions, x => new Vector3(-x.x, x.y));
+        lineRendererMirror.SetPositions(positions);
     }
 
     // Just testing for now
@@ -332,3 +331,15 @@ public class WaveformManager : MonoBehaviour
         // Updating the waveform every frame is unneccesary and will lag the heck out of anyone's machine
     // Maybe edit UpdateWaveformData() to do the same? 
     // Although current usage is runs UWD() way less frequently
+
+
+
+    // CURRENT TO DO:
+    // move strikeline up
+        // make it moveable?
+        // let current waveform pos go below screen so that first peak can be seen at the strikeline
+        // also let current waveform pos go a bit above screen so that it can stop at the strikeline instead of bottom of screen too
+        // maybe put a marker where waveform stops?
+    // waveform data position does not update correctly when audio playing stops
+    // ORRR just grab all the points, mirror them, and put them in another line renderer on top of the existing one
+    // then, on to beatlines & rendering that shit...
