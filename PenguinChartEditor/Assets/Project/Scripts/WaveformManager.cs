@@ -6,11 +6,15 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class WaveformManager : MonoBehaviour
 {
-    [SerializeField] PluginBassManager pluginBassManager;
+    [SerializeField] PluginBassManager pluginBassManager; // please make them not serializable later
+    [SerializeField] GameObject strikelineGO;
+    Strikeline strikeline;
 
     LineRenderer lineRendererMain;
     LineRenderer lineRendererMirror;
     // Note: Line renderer uses local positioning to more easily align with the screen and cull points off-screen
+    // both of these line renderers combine to make a symmetrical waveform
+    // but the center is hollow! so cool and unique
     
     RectTransform rt;
 
@@ -78,6 +82,7 @@ public class WaveformManager : MonoBehaviour
         lineRendererMirror = transform.GetChild(0).gameObject.GetComponent<LineRenderer>();
         rt = gameObject.GetComponent<RectTransform>();
         screenReference = GameObject.Find("ScreenReference");
+        strikeline = strikelineGO.GetComponent<Strikeline>();
 
         gameObject.transform.position = screenReference.transform.position + Vector3.back; 
         // ^^ Move the waveform in front of the background panel so that it actually appears\
@@ -89,6 +94,8 @@ public class WaveformManager : MonoBehaviour
         currentWaveform = ChartMetadata.StemType.song; // testing
         UpdateWaveformData(ChartMetadata.StemType.song);
         ScrollWaveformSegment(0, false);
+        // Ratio of bottom to strikeline and strikeline to top should be the same between waveform line renderer and strikeline line renderer
+        // Pivot & Center of game object is at bottom of screen
     }
 
     double audioPosition = -1;
@@ -282,6 +289,8 @@ public class WaveformManager : MonoBehaviour
 
     private void GenerateWaveformPoints(float[] masterWaveformData, int samplesPerScreen)
     {
+        // float currentYValue = rtHeight * strikeline.CalculateRatio();
+        // ^ this puts the waveform to stop generating at the strikeline
         float currentYValue = 0;
         int lineRendererIndex = 0; // This must be seperate because line renderer index is NOT the same as either i comparison variable
         // theoretically you could do some subtraction to figure out the index but this is just simpler & easier
