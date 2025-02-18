@@ -133,13 +133,13 @@ public class WaveformManager : MonoBehaviour
 
             // anyways this is just how much to subtract from the y-pos of each line renderer point each frame to move at the pace of the audio
             // since y distance between points is based on a (time) value, the audio delta 
-            // divided by the y-distance between two points yields the corresponding distance delta to an audio delta 
+            // divided by the y-distance between two points (the array res and the shrinkFactor) yields the corresponding distance delta to an audio delta 
             var localYChange = (float)(audioPosition - lastAudioPosition) / pluginBassManager.compressedArrayResolution * shrinkFactor;
             
             // this picks the good points out of the current array of points 
             // and discards the old ones that fall below the screen
             Vector3[] currentPositions = new Vector3[lineRendererMain.positionCount];
-            Vector3[] modifiedPositions = new Vector3[lineRendererMain.positionCount]; // # of points is stil the same by the time this is done
+            Vector3[] modifiedPositions = new Vector3[lineRendererMain.positionCount]; // # of points is still the same by the time this is done
             lineRendererMain.GetPositions(currentPositions);
 
             int leftOutPoints = 0; 
@@ -160,28 +160,70 @@ public class WaveformManager : MonoBehaviour
             }
 
             currentWFDataPosition += leftOutPoints; // advance array by # of points destroyed
-            float startingY = modifiedPositions[modifiedArrayStopPoint - 1].y + shrinkFactor; 
-            // ^^ start drawing more points where the last valid position of the point migration left off 
-            // ^^ if you don't start with a shrinkFactor points will crush themselves (gets smaller every loop)
-            float[] masterWaveformData = waveformData[currentWaveform].Item1;
 
-            // add on extra points to replace the ones that fell below the screen
-            for (int i = 0; i < leftOutPoints; i++)
-            {
-                var pullPoint = modifiedArrayStopPoint + i;
-                try
-                {
-                    modifiedPositions[pullPoint] = new Vector3(masterWaveformData[currentWFDataPosition + pullPoint], startingY);
-                    startingY += shrinkFactor;
-                }
-                catch // this is if there is no more data to pull but the waveform is still physically playing
-                {
-                    modifiedPositions[pullPoint] = new Vector3(0, startingY);
-                }
-            }
-            MirrorWavePoints(modifiedPositions); // cave johnson, we're done here, throw it on the screen
+            GenerateWaveformPoints(
+                waveformData[currentWaveform].Item1,
+                modifiedPositions,
+                modifiedArrayStopPoint,
+                leftOutPoints,
+                modifiedPositions[modifiedArrayStopPoint - 1].y + shrinkFactor
+                // ^^ start drawing more points where the last valid position of the point migration left off 
+                // ^^ if you don't start with a shrinkFactor points will crush themselves (gets smaller every loop)
+            );
+
             lastAudioPosition = audioPosition; // set up stuff for next loop
         }
+    }
+    /// <summary>
+    /// Generate waveform points based on a moving waveform (e.g when it is playing)
+    /// </summary>
+    /// <param name="masterWaveformData"></param>
+    /// <param name="modifiedPositions"></param>
+    /// <param name="modifiedArrayStopPoint"></param>
+    /// <param name="pointsToGenerate"></param>
+    /// <param name="startingY"></param>
+    private void GenerateWaveformPoints(float[] masterWaveformData, Vector3[] modifiedPositions, int modifiedArrayStopPoint, int pointsToGenerate, float startingY)
+    {
+        var samplesPerScreen = (int)Mathf.Round(rtHeight / shrinkFactor);
+        var strikeSamplePoint = (int)Math.Ceiling(-samplesPerScreen * strikeline.CalculateStrikelineScreenProportion());
+
+        var pullPoint = currentWFDataPosition - pointsToGenerate + strikeSamplePoint + samplesPerScreen;    
+        for (int i = modifiedArrayStopPoint; i < modifiedPositions.Length; i++)
+        {
+            try
+            {
+                modifiedPositions[i] = new Vector3(masterWaveformData[pullPoint], startingY);
+            }
+            catch
+            {
+                modifiedPositions[i] = new Vector3(0, startingY);
+            }
+            startingY += shrinkFactor;
+            pullPoint++;
+        }
+        DisplayWavePoints(modifiedPositions);
+    }
+    
+    private void GenerateWaveformPoints(float[] masterWaveformData, int samplesPerScreen)
+    {
+        var strikeSamplePoint = (int)Math.Ceiling(-samplesPerScreen * strikeline.CalculateStrikelineScreenProportion()); // note the negative sign
+        Vector3[] lineRendererPositions = new Vector3[lineRendererMain.positionCount];
+        float yPos = 0;
+
+        for (int lineRendererIndex = 0; lineRendererIndex < lineRendererPositions.Length; lineRendererIndex++)
+        {
+            try
+            {
+                lineRendererPositions[lineRendererIndex] = new Vector3(masterWaveformData[currentWFDataPosition + strikeSamplePoint], yPos);
+            }
+            catch
+            {
+                lineRendererPositions[lineRendererIndex] = new Vector3(0, yPos);
+            }
+            yPos += shrinkFactor;
+            strikeSamplePoint++;
+        }
+        DisplayWavePoints(lineRendererPositions);
     }
 
     public void ResetAudioPositions()
@@ -239,6 +281,12 @@ public class WaveformManager : MonoBehaviour
         return samples;
     }
 
+    private void SetUpWaveformChange(out float[] masterWaveformData, out int samplesPerScreen)
+    {
+        masterWaveformData = waveformData[currentWaveform].Item1;
+        samplesPerScreen = (int)Mathf.Round(rtHeight / shrinkFactor);
+    }
+
     /// <summary>
     /// Take a value from a mouse scroll wheel delta and use it to change what waveform data is displayed. 
     /// </summary>
@@ -267,9 +315,9 @@ public class WaveformManager : MonoBehaviour
         {
             currentWFDataPosition = 0;
         }
-        else if (currentWFDataPosition + samplesPerScreen > masterWaveformData.Length)
+        else if (currentWFDataPosition > masterWaveformData.Length)
         {
-            currentWFDataPosition = masterWaveformData.Length - samplesPerScreen; 
+            currentWFDataPosition = masterWaveformData.Length;
             // position is from bottom of screen so position should never allow for an index that promises more samples than available
         }
 
@@ -281,15 +329,10 @@ public class WaveformManager : MonoBehaviour
         GenerateWaveformPoints(masterWaveformData, samplesPerScreen);
     }
 
-    private void SetUpWaveformChange(out float[] masterWaveformData, out int samplesPerScreen)
-    {
-        masterWaveformData = waveformData[currentWaveform].Item1;
-        samplesPerScreen = (int)Mathf.Round(rtHeight / shrinkFactor);
-    }
-
+/*
     private void GenerateWaveformPoints(float[] masterWaveformData, int samplesPerScreen)
     {
-        // float currentYValue = rtHeight * strikeline.CalculateRatio();
+        float strikelinePosition = rtHeight * strikeline.CalculateStrikelineScreenProportion();
         // ^ this puts the waveform to stop generating at the strikeline
         float currentYValue = 0;
         int lineRendererIndex = 0; // This must be seperate because line renderer index is NOT the same as either i comparison variable
@@ -305,9 +348,11 @@ public class WaveformManager : MonoBehaviour
             // add shrinkFactor to currentYValue to set the next point to be drawn at the next y position
         }
         MirrorWavePoints(lineRendererPositions);
-    }
+    } */
 
-    private void MirrorWavePoints(Vector3[] positions)
+
+
+    private void DisplayWavePoints(Vector3[] positions)
     {
         lineRendererMain.SetPositions(positions);
         positions = Array.ConvertAll(positions, x => new Vector3(-x.x, x.y));

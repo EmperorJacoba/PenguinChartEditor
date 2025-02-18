@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pluginBassManager: {fileID: 1722031495}
-  strikeline: {fileID: 1368999639}
+  strikelineGO: {fileID: 1368999639}
 --- !u!120 &33159348
 LineRenderer:
   serializedVersion: 2
