@@ -163,10 +163,6 @@ public class WaveformManager : MonoBehaviour
             // (probably due to difference between song timing & frame timing idk)
             // a time delta is needed to move the waveform properly and this is the most reliable way to do it afaik
             audioPosition = Bass.BASS_ChannelBytes2Seconds(pluginBassManager.stemStreams[ChartMetadata.StemType.song], Bass.BASS_ChannelGetPosition(pluginBassManager.stemStreams[ChartMetadata.StemType.song])); 
-            if (lastAudioPosition == -1)
-            {
-                lastAudioPosition = audioPosition; // avoids some funky math and also holdovers from last time audio is played
-            }
             
             // ask me about this (localYChange) and i will rant at you about the NONSENSE that requires this
             // unity coordinate systems are just...not consistent? between world, local, and line renderer spaces
@@ -218,8 +214,17 @@ public class WaveformManager : MonoBehaviour
                 modifiedArrayPosition++;
             }
         }
-        modifiedArrayStopPoint = modifiedArrayPosition - 1; // modified array position stops at the last worked upon value + 1 because of how it's written
+        modifiedArrayStopPoint = modifiedArrayPosition;
         return modifiedPositions;
+    }
+
+    /// <summary>
+    /// Set values used to calculate audio deltas while playing to -1 for use the next time the audio is played.
+    /// </summary>
+    public void ResetAudioPositions()
+    {
+        audioPosition = 0;
+        lastAudioPosition = 0;
     }
 
     /// <summary>
@@ -231,9 +236,12 @@ public class WaveformManager : MonoBehaviour
     {
         SetUpWaveformChange(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
 
-        var startingY = modifiedPositions[modifiedArrayStopPoint].y + ShrinkFactor;
+        var startingY = modifiedPositions[modifiedArrayStopPoint - 1].y + ShrinkFactor;
         // ^^ start drawing more points where the last valid position of the point migration left off 
         // ^^ if you don't start with a shrinkFactor points will crush themselves (gets smaller every loop)
+        // ^^ I don't understand why, but if you try to do modifiedArrayStopPoint - 1 in any other spot BESIDES here the playing will not work properly
+        // ^^ I tried adding it to TransformLineRendererPoints to make things simpler but that has no bearing on stuff that happens here???????
+        // ^^ It makes zero sense but it works this way so I don't feel like touching it to figure out why.
 
         // This is how many points were culled from the original array of positions
         var pointChange = modifiedPositions.Length - modifiedArrayStopPoint;
@@ -290,14 +298,6 @@ public class WaveformManager : MonoBehaviour
         return lineRendererPositions;
     }
 
-    /// <summary>
-    /// Set values used to calculate audio deltas while playing to -1 for use the next time the audio is played.
-    /// </summary>
-    public void ResetAudioPositions()
-    {
-        audioPosition = -1;
-        lastAudioPosition = -1;
-    }
 
     /// <summary>
     /// Enable/disable middle click movement upon press/release
