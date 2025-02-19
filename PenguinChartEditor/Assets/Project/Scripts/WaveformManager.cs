@@ -163,7 +163,13 @@ public class WaveformManager : MonoBehaviour
             // (probably due to difference between song timing & frame timing idk)
             // a time delta is needed to move the waveform properly and this is the most reliable way to do it afaik
             audioPosition = Bass.BASS_ChannelBytes2Seconds(pluginBassManager.stemStreams[ChartMetadata.StemType.song], Bass.BASS_ChannelGetPosition(pluginBassManager.stemStreams[ChartMetadata.StemType.song])); 
-            
+            if (lastAudioPosition == -1)
+            {
+                lastAudioPosition = audioPosition;  // Tried to remove this cause I thought it was dumb, broke playing the waveform.
+                                                    // Playing performance is slightly offset because of this, but it's so miniscule I'm not sure it matters all that much.
+                                                    // This offset will probably get weeded out with calibration eventually anyway
+            }
+
             // ask me about this (localYChange) and i will rant at you about the NONSENSE that requires this
             // unity coordinate systems are just...not consistent? between world, local, and line renderer spaces
             // for some odd reason if you want to move them all down at once by moving the container there is ZERO way to convert between
@@ -223,8 +229,8 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     public void ResetAudioPositions()
     {
-        audioPosition = 0;
-        lastAudioPosition = 0;
+        audioPosition = -1;
+        lastAudioPosition = -1;
     }
 
     /// <summary>
