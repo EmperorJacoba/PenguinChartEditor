@@ -68,7 +68,7 @@ public class WaveformManager : MonoBehaviour
     /// Where the user is by sample count.
     /// <para>This corresponds to an index in the WaveformData arrays.</para>
     /// </summary>
-    public static int CurrentWFDataPosition {get; set;}
+    public static int CurrentWFDataPosition {get; private set;}
 
     /// <summary>
     /// How many array indexes to skip when scrolling with wheel
@@ -120,6 +120,7 @@ public class WaveformManager : MonoBehaviour
         pluginBassManager = GameObject.Find("PluginBassManager").GetComponent<PluginBassManager>();
         screenReference = GameObject.Find("ScreenReference");
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
+
         ShrinkFactor = 0.0001f;
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -153,7 +154,7 @@ public class WaveformManager : MonoBehaviour
             // If this ran when the mouse was moved then it would be super jumpy
         }
 
-        if (pluginBassManager.audioPlaying)
+        if (pluginBassManager.AudioPlaying)
         {
             // This if block (which should be refactored later) plays the waveform in sync with the audio
             // "strikeline" is currently at bottom of screen
@@ -162,7 +163,7 @@ public class WaveformManager : MonoBehaviour
             // Time.deltaTime or a coroutine don't work properly for some reason 
             // (probably due to difference between song timing & frame timing idk)
             // a time delta is needed to move the waveform properly and this is the most reliable way to do it afaik
-            audioPosition = Bass.BASS_ChannelBytes2Seconds(pluginBassManager.stemStreams[ChartMetadata.StemType.song], Bass.BASS_ChannelGetPosition(pluginBassManager.stemStreams[ChartMetadata.StemType.song])); 
+            audioPosition = Bass.BASS_ChannelBytes2Seconds(pluginBassManager.StemStreams[ChartMetadata.StemType.song], Bass.BASS_ChannelGetPosition(pluginBassManager.StemStreams[ChartMetadata.StemType.song])); 
             if (lastAudioPosition == -1)
             {
                 lastAudioPosition = audioPosition;  // Tried to remove this cause I thought it was dumb, broke playing the waveform.
@@ -181,7 +182,7 @@ public class WaveformManager : MonoBehaviour
             // anyways this is just how much to subtract from the y-pos of each line renderer point each frame to move at the pace of the audio
             // since y distance between points is based on a (time) value, the audio delta 
             // divided by the y-distance between two points (the array res and the shrinkFactor) yields the corresponding distance delta to an audio delta 
-            var localYChange = (float)(audioPosition - lastAudioPosition) / pluginBassManager.compressedArrayResolution * ShrinkFactor;
+            var localYChange = (float)(audioPosition - lastAudioPosition) / pluginBassManager.CompressedArrayResolution * ShrinkFactor;
             
             // this picks the good points out of the current array of points 
             // and discards the old ones that fall below the screen
@@ -379,6 +380,10 @@ public class WaveformManager : MonoBehaviour
     /// <param name="isMiddleScroll">Used to correctly scroll with the middle mouse button</param>
     public void ScrollWaveformSegment(float scrollChange, bool isMiddleScroll)
     {
+        if (float.IsNaN(scrollChange)) // for some reason when the input map is reenabled it sends NaN into this function so we will be having none of that thank you 
+        {
+            return;
+        }
         // Get base calculations before starting anything (strikeSamplePoint not needed here fyi)
         SetUpWaveformChange(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
 
@@ -447,15 +452,5 @@ public class WaveformManager : MonoBehaviour
     // To do;
     // Implement changing of shrink factor
         // Happens via speed & hyperspeed changes
-
-
-
-    // CURRENT TO DO:
-    // move strikeline up
-        // make it moveable?
-        // let current waveform pos go below screen so that first peak can be seen at the strikeline
-        // also let current waveform pos go a bit above screen so that it can stop at the strikeline instead of bottom of screen too
-        // maybe put a marker where waveform stops?
-    // waveform data position does not update correctly when audio playing stops
-    // ORRR just grab all the points, mirror them, and put them in another line renderer on top of the existing one
+    // Implement calibration
     // then, on to beatlines...

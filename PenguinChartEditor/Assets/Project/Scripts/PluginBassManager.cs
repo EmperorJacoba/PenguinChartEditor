@@ -6,35 +6,50 @@ using System.Collections.Generic;
 public class PluginBassManager : MonoBehaviour
 {
     int sampleRate = 44100;
-    public float compressedArrayResolution = 0.001f; // Holds a value in seconds for how often to take a sample from all samples - currently 1ms, seems fine enough
+
+    /// <summary>
+    /// Holds a value in seconds for how often to take a sample from all samples
+    /// <para>1 millisecond (0.001 seconds) by default.</para>
+    /// </summary>
+    public float CompressedArrayResolution {get; private set;}
+
+    /// <summary>
+    /// Holds BASS stream data for playing audio. Stem is audio stem identifier, int is stream data.
+    /// </summary>
+    public Dictionary<ChartMetadata.StemType, int> StemStreams {get; private set;}
     
     string testSongPath = "G:/_PCE_files/TestAudioFiles/120BPMTestTrack.opus";
-    public bool audioPlaying = false;
+    
+    /// <summary>
+    /// Is the audio file currently playing?
+    /// </summary>
+    public bool AudioPlaying {get; private set;}
 
     WaveformManager waveformManager;
 
     private void Awake() 
     {
+        StemStreams = new();
+        AudioPlaying = false;
+        CompressedArrayResolution = 0.001f;
+        waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
+
         InitializeBassPlugin();
         testSongPath = "G:/_PCE_files/TestAudioFiles/120BPMTestTrack.opus";
         UpdateAudioStream(ChartMetadata.StemType.song, testSongPath);
-
-        waveformManager = GameObject.Find("WaveformManager").gameObject.GetComponent<WaveformManager>();
     }
 
     public void UpdateAudioStream(ChartMetadata.StemType stemType, string songPath)
     {
         // Make this asynchronous for later? idk
-        if (stemStreams.ContainsKey(stemType))
+        if (StemStreams.ContainsKey(stemType))
         {
-            Bass.BASS_StreamFree(stemStreams[stemType]); // I think I have to do this to prevent memory leaks? Just doing this to be cautious
-            stemStreams.Remove(stemType); // Flush current value in case user updates the directory, avoids error
+            Bass.BASS_StreamFree(StemStreams[stemType]); // I think I have to do this to prevent memory leaks? Just doing this to be cautious
+            StemStreams.Remove(stemType); // Flush current value in case user updates the directory, avoids error
         }
-        stemStreams.Add(stemType, Bass.BASS_StreamCreateFile(songPath, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_STREAM_PRESCAN));
+        StemStreams.Add(stemType, Bass.BASS_StreamCreateFile(songPath, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_STREAM_PRESCAN));
         // Create master stream in data set to avoid creating a stream over and over during frequent start/stopping
     }
-
-    public Dictionary<ChartMetadata.StemType, int> stemStreams = new(); 
 
     void InitializeBassPlugin()
     {
@@ -49,12 +64,12 @@ public class PluginBassManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns a simplified float array of an audio file's sample data.
+    /// Simplify an audio file into x samples taken every CompressedArrayResolution milliseconds from the audio file.
     /// </summary>
-    /// <param name="songPath"></param>
-    /// <param name="normalizationFactor">This number decreases the length of the peaks of the waveform
-    /// Since the line renderer uses local positioning for easier culling & positioning, it looks super crazy without dividing by a</param>
-    /// <returns>waveformData (float[]) that contains selected audio samples.</returns>
+    /// <param name="songPath">File explorer path to the audio file.</param>
+    /// <param name="bytesPerSample">Number of bytes in the original track that each sample represents. Can vary based on encoding.</param>
+    /// <returns>Float array of an audio file's sample data.</returns>
+    /// <exception cref="ArgumentException">Invalid song path</exception>
     public float[] GetAudioSamples(string songPath, out long bytesPerSample) // testing path as default value
     {
         // Step 1: Make BASS stream of song path
@@ -90,7 +105,7 @@ public class PluginBassManager : MonoBehaviour
         allSamples = ConvertStereoSamplestoMono(allSamples);
 
         // Step 5: Calculate number of samples to take and how long each sample is in bytes
-        long sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, compressedArrayResolution) / 8; // Number of bytes in x seconds of audio (/4) - div by extra 2 because converted to mono audio
+        long sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, CompressedArrayResolution) / 8; // Number of bytes in x seconds of audio (/4) - div by extra 2 because converted to mono audio
         bytesPerSample = sampleIntervalBytes * 4; // multiply by 4 to undo /2 for floats and /2 for mono 
         // ^ this is used to play/pause the audio which uses 16-bit (not 32-bit) & stereo
         // ^ this is *4 and not *8 because 16 bit is still 2 bytes
@@ -110,26 +125,26 @@ public class PluginBassManager : MonoBehaviour
         return waveformData;
     }
 
-    // This function has not yet been tested!!
     public void PlayPauseAudio()
     {
         Bass.BASS_ChannelSetPosition
         (
-            stemStreams[ChartMetadata.StemType.song], 
+            StemStreams[ChartMetadata.StemType.song], 
             WaveformManager.CurrentWFDataPosition * WaveformManager.WaveformData[ChartMetadata.StemType.song].Item2
             // ^ Item2 holds how many bytes are held for each second of audio
             // this rate will vary based on audio formats and stuff
         );
-        if (!audioPlaying)
+        if (!AudioPlaying)
         {
-            Bass.BASS_ChannelPlay(stemStreams[ChartMetadata.StemType.song], false);
-            audioPlaying = true;
+            Bass.BASS_ChannelPlay(StemStreams[ChartMetadata.StemType.song], false);
+            AudioPlaying = true;
         }
         else
         {
-            Bass.BASS_ChannelPause(stemStreams[ChartMetadata.StemType.song]);
-            audioPlaying = false;
+            Bass.BASS_ChannelPause(StemStreams[ChartMetadata.StemType.song]);
+            AudioPlaying = false;
             waveformManager.ResetAudioPositions();
+            waveformManager.ScrollWaveformSegment(0, false);
         }
         waveformManager.ToggleCharting();
     }
