@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Class attached to the Strikeline container game object. 
+/// </summary>
 public class Strikeline : MonoBehaviour
 {
     GameObject screenReference;

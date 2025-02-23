@@ -29,6 +29,8 @@ public class PluginBassManager : MonoBehaviour
 
     private void Awake() 
     {
+        ChartMetadata.TempSetUpStemDict();
+        
         StemStreams = new();
         AudioPlaying = false;
         CompressedArrayResolution = 0.001f;
@@ -125,6 +127,22 @@ public class PluginBassManager : MonoBehaviour
         return waveformData;
     }
 
+    /// <summary>
+    /// Converts stereo samples to mono samples to get a more accurate waveform.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <returns></returns>
+    private float[] ConvertStereoSamplestoMono(float[] samples) 
+    {
+        var monoSamples = new float[samples.Length / 2]; // stereo samples have two data points for every sample (L+R track)
+                                                         // so mono will have half the number of samples
+        for (var i = 0; i < monoSamples.Length; i++)
+        {
+            monoSamples[i] = (samples[i*2] + samples[i*2 + 1]) / 2; // average both stereo samples
+        }
+        return monoSamples;
+    }
+
     public void PlayPauseAudio()
     {
         Bass.BASS_ChannelSetPosition
@@ -149,22 +167,10 @@ public class PluginBassManager : MonoBehaviour
         waveformManager.ToggleCharting();
     }
 
-    /// <summary>
-    /// Converts stereo samples to mono samples to get a more accurate waveform.
-    /// </summary>
-    /// <param name="samples"></param>
-    /// <returns></returns>
-    private float[] ConvertStereoSamplestoMono(float[] samples) 
+    public double GetCurrentAudioPosition()
     {
-        var monoSamples = new float[samples.Length / 2]; // stereo samples have two data points for every sample (L+R track)
-                                                         // so mono will have half the number of samples
-        for (var i = 0; i < monoSamples.Length; i++)
-        {
-            monoSamples[i] = (samples[i*2] + samples[i*2 + 1]) / 2; // average both stereo samples
-        }
-        return monoSamples;
+        return Bass.BASS_ChannelBytes2Seconds(StemStreams[ChartMetadata.StemType.song], Bass.BASS_ChannelGetPosition(StemStreams[ChartMetadata.StemType.song]));
     }
-
     void OnApplicationQuit()
     {
         Bass.BASS_Free();     

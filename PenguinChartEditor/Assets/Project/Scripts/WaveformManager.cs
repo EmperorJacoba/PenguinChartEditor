@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Un4seen.Bass;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -163,7 +162,7 @@ public class WaveformManager : MonoBehaviour
             // Time.deltaTime or a coroutine don't work properly for some reason 
             // (probably due to difference between song timing & frame timing idk)
             // a time delta is needed to move the waveform properly and this is the most reliable way to do it afaik
-            audioPosition = Bass.BASS_ChannelBytes2Seconds(pluginBassManager.StemStreams[ChartMetadata.StemType.song], Bass.BASS_ChannelGetPosition(pluginBassManager.StemStreams[ChartMetadata.StemType.song])); 
+            audioPosition = pluginBassManager.GetCurrentAudioPosition(); 
             if (lastAudioPosition == -1)
             {
                 lastAudioPosition = audioPosition;  // Tried to remove this cause I thought it was dumb, broke playing the waveform.
@@ -180,24 +179,26 @@ public class WaveformManager : MonoBehaviour
             // don't try to work the chunking system because this is miles simpler
 
             // anyways this is just how much to subtract from the y-pos of each line renderer point each frame to move at the pace of the audio
-            // since y distance between points is based on a (time) value, the audio delta 
-            // divided by the y-distance between two points (the array res and the shrinkFactor) yields the corresponding distance delta to an audio delta 
+            // convert the change in audio position to samples in WaveformData by dividing by the resolution
+            // convert the change in samples to y-change by multiplying by ShrinkFactor (the y-distance between each sample in the line renderer)
             var localYChange = (float)(audioPosition - lastAudioPosition) / pluginBassManager.CompressedArrayResolution * ShrinkFactor;
             
-            // this picks the good points out of the current array of points 
-            // and discards the old ones that fall below the screen
             Vector3[] currentPositions = new Vector3[lineRendererMain.positionCount]; // # of points is still the same by the time this is done
-            lineRendererMain.GetPositions(currentPositions);
+            lineRendererMain.GetPositions(currentPositions); // since the other renderer is just a mirror you can just use the main's points
 
+            // do the shift down
             var modifiedPositions = TransformLineRendererPoints(currentPositions, localYChange, out var modifiedArrayStopPoint);
 
+            // display the shift down
             DisplayWaveformPoints(GenerateWaveformPoints(modifiedPositions, modifiedArrayStopPoint));
-            lastAudioPosition = audioPosition; // set up stuff for next loop
+
+            // set up stuff for next loop
+            lastAudioPosition = audioPosition;
         }
     }
 
     /// <summary>
-    /// Takes an array of line renderer positions and transforms them down by a specified Y change, while also culling points that fall below the screen.
+    /// Takes an array of line renderer positions and transforms them down by a specified local Y change, while also culling points that fall below the screen.
     /// </summary>
     /// <param name="currentPositions">The array of positions to transform.</param>
     /// <param name="yChange">The amount to transform by.</param>
@@ -239,6 +240,7 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     /// <param name="modifiedPositions">Remaining points from off-screen cull (existing points with Y change applied).</param>
     /// <param name="modifiedArrayStopPoint">The first empty, ungenerated Vector3 position in the array of points.</param>
+    /// <returns>Vector3[] array of line renderer positions</returns>
     private Vector3[] GenerateWaveformPoints(Vector3[] modifiedPositions, int modifiedArrayStopPoint)
     {
         SetUpWaveformChange(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);

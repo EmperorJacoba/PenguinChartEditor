@@ -28,7 +28,7 @@ public class ChartMetadata : MonoBehaviour
         video_start_time,
     }
 
-    public Dictionary<MetadataType, string> songInfo = new();
+    public Dictionary<MetadataType, string> SongInfo = new();
 
     // All of these values store difficulties in a value from 0-6, although values higher than 6 are allowed for some niche CH uses.
     // Set up these values in the CHART tab - no sense setting them up when you don't have the tracks charted yet!
@@ -53,7 +53,7 @@ public class ChartMetadata : MonoBehaviour
         diff_vocals_harm
     }
 
-    public Dictionary<InstrumentDifficultyType, int> difficulties = new();
+    public Dictionary<InstrumentDifficultyType, int> Difficulties = new();
 
     /// <summary>
     /// Stores valid types of audio stems.
@@ -75,7 +75,21 @@ public class ChartMetadata : MonoBehaviour
         drums_4
     }
 
-    public Dictionary<StemType, string> stems = new();
+    public static Dictionary<StemType, string> Stems = new();
+
+    string[] stems = new string[6] {
+        "", 
+        "", 
+        "", 
+        "", 
+        "", 
+        ""
+    };
+
+    public static void TempSetUpStemDict()
+    {
+        
+    }
 
     private int chartResolution;
     /// <summary>
@@ -94,10 +108,8 @@ public class ChartMetadata : MonoBehaviour
             {
                 throw new ArgumentException("Chart resolution must be greater than 192 ticks per quarter note!");
             }
-            else
-            {
-                chartResolution = tempResolution;
-            }
+
+            chartResolution = tempResolution;
         }
     }
 
@@ -142,19 +154,17 @@ public class ChartMetadata : MonoBehaviour
         // Convert the string passed in from the InputField to the enum type MetadataType
         MetadataType selectedMetadataAsEnum = (MetadataType)Enum.Parse(typeof(MetadataType), CurrentInputField); 
         // Add the selected audio path to dictionary with key as the enum type of the string
-        songInfo.Add(selectedMetadataAsEnum, userInput);
+        SongInfo.Add(selectedMetadataAsEnum, userInput);
     }
 
     public void ClearSongInfo(string metadata)
     {
         MetadataType selectedMetadataAsEnum = (MetadataType)Enum.Parse(typeof(MetadataType), metadata); 
-        if (songInfo.ContainsKey(selectedMetadataAsEnum))
+        if (SongInfo.ContainsKey(selectedMetadataAsEnum))
         {
-            songInfo.Remove(selectedMetadataAsEnum);
+            SongInfo.Remove(selectedMetadataAsEnum);
         }
     }
-
-
 
     // Set up extension filters for selecting files
     private readonly ExtensionFilter[] imageExtensions = new [] 
@@ -222,7 +232,7 @@ public class ChartMetadata : MonoBehaviour
             // Convert the string passed in from the button to the enum type StemType
             StemType selectedStemAsEnum = (StemType)Enum.Parse(typeof(StemType), selectedStem); 
             // Add the selected audio path to dictionary with key as the enum type of the string
-            stems.Add(selectedStemAsEnum, selectedAudioPath[0]);
+            Stems.Add(selectedStemAsEnum, selectedAudioPath[0]);
 
             GetInputField(selectedStem).text = selectedAudioPath[0]; // Change the input field preview to the path of the audio file
         }
@@ -251,9 +261,9 @@ public class ChartMetadata : MonoBehaviour
     public void ClearAudioStem(string selectedStem)
     {
         StemType selectedStemAsEnum = (StemType)Enum.Parse(typeof(StemType), selectedStem);
-        if (stems.ContainsKey(selectedStemAsEnum))
+        if (Stems.ContainsKey(selectedStemAsEnum))
         {
-            stems.Remove(selectedStemAsEnum);
+            Stems.Remove(selectedStemAsEnum);
             GetInputField(selectedStem).text = "";
         }
     }
