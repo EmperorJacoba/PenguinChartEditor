@@ -26,36 +26,46 @@ public class WaveformSelectorDropdown : MonoBehaviour
     /// </summary>
     private List<ChartMetadata.StemType> dropdownIndexes = new();
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void SetUpWaveformOptions()
     {
         dropdown.options.Add(new TMP_Dropdown.OptionData("None"));
-        dropdownIndexes.Add(0);
+        dropdownIndexes.Add(0); // 0 is not valid StemType, but list will still accept it => used to show that waveform is inactive
 
+        // Organize stems before adding to dropdown so the stem selection dropdown isn't a mess
         ChartMetadata.Stems = ChartMetadata.Stems.OrderBy(pair => pair.Key).ToDictionary(pair => pair.Key, pair => pair.Value);
 
+        // Add options to dropdown from StemType
         foreach (var entry in ChartMetadata.Stems)
         {
-            var capitalEntry = Capitalize(entry.Key.ToString());
-            dropdown.options.Add(new TMP_Dropdown.OptionData(capitalEntry));
+            var capitalizedEntry = Capitalize(entry.Key.ToString()); // for more polished look
+            dropdown.options.Add(new TMP_Dropdown.OptionData(capitalizedEntry));
             dropdownIndexes.Add(entry.Key);
         }
     }
 
     private string Capitalize(string name)
     {
-        return char.ToUpper(name[0]) + name.Substring(1);
+        return char.ToUpper(name[0]) + name.Substring(1); 
     }
 
+    /// <summary>
+    /// Method that handles changing visible waveform from dropdown selection.
+    /// </summary>
+    /// <param name="index"></param>
     private void OnValueChanged(int index)
     {
-        if (Enum.IsDefined(typeof(ChartMetadata.StemType), index))
+        if (Enum.IsDefined(typeof(ChartMetadata.StemType), index)) // value can be zero, but zero is not in StemType
         {
             waveformManager.ChangeDisplayedWaveform(dropdownIndexes[index]);
+            // ^^ dropdownIndexes is used instead of just the index because the dropdown only contains stems the user has defined
+            // ^^ so passed in index has to be converted to a StemType identifier 
         }
-        else
+        else // index = 0, so "none" was chosen, so "disable" waveform
         {
-            waveformManager.ChangeWaveformVisibility(false);
+            waveformManager.SetWaveformVisibility(false);
         }
-        
     }
 }

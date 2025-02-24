@@ -116,7 +116,7 @@ public class WaveformManager : MonoBehaviour
 
     void Start()
     {
-        ChangeWaveformVisibility(false);
+        SetWaveformVisibility(false);
         // Invisible by default so that a bunch of dropdown defaulting logic isn't needed
         // Just have user select it
         
@@ -191,6 +191,9 @@ public class WaveformManager : MonoBehaviour
         else inputMap.Charting.Enable();
     }
 
+    /// <summary>
+    /// Create waveform data for each stem in the ChartMetadata Stems dictionary.
+    /// </summary>
     void InitializeWaveformData()
     {
         foreach (var pair in ChartMetadata.Stems)
@@ -199,13 +202,13 @@ public class WaveformManager : MonoBehaviour
         }
     }
     
-    public void ChangeWaveformVisibility(bool isVisible)
+    public void SetWaveformVisibility(bool isVisible)
     {
         // since pathing/playing/etc has been built around the waveform itself (oopsies)
-        // you can't just disable the line renderer
+        // you can't disable the line renderer
         // so put it behind everything else and now it's "disabled"
         if (isVisible) transform.position = screenReference.transform.position + Vector3.back;
-        // ^^ In order for the waveform to be visible the container game object has to be moved in front of the backgroun panel
+        // ^^ In order for the waveform to be visible the container game object has to be moved in front of the background panel & vice versa
         else transform.position = screenReference.transform.position - 2*Vector3.back; // 2* b/c this looks weird in the scene view otherwise
     }
 
@@ -461,9 +464,13 @@ public class WaveformManager : MonoBehaviour
         ScrollWaveformSegment(0, false);
     }
 
+    /// <summary>
+    /// Update the visible and calculated-upon waveform.
+    /// </summary>
+    /// <param name="stem">The stem to set to the active waveform.</param>
     public void ChangeDisplayedWaveform(ChartMetadata.StemType stem)
     {
-        ChangeWaveformVisibility(true);
+        SetWaveformVisibility(true);
         CurrentWaveform = stem;
         ScrollWaveformSegment(0, false);
     }
@@ -483,5 +490,5 @@ public class WaveformManager : MonoBehaviour
         // Happens via speed & hyperspeed changes
     // Implement calibration
     // then, on to beatlines...
-    
+
     // Let CurrentWFDataPosition scroll to length of longest stem

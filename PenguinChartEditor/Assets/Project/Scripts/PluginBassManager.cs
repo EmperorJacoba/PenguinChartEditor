@@ -19,7 +19,7 @@ public class PluginBassManager : MonoBehaviour
     public Dictionary<ChartMetadata.StemType, int> StemStreams {get; private set;}
     
     /// <summary>
-    /// Is the audio file currently playing?
+    /// Is the audio currently playing?
     /// </summary>
     public bool AudioPlaying {get; private set;}
 
@@ -38,6 +38,10 @@ public class PluginBassManager : MonoBehaviour
         UpdateStemStreams();
     }
 
+    /// <summary>
+    /// Generate BASS streams from file paths in Stem dict in ChartMetadata.
+    /// </summary>
+    /// <exception cref="ArgumentException">Bad song stem in Stem dictionary</exception>
     public void UpdateStemStreams()
     {
         foreach (var stem in ChartMetadata.Stems)
@@ -48,12 +52,17 @@ public class PluginBassManager : MonoBehaviour
             }
             catch
             {
-                throw new ArgumentException($"Bad song stem passed into stream update. Debug: (Stem: {stem.Key})");
+                throw new ArgumentException($"Bad song stem passed into stream update. Try reloading directory or choosing new file. Debug: (Stem: {stem.Key})");
                 // I don't think this actually ever fires, but it's here just in case
             }
         }
     }
 
+    /// <summary>
+    /// Create BASS stream from a file path with StemType identifier.
+    /// </summary>
+    /// <param name="stemType">The stem that the BASS stream belongs to.</param>
+    /// <param name="songPath">The file path to create a stream from.</param>
     public void UpdateAudioStream(ChartMetadata.StemType stemType, string songPath)
     {
         // Make this asynchronous for later? idk
