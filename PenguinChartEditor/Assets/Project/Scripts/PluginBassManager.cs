@@ -18,8 +18,6 @@ public class PluginBassManager : MonoBehaviour
     /// </summary>
     public Dictionary<ChartMetadata.StemType, int> StemStreams {get; private set;}
     
-    string testSongPath = "G:/_PCE_files/TestAudioFiles/120BPMTestTrack.opus";
-    
     /// <summary>
     /// Is the audio file currently playing?
     /// </summary>
@@ -30,15 +28,30 @@ public class PluginBassManager : MonoBehaviour
     private void Awake() 
     {
         ChartMetadata.TempSetUpStemDict();
-        
+
         StemStreams = new();
         AudioPlaying = false;
         CompressedArrayResolution = 0.001f;
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
 
         InitializeBassPlugin();
-        testSongPath = "G:/_PCE_files/TestAudioFiles/120BPMTestTrack.opus";
-        UpdateAudioStream(ChartMetadata.StemType.song, testSongPath);
+        UpdateStemStreams();
+    }
+
+    public void UpdateStemStreams()
+    {
+        foreach (var stem in ChartMetadata.Stems)
+        {
+            try
+            {
+                UpdateAudioStream(stem.Key, stem.Value);
+            }
+            catch
+            {
+                throw new ArgumentException($"Bad song stem passed into stream update. Debug: (Stem: {stem.Key})");
+                // I don't think this actually ever fires, but it's here just in case
+            }
+        }
     }
 
     public void UpdateAudioStream(ChartMetadata.StemType stemType, string songPath)
@@ -72,10 +85,10 @@ public class PluginBassManager : MonoBehaviour
     /// <param name="bytesPerSample">Number of bytes in the original track that each sample represents. Can vary based on encoding.</param>
     /// <returns>Float array of an audio file's sample data.</returns>
     /// <exception cref="ArgumentException">Invalid song path</exception>
-    public float[] GetAudioSamples(string songPath, out long bytesPerSample) // testing path as default value
+    public float[] GetAudioSamples(ChartMetadata.StemType stem, out long bytesPerSample) // testing path as default value
     {
         // Step 1: Make BASS stream of song path
-        songPath = testSongPath;
+        var songPath = ChartMetadata.Stems[stem];
         // Use ChartMetadata.StemTypes & stem dictionary in future
 
         // GetAudioSamples() uses a different one-time stream from stemStreams{} because it needs decoded stream
@@ -164,7 +177,7 @@ public class PluginBassManager : MonoBehaviour
             waveformManager.ResetAudioPositions();
             waveformManager.ScrollWaveformSegment(0, false);
         }
-        waveformManager.ToggleCharting();
+        waveformManager.ToggleChartingInputMap();
     }
 
     public double GetCurrentAudioPosition()

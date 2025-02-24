@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -8,6 +9,7 @@ public class WaveformManager : MonoBehaviour
     PluginBassManager pluginBassManager;
     Strikeline strikeline;
 
+    #region Properties
     /// <summary>
     /// Line renderer that contains rightward (positive dir) waveform render
     /// </summary>
@@ -50,7 +52,7 @@ public class WaveformManager : MonoBehaviour
     /// <summary>
     /// The currently displayed waveform.
     /// </summary>
-    public ChartMetadata.StemType CurrentWaveform {get; set;} 
+    private static ChartMetadata.StemType CurrentWaveform {get; set;} 
 
     /// <summary>
     /// Dictionary that contains waveform point data for each song stem.
@@ -75,12 +77,12 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     private readonly int scrollSkip = 100; 
 
-    // Needed for delta calculations when scrolling using MMB
-    private float initialMouseY = float.NaN;
-    private float currentMouseY;
-
+    #endregion
+    #region Unity Functions
     void Awake() 
     {
+        InitializeComponents();
+
         inputMap = new();
         inputMap.Enable();
 
@@ -93,18 +95,6 @@ public class WaveformManager : MonoBehaviour
         inputMap.Charting.MiddleMouseClick.canceled += x => ChangeMiddleClick(false);
         
         // Put all this input map stuff in a seperate file later on
-    }
-
-    public void ToggleCharting()
-    {
-        if (inputMap.Charting.enabled)
-        {
-            inputMap.Charting.Disable();
-        }
-        else
-        {
-            inputMap.Charting.Enable();
-        }
     }
 
     private void InitializeComponents()
@@ -121,29 +111,25 @@ public class WaveformManager : MonoBehaviour
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
 
         ShrinkFactor = 0.0001f;
+        CurrentWFDataPosition = 0;
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
-        InitializeComponents();
-        
-        gameObject.transform.position = screenReference.transform.position + Vector3.back; 
-        // ^^ Move the waveform in front of the background panel so that it actually appears
-        // For whatever reason if this isn't moved back it is always ON the panel at start and doesn't show up
+        ChangeWaveformVisibility(false);
+        // Invisible by default so that a bunch of dropdown defaulting logic isn't needed
+        // Just have user select it
         
         rt.pivot = screenReference.GetComponent<RectTransform>().pivot;
         rtHeight = rt.rect.height;
 
-        CurrentWaveform = ChartMetadata.StemType.song; // testing
-        CurrentWFDataPosition = 0;
-        UpdateWaveformData(ChartMetadata.StemType.song);
+        CurrentWaveform = ChartMetadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default
+        // This is just so that ScrollWaveformSegment has something to generate from
+
+        InitializeWaveformData();
         ScrollWaveformSegment(0, false);
-        // Ratio of bottom to strikeline and strikeline to top should be the same between waveform line renderer and strikeline line renderer
-        // Pivot & Center of game object is at bottom of screen
     }
 
-    double audioPosition = -1;
-    double lastAudioPosition = -1;
     void Update()
     {
         if (inputMap.Charting.MiddleScrollMousePos.enabled)
@@ -197,6 +183,45 @@ public class WaveformManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+    public void ToggleChartingInputMap()
+    {
+        if (inputMap.Charting.enabled) inputMap.Charting.Disable();
+        else inputMap.Charting.Enable();
+    }
+
+    void InitializeWaveformData()
+    {
+        foreach (var pair in ChartMetadata.Stems)
+        {
+            UpdateWaveformData(pair.Key);
+        }
+    }
+    
+    public void ChangeWaveformVisibility(bool isVisible)
+    {
+        // since pathing/playing/etc has been built around the waveform itself (oopsies)
+        // you can't just disable the line renderer
+        // so put it behind everything else and now it's "disabled"
+        if (isVisible) transform.position = screenReference.transform.position + Vector3.back;
+        // ^^ In order for the waveform to be visible the container game object has to be moved in front of the backgroun panel
+        else transform.position = screenReference.transform.position - 2*Vector3.back; // 2* b/c this looks weird in the scene view otherwise
+    }
+
+    double audioPosition = -1;
+    double lastAudioPosition = -1;
+
+    /// <summary>
+    /// Set values used to calculate audio deltas while playing to -1 for use the next time the audio is played.
+    /// </summary>
+    public void ResetAudioPositions()
+    {
+        audioPosition = -1;
+        lastAudioPosition = -1;
+    }
+
+    #region Point Generation
     /// <summary>
     /// Takes an array of line renderer positions and transforms them down by a specified local Y change, while also culling points that fall below the screen.
     /// </summary>
@@ -224,15 +249,6 @@ public class WaveformManager : MonoBehaviour
         }
         modifiedArrayStopPoint = modifiedArrayPosition;
         return modifiedPositions;
-    }
-
-    /// <summary>
-    /// Set values used to calculate audio deltas while playing to -1 for use the next time the audio is played.
-    /// </summary>
-    public void ResetAudioPositions()
-    {
-        audioPosition = -1;
-        lastAudioPosition = -1;
     }
 
     /// <summary>
@@ -307,6 +323,24 @@ public class WaveformManager : MonoBehaviour
         return lineRendererPositions;
     }
 
+    /// <summary>
+    /// Take an array of line renderer points and display them as a symmetrical waveform on a 2D plane.
+    /// </summary>
+    /// <param name="positions">The array of line renderer positions to display</param>
+    private void DisplayWaveformPoints(Vector3[] positions)
+    {
+        lineRendererMain.SetPositions(positions);
+
+        // use LINQ to mirror all x positions of every point
+        positions = Array.ConvertAll(positions, pos => new Vector3(-pos.x, pos.y));
+
+        lineRendererMirror.SetPositions(positions);
+    }
+    #endregion
+
+    // Needed for delta calculations when scrolling using MMB
+    private float initialMouseY = float.NaN;
+    private float currentMouseY;
 
     /// <summary>
     /// Enable/disable middle click movement upon press/release
@@ -339,7 +373,7 @@ public class WaveformManager : MonoBehaviour
     /// <param name="stem">The BASS stream to get audio samples of.</param>
     public void UpdateWaveformData(ChartMetadata.StemType stem) // pass in file path here later
     {
-        float[] stemWaveformData = pluginBassManager.GetAudioSamples("", out long bytesPerSample); 
+        float[] stemWaveformData = pluginBassManager.GetAudioSamples(stem, out long bytesPerSample); 
         stemWaveformData = Normalize(stemWaveformData, 5); // Modify obtained data to reduce peaks
 
         if (WaveformData.ContainsKey(stem))
@@ -420,24 +454,17 @@ public class WaveformManager : MonoBehaviour
         DisplayWaveformPoints(GenerateWaveformPoints());
     }
 
-    /// <summary>
-    /// Take an array of line renderer points and display them as a symmetrical waveform on a 2D plane.
-    /// </summary>
-    /// <param name="positions">The array of line renderer positions to display</param>
-    private void DisplayWaveformPoints(Vector3[] positions)
-    {
-        lineRendererMain.SetPositions(positions);
-
-        // use LINQ to mirror all x positions of every point
-        positions = Array.ConvertAll(positions, pos => new Vector3(-pos.x, pos.y));
-
-        lineRendererMirror.SetPositions(positions);
-    }
-
     // Just testing for now
     public void ChangeShrinkFactor(float scrollbarPosition)
     {
         ShrinkFactor = defaultShrinkFactor + 0.0001f*scrollbarPosition*20;
+        ScrollWaveformSegment(0, false);
+    }
+
+    public void ChangeDisplayedWaveform(ChartMetadata.StemType stem)
+    {
+        ChangeWaveformVisibility(true);
+        CurrentWaveform = stem;
         ScrollWaveformSegment(0, false);
     }
 }
@@ -456,3 +483,5 @@ public class WaveformManager : MonoBehaviour
         // Happens via speed & hyperspeed changes
     // Implement calibration
     // then, on to beatlines...
+    
+    // Let CurrentWFDataPosition scroll to length of longest stem
