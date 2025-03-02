@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class PluginBassManager : MonoBehaviour
 {
+    WaveformManager waveformManager;
     int sampleRate = 44100;
 
     /// <summary>
@@ -14,7 +15,7 @@ public class PluginBassManager : MonoBehaviour
     public float CompressedArrayResolution {get; private set;}
 
     /// <summary>
-    /// Holds BASS stream data for playing audio. Stem is audio stem identifier, int is stream data.
+    /// Holds BASS stream data for playing audio. Stem is audio stem identifier, int is BASS stream data.
     /// </summary>
     public Dictionary<ChartMetadata.StemType, int> StemStreams {get; private set;}
     
@@ -23,7 +24,11 @@ public class PluginBassManager : MonoBehaviour
     /// </summary>
     public bool AudioPlaying {get; private set;}
 
-    WaveformManager waveformManager;
+    /// <summary>
+    /// The stem with the longest stream length in StemStreams. All other stem streams are linked to this stem for playback purposes.
+    /// <para>This stream is guaranteed to exist in StemStreams at all times EXCEPT when there is no audio loaded.</para> 
+    /// </summary>
+    private ChartMetadata.StemType StreamLink {get; set;}
 
     private void Awake() 
     {
@@ -35,7 +40,11 @@ public class PluginBassManager : MonoBehaviour
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
 
         InitializeBassPlugin();
+
+        // streams are only updated in Song Setup so this data will remain the same throughout entire scene usage
         UpdateStemStreams();
+        StreamLink = GetLongestStream(); 
+        LinkStreams();
     }
 
     /// <summary>
@@ -56,6 +65,26 @@ public class PluginBassManager : MonoBehaviour
                 // I don't think this actually ever fires, but it's here just in case
             }
         }
+    }
+
+    /// <summary>
+    /// Get the longest audio file to link playing all other stems to. Needed to properly play audio synchronously.
+    /// </summary>
+    /// <returns>Stem with longest playback length</returns>
+    private ChartMetadata.StemType GetLongestStream()
+    {
+        long streamLength = 0;
+        ChartMetadata.StemType longestStream = 0;
+        foreach(var stream in StemStreams)
+        {
+            var currentStreamLength = Bass.BASS_ChannelGetLength(stream.Value);
+            if (currentStreamLength > streamLength)
+            {
+                streamLength = currentStreamLength;
+                longestStream = stream.Key;
+            }
+        }
+        return longestStream;
     }
 
     /// <summary>
@@ -152,36 +181,33 @@ public class PluginBassManager : MonoBehaviour
     /// <summary>
     /// Converts stereo samples to mono samples to get a more accurate waveform.
     /// </summary>
-    /// <param name="samples"></param>
+    /// <param name="stereoSamples"></param>
     /// <returns></returns>
-    private float[] ConvertStereoSamplestoMono(float[] samples) 
+    private float[] ConvertStereoSamplestoMono(float[] stereoSamples) 
     {
-        var monoSamples = new float[samples.Length / 2]; // stereo samples have two data points for every sample (L+R track)
+        var monoSamples = new float[stereoSamples.Length / 2]; // stereo samples have two data points for every sample (L+R track)
                                                          // so mono will have half the number of samples
         for (var i = 0; i < monoSamples.Length; i++)
         {
-            monoSamples[i] = (samples[i*2] + samples[i*2 + 1]) / 2; // average both stereo samples
+            monoSamples[i] = (stereoSamples[i*2] + stereoSamples[i*2 + 1]) / 2; // average both stereo samples
         }
         return monoSamples;
     }
 
+    /// <summary>
+    /// Called by user playing/pausing the audio from a button.
+    /// </summary>
     public void PlayPauseAudio()
     {
-        Bass.BASS_ChannelSetPosition
-        (
-            StemStreams[ChartMetadata.StemType.song], 
-            WaveformManager.CurrentWFDataPosition * WaveformManager.WaveformData[ChartMetadata.StemType.song].Item2
-            // ^ Item2 holds how many bytes are held for each second of audio
-            // this rate will vary based on audio formats and stuff
-        );
         if (!AudioPlaying)
         {
-            Bass.BASS_ChannelPlay(StemStreams[ChartMetadata.StemType.song], false);
+            SetStreamPositions();
+            Bass.BASS_ChannelPlay(StemStreams[StreamLink], false);
             AudioPlaying = true;
         }
         else
         {
-            Bass.BASS_ChannelPause(StemStreams[ChartMetadata.StemType.song]);
+            Bass.BASS_ChannelPause(StemStreams[StreamLink]);
             AudioPlaying = false;
             waveformManager.ResetAudioPositions();
             waveformManager.ScrollWaveformSegment(0, false);
@@ -189,12 +215,51 @@ public class PluginBassManager : MonoBehaviour
         waveformManager.ToggleChartingInputMap();
     }
 
+    /// <summary>
+    /// Set the stream position to the waveform's current position for every stream in StemStreams. 
+    /// </summary>
+    private void SetStreamPositions()
+    {
+        foreach (var streampair in StemStreams)
+        {
+            try
+            {
+                Bass.BASS_ChannelSetPosition
+                (
+                    StemStreams[streampair.Key], 
+                    WaveformManager.CurrentWFDataPosition * WaveformManager.WaveformData[streampair.Key].Item2
+                    // ^ Item2 holds how many bytes are held for each second of audio
+                    // this rate will vary based on audio formats and stuff
+                );
+            }
+            catch
+            {
+                continue; // this is when audio file lengths differ - figure out what to do here
+            }
+        }
+    }
+    
+    private void LinkStreams()
+    {
+        foreach (var stream in StemStreams)
+        {
+            Bass.BASS_ChannelSetLink(StemStreams[StreamLink], stream.Value);
+        }
+    }
+
+    /// <summary>
+    /// Get the current audio position of the main audio playback stem.
+    /// </summary>
+    /// <returns></returns>
     public double GetCurrentAudioPosition()
     {
-        return Bass.BASS_ChannelBytes2Seconds(StemStreams[ChartMetadata.StemType.song], Bass.BASS_ChannelGetPosition(StemStreams[ChartMetadata.StemType.song]));
+        return Bass.BASS_ChannelBytes2Seconds(StemStreams[StreamLink], Bass.BASS_ChannelGetPosition(StemStreams[StreamLink]));
     }
+
     void OnApplicationQuit()
     {
         Bass.BASS_Free();     
     }
+    
+    // need to free streams when switching to different tabs too
 }
