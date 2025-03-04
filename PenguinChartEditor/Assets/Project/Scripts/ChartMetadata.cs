@@ -80,8 +80,8 @@ public class ChartMetadata : MonoBehaviour
 
     // test paths to make this easier
     static string[] stems = new string[6] {
-        "G:/_PCE_files/TestAudioFiles/120BPMTestTrack.opus", // song
-        "G:/_PCE_files/TestAudioFiles/burning.opus", // guitar
+        "C:/_PCE_files/TestAudioFiles/120BPMTestTrack.opus", // song
+        "C:/_PCE_files/TestAudioFiles/burning.opus", // guitar
         "", // bass
         "", // keys
         "", // vocals
