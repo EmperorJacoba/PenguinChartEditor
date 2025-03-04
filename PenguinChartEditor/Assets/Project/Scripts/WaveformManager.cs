@@ -20,9 +20,9 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     LineRenderer lineRendererMirror;
 
-    // Note: Line renderer uses local positioning to more easily align with the screen and cull points off-screen
-    // both of these line renderers combine to make a symmetrical waveform
-    // and the center is hollow! so cool and unique
+        // Note: Line renderer uses local positioning to more easily align with the screen and cull points off-screen
+        // both of these line renderers combine to make a symmetrical waveform
+        // and the center is hollow! so cool and unique
     
     /// <summary>
     /// RectTransform attached to the waveform container.
@@ -66,10 +66,28 @@ public class WaveformManager : MonoBehaviour
     // 64 bit values are actually kinda baller in my opinion so i'm not opposed 
 
     /// <summary>
-    /// Where the user is by sample count.
+    /// Where the user is by sample count at the strikeline.
     /// <para>This corresponds to an index in the WaveformData arrays.</para>
     /// </summary>
-    public static int CurrentWFDataPosition {get; private set;}
+    public static int CurrentWaveformDataPosition
+    {
+        get
+        {
+            return _wfPosition;
+        }
+        private set
+        {
+            if (_wfPosition == value) return;
+            _wfPosition = value;
+
+            WFPositionChanged?.Invoke(); // This is here so that TempoManager can update lines whenever WF is changed
+            // This will happen from playing/scrolling the waveform, so this is easier
+        }
+    }
+    private static int _wfPosition;
+
+    public delegate void WFPositionChangedDelegate();
+    public static event WFPositionChangedDelegate WFPositionChanged;
 
     /// <summary>
     /// How many array indexes to skip when scrolling with wheel
@@ -111,7 +129,7 @@ public class WaveformManager : MonoBehaviour
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
 
         ShrinkFactor = 0.0001f;
-        CurrentWFDataPosition = 0;
+        CurrentWaveformDataPosition = 0;
     }
 
     void Start()
@@ -141,9 +159,8 @@ public class WaveformManager : MonoBehaviour
 
         if (pluginBassManager.AudioPlaying)
         {
-            // This if block (which should be refactored later) plays the waveform in sync with the audio
-            // "strikeline" is currently at bottom of screen
-
+            // This if block plays the waveform in sync with the audio
+            
             // Step: Get audio delta
             // Time.deltaTime or a coroutine don't work properly for some reason 
             // (probably due to difference between song timing & frame timing idk)
@@ -242,7 +259,7 @@ public class WaveformManager : MonoBehaviour
             var vectorChange = currentPositions[i] - new Vector3(0, yChange, 0);
             if (vectorChange.y < 0) // weed out anything below bottom of screen -> pivot is at bottom of screen
             {
-                CurrentWFDataPosition++; // advance position for each culled point
+                CurrentWaveformDataPosition++; // advance position for each culled point
             }
             else // apply change for valid values
             {
@@ -262,7 +279,7 @@ public class WaveformManager : MonoBehaviour
     /// <returns>Vector3[] array of line renderer positions</returns>
     private Vector3[] GenerateWaveformPoints(Vector3[] modifiedPositions, int modifiedArrayStopPoint)
     {
-        SetUpWaveformChange(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
+        GetWaveformProperties(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
 
         var startingY = modifiedPositions[modifiedArrayStopPoint - 1].y + ShrinkFactor;
         // ^^ start drawing more points where the last valid position of the point migration left off 
@@ -275,7 +292,7 @@ public class WaveformManager : MonoBehaviour
         var pointChange = modifiedPositions.Length - modifiedArrayStopPoint;
 
         // This is the index to START pulling data points from for the end of the line renderer array
-        var pullPoint = CurrentWFDataPosition - pointChange + strikeSamplePoint + samplesPerScreen;
+        var pullPoint = CurrentWaveformDataPosition - pointChange + strikeSamplePoint + samplesPerScreen;
         // Take current strikeline position (CurrentWFDataPosition), subtract how many points were culled to get the past frame's strikeline alignment
         // Then get to the bottom of the screen by adding strikeSamplePoint (which is negative)
         // Then get to last frame's top of screen with samplesPerScreen (which is where new data for the current frame will begin)
@@ -304,7 +321,7 @@ public class WaveformManager : MonoBehaviour
     /// <returns>Vector3 array of line renderer positions</returns>
     private Vector3[] GenerateWaveformPoints()
     {
-        SetUpWaveformChange(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
+        GetWaveformProperties(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
 
         Vector3[] lineRendererPositions = new Vector3[lineRendererMain.positionCount];
         float yPos = 0;
@@ -313,7 +330,7 @@ public class WaveformManager : MonoBehaviour
         {
             try
             {
-                lineRendererPositions[lineRendererIndex] = new Vector3(masterWaveformData[CurrentWFDataPosition + strikeSamplePoint], yPos);
+                lineRendererPositions[lineRendererIndex] = new Vector3(masterWaveformData[CurrentWaveformDataPosition + strikeSamplePoint], yPos);
             }
             catch // this happens when there is no data to pull for the waveform
             {
@@ -399,12 +416,12 @@ public class WaveformManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculate necessary data to generate waveform points.
+    /// Calculate necessary data to generate/access waveform points.
     /// </summary>
     /// <param name="masterWaveformData">Current array of waveform data to pull from.</param>
     /// <param name="samplesPerScreen">The number of sample points that can be displayed on screen, based on the current shrinkFactor.</param>
-    /// <param name="strikeSamplePoint">The number of sample points displayed from the bottom of the screen to the strikline. THIS VALUE IS NEGATIVE BY DEFAULT</param>
-    private void SetUpWaveformChange(out float[] masterWaveformData, out int samplesPerScreen, out int strikeSamplePoint)
+    /// <param name="strikeSamplePoint">The number of sample points displayed from the bottom of the screen to the strikeline. THIS VALUE IS NEGATIVE BY DEFAULT</param>
+    private void GetWaveformProperties(out float[] masterWaveformData, out int samplesPerScreen, out int strikeSamplePoint)
     {
         masterWaveformData = WaveformData[CurrentWaveform].Item1;
         samplesPerScreen = (int)Mathf.Round(rtHeight / ShrinkFactor);
@@ -424,7 +441,7 @@ public class WaveformManager : MonoBehaviour
             return;
         }
         // Get base calculations before starting anything (strikeSamplePoint not needed here fyi)
-        SetUpWaveformChange(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
+        GetWaveformProperties(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
 
         // Scroll change can be float from click + drag, int from scroll wheel => int must scale up with scrollSkip to get a sort of "mechanical advantage" with scrolling
         // Get position of array to start r/w from
@@ -435,16 +452,16 @@ public class WaveformManager : MonoBehaviour
         }
 
         scrollChange = Mathf.Round(scrollChange); // Round to int to avoid decimal array positions
-        CurrentWFDataPosition += (int)scrollChange; // Add scrollChange (which is now a # of data points to ffw by) to modify array position
+        CurrentWaveformDataPosition += (int)scrollChange; // Add scrollChange (which is now a # of data points to ffw by) to modify array position
 
         // Check to make sure r/w request is within the bounds of the array
-        if (CurrentWFDataPosition < 0)
+        if (CurrentWaveformDataPosition < 0)
         {
-            CurrentWFDataPosition = 0;
+            CurrentWaveformDataPosition = 0;
         }
-        else if (CurrentWFDataPosition > masterWaveformData.Length)
+        else if (CurrentWaveformDataPosition > masterWaveformData.Length)
         {
-            CurrentWFDataPosition = masterWaveformData.Length;
+            CurrentWaveformDataPosition = masterWaveformData.Length;
             // position is from strikeline so so long as the position is never outside of the array then we chilling
             // try/catch takes care of making sure it doesn't try displaying nonreal points
         }
@@ -473,6 +490,21 @@ public class WaveformManager : MonoBehaviour
         SetWaveformVisibility(true);
         CurrentWaveform = stem;
         ScrollWaveformSegment(0, false);
+    }
+
+    /// <summary>
+    /// Get the start and end second values of the visible waveform segment.
+    /// </summary>
+    /// <param name="startPoint">The first waveform point visible, in seconds.</param>
+    /// <param name="endPoint">The last waveform point visible, in seconds</param>
+    public void GetDisplayedAudioPositions(out float startPoint, out float endPoint)
+    {
+        GetWaveformProperties(out var unused, out var samplesPerScreen, out var strikeSamplePoint);
+
+        // get to bottom of screen, calculate what that waveform position is in seconds
+        startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * pluginBassManager.CompressedArrayResolution;
+        // get to bottom of screen, jump to top of screen with samplesPerScreen, calculate what that waveform position is in seconds
+        endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * pluginBassManager.CompressedArrayResolution;
     }
 }
 
