@@ -18,11 +18,37 @@ public class TempoManager : MonoBehaviour
     /// </summary>
     public Dictionary<float, float> BeatlineTimestamps {get; set;} // I might not have to use this, but this is a port from my original sketch
 
+    /// <summary>
+    /// The thickness of a bar starting line
+    /// </summary>
+    private float barLineThickness = 0.05f;
+
+    /// <summary>
+    /// The thickness of the division line (e.g quarter note in 4/4 or eighth note in 7/8)
+    /// </summary>
+    private float divisionLineThickness = 0.03f;
+
+    /// <summary>
+    /// The thickness of the second division line (e.g eighth note in 4/4)
+    /// </summary>
+    private float halfDivisionLineThickness = 0.01f;
+    
+
     void Awake()
     {
         TempoEvents = new();
         BeatlineTimestamps = new();
-        WaveformManager.WFPositionChanged += WaveformMoved;
+        WaveformManager.WFPositionChanged += WaveformMoved; // set up event so that beatlines can update properly
+    }
+
+    void Start()
+    {
+        if (TempoEvents.Count == 0) // if there is no data to load in 
+        {
+            TempoEvents.Add(0, 120000); // add placeholder bpm
+            BeatlineTimestamps.Add(0, 0);
+        }
+
     }
 
     /// <summary>
@@ -30,6 +56,7 @@ public class TempoManager : MonoBehaviour
     /// </summary>
     void WaveformMoved()
     {
-        Debug.Log($"Changed");
+        
     }
+
 }
