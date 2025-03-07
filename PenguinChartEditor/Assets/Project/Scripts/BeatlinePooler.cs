@@ -8,7 +8,8 @@ public class BeatlinePooler : MonoBehaviour
     // https://learn.unity.com/tutorial/introduction-to-object-pooling
 
     [SerializeField] GameObject beatlinePrefab;
-    [SerializeField] GameObject tempoMapBackground;
+    [SerializeField] GameObject canvas;
+
 
     public static BeatlinePooler instance;
 
@@ -36,7 +37,7 @@ public class BeatlinePooler : MonoBehaviour
     void CreateNewBeatline()
     {
         GameObject tmp;
-        tmp = Instantiate(beatlinePrefab, transform);
+        tmp = Instantiate(beatlinePrefab, canvas.transform);
     
         tmp.SetActive(false);
         pooledObjects.Add(tmp);
@@ -55,11 +56,6 @@ public class BeatlinePooler : MonoBehaviour
         CreateNewBeatline();
         return GetPooledObject();
     }
-
-    // When instantiating initial objects:
-    // Instantiate with width of tempo background track by screen percentage (ratio)
-        // Recalculate ratio when screen is changed (probably an event you can subscribe to here)
-    // Line thicknesses are determined by TempoManager
 
     // Next goal: Set up this script to properly set up/spawn prefabs with ratio
     // Then: Spawn in a beatline with TempoManager with obj pooling
