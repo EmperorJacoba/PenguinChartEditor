@@ -47,7 +47,7 @@ public class WaveformManager : MonoBehaviour
     /// <para>Modified by hyperspeed and audio speed changes.</para>
     /// </summary>
     public static float ShrinkFactor {get; set;} // Needed to compress the points into something legible (y value * shrinkFactor = y position)
-    private static readonly float defaultShrinkFactor = 0.0001f;
+    private static readonly float defaultShrinkFactor = 0.001f;
 
     /// <summary>
     /// The currently displayed waveform.
@@ -128,7 +128,7 @@ public class WaveformManager : MonoBehaviour
         screenReference = GameObject.Find("ScreenReference");
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
 
-        ShrinkFactor = 0.0001f;
+        ShrinkFactor = defaultShrinkFactor;
         CurrentWaveformDataPosition = 0;
     }
 
@@ -180,6 +180,7 @@ public class WaveformManager : MonoBehaviour
             // Transform.TransformPoint did not work!
             // this was just what worked the easiest, sigh - here as a warning to future me, 
             // don't try to work the chunking system because this is miles simpler
+            // EDIT: line renderer coordinate points are based on the scale of the parent object when using local space...i hate this but it also makes sense
 
             // anyways this is just how much to subtract from the y-pos of each line renderer point each frame to move at the pace of the audio
             // convert the change in audio position to samples in WaveformData by dividing by the resolution
@@ -394,7 +395,7 @@ public class WaveformManager : MonoBehaviour
     public void UpdateWaveformData(ChartMetadata.StemType stem) // pass in file path here later
     {
         float[] stemWaveformData = pluginBassManager.GetAudioSamples(stem, out long bytesPerSample); 
-        stemWaveformData = Normalize(stemWaveformData, 5); // Modify obtained data to reduce peaks
+        stemWaveformData = Normalize(stemWaveformData, 0.50f); // Modify obtained data to reduce peaks
 
         if (WaveformData.ContainsKey(stem))
         {

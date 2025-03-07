@@ -8,9 +8,12 @@ public class BeatlinePooler : MonoBehaviour
     // https://learn.unity.com/tutorial/introduction-to-object-pooling
 
     [SerializeField] GameObject beatlinePrefab;
+    [SerializeField] GameObject tempoMapBackground;
 
     public static BeatlinePooler instance;
+
     public List<GameObject> pooledObjects;
+    
     public int poolAmount;
 
     void Awake()
@@ -23,14 +26,18 @@ public class BeatlinePooler : MonoBehaviour
         pooledObjects = new List<GameObject>();
         for(int i = 0; i < poolAmount; i++)
         {
-            CreateNewObject();
+            CreateNewBeatline();
         }
     }
 
-    void CreateNewObject()
+    // This only works properly if everything is set to origin on the parent
+    // Please don't freak out if this spawns things 1903412812349 miles away
+    // All the beatlines are based on UI so they shouldn't (?) need to be scaled or anything weird like that
+    void CreateNewBeatline()
     {
         GameObject tmp;
         tmp = Instantiate(beatlinePrefab, transform);
+    
         tmp.SetActive(false);
         pooledObjects.Add(tmp);
     }
@@ -45,7 +52,7 @@ public class BeatlinePooler : MonoBehaviour
             }
         }
         // This prevents a null return by creating a new game object and recalling the function if no more are available.
-        CreateNewObject();
+        CreateNewBeatline();
         return GetPooledObject();
     }
 
@@ -54,8 +61,8 @@ public class BeatlinePooler : MonoBehaviour
         // Recalculate ratio when screen is changed (probably an event you can subscribe to here)
     // Line thicknesses are determined by TempoManager
 
-    // Next goal: Set up this script to properly set up prefabs with ratio
-    // Then: Spawn in a beatline with TempoManager
+    // Next goal: Set up this script to properly set up/spawn prefabs with ratio
+    // Then: Spawn in a beatline with TempoManager with obj pooling
     // Then: Spawn in a series of beatlines in accordance with time-second markings
         // Experiment with spawning beatlines even when there are no timestamps -> inbetween, dynamically determined beatlines
             // Every time-second calculation in the dict will correspond to a TempoEvent
