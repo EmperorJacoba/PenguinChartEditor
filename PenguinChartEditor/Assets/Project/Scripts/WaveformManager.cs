@@ -40,13 +40,27 @@ public class WaveformManager : MonoBehaviour
     GameObject screenReference; 
 
     private InputMap inputMap;
-    
+
     /// <summary>
     /// The y distance between each waveform point on the line renderer. Default is 0.0001.
     /// <para>Change shrink factor to modify how tight the waveform looks.</para>
     /// <para>Modified by hyperspeed and audio speed changes.</para>
     /// </summary>
-    public static float ShrinkFactor {get; set;} // Needed to compress the points into something legible (y value * shrinkFactor = y position)
+    public static float ShrinkFactor // Needed to compress the points into something legible (y value * shrinkFactor = y position)
+    {
+        get
+        {
+            return _shrinkFactor;
+        }
+        set
+        {
+            if (_shrinkFactor == value) return;
+            _shrinkFactor = value;
+
+            WFPositionChanged?.Invoke(); // so that beatlines update when shrink factor is changed as well
+        }
+    }
+    private static float _shrinkFactor = 0.001f;
     private static readonly float defaultShrinkFactor = 0.001f;
 
     /// <summary>
@@ -128,7 +142,6 @@ public class WaveformManager : MonoBehaviour
         screenReference = GameObject.Find("ScreenReference");
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
 
-        ShrinkFactor = defaultShrinkFactor;
         CurrentWaveformDataPosition = 0;
     }
 
@@ -185,7 +198,7 @@ public class WaveformManager : MonoBehaviour
             // anyways this is just how much to subtract from the y-pos of each line renderer point each frame to move at the pace of the audio
             // convert the change in audio position to samples in WaveformData by dividing by the resolution
             // convert the change in samples to y-change by multiplying by ShrinkFactor (the y-distance between each sample in the line renderer)
-            var localYChange = (float)(audioPosition - lastAudioPosition) / pluginBassManager.CompressedArrayResolution * ShrinkFactor;
+            var localYChange = (float)(audioPosition - lastAudioPosition) / PluginBassManager.CompressedArrayResolution * ShrinkFactor;
             
             Vector3[] currentPositions = new Vector3[lineRendererMain.positionCount]; // # of points is still the same by the time this is done
             lineRendererMain.GetPositions(currentPositions); // since the other renderer is just a mirror you can just use the main's points
@@ -307,7 +320,7 @@ public class WaveformManager : MonoBehaviour
             }
             catch // this happens when there is no data to pull for the waveform
             {
-                modifiedPositions[i] = new Vector3(0, startingY); // so make it null
+                modifiedPositions[i] = new Vector3(0, startingY); // so make it zero
                 // this way the beginning and end of the waveform will stop at the strikeline instead of screen boundaries
             }
             startingY += ShrinkFactor;
@@ -395,7 +408,7 @@ public class WaveformManager : MonoBehaviour
     public void UpdateWaveformData(ChartMetadata.StemType stem) // pass in file path here later
     {
         float[] stemWaveformData = pluginBassManager.GetAudioSamples(stem, out long bytesPerSample); 
-        stemWaveformData = Normalize(stemWaveformData, 0.50f); // Modify obtained data to reduce peaks
+        stemWaveformData = Normalize(stemWaveformData, 0.60f); // Modify obtained data to reduce peaks
 
         if (WaveformData.ContainsKey(stem))
         {
@@ -422,11 +435,11 @@ public class WaveformManager : MonoBehaviour
     /// <param name="masterWaveformData">Current array of waveform data to pull from.</param>
     /// <param name="samplesPerScreen">The number of sample points that can be displayed on screen, based on the current shrinkFactor.</param>
     /// <param name="strikeSamplePoint">The number of sample points displayed from the bottom of the screen to the strikeline. THIS VALUE IS NEGATIVE BY DEFAULT</param>
-    private void GetWaveformProperties(out float[] masterWaveformData, out int samplesPerScreen, out int strikeSamplePoint)
+    public void GetWaveformProperties(out float[] masterWaveformData, out int samplesPerScreen, out int strikeSamplePoint)
     {
         masterWaveformData = WaveformData[CurrentWaveform].Item1;
         samplesPerScreen = (int)Mathf.Round(rtHeight / ShrinkFactor);
-        strikeSamplePoint = (int)Math.Ceiling(-samplesPerScreen * strikeline.CalculateStrikelineScreenProportion()); // note the negative sign
+        strikeSamplePoint = (int)Math.Ceiling(-samplesPerScreen * strikeline.GetStrikelineScreenProportion()); // note the negative sign
     }
 
     /// <summary>
@@ -498,14 +511,16 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     /// <param name="startPoint">The first waveform point visible, in seconds.</param>
     /// <param name="endPoint">The last waveform point visible, in seconds</param>
-    public void GetDisplayedAudioPositions(out float startPoint, out float endPoint)
+    public (float, float) GetDisplayedAudioPositions()
     {
         GetWaveformProperties(out var unused, out var samplesPerScreen, out var strikeSamplePoint);
 
         // get to bottom of screen, calculate what that waveform position is in seconds
-        startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * pluginBassManager.CompressedArrayResolution;
+        var startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * PluginBassManager.CompressedArrayResolution;
         // get to bottom of screen, jump to top of screen with samplesPerScreen, calculate what that waveform position is in seconds
-        endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * pluginBassManager.CompressedArrayResolution;
+        var endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * PluginBassManager.CompressedArrayResolution;
+
+        return (startPoint, endPoint);
     }
 }
 

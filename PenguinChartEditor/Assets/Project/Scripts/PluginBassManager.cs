@@ -12,7 +12,7 @@ public class PluginBassManager : MonoBehaviour
     /// Holds a value in seconds for how often to take a sample from all samples
     /// <para>1 millisecond (0.001 seconds) by default.</para>
     /// </summary>
-    public float CompressedArrayResolution {get; private set;}
+    public static float CompressedArrayResolution {get; private set;}
 
     /// <summary>
     /// Holds BASS stream data for playing audio. Stem is audio stem identifier, int is BASS stream data.
@@ -29,6 +29,11 @@ public class PluginBassManager : MonoBehaviour
     /// <para>This stream is guaranteed to exist in StemStreams at all times EXCEPT when there is no audio loaded.</para> 
     /// </summary>
     private ChartMetadata.StemType StreamLink {get; set;}
+
+    /// <summary>
+    /// The length of the stream attached to the longest stem.
+    /// </summary>
+    public static float SongLength {get; set;}
 
     private void Awake() 
     {
@@ -83,6 +88,7 @@ public class PluginBassManager : MonoBehaviour
                 longestStream = stream.Key;
             }
         }
+        SongLength = (float)Bass.BASS_ChannelBytes2Seconds(StemStreams[longestStream], streamLength);
         return longestStream;
     }
 

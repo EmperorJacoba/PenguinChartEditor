@@ -2677,6 +2677,7 @@ MonoBehaviour:
   beatlinePrefab: {fileID: 6239090009231363197, guid: 6d12eaf9ec73a61478085a805dfbf106, type: 3}
   canvas: {fileID: 609910792}
   pooledObjects: []
+  beatlines: []
   poolAmount: 10
 --- !u!4 &1174461338
 Transform:

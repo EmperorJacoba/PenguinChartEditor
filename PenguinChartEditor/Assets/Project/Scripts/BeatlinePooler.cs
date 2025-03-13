@@ -1,74 +1,86 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class BeatlinePooler : MonoBehaviour
 {
-    // Most of this code is copied straight from Unity's intro to object pooling
-    // Work smarter, not harder, kids! (Thanks, Unity staff!)
+    // Adapted from Unity's intro to object pooling
     // https://learn.unity.com/tutorial/introduction-to-object-pooling
 
     [SerializeField] GameObject beatlinePrefab;
     [SerializeField] GameObject canvas;
 
-
+    /// <summary>
+    /// Static reference to the pooler object.
+    /// </summary>
     public static BeatlinePooler instance;
 
-    public List<GameObject> pooledObjects;
+    private List<Beatline> beatlines;
     
     public int poolAmount;
 
     void Awake()
     {
         instance = this;
+        beatlines = new();
     }
 
     void Start()
     {
-        pooledObjects = new List<GameObject>();
         for(int i = 0; i < poolAmount; i++)
         {
             CreateNewBeatline();
         }
     }
 
-    // This only works properly if everything is set to origin on the parent
-    // Please don't freak out if this spawns things 1903412812349 miles away
     // All the beatlines are based on UI so they shouldn't (?) need to be scaled or anything weird like that
     void CreateNewBeatline()
     {
         GameObject tmp;
-        tmp = Instantiate(beatlinePrefab, canvas.transform);
+        tmp = Instantiate(beatlinePrefab, canvas.transform); // MUST BE A CHILD OF THE CANVAS
+        beatlines.Add(tmp.GetComponent<Beatline>());
     
-        tmp.SetActive(false);
-        pooledObjects.Add(tmp);
+        beatlines[^1].IsVisible = false;
     }
 
-    public GameObject GetPooledObject()
+    /// <summary>
+    /// Get a specified beatline from the collection of existing pooled beatline objects.
+    /// </summary>
+    /// <param name="index">The target beatline number.</param>
+    /// <returns>The requested beatline.</returns>
+    public Beatline GetBeatline(int index)
     {
-        for(int i = 0; i < poolAmount; i++)
+        Beatline beatline;
+        try
         {
-            if(!pooledObjects[i].activeInHierarchy)
-            {
-                return pooledObjects[i];
-            }
+            beatline = beatlines[index]; // attempt fetch of the requested beatline
         }
-        // This prevents a null return by creating a new game object and recalling the function if no more are available.
-        CreateNewBeatline();
-        return GetPooledObject();
+        catch // if the requested beatline does not exist, make a new one and fetch it
+        {
+            CreateNewBeatline(); // this only needs to happen once because accessing a beatline will happen sequentially
+            beatline = beatlines[index];
+        }
+        beatline.IsVisible = true; // prepare beatline to display calculations
+        return beatline;
     }
 
-    // Next goal: Set up this script to properly set up/spawn prefabs with ratio
-    // Then: Spawn in a beatline with TempoManager with obj pooling
-    // Then: Spawn in a series of beatlines in accordance with time-second markings
-        // Experiment with spawning beatlines even when there are no timestamps -> inbetween, dynamically determined beatlines
-            // Every time-second calculation in the dict will correspond to a TempoEvent
-            // Maybe combine dictionaries?
-        // Experiment with moving beatlines
-            // They move only in Y-direction -> X-dir is locked
-    // Then: Use an existing SyncTrack to generate beatlines
-        // Read a .chart file
-        // Get [SyncTrack] section
-        // Parse section data into TempoEvents
-        // Calculate beatline positions from new data
-        // Render beatlines
+    /// <summary>
+    /// Deactivate all active beatlines past a specified beatline number.
+    /// <para>Called after generating beatlines. Pass in the last generated beatline number to deactivate all unused beatlines past that beatline.</para>
+    /// </summary>
+    /// <param name="lastIndex">The beatline number to start deactivating from.</param>
+    public void DeactivateUnusedBeatlines(int lastIndex)
+    {
+        // Since beatlines are accessed and displayed sequentially, disable all
+        // beatlines from the last beatline accessed until hitting an already inactive beatline.
+        while (true)
+        {
+            if (beatlines[lastIndex].IsVisible) 
+            {
+                beatlines[lastIndex].IsVisible = false;
+            }
+            else break;
+            lastIndex++;
+        }
+    }
 }
