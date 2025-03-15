@@ -94,12 +94,16 @@ public class ChartMetadata : MonoBehaviour
         Stems[StemType.guitar] = stems[1];
     }
 
-    private int chartResolution;
+    private int _chartResolution;
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
     /// </summary>
     public string ChartResolution 
     {
+        get
+        {
+            return _chartResolution.ToString();
+        }
         set 
         {
             if (!int.TryParse(value, out int tempResolution))
@@ -112,7 +116,7 @@ public class ChartMetadata : MonoBehaviour
                 throw new ArgumentException("Chart resolution must be greater than 192 ticks per quarter note!");
             }
 
-            chartResolution = tempResolution;
+            _chartResolution = tempResolution;
         }
     }
 
@@ -137,7 +141,7 @@ public class ChartMetadata : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         ChartResolution = Convert.ToString(UserSettings.DefaultResolution);
-        resolutionTextBox.text = Convert.ToString(chartResolution);
+        resolutionTextBox.text = Convert.ToString(_chartResolution);
     }
 
     /// <summary>

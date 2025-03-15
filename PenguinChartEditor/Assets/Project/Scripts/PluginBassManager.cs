@@ -213,6 +213,7 @@ public class PluginBassManager : MonoBehaviour
         if (!AudioPlaying)
         {
             SetStreamPositions();
+            Bass.BASS_ChannelSetAttribute(StemStreams[ChartMetadata.StemType.song], BASSAttribute.BASS_ATTRIB_VOL, 0);
             Bass.BASS_ChannelPlay(StemStreams[StreamLink], false);
             AudioPlaying = true;
         }

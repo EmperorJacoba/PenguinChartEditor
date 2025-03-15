@@ -20,7 +20,7 @@ public class TempoManager : MonoBehaviour
 
     /// <summary>
     /// The thickness of the division line (e.g quarter note in 4/4 or eighth note in 7/8)
-    /// </summary>
+    /// </summary>;
     private float divisionLineThickness = 0.03f;
 
     /// <summary>
@@ -42,6 +42,7 @@ public class TempoManager : MonoBehaviour
 
     void Start()
     {
+        TempoEvents = ChartParser.GetTempoEventDict("C:/_PCE_files/TestAudioFiles/Burning.chart");
         if (TempoEvents.Count == 0) // if there is no data to load in 
         {
             TempoEvents.Add(0, (120.0f, 0)); // add placeholder bpm
@@ -68,7 +69,7 @@ public class TempoManager : MonoBehaviour
 
         // Set up different iterators
         int currentBeatline = 0; // Holds which beatline is being modified at the present moment
-        int validEventIndex = 0; // Holds the tempo event from validTempoEvents that is being used to calculate new positions
+        int validEventIndex = 1; // Holds the tempo event from validTempoEvents that is being used to calculate new positions
 
         // Actually generate beatlines (currently basic quarter note math atm)
         for (
@@ -78,16 +79,19 @@ public class TempoManager : MonoBehaviour
                 currentBeatline++
             )
         {
+
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
+            workedBeatline.UpdateBPMLabelText(currentBeatline);
 
             // Timestamp is calculated before loop starts, so start by updating the selected beatline's position
             workedBeatline.UpdateBeatlinePosition((currentTimestamp - startTime)/timeShown); 
 
             // Calculate what the next beatline timestamp will be based on the current BPM
-            currentTimestamp += TempoEvents[validTempoEvents[validEventIndex]].Item1 / 60; 
+            currentTimestamp += 60 / TempoEvents[validTempoEvents[validEventIndex]].Item1;
             try 
             {
+
                 // If we've passed or hit the calculated position of another tempo change,
                 // Set the new beatline position to the position of that tempo event and generate beatlines with new BPM
                 if (currentTimestamp >= TempoEvents[validTempoEvents[validEventIndex + 1]].Item2)
@@ -107,7 +111,6 @@ public class TempoManager : MonoBehaviour
             }
         }
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);
-
 
         // take the first beatline in the valid timestamps -> generate that beatline, beatline & label visible
         // get distance between beatlines based on paired BPM, make next beatlines based on that until you hit next timestamp -> beatline visible but label invisible
@@ -131,7 +134,7 @@ public class TempoManager : MonoBehaviour
         var tempoEventStartPoint = TempoEvents[tickTimeEvent].Item2;
         while (tempoEventStartPoint < startTime)
         {
-            tempoEventStartPoint += bpm / 60;
+            tempoEventStartPoint += 60 / bpm;
         }
         return tempoEventStartPoint;
     }
@@ -182,12 +185,23 @@ public class TempoManager : MonoBehaviour
             return tempoTickTimeEvents[index];
         }
     }
+
+
+
+
+
+
+    // Current issues:
+    // Beatlines do not generate properly from a valid tempo dictionary made by ChartParser
+
     
     // Next steps:
     // Make finding valid tempo events more efficient
     // Fix normalization so that amplitude can be changed
     // Make simple Beatline functions into properties
         // Maybe also add some debug properties like tick-time event? Auto implemented or hardcoded? etc
+
+
     // Implement importing of existing .chart data (Tempo events only)\
         // Use an existing SyncTrack to generate beatlines
         // Read a .chart file
@@ -195,6 +209,8 @@ public class TempoManager : MonoBehaviour
         // Parse section data into TempoEvents
         // Calculate beatline positions from new data
         // Render beatlines
+
+
     // Use existing .chart data to improve beatline algorithm and modify as needed
     // Implement moving beatlines and actually tempo mapping
         // They move only in Y-direction -> X-dir is locked

@@ -75,11 +75,18 @@ public class BeatlinePooler : MonoBehaviour
         // beatlines from the last beatline accessed until hitting an already inactive beatline.
         while (true)
         {
-            if (beatlines[lastIndex].IsVisible) 
+            try 
             {
-                beatlines[lastIndex].IsVisible = false;
+                if (beatlines[lastIndex].IsVisible) 
+                {
+                    beatlines[lastIndex].IsVisible = false;
+                }
+                else break;
             }
-            else break;
+            catch
+            {
+                break;
+            }
             lastIndex++;
         }
     }
