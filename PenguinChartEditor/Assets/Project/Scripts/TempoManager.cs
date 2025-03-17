@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -37,7 +36,9 @@ public class TempoManager : MonoBehaviour
         TempoEvents = new();
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
-        WaveformManager.WFPositionChanged += WaveformChanged; // set up event so that beatlines can update properly
+
+        SongTimelineManager.TimeChanged += SongTimeChanged; // set up event so that beatlines can update properly
+        WaveformManager.DisplayChanged += SongTimeChanged;
     }
 
     void Start()
@@ -47,20 +48,19 @@ public class TempoManager : MonoBehaviour
         {
             TempoEvents.Add(0, (120.0f, 0)); // add placeholder bpm
         }
-        WaveformChanged(); // render beatlines for first time
+        SongTimeChanged(); // render beatlines for first time
     }
 
     /// <summary>
     /// Fires every time the visible waveform changes. Used to update beatlines to new displayed waveform.
     /// </summary>
-    void WaveformChanged()
+    void SongTimeChanged()
     {
         // Get the period of time shown on screen and the amount of time shown for position and bounds calculations 
-        (var startTime, var endTime) = waveformManager.GetDisplayedAudioPositions();
+        (var startTime, var endTime) = waveformManager.GetDisplayedAudio();
         var timeShown = endTime - startTime;
 
         // Get a list of all beat changes in the TempoEvents dict that are present in the given time interval to get basis for calculating beatlines
-        // THERE IS ABSOLUTELY A MORE EFFICIENT WAY TO DO THIS => UPDATE LATER
         List<int> validTempoEvents = TempoEvents.Where(n => n.Value.Item2 >= startTime && n.Value.Item2 <= endTime).ToDictionary(item => item.Key, item => item.Value).Keys.ToList();
 
         // Because tempo events are not guaranteed to be the first beatline in a given time period, 
@@ -69,17 +69,16 @@ public class TempoManager : MonoBehaviour
 
         // Set up different iterators
         int currentBeatline = 0; // Holds which beatline is being modified at the present moment
-        int validEventIndex = 1; // Holds the tempo event from validTempoEvents that is being used to calculate new positions
+        int validEventIndex = 0; // Holds the tempo event from validTempoEvents that is being used to calculate new positions
 
         // Actually generate beatlines (currently basic quarter note math atm)
         for (
-                float currentTimestamp = GetStartingTimestamp(validTempoEvents[0], startTime); // Calculate the timestamp to start generating beatlines from (GetStartingTimestamp)
+                float currentTimestamp = GetStartingTimestamp(validTempoEvents[0], (float)startTime); // Calculate the timestamp to start generating beatlines from (GetStartingTimestamp)
                 currentTimestamp < endTime && // Don't generate beatlines outside of the shown time period
                 currentTimestamp < PluginBassManager.SongLength; // Don't generate beatlines that don't exist (falls ahead of the end of the audio file) 
                 currentBeatline++
             )
         {
-
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
             workedBeatline.UpdateBPMLabelText(currentBeatline);
@@ -91,7 +90,6 @@ public class TempoManager : MonoBehaviour
             currentTimestamp += 60 / TempoEvents[validTempoEvents[validEventIndex]].Item1;
             try 
             {
-
                 // If we've passed or hit the calculated position of another tempo change,
                 // Set the new beatline position to the position of that tempo event and generate beatlines with new BPM
                 if (currentTimestamp >= TempoEvents[validTempoEvents[validEventIndex + 1]].Item2)
@@ -132,11 +130,16 @@ public class TempoManager : MonoBehaviour
     {
         var bpm = TempoEvents[tickTimeEvent].Item1;
         var tempoEventStartPoint = TempoEvents[tickTimeEvent].Item2;
-        while (tempoEventStartPoint < startTime)
-        {
-            tempoEventStartPoint += 60 / bpm;
-        }
-        return tempoEventStartPoint;
+
+        if (tempoEventStartPoint >= startTime) return tempoEventStartPoint;
+
+        var timeDiff = startTime - tempoEventStartPoint;
+        
+        var beatInterval = 60 / bpm;
+        var numIntervals = (int)(timeDiff / beatInterval);
+
+        float nextBeatlineTimestamp = tempoEventStartPoint + (numIntervals + 1) * beatInterval;
+        return nextBeatlineTimestamp;
     }
 
     /// <summary>
@@ -144,7 +147,7 @@ public class TempoManager : MonoBehaviour
     /// </summary>
     /// <param name="currentTimestamp">The timestamp to get the tick-time event from.</param>
     /// <returns>The tick-time event before currentTimestamp in TempoEvents</returns>
-    private int FindPrecedingTempoEvent(float currentTimestamp)
+    private int FindPrecedingTempoEvent(double currentTimestamp)
     {
         // As much as I would love to do this based on a tick-time event, 
         // a tick-time event is not guaranteed to exist in a given time period
@@ -160,7 +163,7 @@ public class TempoManager : MonoBehaviour
         // Attempt a binary search for the current timestamp, 
         // which will return a bitwise complement of the index of the next highest timesecond value 
         // OR tempoTimeSecondEvents.Count if there are no more elements
-        var index = tempoTimeSecondEvents.BinarySearch(currentTimestamp);
+        var index = tempoTimeSecondEvents.BinarySearch((float)currentTimestamp);
         if (index <= 0) // bitwise complement is negative or zero
         {
             // modify index if the found timestamp is at the end of the array (last tempo event)
@@ -186,18 +189,8 @@ public class TempoManager : MonoBehaviour
         }
     }
 
-
-
-
-
-
-    // Current issues:
-    // Beatlines do not generate properly from a valid tempo dictionary made by ChartParser
-
-    
     // Next steps:
     // Make finding valid tempo events more efficient
-    // Fix normalization so that amplitude can be changed
     // Make simple Beatline functions into properties
         // Maybe also add some debug properties like tick-time event? Auto implemented or hardcoded? etc
 

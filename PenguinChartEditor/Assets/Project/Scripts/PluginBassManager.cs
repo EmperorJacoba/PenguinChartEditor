@@ -9,26 +9,30 @@ public class PluginBassManager : MonoBehaviour
     int sampleRate = 44100;
 
     /// <summary>
-    /// Holds a value in seconds for how often to take a sample from all samples
-    /// <para>1 millisecond (0.001 seconds) by default.</para>
+    /// Holds a value in seconds for how often to take a sample from all samples (1 millisecond)
     /// </summary>
-    public static float CompressedArrayResolution {get; private set;}
+    public const double ARRAY_RESOLUTION = 0.001;
+
+    /// <summary>
+    /// How many audio samples in the compressed array exist for every second in the audio.
+    /// </summary>
+    public const int SAMPLES_PER_SECOND = 1000; // I don't want to mess with floating point 1/x garbo so this is here
 
     /// <summary>
     /// Holds BASS stream data for playing audio. Stem is audio stem identifier, int is BASS stream data.
     /// </summary>
-    public Dictionary<ChartMetadata.StemType, int> StemStreams {get; private set;}
+    public static Dictionary<ChartMetadata.StemType, int> StemStreams {get; private set;}
     
     /// <summary>
     /// Is the audio currently playing?
     /// </summary>
-    public bool AudioPlaying {get; private set;}
+    public static bool AudioPlaying {get; private set;}
 
     /// <summary>
     /// The stem with the longest stream length in StemStreams. All other stem streams are linked to this stem for playback purposes.
     /// <para>This stream is guaranteed to exist in StemStreams at all times EXCEPT when there is no audio loaded.</para> 
     /// </summary>
-    private ChartMetadata.StemType StreamLink {get; set;}
+    private static ChartMetadata.StemType StreamLink {get; set;}
 
     /// <summary>
     /// The length of the stream attached to the longest stem.
@@ -41,7 +45,6 @@ public class PluginBassManager : MonoBehaviour
 
         StemStreams = new();
         AudioPlaying = false;
-        CompressedArrayResolution = 0.001f;
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
 
         InitializeBassPlugin();
@@ -169,7 +172,7 @@ public class PluginBassManager : MonoBehaviour
         allSamples = ConvertStereoSamplestoMono(allSamples);
 
         // Step 5: Calculate number of samples to take and how long each sample is in bytes
-        long sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, CompressedArrayResolution) / 8; // Number of bytes in x seconds of audio (/4) - div by extra 2 because converted to mono audio
+        long sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, ARRAY_RESOLUTION) / 8; // Number of bytes in x seconds of audio (/4) - div by extra 2 because converted to mono audio
         bytesPerSample = sampleIntervalBytes * 4; // multiply by 4 to undo /2 for floats and /2 for mono 
         // ^ this is used to play/pause the audio which uses 16-bit (not 32-bit) & stereo
         // ^ this is *4 and not *8 because 16 bit is still 2 bytes
@@ -221,10 +224,8 @@ public class PluginBassManager : MonoBehaviour
         {
             Bass.BASS_ChannelPause(StemStreams[StreamLink]);
             AudioPlaying = false;
-            waveformManager.ResetAudioPositions();
-            waveformManager.ScrollWaveformSegment(0, false);
         }
-        waveformManager.ToggleChartingInputMap();
+        SongTimelineManager.ToggleChartingInputMap();
     }
 
     /// <summary>
@@ -239,7 +240,7 @@ public class PluginBassManager : MonoBehaviour
                 Bass.BASS_ChannelSetPosition
                 (
                     StemStreams[streampair.Key], 
-                    WaveformManager.CurrentWaveformDataPosition * WaveformManager.WaveformData[streampair.Key].Item2
+                    waveformManager.CurrentWaveformDataPosition * WaveformManager.WaveformData[streampair.Key].Item2
                     // ^ Item2 holds how many bytes are held for each second of audio
                     // this rate will vary based on audio formats and stuff
                 );
@@ -268,7 +269,7 @@ public class PluginBassManager : MonoBehaviour
     /// Get the current audio position of the main audio playback stem.
     /// </summary>
     /// <returns></returns>
-    public double GetCurrentAudioPosition()
+    public static double GetCurrentAudioPosition()
     {
         return Bass.BASS_ChannelBytes2Seconds(StemStreams[StreamLink], Bass.BASS_ChannelGetPosition(StemStreams[StreamLink]));
     }

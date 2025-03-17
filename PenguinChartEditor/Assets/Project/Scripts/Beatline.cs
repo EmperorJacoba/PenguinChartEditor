@@ -49,17 +49,14 @@ public class Beatline : MonoBehaviour
     /// Update the position of the beatline to a specified proportion up the screen.
     /// </summary>
     /// <param name="percentOfScreen">The percent of the screen that should exist between the bottom and the beatline.</param>
-    public void UpdateBeatlinePosition(float percentOfScreen) // change this to percentage later
+    public void UpdateBeatlinePosition(double percentOfScreen) // change this to percentage later
     {
-        percentOfScreen*=100;
-        
         // rect.height does not work here because the underlying rectangle of this game object has w*h of (0,0)
         // Size delta is the negative of the screen size because that's (0 - screen size)
-        var newYPos = percentOfScreen * -beatlineRt.sizeDelta.y * 100; 
-        newYPos /= 10000;
+        var newYPos = percentOfScreen * -beatlineRt.sizeDelta.y;
         Vector3[] newPos = new Vector3[2];
-        newPos[0] = new Vector2(line.GetPosition(0).x, newYPos);
-        newPos[1] = new Vector2(line.GetPosition(1).x, newYPos);
+        newPos[0] = new Vector2(line.GetPosition(0).x, (float)newYPos);
+        newPos[1] = new Vector2(line.GetPosition(1).x, (float)newYPos);
         line.SetPositions(newPos);
         UpdateLabel();
     }
