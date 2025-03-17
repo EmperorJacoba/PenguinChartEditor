@@ -47,7 +47,7 @@ public class WaveformManager : MonoBehaviour
     /// <para>Change shrink factor to modify how tight the waveform looks.</para>
     /// <para>Modified by hyperspeed and audio speed changes.</para>
     /// </summary>
-    public static float ShrinkFactor // Needed to compress the points into something legible (y value * shrinkFactor = y position)
+    public float ShrinkFactor // Needed to compress the points into something legible (y value * shrinkFactor = y position)
     {
         get
         {
@@ -57,10 +57,10 @@ public class WaveformManager : MonoBehaviour
         {
             if (_shrinkFactor == value) return;
             _shrinkFactor = value;
+            GenerateWaveformPoints();
         }
     }
     private static float _shrinkFactor = 0.001f;
-    private static readonly float defaultShrinkFactor = 0.001f;
 
     /// <summary>
     /// The currently displayed waveform.
@@ -82,7 +82,7 @@ public class WaveformManager : MonoBehaviour
     /// Where the user is by sample count at the strikeline.
     /// <para>This corresponds to an index in the WaveformData arrays.</para>
     /// </summary>
-    public static int CurrentWaveformDataPosition
+    public int CurrentWaveformDataPosition
     {
         get
         {
@@ -95,6 +95,21 @@ public class WaveformManager : MonoBehaviour
         }
     }
     private static int _wfPosition;
+
+    public float Amplitude
+    {
+        get
+        {
+            return _amplitude;
+        }
+        set
+        {
+            if (_amplitude == value) return;
+            _amplitude = value;
+            GenerateWaveformPoints();
+        }
+    }
+    private static float _amplitude = 3;
 
     #endregion
     #region Unity Functions
@@ -169,7 +184,7 @@ public class WaveformManager : MonoBehaviour
     /// Generate an array of line renderer positions based on waveform audio.
     /// </summary>
     /// <returns>Vector3 array of line renderer positions</returns>
-    private Vector3[] GenerateWaveformPoints()
+    private void GenerateWaveformPoints()
     {
         GetWaveformProperties(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
 
@@ -183,7 +198,7 @@ public class WaveformManager : MonoBehaviour
         {
             try
             {
-                lineRendererPositions[lineRendererIndex] = new Vector3(masterWaveformData[CurrentWaveformDataPosition + strikeSamplePoint], yPos);
+                lineRendererPositions[lineRendererIndex] = new Vector3(masterWaveformData[CurrentWaveformDataPosition + strikeSamplePoint] * Amplitude, yPos);
             }
             catch // this happens when there is no data to pull for the waveform
             {
@@ -193,22 +208,13 @@ public class WaveformManager : MonoBehaviour
             yPos += ShrinkFactor;
             strikeSamplePoint++; // this allows working with the waveform data from the bottom up & for CurrentWFDataPosition to be at the strikeline
         }
-
-        return lineRendererPositions;
-    }
-
-    /// <summary>
-    /// Take an array of line renderer points and display them as a symmetrical waveform on a 2D plane.
-    /// </summary>
-    /// <param name="positions">The array of line renderer positions to display</param>
-    private void DisplayWaveformPoints(Vector3[] positions)
-    {
-        lineRendererMain.SetPositions(positions);
+        
+        lineRendererMain.SetPositions(lineRendererPositions);
 
         // mirror all x positions of every point
-        positions = Array.ConvertAll(positions, pos => new Vector3(-pos.x, pos.y));
+        lineRendererPositions = Array.ConvertAll(lineRendererPositions, pos => new Vector3(-pos.x, pos.y));
 
-        lineRendererMirror.SetPositions(positions);
+        lineRendererMirror.SetPositions(lineRendererPositions);
     }
     #endregion
 
@@ -219,7 +225,6 @@ public class WaveformManager : MonoBehaviour
     public void UpdateWaveformData(ChartMetadata.StemType stem) // pass in file path here later
     {
         float[] stemWaveformData = pluginBassManager.GetAudioSamples(stem, out long bytesPerSample); 
-        stemWaveformData = Normalize(stemWaveformData, 0.60f); // Modify obtained data to reduce peaks
 
         if (WaveformData.ContainsKey(stem))
         {
@@ -227,18 +232,6 @@ public class WaveformManager : MonoBehaviour
         } // Flush current value to allow for new one
 
         WaveformData.Add(stem, (stemWaveformData, bytesPerSample));
-    }
-
-    // This is here so that waveform peak lengths can be changed by user later on
-    // CHANGE THIS TO BE DYNAMIC WHEN GENERATING POINTS
-    float[] Normalize(float[] samples, float divideBy)
-    {
-        for (var i = 0; i < samples.Length; i++)
-        {
-            samples[i] /= divideBy; // Change sample value b/c line render uses local positioning and w/o this the peaks are too big
-            // If original values are used, waveform looks crazy by default
-        }
-        return samples;
     }
 
     /// <summary>
@@ -259,13 +252,7 @@ public class WaveformManager : MonoBehaviour
         // This can use an implicit cast because song position is always rounded to 3 decimal places
         CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPosition * PluginBassManager.SAMPLES_PER_SECOND);
 
-        DisplayWaveformPoints(GenerateWaveformPoints());
-    }
-
-    // Just testing for now
-    public void ChangeShrinkFactor(float scrollbarPosition)
-    {
-        ShrinkFactor = defaultShrinkFactor + 0.0001f*scrollbarPosition*20;
+        GenerateWaveformPoints();
     }
 
     /// <summary>
@@ -276,8 +263,10 @@ public class WaveformManager : MonoBehaviour
     {
         SetWaveformVisibility(true);
         CurrentWaveform = stem;
-        DisplayWaveformPoints(GenerateWaveformPoints());
+        GenerateWaveformPoints();
     }
+
+
 
     /// <summary>
     /// Get the start and end second values of the visible waveform segment.
