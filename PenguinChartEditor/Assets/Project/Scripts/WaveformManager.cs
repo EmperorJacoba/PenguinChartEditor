@@ -42,6 +42,9 @@ public class WaveformManager : MonoBehaviour
 
     private InputMap inputMap;
 
+    public delegate void WaveformDisplayDelegate();
+    public static event WaveformDisplayDelegate DisplayChanged;
+
     /// <summary>
     /// The y distance between each waveform point on the line renderer. Default is 0.0001.
     /// <para>Change shrink factor to modify how tight the waveform looks.</para>
@@ -57,7 +60,7 @@ public class WaveformManager : MonoBehaviour
         {
             if (_shrinkFactor == value) return;
             _shrinkFactor = value;
-            GenerateWaveformPoints();
+            DisplayChanged?.Invoke();
         }
     }
     private static float _shrinkFactor = 0.001f;
@@ -106,7 +109,7 @@ public class WaveformManager : MonoBehaviour
         {
             if (_amplitude == value) return;
             _amplitude = value;
-            GenerateWaveformPoints();
+            DisplayChanged?.Invoke();
         }
     }
     private static float _amplitude = 3;
@@ -141,6 +144,7 @@ public class WaveformManager : MonoBehaviour
         // Just have user select it
 
         SongTimelineManager.TimeChanged += ChangeWaveformSegment;
+        DisplayChanged += GenerateWaveformPoints;
         
         rt.pivot = screenReference.GetComponent<RectTransform>().pivot;
         rtHeight = rt.rect.height;

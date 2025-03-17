@@ -36,7 +36,9 @@ public class TempoManager : MonoBehaviour
         TempoEvents = new();
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
+
         SongTimelineManager.TimeChanged += SongTimeChanged; // set up event so that beatlines can update properly
+        WaveformManager.DisplayChanged += SongTimeChanged;
     }
 
     void Start()
@@ -68,7 +70,7 @@ public class TempoManager : MonoBehaviour
 
         // Set up different iterators
         int currentBeatline = 0; // Holds which beatline is being modified at the present moment
-        int validEventIndex = 1; // Holds the tempo event from validTempoEvents that is being used to calculate new positions
+        int validEventIndex = 0; // Holds the tempo event from validTempoEvents that is being used to calculate new positions
 
         // Actually generate beatlines (currently basic quarter note math atm)
         for (
