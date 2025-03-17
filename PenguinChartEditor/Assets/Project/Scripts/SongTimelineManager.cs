@@ -4,6 +4,7 @@ using UnityEngine;
 public class SongTimelineManager : MonoBehaviour
 {
     static InputMap inputMap;
+    WaveformManager waveformManager;
 
     // Needed for delta calculations when scrolling using MMB
     private float initialMouseY = float.NaN;
@@ -18,7 +19,7 @@ public class SongTimelineManager : MonoBehaviour
         private set
         {
             if (_songPos == value) return;
-            value = Math.Round(value, 3);
+            value = Math.Round(value, 3); // So that CurrentWFDataPosition comes out clean
             _songPos = value;
 
             TimeChanged?.Invoke();
@@ -26,17 +27,16 @@ public class SongTimelineManager : MonoBehaviour
     }
     private static double _songPos = 0; 
 
-    private double audioPosition = -1;
-    private double lastAudioPosition = -1;
     public delegate void TimeChangedDelegate();
     public static event TimeChangedDelegate TimeChanged;
 
     void Awake()
     {
+        waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
         inputMap = new();
         inputMap.Enable();
 
-        inputMap.Charting.ScrollTrack.performed += scrollChange => ChangeTime(scrollChange.ReadValue<double>(), false);
+        inputMap.Charting.ScrollTrack.performed += scrollChange => ChangeTime(scrollChange.ReadValue<float>());
 
         inputMap.Charting.MiddleScrollMousePos.performed += x => currentMouseY = x.ReadValue<Vector2>().y;
         inputMap.Charting.MiddleScrollMousePos.Disable(); // This is disabled immediately so that it's not running when it's not needed
@@ -91,12 +91,13 @@ public class SongTimelineManager : MonoBehaviour
         }
     }
 
-    void ChangeTime(double scrollChange, bool IsMiddleScroll)
+    void ChangeTime(float scrollChange, bool middleClick = false)
     {
-        if (double.IsNaN(scrollChange)) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
+        if (float.IsNaN(scrollChange)) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
 
-        scrollChange *= UserSettings.Sensitivity;
-        SongPosition += scrollChange;
+        var scrollSuppressant = 1;
+        if (middleClick) scrollSuppressant = 50;
+        SongPosition += scrollChange / (UserSettings.Sensitivity * scrollSuppressant);
 
         if (SongPosition < 0)
         {

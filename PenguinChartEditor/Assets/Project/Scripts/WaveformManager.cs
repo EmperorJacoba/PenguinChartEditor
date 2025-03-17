@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -123,6 +124,8 @@ public class WaveformManager : MonoBehaviour
         SetWaveformVisibility(false);
         // Invisible by default so that a bunch of dropdown defaulting logic isn't needed
         // Just have user select it
+
+        SongTimelineManager.TimeChanged += ChangeWaveformSegment;
         
         rt.pivot = screenReference.GetComponent<RectTransform>().pivot;
         rtHeight = rt.rect.height;
@@ -135,7 +138,7 @@ public class WaveformManager : MonoBehaviour
 
     void Update()
     {
-        SongTimelineManager.TimeChanged += ChangeWaveformSegment;
+
     }
     #endregion
 
@@ -227,6 +230,7 @@ public class WaveformManager : MonoBehaviour
     }
 
     // This is here so that waveform peak lengths can be changed by user later on
+    // CHANGE THIS TO BE DYNAMIC WHEN GENERATING POINTS
     float[] Normalize(float[] samples, float divideBy)
     {
         for (var i = 0; i < samples.Length; i++)
@@ -250,9 +254,10 @@ public class WaveformManager : MonoBehaviour
         strikeSamplePoint = (int)Math.Ceiling(-samplesPerScreen * strikeline.GetStrikelineScreenProportion()); // note the negative sign
     }
 
-    private void ChangeWaveformSegment()
+    public void ChangeWaveformSegment()
     {
-        CurrentWaveformDataPosition = (int)Math.Round(SongTimelineManager.SongPosition * 1000);
+        // This can use an implicit cast because song position is always rounded to 3 decimal places
+        CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPosition * PluginBassManager.SAMPLES_PER_SECOND);
 
         DisplayWaveformPoints(GenerateWaveformPoints());
     }
@@ -271,6 +276,7 @@ public class WaveformManager : MonoBehaviour
     {
         SetWaveformVisibility(true);
         CurrentWaveform = stem;
+        DisplayWaveformPoints(GenerateWaveformPoints());
     }
 
     /// <summary>
@@ -283,9 +289,9 @@ public class WaveformManager : MonoBehaviour
         GetWaveformProperties(out var _, out var samplesPerScreen, out var strikeSamplePoint);
 
         // get to bottom of screen, calculate what that waveform position is in seconds
-        var startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * PluginBassManager.CompressedArrayResolution;
+        var startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * PluginBassManager.ARRAY_RESOLUTION; // change pls
         // get to bottom of screen, jump to top of screen with samplesPerScreen, calculate what that waveform position is in seconds
-        var endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * PluginBassManager.CompressedArrayResolution;
+        var endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * PluginBassManager.ARRAY_RESOLUTION; // change pls
 
         return (startPoint, endPoint);
     }
