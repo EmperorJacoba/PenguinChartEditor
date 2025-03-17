@@ -150,11 +150,6 @@ public class WaveformManager : MonoBehaviour
 
         InitializeWaveformData();
     }
-
-    void Update()
-    {
-
-    }
     #endregion
 
     /// <summary>
@@ -196,6 +191,7 @@ public class WaveformManager : MonoBehaviour
 
         for (int lineRendererIndex = 0; lineRendererIndex < lineRendererPositions.Length; lineRendererIndex++)
         {
+            yPos = lineRendererIndex*ShrinkFactor;
             try
             {
                 lineRendererPositions[lineRendererIndex] = new Vector3(masterWaveformData[CurrentWaveformDataPosition + strikeSamplePoint] * Amplitude, yPos);
@@ -205,7 +201,6 @@ public class WaveformManager : MonoBehaviour
                 lineRendererPositions[lineRendererIndex] = new Vector3(0, yPos);
                 // this way the beginning and end of the waveform will stop at the strikeline instead of screen boundaries
             }
-            yPos += ShrinkFactor;
             strikeSamplePoint++; // this allows working with the waveform data from the bottom up & for CurrentWFDataPosition to be at the strikeline
         }
         
@@ -265,8 +260,6 @@ public class WaveformManager : MonoBehaviour
         CurrentWaveform = stem;
         GenerateWaveformPoints();
     }
-
-
 
     /// <summary>
     /// Get the start and end second values of the visible waveform segment.
