@@ -12,23 +12,23 @@ public class PluginBassManager : MonoBehaviour
     /// Holds a value in seconds for how often to take a sample from all samples
     /// <para>1 millisecond (0.001 seconds) by default.</para>
     /// </summary>
-    public static float CompressedArrayResolution {get; private set;}
+    public static double CompressedArrayResolution {get; private set;} = 0.001;
 
     /// <summary>
     /// Holds BASS stream data for playing audio. Stem is audio stem identifier, int is BASS stream data.
     /// </summary>
-    public Dictionary<ChartMetadata.StemType, int> StemStreams {get; private set;}
+    public static Dictionary<ChartMetadata.StemType, int> StemStreams {get; private set;}
     
     /// <summary>
     /// Is the audio currently playing?
     /// </summary>
-    public bool AudioPlaying {get; private set;}
+    public static bool AudioPlaying {get; private set;}
 
     /// <summary>
     /// The stem with the longest stream length in StemStreams. All other stem streams are linked to this stem for playback purposes.
     /// <para>This stream is guaranteed to exist in StemStreams at all times EXCEPT when there is no audio loaded.</para> 
     /// </summary>
-    private ChartMetadata.StemType StreamLink {get; set;}
+    private static ChartMetadata.StemType StreamLink {get; set;}
 
     /// <summary>
     /// The length of the stream attached to the longest stem.
@@ -41,7 +41,6 @@ public class PluginBassManager : MonoBehaviour
 
         StemStreams = new();
         AudioPlaying = false;
-        CompressedArrayResolution = 0.001f;
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
 
         InitializeBassPlugin();
@@ -221,10 +220,9 @@ public class PluginBassManager : MonoBehaviour
         {
             Bass.BASS_ChannelPause(StemStreams[StreamLink]);
             AudioPlaying = false;
-            waveformManager.ResetAudioPositions();
             waveformManager.ScrollWaveformSegment(0, false);
         }
-        waveformManager.ToggleChartingInputMap();
+        SongTimelineManager.ToggleChartingInputMap();
     }
 
     /// <summary>
@@ -268,7 +266,7 @@ public class PluginBassManager : MonoBehaviour
     /// Get the current audio position of the main audio playback stem.
     /// </summary>
     /// <returns></returns>
-    public double GetCurrentAudioPosition()
+    public static double GetCurrentAudioPosition()
     {
         return Bass.BASS_ChannelBytes2Seconds(StemStreams[StreamLink], Bass.BASS_ChannelGetPosition(StemStreams[StreamLink]));
     }

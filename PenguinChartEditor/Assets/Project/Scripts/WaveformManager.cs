@@ -56,8 +56,6 @@ public class WaveformManager : MonoBehaviour
         {
             if (_shrinkFactor == value) return;
             _shrinkFactor = value;
-
-            WFPositionChanged?.Invoke(); // so that beatlines update when shrink factor is changed as well
         }
     }
     private static float _shrinkFactor = 0.001f;
@@ -93,40 +91,15 @@ public class WaveformManager : MonoBehaviour
         {
             if (_wfPosition == value) return;
             _wfPosition = value;
-
-            WFPositionChanged?.Invoke(); // This is here so that TempoManager can update lines whenever WF is changed
-            // This will happen from playing/scrolling the waveform, so this is easier
         }
     }
     private static int _wfPosition;
-
-    public delegate void WFPositionChangedDelegate();
-    public static event WFPositionChangedDelegate WFPositionChanged;
-
-    /// <summary>
-    /// How many array indexes to skip when scrolling with wheel
-    /// <para>This works like mechanical advantage so that scrolling the waveform isn't super slow.</para>
-    /// </summary>
-    private readonly int scrollSkip = 100; 
 
     #endregion
     #region Unity Functions
     void Awake() 
     {
         InitializeComponents();
-
-        inputMap = new();
-        inputMap.Enable();
-
-        inputMap.Charting.ScrollTrack.performed += scrollChange => ScrollWaveformSegment(scrollChange.ReadValue<float>(), false);
-
-        inputMap.Charting.MiddleScrollMousePos.performed += x => currentMouseY = x.ReadValue<Vector2>().y;
-        inputMap.Charting.MiddleScrollMousePos.Disable(); // This is disabled immediately so that it's not running when it's not needed
-
-        inputMap.Charting.MiddleMouseClick.started += x => ChangeMiddleClick(true);
-        inputMap.Charting.MiddleMouseClick.canceled += x => ChangeMiddleClick(false);
-        
-        // Put all this input map stuff in a seperate file later on
     }
 
     private void InitializeComponents()
@@ -158,69 +131,13 @@ public class WaveformManager : MonoBehaviour
         // This is just so that ScrollWaveformSegment has something to generate from
 
         InitializeWaveformData();
-        ScrollWaveformSegment(0, false);
     }
 
     void Update()
     {
-        if (inputMap.Charting.MiddleScrollMousePos.enabled)
-        {
-            ScrollWaveformSegment(currentMouseY - initialMouseY, true);
-            // This runs every frame to get that smooth scrolling effect like on webpages and such
-            // If this ran when the mouse was moved then it would be super jumpy
-        }
-
-        if (pluginBassManager.AudioPlaying)
-        {
-            // This if block plays the waveform in sync with the audio
-            
-            // Step: Get audio delta
-            // Time.deltaTime or a coroutine don't work properly for some reason 
-            // (probably due to difference between song timing & frame timing idk)
-            // a time delta is needed to move the waveform properly and this is the most reliable way to do it afaik
-            audioPosition = pluginBassManager.GetCurrentAudioPosition(); 
-            if (lastAudioPosition == -1)
-            {
-                lastAudioPosition = audioPosition;  // Tried to remove this cause I thought it was dumb, broke playing the waveform.
-                                                    // Playing performance is slightly offset because of this, but it's so miniscule I'm not sure it matters all that much.
-                                                    // This offset will probably get weeded out with calibration eventually anyway
-            }
-
-            // ask me about this (localYChange) and i will rant at you about the NONSENSE that requires this
-            // unity coordinate systems are just...not consistent? between world, local, and line renderer spaces
-            // for some odd reason if you want to move them all down at once by moving the container there is ZERO way to convert between
-            // a line renderer/local coordinate and world space coordinate shift...or maybe there is and i'm just blind?
-            // Transform.TransformPoint did not work!
-            // this was just what worked the easiest, sigh - here as a warning to future me, 
-            // don't try to work the chunking system because this is miles simpler
-            // EDIT: line renderer coordinate points are based on the scale of the parent object when using local space...i hate this but it also makes sense
-
-            // anyways this is just how much to subtract from the y-pos of each line renderer point each frame to move at the pace of the audio
-            // convert the change in audio position to samples in WaveformData by dividing by the resolution
-            // convert the change in samples to y-change by multiplying by ShrinkFactor (the y-distance between each sample in the line renderer)
-            var localYChange = (float)(audioPosition - lastAudioPosition) / PluginBassManager.CompressedArrayResolution * ShrinkFactor;
-            
-            Vector3[] currentPositions = new Vector3[lineRendererMain.positionCount]; // # of points is still the same by the time this is done
-            lineRendererMain.GetPositions(currentPositions); // since the other renderer is just a mirror you can just use the main's points
-
-            // do the shift down
-            var modifiedPositions = TransformLineRendererPoints(currentPositions, localYChange, out var modifiedArrayStopPoint);
-
-            // display the shift down
-            DisplayWaveformPoints(GenerateWaveformPoints(modifiedPositions, modifiedArrayStopPoint));
-
-            // set up stuff for next loop
-            lastAudioPosition = audioPosition;
-        }
+        SongTimelineManager.TimeChanged += ChangeWaveformSegment;
     }
-
     #endregion
-
-    public void ToggleChartingInputMap()
-    {
-        if (inputMap.Charting.enabled) inputMap.Charting.Disable();
-        else inputMap.Charting.Enable();
-    }
 
     /// <summary>
     /// Create waveform data for each stem in the ChartMetadata Stems dictionary.
@@ -243,91 +160,7 @@ public class WaveformManager : MonoBehaviour
         else transform.position = screenReference.transform.position - 2*Vector3.back; // 2* b/c this looks weird in the scene view otherwise
     }
 
-    double audioPosition = -1;
-    double lastAudioPosition = -1;
-
-    /// <summary>
-    /// Set values used to calculate audio deltas while playing to -1 for use the next time the audio is played.
-    /// </summary>
-    public void ResetAudioPositions()
-    {
-        audioPosition = -1;
-        lastAudioPosition = -1;
-    }
-
     #region Point Generation
-    /// <summary>
-    /// Takes an array of line renderer positions and transforms them down by a specified local Y change, while also culling points that fall below the screen.
-    /// </summary>
-    /// <param name="currentPositions">The array of positions to transform.</param>
-    /// <param name="yChange">The amount to transform by.</param>
-    /// <param name="modifiedArrayStopPoint">The last filled position of the transformed array of positions.</param>
-    /// <returns>Vector3[] array of transformed points, with extra empty positions for each culled point</returns>
-    private Vector3[] TransformLineRendererPoints(Vector3[] currentPositions, float yChange, out int modifiedArrayStopPoint)
-    {
-        Vector3[] modifiedPositions = new Vector3[lineRendererMain.positionCount];
-        int modifiedArrayPosition = 0;
-
-        for (int i = 0; i < currentPositions.Length; i++)
-        {
-            var vectorChange = currentPositions[i] - new Vector3(0, yChange, 0);
-            if (vectorChange.y < 0) // weed out anything below bottom of screen -> pivot is at bottom of screen
-            {
-                CurrentWaveformDataPosition++; // advance position for each culled point
-            }
-            else // apply change for valid values
-            {
-                modifiedPositions[modifiedArrayPosition] = vectorChange;
-                modifiedArrayPosition++;
-            }
-        }
-        modifiedArrayStopPoint = modifiedArrayPosition;
-        return modifiedPositions;
-    }
-
-    /// <summary>
-    /// Generate waveform points based on a moving waveform (e.g when it is playing)
-    /// </summary>
-    /// <param name="modifiedPositions">Remaining points from off-screen cull (existing points with Y change applied).</param>
-    /// <param name="modifiedArrayStopPoint">The first empty, ungenerated Vector3 position in the array of points.</param>
-    /// <returns>Vector3[] array of line renderer positions</returns>
-    private Vector3[] GenerateWaveformPoints(Vector3[] modifiedPositions, int modifiedArrayStopPoint)
-    {
-        GetWaveformProperties(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
-
-        var startingY = modifiedPositions[modifiedArrayStopPoint - 1].y + ShrinkFactor;
-        // ^^ start drawing more points where the last valid position of the point migration left off 
-        // ^^ if you don't start with a shrinkFactor points will crush themselves (gets smaller every loop)
-        // ^^ I don't understand why, but if you try to do modifiedArrayStopPoint - 1 in any other spot BESIDES here the playing will not work properly
-        // ^^ I tried adding it to TransformLineRendererPoints to make things simpler but that has no bearing on stuff that happens here???????
-        // ^^ It makes zero sense but it works this way so I don't feel like touching it to figure out why.
-
-        // This is how many points were culled from the original array of positions
-        var pointChange = modifiedPositions.Length - modifiedArrayStopPoint;
-
-        // This is the index to START pulling data points from for the end of the line renderer array
-        var pullPoint = CurrentWaveformDataPosition - pointChange + strikeSamplePoint + samplesPerScreen;
-        // Take current strikeline position (CurrentWFDataPosition), subtract how many points were culled to get the past frame's strikeline alignment
-        // Then get to the bottom of the screen by adding strikeSamplePoint (which is negative)
-        // Then get to last frame's top of screen with samplesPerScreen (which is where new data for the current frame will begin)
-        // Then iterate from this point like generating any other section of the waveform
-
-        for (int i = modifiedArrayStopPoint; i < modifiedPositions.Length; i++)
-        {
-            try
-            {
-                modifiedPositions[i] = new Vector3(masterWaveformData[pullPoint], startingY);
-            }
-            catch // this happens when there is no data to pull for the waveform
-            {
-                modifiedPositions[i] = new Vector3(0, startingY); // so make it zero
-                // this way the beginning and end of the waveform will stop at the strikeline instead of screen boundaries
-            }
-            startingY += ShrinkFactor;
-            pullPoint++;
-        }
-        return modifiedPositions;
-    }
     
     /// <summary>
     /// Generate an array of line renderer positions based on waveform audio.
@@ -336,6 +169,9 @@ public class WaveformManager : MonoBehaviour
     private Vector3[] GenerateWaveformPoints()
     {
         GetWaveformProperties(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
+
+        lineRendererMain.positionCount = samplesPerScreen;
+        lineRendererMirror.positionCount = samplesPerScreen;
 
         Vector3[] lineRendererPositions = new Vector3[lineRendererMain.positionCount];
         float yPos = 0;
@@ -354,6 +190,7 @@ public class WaveformManager : MonoBehaviour
             yPos += ShrinkFactor;
             strikeSamplePoint++; // this allows working with the waveform data from the bottom up & for CurrentWFDataPosition to be at the strikeline
         }
+
         return lineRendererPositions;
     }
 
@@ -365,41 +202,12 @@ public class WaveformManager : MonoBehaviour
     {
         lineRendererMain.SetPositions(positions);
 
-        // use LINQ to mirror all x positions of every point
+        // mirror all x positions of every point
         positions = Array.ConvertAll(positions, pos => new Vector3(-pos.x, pos.y));
 
         lineRendererMirror.SetPositions(positions);
     }
     #endregion
-
-    // Needed for delta calculations when scrolling using MMB
-    private float initialMouseY = float.NaN;
-    private float currentMouseY;
-
-    /// <summary>
-    /// Enable/disable middle click movement upon press/release
-    /// </summary>
-    /// <param name="clickStatus">true = MMB pressed, false = MMB released</param>
-    void ChangeMiddleClick(bool clickStatus)
-    {
-        if (clickStatus)
-        {
-            inputMap.Charting.MiddleScrollMousePos.Enable(); // Allow calculations of middle mouse scroll now that MMB is clicked
-
-            initialMouseY = Input.mousePosition.y;
-            currentMouseY = Input.mousePosition.y;
-            // ^^ These HAVE to be here. I really didn't want to use the old input system for this (for unity in the literal sense)
-            // but initial & current mouse positions need to be initialized right this instant in order to get a 
-            // proper delta calculation in Update().
-            // Without this the waveform jumps to the beginning when you click MMB without moving
-        }
-        else
-        {
-            inputMap.Charting.MiddleScrollMousePos.Disable();
-            initialMouseY = float.NaN; 
-            // Kind of a relic from testing, but I'm keeping this here because I feel like this is somewhat helpful in case this is improperly used somewhere
-        }
-    }
 
     /// <summary>
     /// Update waveform data to a new audio file.
@@ -442,49 +250,10 @@ public class WaveformManager : MonoBehaviour
         strikeSamplePoint = (int)Math.Ceiling(-samplesPerScreen * strikeline.GetStrikelineScreenProportion()); // note the negative sign
     }
 
-    /// <summary>
-    /// Take a value from a mouse scroll wheel delta and use it to change what waveform data is displayed. 
-    /// <para>Also used to initialize waveform display (scrollChange = 0)</para>
-    /// </summary>
-    /// <param name="scrollChange">Input from scroll method used to move visible parts of waveform</param>
-    /// <param name="isMiddleScroll">Used to correctly scroll with the middle mouse button</param>
-    public void ScrollWaveformSegment(float scrollChange, bool isMiddleScroll)
+    private void ChangeWaveformSegment()
     {
-        if (float.IsNaN(scrollChange)) // for some reason when the input map is reenabled it sends NaN into this function so we will be having none of that thank you 
-        {
-            return;
-        }
-        // Get base calculations before starting anything (strikeSamplePoint not needed here fyi)
-        GetWaveformProperties(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
+        CurrentWaveformDataPosition = (int)Math.Round(SongTimelineManager.SongPosition * 1000);
 
-        // Scroll change can be float from click + drag, int from scroll wheel => int must scale up with scrollSkip to get a sort of "mechanical advantage" with scrolling
-        // Get position of array to start r/w from
-        if (!isMiddleScroll) // Cursor delta is based on pixels so this upscaling isn't really needed for a non-MMB scroll
-        {
-            scrollChange *= scrollSkip; // Multiply by value to convert the scroll into a number able to be processed by masterWaveformData array
-            // Scroll from scroll wheel yields super small values
-        }
-
-        scrollChange = Mathf.Round(scrollChange); // Round to int to avoid decimal array positions
-        CurrentWaveformDataPosition += (int)scrollChange; // Add scrollChange (which is now a # of data points to ffw by) to modify array position
-
-        // Check to make sure r/w request is within the bounds of the array
-        if (CurrentWaveformDataPosition < 0)
-        {
-            CurrentWaveformDataPosition = 0;
-        }
-        else if (CurrentWaveformDataPosition > masterWaveformData.Length)
-        {
-            CurrentWaveformDataPosition = masterWaveformData.Length;
-            // position is from strikeline so so long as the position is never outside of the array then we chilling
-            // try/catch takes care of making sure it doesn't try displaying nonreal points
-        }
-
-        // Tell the line renderers that they will need to draw the amount of points that will fit on screen with current settings
-        lineRendererMain.positionCount = samplesPerScreen;
-        lineRendererMirror.positionCount = samplesPerScreen;
-
-        // Generate points with new position
         DisplayWaveformPoints(GenerateWaveformPoints());
     }
 
@@ -492,7 +261,6 @@ public class WaveformManager : MonoBehaviour
     public void ChangeShrinkFactor(float scrollbarPosition)
     {
         ShrinkFactor = defaultShrinkFactor + 0.0001f*scrollbarPosition*20;
-        ScrollWaveformSegment(0, false);
     }
 
     /// <summary>
@@ -503,7 +271,6 @@ public class WaveformManager : MonoBehaviour
     {
         SetWaveformVisibility(true);
         CurrentWaveform = stem;
-        ScrollWaveformSegment(0, false);
     }
 
     /// <summary>
@@ -511,9 +278,9 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     /// <param name="startPoint">The first waveform point visible, in seconds.</param>
     /// <param name="endPoint">The last waveform point visible, in seconds</param>
-    public (float, float) GetDisplayedAudioPositions()
+    public (double, double) GetDisplayedAudio()
     {
-        GetWaveformProperties(out var unused, out var samplesPerScreen, out var strikeSamplePoint);
+        GetWaveformProperties(out var _, out var samplesPerScreen, out var strikeSamplePoint);
 
         // get to bottom of screen, calculate what that waveform position is in seconds
         var startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * PluginBassManager.CompressedArrayResolution;

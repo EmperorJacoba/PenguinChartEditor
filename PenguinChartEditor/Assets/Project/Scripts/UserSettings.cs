@@ -30,6 +30,7 @@ public static class UserSettings
     /// </summary>
     public static int SustainGap { get; set; }
 
+    public static int Sensitivity { get; set; } = 5;
     // Note on sustain gaps:
     // Sustain gap is stored in milliseconds, but works in tick time
     // Distance between one note sustain and following note must be converted to ticks from ms, based on tempo

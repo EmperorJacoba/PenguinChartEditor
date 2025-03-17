@@ -37,7 +37,7 @@ public class TempoManager : MonoBehaviour
         TempoEvents = new();
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
-        WaveformManager.WFPositionChanged += WaveformChanged; // set up event so that beatlines can update properly
+        SongTimelineManager.TimeChanged += SongTimeChanged; // set up event so that beatlines can update properly
     }
 
     void Start()
@@ -47,16 +47,16 @@ public class TempoManager : MonoBehaviour
         {
             TempoEvents.Add(0, (120.0f, 0)); // add placeholder bpm
         }
-        WaveformChanged(); // render beatlines for first time
+        SongTimeChanged(); // render beatlines for first time
     }
 
     /// <summary>
     /// Fires every time the visible waveform changes. Used to update beatlines to new displayed waveform.
     /// </summary>
-    void WaveformChanged()
+    void SongTimeChanged()
     {
         // Get the period of time shown on screen and the amount of time shown for position and bounds calculations 
-        (var startTime, var endTime) = waveformManager.GetDisplayedAudioPositions();
+        (var startTime, var endTime) = waveformManager.GetDisplayedAudio();
         var timeShown = endTime - startTime;
 
         // Get a list of all beat changes in the TempoEvents dict that are present in the given time interval to get basis for calculating beatlines
@@ -73,7 +73,7 @@ public class TempoManager : MonoBehaviour
 
         // Actually generate beatlines (currently basic quarter note math atm)
         for (
-                float currentTimestamp = GetStartingTimestamp(validTempoEvents[0], startTime); // Calculate the timestamp to start generating beatlines from (GetStartingTimestamp)
+                float currentTimestamp = GetStartingTimestamp(validTempoEvents[0], (float)startTime); // Calculate the timestamp to start generating beatlines from (GetStartingTimestamp)
                 currentTimestamp < endTime && // Don't generate beatlines outside of the shown time period
                 currentTimestamp < PluginBassManager.SongLength; // Don't generate beatlines that don't exist (falls ahead of the end of the audio file) 
                 currentBeatline++
@@ -91,7 +91,6 @@ public class TempoManager : MonoBehaviour
             currentTimestamp += 60 / TempoEvents[validTempoEvents[validEventIndex]].Item1;
             try 
             {
-
                 // If we've passed or hit the calculated position of another tempo change,
                 // Set the new beatline position to the position of that tempo event and generate beatlines with new BPM
                 if (currentTimestamp >= TempoEvents[validTempoEvents[validEventIndex + 1]].Item2)
@@ -134,7 +133,7 @@ public class TempoManager : MonoBehaviour
         var tempoEventStartPoint = TempoEvents[tickTimeEvent].Item2;
         while (tempoEventStartPoint < startTime)
         {
-            tempoEventStartPoint += 60 / bpm;
+            tempoEventStartPoint += 60 / bpm; // CHANGE
         }
         return tempoEventStartPoint;
     }
@@ -144,7 +143,7 @@ public class TempoManager : MonoBehaviour
     /// </summary>
     /// <param name="currentTimestamp">The timestamp to get the tick-time event from.</param>
     /// <returns>The tick-time event before currentTimestamp in TempoEvents</returns>
-    private int FindPrecedingTempoEvent(float currentTimestamp)
+    private int FindPrecedingTempoEvent(double currentTimestamp)
     {
         // As much as I would love to do this based on a tick-time event, 
         // a tick-time event is not guaranteed to exist in a given time period
@@ -160,7 +159,7 @@ public class TempoManager : MonoBehaviour
         // Attempt a binary search for the current timestamp, 
         // which will return a bitwise complement of the index of the next highest timesecond value 
         // OR tempoTimeSecondEvents.Count if there are no more elements
-        var index = tempoTimeSecondEvents.BinarySearch(currentTimestamp);
+        var index = tempoTimeSecondEvents.BinarySearch((float)currentTimestamp);
         if (index <= 0) // bitwise complement is negative or zero
         {
             // modify index if the found timestamp is at the end of the array (last tempo event)
