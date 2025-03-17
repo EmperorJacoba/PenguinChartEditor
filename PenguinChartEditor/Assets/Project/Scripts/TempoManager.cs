@@ -61,7 +61,6 @@ public class TempoManager : MonoBehaviour
         var timeShown = endTime - startTime;
 
         // Get a list of all beat changes in the TempoEvents dict that are present in the given time interval to get basis for calculating beatlines
-        // THERE IS ABSOLUTELY A MORE EFFICIENT WAY TO DO THIS => UPDATE LATER
         List<int> validTempoEvents = TempoEvents.Where(n => n.Value.Item2 >= startTime && n.Value.Item2 <= endTime).ToDictionary(item => item.Key, item => item.Value).Keys.ToList();
 
         // Because tempo events are not guaranteed to be the first beatline in a given time period, 
@@ -80,7 +79,6 @@ public class TempoManager : MonoBehaviour
                 currentBeatline++
             )
         {
-
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
             workedBeatline.UpdateBPMLabelText(currentBeatline);
@@ -132,11 +130,16 @@ public class TempoManager : MonoBehaviour
     {
         var bpm = TempoEvents[tickTimeEvent].Item1;
         var tempoEventStartPoint = TempoEvents[tickTimeEvent].Item2;
-        while (tempoEventStartPoint < startTime)
-        {
-            tempoEventStartPoint += 60 / bpm; // CHANGE
-        }
-        return tempoEventStartPoint;
+
+        if (tempoEventStartPoint >= startTime) return tempoEventStartPoint;
+
+        var timeDiff = startTime - tempoEventStartPoint;
+        
+        var beatInterval = 60 / bpm;
+        var numIntervals = (int)(timeDiff / beatInterval);
+
+        float nextBeatlineTimestamp = tempoEventStartPoint + (numIntervals + 1) * beatInterval;
+        return nextBeatlineTimestamp;
     }
 
     /// <summary>
@@ -186,18 +189,8 @@ public class TempoManager : MonoBehaviour
         }
     }
 
-
-
-
-
-
-    // Current issues:
-    // Beatlines do not generate properly from a valid tempo dictionary made by ChartParser
-
-    
     // Next steps:
     // Make finding valid tempo events more efficient
-    // Fix normalization so that amplitude can be changed
     // Make simple Beatline functions into properties
         // Maybe also add some debug properties like tick-time event? Auto implemented or hardcoded? etc
 
