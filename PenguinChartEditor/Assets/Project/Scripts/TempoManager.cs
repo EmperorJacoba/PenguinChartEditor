@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TempoManager : MonoBehaviour
@@ -38,6 +39,7 @@ public class TempoManager : MonoBehaviour
     private WaveformManager waveformManager;
     private Strikeline strikeline;
     
+    public const int PLACEHOLDER_RESOLUTION = 320;
 
     void Awake()
     {
@@ -78,7 +80,6 @@ public class TempoManager : MonoBehaviour
         // Set up different iterators
         int currentBeatline = 0; // Holds which beatline is being modified at the present moment
         int validEventIndex = 0; // Holds the tempo event from validTempoEvents that is being used to calculate new positions
-        int currentTimeSignatureBaseBeat = 0;
         // Actually generate beatlines (currently basic quarter note math atm)
         for (
                 float currentTimestamp = GetStartingTimestamp(validTempoEvents[0], (float)startTime); // Calculate the timestamp to start generating beatlines from (GetStartingTimestamp)
@@ -135,6 +136,45 @@ public class TempoManager : MonoBehaviour
                 // if one falls on tick 64, you need to render where the 192 beatline would be if BPM was on tick 0 
                 // this logic can fit in for all beatlines
     }
+
+    // Time signatures
+    // Get the last time signature
+    // # of beats in a bar is numerator multiplied by the chart resolution 
+    // If current beat tick-time - tick-time of last time sig % chartres * num * (denom / 4) == 0, then we've hit a new bar
+        // If this is not true for a TS with its last TS, there's a TS error
+        // Notify the user
+    // Check for new time signature
+        // If there is a time signature on the current beatline tick-time timestamp, that beatline is the first note of the bar and gets the bar line thickness
+        // OR if it satisfies the modulo above, it gets the bar line thickness
+            // If not true, we're on a secondary beat
+            // Check to see if it's a first-div
+                // current beat tick time - tick time of last TS event % chartres * (denom / 4)
+            // If not, check for second-div
+                // current beat tick time - tick time of last TS event % chartres * (denom / 8)
+
+    Beatline.BeatlineType CalculateBeatlineThickness(int beatlineTickTimePos, int lastTSTickTimePos)
+    {
+        var tsDiff = beatlineTickTimePos - lastTSTickTimePos;
+        if (tsDiff % (PLACEHOLDER_RESOLUTION * TimeSignatureEvents[lastTSTickTimePos].Item1 * TimeSignatureEvents[lastTSTickTimePos].Item2) == 0)
+        {
+            return Beatline.BeatlineType.barline;
+        }
+        else if (tsDiff % (PLACEHOLDER_RESOLUTION * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
+        {
+            return Beatline.BeatlineType.divisionLine;
+        }
+        else if (tsDiff % (PLACEHOLDER_RESOLUTION * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 8)) == 0)
+        {
+            return Beatline.BeatlineType.halfDivisionLine;
+        }
+        return Beatline.BeatlineType.none;
+    }
+    
+    // 192 / 4 = 48 = sixteenth note
+    // 192 / 2 = 96 = eighth note
+    // 192 / 1 = 192 = quarter note
+    // 192 / 0.5 = 384 = half note
+    // 192 / 0.25 = 768 = whole note
 
     /// <summary>
     /// Get the first beatline timestamp that exists after a given timestamp.

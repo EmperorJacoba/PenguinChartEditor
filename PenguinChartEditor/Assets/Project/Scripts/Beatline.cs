@@ -32,6 +32,16 @@ public class Beatline : MonoBehaviour
     /// </summary>
     private RectTransform beatlineRt;
 
+    public enum BeatlineType
+    {
+        none = 0,
+        barline = 1,
+        divisionLine = 2,
+        halfDivisionLine = 3
+    }
+
+    float[] thicknesses = {0, 0.01f, 0.03f, 0.05f};
+
     #endregion
     #region Properties
 
@@ -80,6 +90,19 @@ public class Beatline : MonoBehaviour
             bpmLabel.text = value;
         }
     }
+
+    public BeatlineType Type
+    {
+        get { return _bt; }
+        set
+        {
+            if (value == _bt) return;
+            UpdateThickness(value);
+            _bt = value;
+        }
+    }
+    BeatlineType _bt = BeatlineType.none;
+
     #endregion
     #region Functions 
 
@@ -98,6 +121,8 @@ public class Beatline : MonoBehaviour
         line.SetPositions(newPos);
         UpdateLabel();
     }
+
+
     
     #endregion
     
@@ -105,6 +130,13 @@ public class Beatline : MonoBehaviour
     private void UpdateLabel()
     {
         beatlineLabel.transform.localPosition = new Vector3(beatlineLabel.transform.localPosition.x, line.GetPosition(1).y - (beatlineLabelRt.rect.height / 2));
+    }
+
+    private void UpdateThickness(BeatlineType type)
+    {
+        var thickness = thicknesses[(int)type];
+        line.startWidth = thickness;
+        line.endWidth = thickness;
     }
 
     void Awake()
