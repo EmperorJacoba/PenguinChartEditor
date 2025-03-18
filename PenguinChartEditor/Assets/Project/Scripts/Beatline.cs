@@ -139,11 +139,6 @@ public class Beatline : MonoBehaviour
         line.endWidth = thickness;
     }
 
-    private void DetermineLabelVisibility(BeatlineType type)
-    {
-        
-    }
-
     void Awake()
     {
         beatlineRt = gameObject.GetComponent<RectTransform>();

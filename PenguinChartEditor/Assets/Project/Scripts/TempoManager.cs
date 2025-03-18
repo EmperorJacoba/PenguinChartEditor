@@ -16,7 +16,6 @@ public class TempoManager : MonoBehaviour
 
     void Start()
     {
-        SongTimeChanged(); // render beatlines for first time
     }
 
     /// <summary>
@@ -28,8 +27,10 @@ public class TempoManager : MonoBehaviour
         (var startTime, var endTime) = waveformManager.GetDisplayedAudio();
         int startTick = SongTimelineManager.ConvertSecondsToTickTime((float)startTime);
         int endTick = SongTimelineManager.ConvertSecondsToTickTime((float)endTime);
-
         var timeShown = endTime - startTime;
+
+        Debug.Log($"{startTime}, {endTime}");
+        Debug.Log($"{startTick}, {endTick}, {timeShown}");
 
         // Set up different iterators
         int currentBeatline = 0; // Holds which beatline is being modified at the present moment
@@ -48,6 +49,7 @@ public class TempoManager : MonoBehaviour
             workedBeatline.UpdateBeatlinePosition(SongTimelineManager.ConvertTickTimeToSeconds(currentTick)/timeShown); 
 
             workedBeatline.Type = SongTimelineManager.CalculateBeatlineType(currentTick);
+            workedBeatline.IsVisible = true;
 
             currentTick += SongTimelineManager.PLACEHOLDER_RESOLUTION / SongTimelineManager.CalculateDivision(currentTick);
         }

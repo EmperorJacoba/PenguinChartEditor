@@ -86,6 +86,7 @@ public class SongTimelineManager : MonoBehaviour
             TempoEvents.Add(0, (120.0f, 0)); // add placeholder bpm
         }
         SongLengthTicks = ConvertSecondsToTickTime(PluginBassManager.SongLength);
+        TimeChanged?.Invoke();
     }
 
     void Update()
@@ -163,6 +164,15 @@ public class SongTimelineManager : MonoBehaviour
 
     public static int ConvertSecondsToTickTime(float timestamp)
     {
+        if (timestamp < 0)
+        {
+            return 0;
+        }
+        else if (timestamp > PluginBassManager.SongLength)
+        {
+            return ConvertSecondsToTickTime(PluginBassManager.SongLength);
+        }
+
         // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
         var tempoTickTimeEvents = TempoEvents.Keys.ToList();
         var tempoTimeSecondEvents = TempoEvents.Values.Select(x => x.Item2).ToList();
@@ -171,7 +181,6 @@ public class SongTimelineManager : MonoBehaviour
         // which will return a bitwise complement of the index of the next highest timesecond value 
         // OR tempoTimeSecondEvents.Count if there are no more elements
         var index = tempoTimeSecondEvents.BinarySearch(timestamp);
-
         int lastTickEvent;
         if (index <= 0) // bitwise complement is negative or zero
         {
@@ -193,7 +202,7 @@ public class SongTimelineManager : MonoBehaviour
             lastTickEvent = tempoTickTimeEvents[index];
         }
 
-        return Mathf.RoundToInt((PLACEHOLDER_RESOLUTION * TempoEvents[lastTickEvent].Item1 * (TempoEvents[lastTickEvent].Item2 - timestamp) / SECONDS_PER_MINUTE) + TempoEvents[lastTickEvent].Item2);
+        return Mathf.RoundToInt((PLACEHOLDER_RESOLUTION * TempoEvents[lastTickEvent].Item1 * (timestamp - TempoEvents[lastTickEvent].Item2) / SECONDS_PER_MINUTE) + lastTickEvent);
     }
 
     public static float ConvertTickTimeToSeconds(int ticktime)
@@ -232,6 +241,7 @@ public class SongTimelineManager : MonoBehaviour
 
     public static int CalculateNextBeatlineEvent(int currentTick)
     {
+        if (currentTick == 0) return 0;
         var ts = CalculateLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
         var tickInterval = PLACEHOLDER_RESOLUTION * TimeSignatureEvents[ts].Item1 / TimeSignatureEvents[ts].Item2 * 2;
@@ -242,6 +252,7 @@ public class SongTimelineManager : MonoBehaviour
 
     public static int CalculateLastTSEventTick(int tick)
     {
+        if (tick == 0) return 0;
         var tsEvents = TimeSignatureEvents.Keys.ToList();
 
         var index = tsEvents.BinarySearch(tick);
@@ -277,6 +288,7 @@ public class SongTimelineManager : MonoBehaviour
 
     public static Beatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos)
     {
+        if (beatlineTickTimePos == 0) return Beatline.BeatlineType.barline;
         var lastTSTickTimePos = CalculateLastTSEventTick(beatlineTickTimePos); 
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos;
         if (tsDiff % (PLACEHOLDER_RESOLUTION * TimeSignatureEvents[lastTSTickTimePos].Item1 * TimeSignatureEvents[lastTSTickTimePos].Item2) == 0)
