@@ -27,10 +27,17 @@ public class Beatline : MonoBehaviour
     /// </summary>
     private LineRenderer line;
 
+    /// <summary>
+    /// The RectTransform attached to the beatline game object.
+    /// </summary>
     private RectTransform beatlineRt;
 
     #endregion
+    #region Properties
 
+    /// <summary>
+    /// Is the beatline currently visible?
+    /// </summary>
     public bool IsVisible
     {
         get 
@@ -43,6 +50,37 @@ public class Beatline : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Is the BPM label currently visible?
+    /// </summary>
+    public bool BPMLabelVisible
+    {
+        get
+        {
+            return beatlineLabel.activeInHierarchy;
+        }
+        set
+        {
+            beatlineLabel.SetActive(value);
+            UpdateLabel();
+        }
+    }
+
+    /// <summary>
+    /// The text shown by the BPM label.
+    /// </summary>
+    public string BPMLabelText
+    {
+        get
+        {
+            return bpmLabel.text;
+        }
+        set
+        {
+            bpmLabel.text = value;
+        }
+    }
+    #endregion
     #region Functions 
 
     /// <summary>
@@ -61,22 +99,6 @@ public class Beatline : MonoBehaviour
         UpdateLabel();
     }
     
-    public void HideBeatlineLabel()
-    {
-        beatlineLabel.SetActive(false);
-    }
-
-    public void ShowBeatlineLabel()
-    {
-        beatlineLabel.SetActive(true);
-        UpdateLabel();
-    }
-
-    public void UpdateBPMLabelText(float newBPM)
-    {
-        bpmLabel.text = newBPM.ToString();
-    }
-
     #endregion
     
     #region Internal Functions

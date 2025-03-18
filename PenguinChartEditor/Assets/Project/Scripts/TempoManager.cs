@@ -81,7 +81,6 @@ public class TempoManager : MonoBehaviour
         {
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
-            workedBeatline.UpdateBPMLabelText(currentBeatline);
 
             // Timestamp is calculated before loop starts, so start by updating the selected beatline's position
             workedBeatline.UpdateBeatlinePosition((currentTimestamp - startTime)/timeShown); 
