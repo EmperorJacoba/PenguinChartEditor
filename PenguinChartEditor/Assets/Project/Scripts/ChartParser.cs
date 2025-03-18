@@ -96,7 +96,7 @@ public class ChartParser : MonoBehaviour
             {
                 // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
                 calculatedTimeSecondDifference = 
-                (tickTimeKeys[i] - tickTimeKeys[i - 1]) / TempoManager.PLACEHOLDER_RESOLUTION * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally
+                (tickTimeKeys[i] - tickTimeKeys[i - 1]) / SongTimelineManager.PLACEHOLDER_RESOLUTION * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally
             }
             catch
             {
