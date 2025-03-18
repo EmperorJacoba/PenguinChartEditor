@@ -81,6 +81,7 @@ public class WaveformManager : MonoBehaviour
         {
             if (_wfPosition == value) return;
             _wfPosition = value;
+            DisplayChanged?.Invoke();
         }
     }
     private static int _wfPosition = 0;

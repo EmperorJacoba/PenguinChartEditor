@@ -8,9 +8,17 @@ public class TempoManager : MonoBehaviour
     /// Dictionary that contains tempo changes and corresponding tick time positions. 
     /// <para> Key = Tick-time position. Value = BPM to three decimal places, time-second value of the tempo change. </para>
     /// <para>Example: 192 = 102.201, 0.237</para>
-    /// <remarks>When writing to file, multiply BPM value by 100 to get proper .chart format (where example would show as B 192 = 102201)</remarks>
+    /// <remarks>When writing to file, multiply BPM value by 100 to get proper .chart format (where example would show as 192 = B 102201)</remarks>
     /// </summary>
     public SortedDictionary<int, (float, float)> TempoEvents {get; set;} // This is sorted dict so that it is easier to read & write tempo changes
+
+    /// <summary>
+    /// Dictionary that contains time signature changes and corresponding tick time positions.
+    /// <para>Key = Tick-time position. Value = Numerator (num of beats per bar), Denominator (type of beat)</para>
+    /// <para>Example: 192 = 4, 4</para>
+    /// <remarks>When writing to file, take the base 2 logarithm of the denominator to get proper .chart format. (where example would show as 192 = TS 4 2)</remarks>
+    /// </summary>
+    public SortedDictionary<int, (int, int)> TimeSignatureEvents {get; set;}
 
     /// <summary>
     /// The thickness of a bar starting line
@@ -43,7 +51,7 @@ public class TempoManager : MonoBehaviour
 
     void Start()
     {
-        TempoEvents = ChartParser.GetTempoEventDict("C:/_PCE_files/TestAudioFiles/Burning.chart");
+        (TempoEvents, TimeSignatureEvents) = ChartParser.GetSyncTrackEventDicts("C:/_PCE_files/TestAudioFiles/Burning.chart");
         if (TempoEvents.Count == 0) // if there is no data to load in 
         {
             TempoEvents.Add(0, (120.0f, 0)); // add placeholder bpm
@@ -70,7 +78,7 @@ public class TempoManager : MonoBehaviour
         // Set up different iterators
         int currentBeatline = 0; // Holds which beatline is being modified at the present moment
         int validEventIndex = 0; // Holds the tempo event from validTempoEvents that is being used to calculate new positions
-
+        int currentTimeSignatureBaseBeat = 0;
         // Actually generate beatlines (currently basic quarter note math atm)
         for (
                 float currentTimestamp = GetStartingTimestamp(validTempoEvents[0], (float)startTime); // Calculate the timestamp to start generating beatlines from (GetStartingTimestamp)
@@ -82,9 +90,17 @@ public class TempoManager : MonoBehaviour
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
 
-
             // Timestamp is calculated before loop starts, so start by updating the selected beatline's position
             workedBeatline.UpdateBeatlinePosition((currentTimestamp - startTime)/timeShown); 
+            if (currentTimestamp == TempoEvents[validTempoEvents[validEventIndex]].Item2)
+            {
+                workedBeatline.BPMLabelVisible = true;
+                workedBeatline.BPMLabelText = $"{TempoEvents[validTempoEvents[validEventIndex]].Item1}";
+            }
+            else
+            {
+                workedBeatline.BPMLabelVisible = false;
+            }
 
             // Calculate what the next beatline timestamp will be based on the current BPM
             currentTimestamp += 60 / TempoEvents[validTempoEvents[validEventIndex]].Item1;
@@ -95,10 +111,10 @@ public class TempoManager : MonoBehaviour
                 if (currentTimestamp >= TempoEvents[validTempoEvents[validEventIndex + 1]].Item2)
                 {
                     currentTimestamp = TempoEvents[validTempoEvents[validEventIndex + 1]].Item2;
+
                     validEventIndex++;
                 }
                 // Current notes:
-                // Not actually tested yet
                 // Only partially accounts for anything smaller than a quarter note (gets new BPM, but acts as if the next note is a quarter note)
                 // Should calculate notes a quarter note away for BPM regardless of other factors (b/c time signature changes could reset which notes are major beats)
             }

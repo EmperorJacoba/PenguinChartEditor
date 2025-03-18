@@ -28,5 +28,5 @@ public class TimeSignature : MonoBehaviour
         float denomInLogBase2 = Mathf.Log(BeatDivision) / Mathf.Log(2);
 
         return $"TS {BeatsPerBar} {denomInLogBase2}";
-    } // NOT FINAL, JUST CONCEPT -> MUST BE FORMATTED FOR FINAL DATA STRUCTURE (probably enum, but research others)
+    } // NOT FINAL, JUST CONCEPT -> MUST BE FORMATTED FOR FINAL DATA STRUCTURE
 }

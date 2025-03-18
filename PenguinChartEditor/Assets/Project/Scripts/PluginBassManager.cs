@@ -240,7 +240,7 @@ public class PluginBassManager : MonoBehaviour
                 Bass.BASS_ChannelSetPosition
                 (
                     StemStreams[streampair.Key], 
-                    waveformManager.CurrentWaveformDataPosition * WaveformManager.WaveformData[streampair.Key].Item2
+                    SongTimelineManager.SongPosition
                     // ^ Item2 holds how many bytes are held for each second of audio
                     // this rate will vary based on audio formats and stuff
                 );

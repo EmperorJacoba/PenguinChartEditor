@@ -7,8 +7,9 @@ using UnityEngine;
 public class ChartParser : MonoBehaviour
 {
     // Note: When creating new chart file, make sure [SyncTrack] starts with a BPM and TS declaration!
-    
-    static (List<int>, List<float>) GetChartTempoEvents(string filePath)
+    const int DEFAULT_TS_DENOMINATOR = 2;
+
+    static (List<int>, List<float>, SortedDictionary<int, (int, int)>) GetSyncTrackEvents(string filePath)
     {
         StreamReader chart = new(filePath);
 
@@ -31,10 +32,9 @@ public class ChartParser : MonoBehaviour
         // Set up lists to deposit info into
         // This is not a dictionary because time-second calculations
         // are needed so save dictionary compilation until final export 
-        List<int> tickTimeKeys = new();
+        List<int> tempoTickTimeKeys = new();
         List<float> bpmVals = new();
-        // Need pairing TS lists
-
+        SortedDictionary<int, (int, int)> tsEvents = new();
 
         line = chart.ReadLine(); // Get into the meat of [SyncTrack]
         while (!line.Contains("}")) // needs to be "Contains" -> Moonscraper generates "} " at the end of SyncTrack files
@@ -54,17 +54,27 @@ public class ChartParser : MonoBehaviour
             // Next step based on if the event is a beat or time signature change (identifier in index 0 of the value)
             if (eventValue[0] == "B")
             {
-                tickTimeKeys.Add(int.Parse(tickTimeKey));
+                tempoTickTimeKeys.Add(int.Parse(tickTimeKey));
                 bpmVals.Add(float.Parse(eventValue[1]) / 1000); // div by 1000 because .chart formats three-decimal BPM with no decimal point
             }
             else if(eventValue[0] == "TS")
             {
-                // TS logic here
+                string[] tsParts = eventValue[1].Split(" ");
+                if (tsParts.Length == 1) // There is no space in the event value (only one number)
+                {
+                    tsEvents.Add(int.Parse(tickTimeKey), (int.Parse(eventValue[1]), DEFAULT_TS_DENOMINATOR)); // Add default TS denom
+                }
+                else
+                {
+                    // If there is a TS event with two parts, undo the log in the second term (refer to format specs)
+                    tsEvents.Add(int.Parse(tickTimeKey), (int.Parse(tsParts[0]), 2 ^ int.Parse(tsParts[1])));
+                }
             }
+
             line = chart.ReadLine();
         }
 
-        return (tickTimeKeys, bpmVals);
+        return (tempoTickTimeKeys, bpmVals, tsEvents);
     }
 
     /// <summary>
@@ -72,11 +82,11 @@ public class ChartParser : MonoBehaviour
     /// </summary>
     /// <param name="filePath">The path of the .chart file.</param>
     /// <returns>The sorted dictionary of TempoEvent values.</returns>
-    public static SortedDictionary<int, (float, float)> GetTempoEventDict(string filePath)
+    public static (SortedDictionary<int, (float, float)>, SortedDictionary<int, (int, int)>) GetSyncTrackEventDicts(string filePath)
     {
-        SortedDictionary<int, (float, float)> outputDict = new();
+        SortedDictionary<int, (float, float)> outputTempoEventsDict = new();
 
-        (var tickTimeKeys, var bpmVals) = GetChartTempoEvents(filePath);
+        (var tickTimeKeys, var bpmVals, var tsEvents) = GetSyncTrackEvents(filePath);
 
         float currentSongTime = 0;
         for (int i = 0; i < tickTimeKeys.Count; i++) // Calculate time-second positions of tempo changes for beatline rendering
@@ -93,9 +103,10 @@ public class ChartParser : MonoBehaviour
                 calculatedTimeSecondDifference = 0; // avoid OOB error for first event
             }
             currentSongTime += calculatedTimeSecondDifference;
-            outputDict.Add(tickTimeKeys[i], (bpmVals[i], currentSongTime));
+            outputTempoEventsDict.Add(tickTimeKeys[i], (bpmVals[i], currentSongTime));
         }
-        return outputDict;
+
+        return (outputTempoEventsDict, tsEvents);
     }
 
     static bool CheckTempoEventLegality(string line)

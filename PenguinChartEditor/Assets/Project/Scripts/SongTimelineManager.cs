@@ -119,9 +119,9 @@ public class SongTimelineManager : MonoBehaviour
         {
             SongPosition = 0;
         }
-        else if (SongPosition > PluginBassManager.SongLength)
+        else if (SongPosition >= PluginBassManager.SongLength)
         {
-            SongPosition = PluginBassManager.SongLength;
+            SongPosition = PluginBassManager.SongLength - 0.005;
         }
     }
 }
