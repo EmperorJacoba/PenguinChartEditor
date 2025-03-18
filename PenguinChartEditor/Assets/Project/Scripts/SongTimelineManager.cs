@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 public class SongTimelineManager : MonoBehaviour
 {
@@ -10,10 +12,12 @@ public class SongTimelineManager : MonoBehaviour
     private float initialMouseY = float.NaN;
     private float currentMouseY;
 
+    public const int SECONDS_PER_MINUTE = 60;
+
     /// <summary>
     /// The current timestamp of the song at the strikeline.
     /// </summary>
-    public static double SongPosition
+    public static double SongPositionSeconds
     {
         get
         {
@@ -30,6 +34,14 @@ public class SongTimelineManager : MonoBehaviour
     }
     private static double _songPos = 0; 
 
+    /// <summary>
+    /// Dictionary that contains tempo changes and corresponding tick time positions. 
+    /// <para> Key = Tick-time position. Value = BPM to three decimal places, time-second value of the tempo change. </para>
+    /// <para>Example: 192 = 102.201, 0.237</para>
+    /// <remarks>When writing to file, multiply BPM value by 100 to get proper .chart format (where example would show as 192 = B 102201)</remarks>
+    /// </summary>
+    public SortedDictionary<int, (float, float)> TempoEvents {get; set;} // This is sorted dict so that it is easier to read & write tempo changes
+
     public delegate void TimeChangedDelegate();
 
     /// <summary>
@@ -40,6 +52,8 @@ public class SongTimelineManager : MonoBehaviour
     void Awake()
     {
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
+        TempoEvents = new();
+
         inputMap = new();
         inputMap.Enable();
 
@@ -50,6 +64,15 @@ public class SongTimelineManager : MonoBehaviour
 
         inputMap.Charting.MiddleMouseClick.started += x => ChangeMiddleClick(true);
         inputMap.Charting.MiddleMouseClick.canceled += x => ChangeMiddleClick(false);
+    }
+
+    void Start()
+    {
+        (TempoEvents, TempoManager.TimeSignatureEvents) = ChartParser.GetSyncTrackEventDicts("C:/_PCE_files/TestAudioFiles/Burning.chart");
+        if (TempoEvents.Count == 0) // if there is no data to load in 
+        {
+            TempoEvents.Add(0, (120.0f, 0)); // add placeholder bpm
+        }
     }
 
     void Update()
@@ -65,7 +88,7 @@ public class SongTimelineManager : MonoBehaviour
         // Add calibration here later on
         if (PluginBassManager.AudioPlaying)
         {
-            SongPosition = PluginBassManager.GetCurrentAudioPosition();
+            SongPositionSeconds = PluginBassManager.GetCurrentAudioPosition();
         }
     }
 
@@ -112,16 +135,129 @@ public class SongTimelineManager : MonoBehaviour
         // If it's a middle click, the delta value is wayyy too large so this is a solution FOR NOW
         var scrollSuppressant = 1;
         if (middleClick) scrollSuppressant = 50;
-        SongPosition += scrollChange / (UserSettings.Sensitivity * scrollSuppressant);
+        SongPositionSeconds += scrollChange / (UserSettings.Sensitivity * scrollSuppressant);
 
         // Clamp position to within the length of the song
-        if (SongPosition < 0)
+        if (SongPositionSeconds < 0)
         {
-            SongPosition = 0;
+            SongPositionSeconds = 0;
         }
-        else if (SongPosition >= PluginBassManager.SongLength)
+        else if (SongPositionSeconds >= PluginBassManager.SongLength)
         {
-            SongPosition = PluginBassManager.SongLength - 0.005;
+            SongPositionSeconds = PluginBassManager.SongLength - 0.005;
+        }
+    }
+
+    public int ConvertSecondsToTickTime(float timestamp)
+    {
+        // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
+        var tempoTickTimeEvents = TempoEvents.Keys.ToList();
+        var tempoTimeSecondEvents = TempoEvents.Values.Select(x => x.Item2).ToList();
+
+        // Attempt a binary search for the current timestamp, 
+        // which will return a bitwise complement of the index of the next highest timesecond value 
+        // OR tempoTimeSecondEvents.Count if there are no more elements
+        var index = tempoTimeSecondEvents.BinarySearch(timestamp);
+
+        int lastTickEvent;
+        if (index <= 0) // bitwise complement is negative or zero
+        {
+            // modify index if the found timestamp is at the end of the array (last tempo event)
+            if (~index == tempoTimeSecondEvents.Count) index = tempoTimeSecondEvents.Count - 1;
+            // else just get the index proper 
+            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+            try
+            {
+                lastTickEvent = tempoTickTimeEvents[index]; 
+            }
+            catch
+            {
+                lastTickEvent = tempoTickTimeEvents[0]; // if ~index - 1 is -1, then the index should be itself
+            }
+        }
+        else 
+        {
+            lastTickEvent = tempoTickTimeEvents[index];
+        }
+
+        return Mathf.RoundToInt((TempoManager.PLACEHOLDER_RESOLUTION * TempoEvents[lastTickEvent].Item1 * (TempoEvents[lastTickEvent].Item2 - timestamp) / SECONDS_PER_MINUTE) + TempoEvents[lastTickEvent].Item2);
+    }
+
+    public float ConvertTickTimeToSeconds(int ticktime)
+    {
+        var tickTimeKeys = TempoEvents.Keys.ToList();
+
+        var index = tickTimeKeys.BinarySearch(ticktime);
+
+        int lastTickEvent;
+        if (index < 0) // bitwise complement is negative
+        {
+            // modify index if the found timestamp is at the end of the array (last tempo event)
+            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
+            // else just get the index proper 
+            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+            try
+            {
+                lastTickEvent = tickTimeKeys[index]; 
+            }
+            catch
+            {
+                lastTickEvent = tickTimeKeys[0]; // if ~index - 1 is -1, then the index should be itself
+            }
+        }
+        else 
+        {
+            lastTickEvent = tickTimeKeys[index];
+        }
+
+        // Formula from .chart format specifications
+        return (ticktime - lastTickEvent) / TempoManager.PLACEHOLDER_RESOLUTION * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1;
+    }
+
+    /// <summary>
+    /// Get the tick-time event directly before a given timestamp from TempoEvents.
+    /// </summary>
+    /// <param name="currentTimestamp">The timestamp to get the tick-time event from.</param>
+    /// <returns>The tick-time event before currentTimestamp in TempoEvents</returns>
+    private int FindPrecedingTempoEvent(double currentTimestamp)
+    {
+        // As much as I would love to do this based on a tick-time event, 
+        // a tick-time event is not guaranteed to exist in a given time period
+        // so we have to get the last tempo using time-second timestamps
+        // basically, have a timestamp, and find the tick-time key of the 
+        // time-second value that would fall directly before the current timestamp, 
+        // if the current timestamp was in TempoEvents
+
+        // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
+        var tempoTickTimeEvents = TempoEvents.Keys.ToList();
+        var tempoTimeSecondEvents = TempoEvents.Values.Select(x => x.Item2).ToList();
+
+        // Attempt a binary search for the current timestamp, 
+        // which will return a bitwise complement of the index of the next highest timesecond value 
+        // OR tempoTimeSecondEvents.Count if there are no more elements
+        var index = tempoTimeSecondEvents.BinarySearch((float)currentTimestamp);
+        if (index <= 0) // bitwise complement is negative or zero
+        {
+            // modify index if the found timestamp is at the end of the array (last tempo event)
+            if (~index == tempoTimeSecondEvents.Count) index = tempoTimeSecondEvents.Count - 1;
+            // else just get the index proper 
+            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+            try
+            {
+                return tempoTickTimeEvents[index]; 
+            }
+            catch
+            {
+                return tempoTickTimeEvents[0]; // if ~index - 1 is -1, then the index should be itself
+            }
+        }
+        else 
+        {
+            // on the off-chance that someone scrolls to a point 
+            // where the start of the segment IS a beatline, 
+            // the binary search will return an actual index, 
+            // which needs to be taken at face value
+            return tempoTickTimeEvents[index];
         }
     }
 }

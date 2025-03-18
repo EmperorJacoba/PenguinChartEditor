@@ -247,7 +247,7 @@ public class WaveformManager : MonoBehaviour
     public void ChangeWaveformSegment()
     {
         // This can use an implicit cast because song position is always rounded to 3 decimal places
-        CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPosition * PluginBassManager.SAMPLES_PER_SECOND);
+        CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPositionSeconds * PluginBassManager.SAMPLES_PER_SECOND);
 
         GenerateWaveformPoints();
     }
