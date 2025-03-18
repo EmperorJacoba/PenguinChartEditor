@@ -10,6 +10,9 @@ public class SongTimelineManager : MonoBehaviour
     private float initialMouseY = float.NaN;
     private float currentMouseY;
 
+    /// <summary>
+    /// The current timestamp of the song at the strikeline.
+    /// </summary>
     public static double SongPosition
     {
         get
@@ -28,6 +31,10 @@ public class SongTimelineManager : MonoBehaviour
     private static double _songPos = 0; 
 
     public delegate void TimeChangedDelegate();
+
+    /// <summary>
+    /// Event that fires whenever the song position changes.
+    /// </summary>
     public static event TimeChangedDelegate TimeChanged;
 
     void Awake()
@@ -54,6 +61,8 @@ public class SongTimelineManager : MonoBehaviour
             // If this ran when the mouse was moved then it would be super jumpy
         }
 
+        // No funky calculations needed, just update the song position every frame
+        // Add calibration here later on
         if (PluginBassManager.AudioPlaying)
         {
             SongPosition = PluginBassManager.GetCurrentAudioPosition();
@@ -91,14 +100,21 @@ public class SongTimelineManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Change the timestamp of the song from a specified scroll change.
+    /// </summary>
+    /// <param name="scrollChange"></param>
+    /// <param name="middleClick"></param>
     void ChangeTime(float scrollChange, bool middleClick = false)
     {
         if (float.IsNaN(scrollChange)) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
 
+        // If it's a middle click, the delta value is wayyy too large so this is a solution FOR NOW
         var scrollSuppressant = 1;
         if (middleClick) scrollSuppressant = 50;
         SongPosition += scrollChange / (UserSettings.Sensitivity * scrollSuppressant);
 
+        // Clamp position to within the length of the song
         if (SongPosition < 0)
         {
             SongPosition = 0;

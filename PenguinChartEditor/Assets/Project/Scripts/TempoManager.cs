@@ -82,6 +82,7 @@ public class TempoManager : MonoBehaviour
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
 
+
             // Timestamp is calculated before loop starts, so start by updating the selected beatline's position
             workedBeatline.UpdateBeatlinePosition((currentTimestamp - startTime)/timeShown); 
 
@@ -127,17 +128,20 @@ public class TempoManager : MonoBehaviour
     /// <returns>The time-second position of the beatline.</returns>
     private float GetStartingTimestamp(int tickTimeEvent, float startTime)
     {
+        // Get vals
         var bpm = TempoEvents[tickTimeEvent].Item1;
         var tempoEventStartPoint = TempoEvents[tickTimeEvent].Item2;
 
+        // Event is already in the window, so no need to do any calculations
         if (tempoEventStartPoint >= startTime) return tempoEventStartPoint;
 
+        // Find number of beats from the tempo start point to the start of the window
         var timeDiff = startTime - tempoEventStartPoint;
-        
         var beatInterval = 60 / bpm;
         var numIntervals = (int)(timeDiff / beatInterval);
 
-        float nextBeatlineTimestamp = tempoEventStartPoint + (numIntervals + 1) * beatInterval;
+        // Convert intervals to seconds and add to the start point to get the first quarter note in the window
+        var nextBeatlineTimestamp = tempoEventStartPoint + (numIntervals + 1) * beatInterval;
         return nextBeatlineTimestamp;
     }
 

@@ -21,7 +21,7 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     LineRenderer lineRendererMirror;
 
-        // Note: Line renderer uses local positioning to more easily align with the screen and cull points off-screen
+        // Note: Line renderer uses local positioning to more easily align with the screen
         // both of these line renderers combine to make a symmetrical waveform
         // and the center is hollow! so cool and unique
     
@@ -40,9 +40,11 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     GameObject screenReference; 
 
-    private InputMap inputMap;
-
     public delegate void WaveformDisplayDelegate();
+
+    /// <summary>
+    /// Event that fires whenever the waveform's look changes (shrink factor changes, amplitude changes)
+    /// </summary>
     public static event WaveformDisplayDelegate DisplayChanged;
 
     /// <summary>
@@ -66,22 +68,6 @@ public class WaveformManager : MonoBehaviour
     private static float _shrinkFactor = 0.001f;
 
     /// <summary>
-    /// The currently displayed waveform.
-    /// </summary>
-    private static ChartMetadata.StemType CurrentWaveform {get; set;} 
-
-    /// <summary>
-    /// Dictionary that contains waveform point data for each song stem.
-    /// <para>ChartMetadata.StemType is the audio stem the data belongs to</para>
-    /// <para>The tuple in the value holds the data (float[]) and the number of bytes per sample (long)</para>
-    /// </summary>
-    public static Dictionary<ChartMetadata.StemType, (float[], long)> WaveformData {get; private set;}
-    // The number of bytes per sample is needed in order to accurately play and seek through the track in PluginBassManager
-    // The number of bytes can vary based on the type of audio file the user inputs, like if they use .opus, .mp3 together, etc.
-    // long is just what Bass returns and I don't want to do a million casts just to make this a regular int
-    // 64 bit values are actually kinda baller in my opinion so i'm not opposed 
-
-    /// <summary>
     /// Where the user is by sample count at the strikeline.
     /// <para>This corresponds to an index in the WaveformData arrays.</para>
     /// </summary>
@@ -97,7 +83,7 @@ public class WaveformManager : MonoBehaviour
             _wfPosition = value;
         }
     }
-    private static int _wfPosition;
+    private static int _wfPosition = 0;
 
     public float Amplitude
     {
@@ -113,6 +99,22 @@ public class WaveformManager : MonoBehaviour
         }
     }
     private static float _amplitude = 3;
+
+    /// <summary>
+    /// The currently displayed waveform.
+    /// </summary>
+    private static ChartMetadata.StemType CurrentWaveform {get; set;} 
+
+    /// <summary>
+    /// Dictionary that contains waveform point data for each song stem.
+    /// <para>ChartMetadata.StemType is the audio stem the data belongs to</para>
+    /// <para>The tuple in the value holds the data (float[]) and the number of bytes per sample (long)</para>
+    /// </summary>
+    public static Dictionary<ChartMetadata.StemType, (float[], long)> WaveformData {get; private set;}
+    // The number of bytes per sample is needed in order to accurately play and seek through the track in PluginBassManager
+    // The number of bytes can vary based on the type of audio file the user inputs, like if they use .opus, .mp3 together, etc.
+    // long is just what Bass returns and I don't want to do a million casts just to make this a regular int
+    // 64 bit values are actually kinda baller in my opinion so i'm not opposed 
 
     #endregion
     #region Unity Functions
@@ -133,8 +135,6 @@ public class WaveformManager : MonoBehaviour
         pluginBassManager = GameObject.Find("PluginBassManager").GetComponent<PluginBassManager>();
         screenReference = GameObject.Find("ScreenReference");
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
-
-        CurrentWaveformDataPosition = 0;
     }
 
     void Start()
@@ -150,7 +150,7 @@ public class WaveformManager : MonoBehaviour
         rtHeight = rt.rect.height;
 
         CurrentWaveform = ChartMetadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default
-        // This is just so that ScrollWaveformSegment has something to generate from
+        // This is just so that the waveform has something to generate from
 
         InitializeWaveformData();
     }
@@ -169,9 +169,6 @@ public class WaveformManager : MonoBehaviour
     
     public void SetWaveformVisibility(bool isVisible)
     {
-        // since pathing/playing/etc has been built around the waveform itself (oopsies)
-        // you can't disable the line renderer
-        // so put it behind everything else and now it's "disabled"
         if (isVisible) transform.position = screenReference.transform.position + Vector3.back;
         // ^^ In order for the waveform to be visible the container game object has to be moved in front of the background panel & vice versa
         else transform.position = screenReference.transform.position - 2*Vector3.back; // 2* b/c this looks weird in the scene view otherwise
