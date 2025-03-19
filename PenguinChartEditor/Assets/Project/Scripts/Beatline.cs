@@ -32,6 +32,8 @@ public class Beatline : MonoBehaviour
     /// </summary>
     private RectTransform beatlineRt;
 
+    private RectTransform screenRefRect;
+
     public enum BeatlineType
     {
         none = 0,
@@ -112,9 +114,8 @@ public class Beatline : MonoBehaviour
     /// <param name="percentOfScreen">The percent of the screen that should exist between the bottom and the beatline.</param>
     public void UpdateBeatlinePosition(double percentOfScreen) // change this to percentage later
     {
-        // rect.height does not work here because the underlying rectangle of this game object has w*h of (0,0)
-        // Size delta is the negative of the screen size because that's (0 - screen size)
-        var newYPos = percentOfScreen * -beatlineRt.sizeDelta.y;
+        // use screen ref to calculate percent of screen -> scale is 1:1 in the line renderer (scale must be 1, 1, 1)
+        var newYPos = percentOfScreen * screenRefRect.rect.height;
         Vector3[] newPos = new Vector3[2];
         newPos[0] = new Vector2(line.GetPosition(0).x, (float)newYPos);
         newPos[1] = new Vector2(line.GetPosition(1).x, (float)newYPos);
@@ -139,6 +140,7 @@ public class Beatline : MonoBehaviour
 
     void Awake()
     {
+        screenRefRect = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
         beatlineRt = gameObject.GetComponent<RectTransform>();
         beatlineLabel = transform.GetChild(0).gameObject;
         beatlineLabelRt = beatlineLabel.GetComponent<RectTransform>();

@@ -304,9 +304,6 @@ public class SongTimelineManager : MonoBehaviour
         var lastTSTickTimePos = CalculateLastTSEventTick(beatlineTickTimePos); 
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos;
 
-        Debug.Log($"{tsDiff}, {(float)TimeSignatureEvents[lastTSTickTimePos].Item1}, {TimeSignatureEvents[lastTSTickTimePos].Item2 / 4}");
-        Debug.Log($"{tsDiff % (PLACEHOLDER_RESOLUTION * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4))}");
-
         if (tsDiff % (PLACEHOLDER_RESOLUTION * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
         {
             return Beatline.BeatlineType.barline;

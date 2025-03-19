@@ -44,7 +44,6 @@ public class TempoManager : MonoBehaviour
 
             if (SongTimelineManager.TempoEvents.ContainsKey(currentTick))
             {
-                {Debug.Log($"{SongTimelineManager.TempoEvents[currentTick]}");}
                 workedBeatline.BPMLabelVisible = true;
                 workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[currentTick].Item1.ToString();
             }
