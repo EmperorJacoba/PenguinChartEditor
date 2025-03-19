@@ -42,7 +42,16 @@ public class TempoManager : MonoBehaviour
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
 
-            workedBeatline.BPMLabelText = $"{currentTick}";
+            if (SongTimelineManager.TempoEvents.ContainsKey(currentTick))
+            {
+                {Debug.Log($"{SongTimelineManager.TempoEvents[currentTick]}");}
+                workedBeatline.BPMLabelVisible = true;
+                workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[currentTick].Item1.ToString();
+            }
+            else
+            {
+                workedBeatline.BPMLabelVisible = false;
+            }
 
             // Timestamp is calculated before loop starts, so start by updating the selected beatline's position
             workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown); 
@@ -55,40 +64,12 @@ public class TempoManager : MonoBehaviour
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);
 
         // Sweep for special labels (irregular beatline label placement) here
-
-        // take the first beatline in the valid timestamps -> generate that beatline, beatline & label visible
-        // get distance between beatlines based on paired BPM, make next beatlines based on that until you hit next timestamp -> beatline visible but label invisible
-            // at that timestamp, recalculate distance to the next beatline
-            // this can also happen in the middle of two beatlines -> if this happens, keep the label, hide the beatline
-                // find distance between current division and main division, and then render bpm normally
-                // example: 0 -> 192 -> 384 -> 576 -> 768 is standard quarter note tick-timestamps
-                // if one falls on tick 64, you need to render where the 192 beatline would be if BPM was on tick 0 
-                // this logic can fit in for all beatlines
     }
-
-
-
-    
     // 192 / 4 = 48 = sixteenth note
     // 192 / 2 = 96 = eighth note
     // 192 / 1 = 192 = quarter note
     // 192 / 0.5 = 384 = half note
     // 192 / 0.25 = 768 = whole note
-
-    // Next steps:
-    // Make finding valid tempo events more efficient
-    // Make simple Beatline functions into properties
-        // Maybe also add some debug properties like tick-time event? Auto implemented or hardcoded? etc
-
-
-    // Implement importing of existing .chart data (Tempo events only)\
-        // Use an existing SyncTrack to generate beatlines
-        // Read a .chart file
-        // Get [SyncTrack] section
-        // Parse section data into TempoEvents
-        // Calculate beatline positions from new data
-        // Render beatlines
-
 
     // Use existing .chart data to improve beatline algorithm and modify as needed
     // Implement moving beatlines and actually tempo mapping

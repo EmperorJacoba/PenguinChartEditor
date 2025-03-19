@@ -121,8 +121,6 @@ public class Beatline : MonoBehaviour
         line.SetPositions(newPos);
         UpdateLabel();
     }
-
-
     
     #endregion
     
@@ -146,6 +144,11 @@ public class Beatline : MonoBehaviour
         beatlineLabelRt = beatlineLabel.GetComponent<RectTransform>();
         bpmLabel = beatlineLabel.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
         line = gameObject.GetComponent<LineRenderer>();
+    }
+
+    void Start()
+    {
+        BPMLabelVisible = false;
     }
 
     #endregion
