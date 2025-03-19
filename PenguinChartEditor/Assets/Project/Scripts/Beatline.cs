@@ -40,7 +40,7 @@ public class Beatline : MonoBehaviour
         halfDivisionLine = 3
     }
 
-    float[] thicknesses = {0, 0.01f, 0.03f, 0.05f};
+    float[] thicknesses = {0, 0.05f, 0.02f, 0.005f};
 
     #endregion
     #region Properties

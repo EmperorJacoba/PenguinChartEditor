@@ -202,14 +202,14 @@ public class SongTimelineManager : MonoBehaviour
             lastTickEvent = tempoTickTimeEvents[index];
         }
 
-        return Mathf.RoundToInt((PLACEHOLDER_RESOLUTION * TempoEvents[lastTickEvent].Item1 * (timestamp - TempoEvents[lastTickEvent].Item2) / SECONDS_PER_MINUTE) + lastTickEvent);
+        return Mathf.RoundToInt((PLACEHOLDER_RESOLUTION * TempoEvents[lastTickEvent].Item1 * (float)(timestamp - TempoEvents[lastTickEvent].Item2) / SECONDS_PER_MINUTE) + lastTickEvent);
     }
 
     public static float ConvertTickTimeToSeconds(int ticktime)
     {
         var lastTickEvent = FindPreviousTickEvent(ticktime);
         // Formula from .chart format specifications
-        return (ticktime - lastTickEvent) / PLACEHOLDER_RESOLUTION * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1;
+        return ((ticktime - lastTickEvent) / (float)PLACEHOLDER_RESOLUTION * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1) + TempoEvents[lastTickEvent].Item2;
     }
 
     public static int FindPreviousTickEvent(int currentTick)
@@ -241,18 +241,16 @@ public class SongTimelineManager : MonoBehaviour
 
     public static int CalculateNextBeatlineEvent(int currentTick)
     {
-        if (currentTick == 0) return 0;
         var ts = CalculateLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
-        var tickInterval = PLACEHOLDER_RESOLUTION * TimeSignatureEvents[ts].Item1 / TimeSignatureEvents[ts].Item2 * 2;
+        var tickInterval = PLACEHOLDER_RESOLUTION * TimeSignatureEvents[ts].Item1 / TimeSignatureEvents[ts].Item2 / 2;
         int numIntervals = (int)Math.Floor(tickDiff / (float)tickInterval);
 
-        return ts + (numIntervals + 1) * tickInterval;
+        return ts + numIntervals * tickInterval;
     }
 
     public static int CalculateLastTSEventTick(int tick)
     {
-        if (tick == 0) return 0;
         var tsEvents = TimeSignatureEvents.Keys.ToList();
 
         var index = tsEvents.BinarySearch(tick);
@@ -286,20 +284,38 @@ public class SongTimelineManager : MonoBehaviour
         return TimeSignatureEvents[tsTick].Item2 / 4;
     }
 
+    // Time signatures
+    // Get the last time signature
+    // # of quarter-beats in a bar is numerator multiplied by the chart resolution 
+    // If current beat tick-time - tick-time of last time sig % chartres * num * (denom / 4) == 0, then we've hit a new bar
+        // If this is not true for a TS with its last TS, there's a TS error
+        // Notify the user
+    // Check for new time signature
+        // If there is a time signature on the current beatline tick-time timestamp, that beatline is the first note of the bar and gets the bar line thickness
+        // OR if it satisfies the modulo above, it gets the bar line thickness
+            // If not true, we're on a secondary beat
+            // Check to see if it's a first-div
+                // current beat tick time - tick time of last TS event % chartres * (denom / 4)
+            // If not, check for second-div
+                // current beat tick time - tick time of last TS event % chartres * (denom / 8)
+
     public static Beatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos)
     {
-        if (beatlineTickTimePos == 0) return Beatline.BeatlineType.barline;
         var lastTSTickTimePos = CalculateLastTSEventTick(beatlineTickTimePos); 
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos;
-        if (tsDiff % (PLACEHOLDER_RESOLUTION * TimeSignatureEvents[lastTSTickTimePos].Item1 * TimeSignatureEvents[lastTSTickTimePos].Item2) == 0)
+
+        Debug.Log($"{tsDiff}, {(float)TimeSignatureEvents[lastTSTickTimePos].Item1}, {TimeSignatureEvents[lastTSTickTimePos].Item2 / 4}");
+        Debug.Log($"{tsDiff % (PLACEHOLDER_RESOLUTION * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4))}");
+
+        if (tsDiff % (PLACEHOLDER_RESOLUTION * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
         {
             return Beatline.BeatlineType.barline;
         }
-        else if (tsDiff % (PLACEHOLDER_RESOLUTION * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
+        else if (tsDiff % (PLACEHOLDER_RESOLUTION * ((float)TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
         {
             return Beatline.BeatlineType.divisionLine;
         }
-        else if (tsDiff % (PLACEHOLDER_RESOLUTION * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 8)) == 0)
+        else if (tsDiff % (PLACEHOLDER_RESOLUTION * ((float)TimeSignatureEvents[lastTSTickTimePos].Item2 / 8)) == 0)
         {
             return Beatline.BeatlineType.halfDivisionLine;
         }

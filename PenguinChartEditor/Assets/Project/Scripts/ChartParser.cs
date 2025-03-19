@@ -7,7 +7,7 @@ using UnityEngine;
 public class ChartParser : MonoBehaviour
 {
     // Note: When creating new chart file, make sure [SyncTrack] starts with a BPM and TS declaration!
-    const int DEFAULT_TS_DENOMINATOR = 2;
+    const int DEFAULT_TS_DENOMINATOR = 4;
 
     static (List<int>, List<float>, SortedDictionary<int, (int, int)>) GetSyncTrackEvents(string filePath)
     {

@@ -29,9 +29,6 @@ public class TempoManager : MonoBehaviour
         int endTick = SongTimelineManager.ConvertSecondsToTickTime((float)endTime);
         var timeShown = endTime - startTime;
 
-        Debug.Log($"{startTime}, {endTime}");
-        Debug.Log($"{startTick}, {endTick}, {timeShown}");
-
         // Set up different iterators
         int currentBeatline = 0; // Holds which beatline is being modified at the present moment
         // Actually generate beatlines (currently basic quarter note math atm)
@@ -45,13 +42,15 @@ public class TempoManager : MonoBehaviour
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
 
+            workedBeatline.BPMLabelText = $"{currentTick}";
+
             // Timestamp is calculated before loop starts, so start by updating the selected beatline's position
-            workedBeatline.UpdateBeatlinePosition(SongTimelineManager.ConvertTickTimeToSeconds(currentTick)/timeShown); 
+            workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown); 
 
             workedBeatline.Type = SongTimelineManager.CalculateBeatlineType(currentTick);
             workedBeatline.IsVisible = true;
 
-            currentTick += SongTimelineManager.PLACEHOLDER_RESOLUTION / SongTimelineManager.CalculateDivision(currentTick);
+            currentTick += SongTimelineManager.PLACEHOLDER_RESOLUTION / SongTimelineManager.CalculateDivision(currentTick) / 2;
         }
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);
 
@@ -67,20 +66,6 @@ public class TempoManager : MonoBehaviour
                 // this logic can fit in for all beatlines
     }
 
-    // Time signatures
-    // Get the last time signature
-    // # of beats in a bar is numerator multiplied by the chart resolution 
-    // If current beat tick-time - tick-time of last time sig % chartres * num * (denom / 4) == 0, then we've hit a new bar
-        // If this is not true for a TS with its last TS, there's a TS error
-        // Notify the user
-    // Check for new time signature
-        // If there is a time signature on the current beatline tick-time timestamp, that beatline is the first note of the bar and gets the bar line thickness
-        // OR if it satisfies the modulo above, it gets the bar line thickness
-            // If not true, we're on a secondary beat
-            // Check to see if it's a first-div
-                // current beat tick time - tick time of last TS event % chartres * (denom / 4)
-            // If not, check for second-div
-                // current beat tick time - tick time of last TS event % chartres * (denom / 8)
 
 
     
