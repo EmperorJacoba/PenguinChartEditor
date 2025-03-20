@@ -14,13 +14,17 @@ public class Beatline : MonoBehaviour
     /// <summary>
     /// The BPM label text on the beatline's label.
     /// </summary>
-    private TextMeshProUGUI bpmLabel;
+    private TextMeshProUGUI bpmLabelText;
 
     /// <summary>
     /// The container for the label object and the label text.
     /// </summary>
-    private GameObject beatlineLabel;
-    private RectTransform beatlineLabelRt;
+    private GameObject bpmLabel;
+    private RectTransform bpmLabelRt;
+
+    private GameObject tsLabel;
+    private RectTransform tsLabelRt;
+    private TextMeshProUGUI tsLabelText;
 
     /// <summary>
     /// The line renderer attached to the beatline game object.
@@ -75,12 +79,12 @@ public class Beatline : MonoBehaviour
     {
         get
         {
-            return beatlineLabel.activeInHierarchy;
+            return bpmLabel.activeInHierarchy;
         }
         set
         {
-            beatlineLabel.SetActive(value);
-            UpdateLabelPosition();
+            bpmLabel.SetActive(value);
+            UpdateLabelPositions();
         }
     }
 
@@ -91,12 +95,38 @@ public class Beatline : MonoBehaviour
     {
         get
         {
-            return bpmLabel.text;
+            return bpmLabelText.text;
         }
         set
         {
             BPMLabelVisible = true;
-            bpmLabel.text = value;
+            bpmLabelText.text = value;
+        }
+    }
+
+    public bool TSLabelVisible
+    {
+        get
+        {
+            return tsLabel.activeInHierarchy;
+        }
+        set
+        {
+            tsLabel.SetActive(value);
+            UpdateLabelPositions();
+        }
+    }
+
+    public string TSLabelText
+    {
+        get
+        {
+            return tsLabelText.text;
+        }
+        set
+        {
+            BPMLabelVisible = true;
+            tsLabelText.text = value;
         }
     }
 
@@ -132,15 +162,16 @@ public class Beatline : MonoBehaviour
         newPos[1] = new Vector2(line.GetPosition(1).x, (float)newYPos);
         line.SetPositions(newPos);
 
-        UpdateLabelPosition(); // to keep the labels locked to their beatlines
+        UpdateLabelPositions(); // to keep the labels locked to their beatlines
     }
     
     #endregion
     
     #region Internal Functions
-    private void UpdateLabelPosition()
+    private void UpdateLabelPositions()
     {
-        beatlineLabel.transform.localPosition = new Vector3(beatlineLabel.transform.localPosition.x, line.GetPosition(1).y - (beatlineLabelRt.rect.height / 2));
+        bpmLabel.transform.localPosition = new Vector3(bpmLabel.transform.localPosition.x, line.GetPosition(1).y - (bpmLabelRt.rect.height / 2));
+        tsLabel.transform.localPosition = new Vector3(tsLabel.transform.localPosition.x, line.GetPosition(0).y - (tsLabelRt.rect.height / 2));
     }
 
     private void UpdateThickness(BeatlineType type)
@@ -157,9 +188,15 @@ public class Beatline : MonoBehaviour
     void Awake()
     {
         screenRefRect = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
-        beatlineLabel = transform.GetChild(0).gameObject;
-        beatlineLabelRt = beatlineLabel.GetComponent<RectTransform>();
-        bpmLabel = beatlineLabel.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+
+        bpmLabel = transform.GetChild(0).gameObject;
+        bpmLabelRt = bpmLabel.GetComponent<RectTransform>();
+        bpmLabelText = bpmLabel.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+
+        tsLabel = transform.GetChild(1).gameObject;
+        tsLabelRt = tsLabel.GetComponent<RectTransform>();
+        tsLabelText = bpmLabel.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+
         line = gameObject.GetComponent<LineRenderer>();
     }
 

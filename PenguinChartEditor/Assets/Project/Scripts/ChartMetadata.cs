@@ -94,11 +94,11 @@ public class ChartMetadata : MonoBehaviour
         Stems[StemType.guitar] = stems[1];
     }
 
-    private int _chartResolution;
+    private static int _chartResolution;
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
     /// </summary>
-    public string ChartResolution 
+    public static string ChartResolution 
     {
         get
         {
@@ -110,12 +110,6 @@ public class ChartMetadata : MonoBehaviour
             {
                 throw new ArgumentException("Resolution must be an integer!");
             }
-
-            if (tempResolution < 192)
-            {
-                throw new ArgumentException("Chart resolution must be greater than 192 ticks per quarter note!");
-            }
-
             _chartResolution = tempResolution;
         }
     }
