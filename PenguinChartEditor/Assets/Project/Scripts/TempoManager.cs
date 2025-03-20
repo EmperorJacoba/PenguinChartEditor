@@ -10,14 +10,10 @@ public class TempoManager : MonoBehaviour
     {
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
 
-        SongTimelineManager.TimeChanged += UpdateBeatlines; // set up event so that beatlines can update properly
+        SongTimelineManager.TimeChanged += UpdateBeatlines; // set up events so that beatlines can update whenever anything changes
         WaveformManager.DisplayChanged += UpdateBeatlines;
     }
-
-    void Start()
-    {
-    }
-
+    
     /// <summary>
     /// Fires every time the visible waveform changes. Used to update beatlines to new displayed waveform.
     /// </summary>
@@ -29,10 +25,10 @@ public class TempoManager : MonoBehaviour
         int endTick = SongTimelineManager.ConvertSecondsToTickTime((float)endTime);
         var timeShown = endTime - startTime;
 
-        HashSet<int> recognizedChanges = new();
-        // Set up different iterators
-        int currentBeatline = 0; // Holds which beatline is being modified at the present moment
-        // Actually generate beatlines (currently basic quarter note math atm)
+        HashSet<int> recognizedChanges = new(); // Needed for irregular/out of step tempo changes
+        int currentBeatline = 0;
+
+        // Generate the division and half-division beatlines
         for (
                 int currentTick = SongTimelineManager.CalculateNextBeatlineEvent(startTick); // Calculate the timestamp to start generating beatlines from (GetStartingTimestamp)
                 currentTick < endTick && // Don't generate beatlines outside of the shown time period
@@ -43,10 +39,11 @@ public class TempoManager : MonoBehaviour
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
 
+            // If there is a tempo event on this generated beatline, make sure the label displays the BPM change
             if (SongTimelineManager.TempoEvents.ContainsKey(currentTick))
             {
-                workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[currentTick].Item1.ToString();
                 workedBeatline.BPMLabelVisible = true;
+                workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[currentTick].Item1.ToString();
                 recognizedChanges.Add(currentTick);
             }
             else
@@ -56,12 +53,17 @@ public class TempoManager : MonoBehaviour
 
             workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown); 
 
+            // Needed to generate correct thickness
             workedBeatline.Type = SongTimelineManager.CalculateBeatlineType(currentTick);
 
+            // Set up tick for next beatline's calculations
             currentTick += (int)(SongTimelineManager.PLACEHOLDER_RESOLUTION / SongTimelineManager.CalculateDivision(currentTick) / 2);
         }
 
+        // Get list of tempo events that *should* be displayed during the visible window  
         var validKeys = SongTimelineManager.TempoEvents.Keys.Where(key => key >= startTick && key <= endTick).ToList();
+
+        // Find all of the tempo events not already accounted for and add a BPM label for it
         for (int i = 0; i <= validKeys.Count - 1; i++)
         {
             if (!recognizedChanges.Contains(validKeys[i]))
@@ -69,25 +71,20 @@ public class TempoManager : MonoBehaviour
                 var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
 
                 workedBeatline.BPMLabelVisible = true;
-                workedBeatline.BPMLabelText = validKeys[i].ToString();
                 workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[validKeys[i]].Item1.ToString();
 
                 workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(validKeys[i]) - startTime)/timeShown); 
+
                 workedBeatline.Type = Beatline.BeatlineType.none;
+
                 workedBeatline.line.enabled = false; // The line will show sometimes if this is not here specifically
+                
                 currentBeatline++;
             }
         }
 
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);
     }
-    // 192 / 4 = 48 = sixteenth note
-    // 192 / 2 = 96 = eighth note
-    // 192 / 1 = 192 = quarter note
-    // 192 / 0.5 = 384 = half note
-    // 192 / 0.25 = 768 = whole note
-
-    // Use existing .chart data to improve beatline algorithm and modify as needed
     // Implement moving beatlines and actually tempo mapping
         // They move only in Y-direction -> X-dir is locked
 }

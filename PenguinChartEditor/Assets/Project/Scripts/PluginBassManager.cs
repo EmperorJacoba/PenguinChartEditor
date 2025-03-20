@@ -14,7 +14,7 @@ public class PluginBassManager : MonoBehaviour
     public const double ARRAY_RESOLUTION = 0.001;
 
     /// <summary>
-    /// How many audio samples in the compressed array exist for every second in the audio.
+    /// The amount of audio samples in the compressed array that exist for every second in the audio.
     /// </summary>
     public const int SAMPLES_PER_SECOND = 1000; // I don't want to mess with floating point 1/x garbo so this is here
 

@@ -10,14 +10,12 @@ public class SongTimelineManager : MonoBehaviour
     public const int PLACEHOLDER_RESOLUTION = 320;
     
     static InputMap inputMap;
-    WaveformManager waveformManager;
 
     // Needed for delta calculations when scrolling using MMB
     private float initialMouseY = float.NaN;
     private float currentMouseY;
 
     #region Properties
-
 
     /// <summary>
     /// The current timestamp of the song at the strikeline.
@@ -31,7 +29,7 @@ public class SongTimelineManager : MonoBehaviour
         private set
         {
             if (_songPos == value) return;
-            // value = Math.Round(value, 3); // So that CurrentWFDataPosition comes out clean
+            value = Math.Round(value, 3); // So that CurrentWFDataPosition comes out clean
             _songPos = value;
 
             TimeChanged?.Invoke();
@@ -46,8 +44,16 @@ public class SongTimelineManager : MonoBehaviour
     /// </summary>
     public static event TimeChangedDelegate TimeChanged;
 
-
-    public static int SongLengthTicks {get; set;} = 0;
+    /// <summary>
+    /// The length of the song in tick time.
+    /// </summary>
+    public static int SongLengthTicks 
+    {
+        get
+        {
+            return ConvertSecondsToTickTime(PluginBassManager.SongLength);
+        }
+    }
 
     /// <summary>
     /// Dictionary that contains tempo changes and corresponding tick time positions. 
@@ -65,15 +71,11 @@ public class SongTimelineManager : MonoBehaviour
     /// </summary>
     public static SortedDictionary<int, (int, int)> TimeSignatureEvents {get; set;}
 
-
     #endregion
 
     #region Unity Functions
     void Awake()
     {
-        waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
-        TempoEvents = new();
-
         inputMap = new();
         inputMap.Enable();
 
@@ -93,7 +95,6 @@ public class SongTimelineManager : MonoBehaviour
         {
             TempoEvents.Add(0, (120.0f, 0)); // add placeholder bpm
         }
-        SongLengthTicks = ConvertSecondsToTickTime(PluginBassManager.SongLength);
         TimeChanged?.Invoke();
     }
 
@@ -114,15 +115,15 @@ public class SongTimelineManager : MonoBehaviour
         }
     }
 
-    #endregion
-
-    #region Time Modification
-
     public static void ToggleChartingInputMap()
     {
         if (inputMap.Charting.enabled) inputMap.Charting.Disable();
         else inputMap.Charting.Enable();
     }
+
+    #endregion
+
+    #region Time Modification
 
     /// <summary>
     /// Enable/disable middle click movement upon press/release
@@ -170,7 +171,7 @@ public class SongTimelineManager : MonoBehaviour
         }
         else if (SongPositionSeconds >= PluginBassManager.SongLength)
         {
-            SongPositionSeconds = PluginBassManager.SongLength - 0.005;
+            SongPositionSeconds = PluginBassManager.SongLength - 0.005; // Can't scroll at all once you hit end of song -> subtract a little time as a TEMP FIX
         }
     }
 
@@ -185,7 +186,7 @@ public class SongTimelineManager : MonoBehaviour
         }
         else if (timestamp > PluginBassManager.SongLength)
         {
-            return ConvertSecondsToTickTime(PluginBassManager.SongLength);
+            return SongLengthTicks;
         }
 
         // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
@@ -217,20 +218,25 @@ public class SongTimelineManager : MonoBehaviour
             lastTickEvent = tempoTickTimeEvents[index];
         }
 
+        // Rearranging of .chart format specification distance between two ticks - thanks, algebra class!
         return Mathf.RoundToInt((PLACEHOLDER_RESOLUTION * TempoEvents[lastTickEvent].Item1 * (float)(timestamp - TempoEvents[lastTickEvent].Item2) / SECONDS_PER_MINUTE) + lastTickEvent);
+        // THIS WILL NOT RETURN A CORRECT VALUE IF THIS DOES NOT DO FLOATING POINT CALCULATIONS
     }
 
     public static double ConvertTickTimeToSeconds(int ticktime)
     {
-        var lastTickEvent = FindPreviousTickEvent(ticktime);
+        var lastTickEvent = FindPreviousTempoEventTick(ticktime);
+
         // Formula from .chart format specifications
         return ((ticktime - lastTickEvent) / (double)PLACEHOLDER_RESOLUTION * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1) + TempoEvents[lastTickEvent].Item2;
     }
 
-    // Give ChartParser, this script, and Burning.chart with the icky tempo change and ask it why it would crush both to the same time value
-
-
-    public static int FindPreviousTickEvent(int currentTick)
+    /// <summary>
+    /// Find the last tempo event before a specified tick. 
+    /// </summary>
+    /// <param name="currentTick"></param>
+    /// <returns>The tick-time timestamp of the previous tempo event.</returns>
+    public static int FindPreviousTempoEventTick(int currentTick)
     {
         var tickTimeKeys = TempoEvents.Keys.ToList();
 
@@ -256,6 +262,11 @@ public class SongTimelineManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Calculate the next beatline to be generated from a specified tick-time timestamp.
+    /// </summary>
+    /// <param name="currentTick"></param>
+    /// <returns>The tick-time timestamp of the next beatline event.</returns>
     public static int CalculateNextBeatlineEvent(int currentTick)
     {
         var ts = CalculateLastTSEventTick(currentTick);
@@ -266,11 +277,16 @@ public class SongTimelineManager : MonoBehaviour
         return (int)(ts + numIntervals * tickInterval);
     }
 
-    public static int CalculateLastTSEventTick(int tick)
+    /// <summary>
+    /// Calculate the last time signature event that occurs before a specified tick.
+    /// </summary>
+    /// <param name="currentTick"></param>
+    /// <returns>The tick-time timestamp of the last time signature event.</returns>
+    public static int CalculateLastTSEventTick(int currentTick)
     {
         var tsEvents = TimeSignatureEvents.Keys.ToList();
 
-        var index = tsEvents.BinarySearch(tick);
+        var index = tsEvents.BinarySearch(currentTick);
 
         int ts;
         if (index < 0) // bitwise complement is negative
@@ -295,6 +311,14 @@ public class SongTimelineManager : MonoBehaviour
         return ts;
     }
 
+    /// <summary>
+    /// Calculate the amount of divisions are needed from the chart resolution for each first-division event.
+    /// <para>Example: TS = 4/4 -> Returns 1, because chart resolution will need to be divided by 1 to reach the number of ticks between first-division (in this case quarter note) events.</para>
+    /// <para>Example: TS = 3/8 -> Returns 2, because res will need to be div by 2 to reach eighth note events.</para>
+    /// <para>Example: TS = 2/2 -> Returns 0.5
+    /// </summary>
+    /// <param name="tick"></param>
+    /// <returns>The factor to multiply the chart resolution by to get the first-division tick-time.</returns>
     public static float CalculateDivision(int tick)
     {
         int tsTick = CalculateLastTSEventTick(tick);
@@ -316,15 +340,22 @@ public class SongTimelineManager : MonoBehaviour
             // If not, check for second-div
                 // current beat tick time - tick time of last TS event % chartres * (denom / 8)
 
+    /// <summary>
+    /// Calculate the type of barline a specified tick-time position should be.
+    /// </summary>
+    /// <param name="beatlineTickTimePos"></param>
+    /// <returns>The type of beatline at this tick.</returns>
     public static Beatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos)
     {
         var lastTSTickTimePos = CalculateLastTSEventTick(beatlineTickTimePos); 
-        var tsDiff = beatlineTickTimePos - lastTSTickTimePos;
+        var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
 
+        // if the difference is divisible by the # of first-division notes in a bar, it's a barline
         if (tsDiff % (PLACEHOLDER_RESOLUTION * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
         {
             return Beatline.BeatlineType.barline;
         }
+        // if it's divisible by the first-division, it's a division line
         else if (tsDiff % (PLACEHOLDER_RESOLUTION * ((float)TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
         {
             return Beatline.BeatlineType.divisionLine;
