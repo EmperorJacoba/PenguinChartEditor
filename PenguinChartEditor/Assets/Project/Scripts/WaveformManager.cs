@@ -81,11 +81,13 @@ public class WaveformManager : MonoBehaviour
         {
             if (_wfPosition == value) return;
             _wfPosition = value;
-            DisplayChanged?.Invoke();
         }
     }
     private static int _wfPosition = 0;
 
+    /// <summary>
+    /// Controls the length of the waveform lines in the editor. BASS-generated values are multiplied by this value to get the final coordinate result. 
+    /// </summary>
     public float Amplitude
     {
         get
@@ -144,16 +146,17 @@ public class WaveformManager : MonoBehaviour
         // Invisible by default so that a bunch of dropdown defaulting logic isn't needed
         // Just have user select it
 
-        SongTimelineManager.TimeChanged += ChangeWaveformSegment;
-        DisplayChanged += GenerateWaveformPoints;
+        SongTimelineManager.TimeChanged += ChangeWaveformSegment; // when the time is changed, update the points displayed
+        DisplayChanged += GenerateWaveformPoints; // when local properties are changed, update the display
         
         rt.pivot = screenReference.GetComponent<RectTransform>().pivot;
         rtHeight = rt.rect.height;
 
         CurrentWaveform = ChartMetadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default
-        // This is just so that the waveform has something to generate from
+        // This is just so that the waveform has something to generate from (avoid bricking program from error)
 
         InitializeWaveformData();
+        DisplayChanged?.Invoke();
     }
     #endregion
 
@@ -167,6 +170,22 @@ public class WaveformManager : MonoBehaviour
             UpdateWaveformData(pair.Key);
         }
     }
+
+    /// <summary>
+    /// Update waveform data to a new audio file.
+    /// </summary>
+    /// <param name="stem">The BASS stream to get audio samples of.</param>
+    public void UpdateWaveformData(ChartMetadata.StemType stem) // pass in file path here later
+    {
+        float[] stemWaveformData = pluginBassManager.GetAudioSamples(stem, out long bytesPerSample); 
+
+        if (WaveformData.ContainsKey(stem))
+        {
+            WaveformData.Remove(stem);
+        } // Flush current value to allow for new one
+
+        WaveformData.Add(stem, (stemWaveformData, bytesPerSample));
+    }
     
     public void SetWaveformVisibility(bool isVisible)
     {
@@ -174,8 +193,6 @@ public class WaveformManager : MonoBehaviour
         // ^^ In order for the waveform to be visible the container game object has to be moved in front of the background panel & vice versa
         else transform.position = screenReference.transform.position - 2*Vector3.back; // 2* b/c this looks weird in the scene view otherwise
     }
-
-    #region Point Generation
     
     /// <summary>
     /// Generate an array of line renderer positions based on waveform audio.
@@ -185,6 +202,7 @@ public class WaveformManager : MonoBehaviour
     {
         GetWaveformProperties(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
 
+        // each line renderer point is a sample
         lineRendererMain.positionCount = samplesPerScreen;
         lineRendererMirror.positionCount = samplesPerScreen;
 
@@ -203,7 +221,7 @@ public class WaveformManager : MonoBehaviour
                 lineRendererPositions[lineRendererIndex] = new Vector3(0, yPos);
                 // this way the beginning and end of the waveform will stop at the strikeline instead of screen boundaries
             }
-            strikeSamplePoint++; // this allows working with the waveform data from the bottom up & for CurrentWFDataPosition to be at the strikeline
+            strikeSamplePoint++; // this allows working with the waveform data from the bottom up and for CurrentWFDataPosition to be at the strikeline
         }
         
         lineRendererMain.SetPositions(lineRendererPositions);
@@ -212,23 +230,6 @@ public class WaveformManager : MonoBehaviour
         lineRendererPositions = Array.ConvertAll(lineRendererPositions, pos => new Vector3(-pos.x, pos.y));
 
         lineRendererMirror.SetPositions(lineRendererPositions);
-    }
-    #endregion
-
-    /// <summary>
-    /// Update waveform data to a new audio file.
-    /// </summary>
-    /// <param name="stem">The BASS stream to get audio samples of.</param>
-    public void UpdateWaveformData(ChartMetadata.StemType stem) // pass in file path here later
-    {
-        float[] stemWaveformData = pluginBassManager.GetAudioSamples(stem, out long bytesPerSample); 
-
-        if (WaveformData.ContainsKey(stem))
-        {
-            WaveformData.Remove(stem);
-        } // Flush current value to allow for new one
-
-        WaveformData.Add(stem, (stemWaveformData, bytesPerSample));
     }
 
     /// <summary>
@@ -247,7 +248,7 @@ public class WaveformManager : MonoBehaviour
     public void ChangeWaveformSegment()
     {
         // This can use an implicit cast because song position is always rounded to 3 decimal places
-        CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPosition * PluginBassManager.SAMPLES_PER_SECOND);
+        CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPositionSeconds * PluginBassManager.SAMPLES_PER_SECOND);
 
         GenerateWaveformPoints();
     }
@@ -273,27 +274,10 @@ public class WaveformManager : MonoBehaviour
         GetWaveformProperties(out var _, out var samplesPerScreen, out var strikeSamplePoint);
 
         // get to bottom of screen, calculate what that waveform position is in seconds
-        var startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * PluginBassManager.ARRAY_RESOLUTION; // change pls
+        var startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * PluginBassManager.ARRAY_RESOLUTION; 
         // get to bottom of screen, jump to top of screen with samplesPerScreen, calculate what that waveform position is in seconds
-        var endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * PluginBassManager.ARRAY_RESOLUTION; // change pls
+        var endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * PluginBassManager.ARRAY_RESOLUTION;
 
         return (startPoint, endPoint);
     }
-}
-
-    // Theory: Do not lock tempo events to waveform points - calculating which points are visible and tempo events should be a SEPERATE PROCESS
-    // Tempo events & waveform points are essentially different "layers" on the song track
-    // # of points = a specific length of song time
-    // Use amount of song visible to calculate where a point on the screen would correspond to within the song time
-    // Tempo events also in it of themselves calculate the distance between two tempo events based on bpm
-    // So 120bpm from tick 0 to tick 192 (0 to first quarter note) is a set distance in seconds & can be shown on the song track based on song time visible
-    // Example: 1 second of song is visible, 120bpm = 2 beats per second, so 1 beat = 0.5 seconds
-    // Distance from tick 0 and tick 192 (next beat) is half the screen height 
-
-    // To do;
-    // Implement changing of shrink factor
-        // Happens via speed & hyperspeed changes
-    // Implement calibration
-    // then, on to beatlines...
-
-    // Let CurrentWFDataPosition scroll to length of longest stem
+} 

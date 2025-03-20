@@ -7,7 +7,7 @@ using UnityEngine;
 public class ChartParser : MonoBehaviour
 {
     // Note: When creating new chart file, make sure [SyncTrack] starts with a BPM and TS declaration!
-    const int DEFAULT_TS_DENOMINATOR = 2;
+    const int DEFAULT_TS_DENOMINATOR = 4;
 
     static (List<int>, List<float>, SortedDictionary<int, (int, int)>) GetSyncTrackEvents(string filePath)
     {
@@ -67,7 +67,7 @@ public class ChartParser : MonoBehaviour
                 else
                 {
                     // If there is a TS event with two parts, undo the log in the second term (refer to format specs)
-                    tsEvents.Add(int.Parse(tickTimeKey), (int.Parse(tsParts[0]), 2 ^ int.Parse(tsParts[1])));
+                    tsEvents.Add(int.Parse(tickTimeKey), (int.Parse(tsParts[0]), (int)Math.Pow(2, int.Parse(tsParts[1]))));
                 }
             }
 
@@ -88,22 +88,22 @@ public class ChartParser : MonoBehaviour
 
         (var tickTimeKeys, var bpmVals, var tsEvents) = GetSyncTrackEvents(filePath);
 
-        float currentSongTime = 0;
+        double currentSongTime = 0;
         for (int i = 0; i < tickTimeKeys.Count; i++) // Calculate time-second positions of tempo changes for beatline rendering
         {
-            float calculatedTimeSecondDifference = 0;
+            double calculatedTimeSecondDifference = 0;
             try
             {
                 // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
                 calculatedTimeSecondDifference = 
-                (tickTimeKeys[i] - tickTimeKeys[i - 1]) / TempoManager.PLACEHOLDER_RESOLUTION * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally
+                (tickTimeKeys[i] - tickTimeKeys[i - 1]) / (double)SongTimelineManager.PLACEHOLDER_RESOLUTION * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally
             }
             catch
             {
                 calculatedTimeSecondDifference = 0; // avoid OOB error for first event
             }
             currentSongTime += calculatedTimeSecondDifference;
-            outputTempoEventsDict.Add(tickTimeKeys[i], (bpmVals[i], currentSongTime));
+            outputTempoEventsDict.Add(tickTimeKeys[i], (bpmVals[i], (float)currentSongTime));
         }
 
         return (outputTempoEventsDict, tsEvents);

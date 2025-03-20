@@ -25,13 +25,18 @@ public class Beatline : MonoBehaviour
     /// <summary>
     /// The line renderer attached to the beatline game object.
     /// </summary>
-    private LineRenderer line;
+    public LineRenderer line;
+
+
+    private RectTransform screenRefRect;
 
     /// <summary>
-    /// The RectTransform attached to the beatline game object.
+    /// The possible types of beatlines that exist.
+    /// <para>none: There is no beatline of any type at this tick with the current TS.</para>
+    /// <para>barline: There is a start of a bar at this tick with the current TS.</para>
+    /// <para>divisionLine: There is a first division beat at this tick with the current TS. (e.g quarter note in 4/4, eighth note in 5/8)</para>
+    /// <para>halfDivisionLine: There is a second division beat at this tick with the current TS. (e.g eighth note in 4/4, sixteenth note in 5/8)</para>
     /// </summary>
-    private RectTransform beatlineRt;
-
     public enum BeatlineType
     {
         none = 0,
@@ -40,7 +45,10 @@ public class Beatline : MonoBehaviour
         halfDivisionLine = 3
     }
 
-    float[] thicknesses = {0, 0.01f, 0.03f, 0.05f};
+    /// <summary>
+    /// Line renderer thicknesses corresponding to each beatline type in the BeatlineType enum. 
+    /// </summary>
+    float[] thicknesses = {0, 0.05f, 0.02f, 0.005f};
 
     #endregion
     #region Properties
@@ -72,7 +80,7 @@ public class Beatline : MonoBehaviour
         set
         {
             beatlineLabel.SetActive(value);
-            UpdateLabel();
+            UpdateLabelPosition();
         }
     }
 
@@ -87,10 +95,14 @@ public class Beatline : MonoBehaviour
         }
         set
         {
+            BPMLabelVisible = true;
             bpmLabel.text = value;
         }
     }
 
+    /// <summary>
+    /// The type of beatline that this beatline object is.
+    /// </summary>
     public BeatlineType Type
     {
         get { return _bt; }
@@ -112,22 +124,21 @@ public class Beatline : MonoBehaviour
     /// <param name="percentOfScreen">The percent of the screen that should exist between the bottom and the beatline.</param>
     public void UpdateBeatlinePosition(double percentOfScreen) // change this to percentage later
     {
-        // rect.height does not work here because the underlying rectangle of this game object has w*h of (0,0)
-        // Size delta is the negative of the screen size because that's (0 - screen size)
-        var newYPos = percentOfScreen * -beatlineRt.sizeDelta.y;
+        // use screen ref to calculate percent of screen -> scale is 1:1 in the line renderer (scale must be 1, 1, 1)
+        var newYPos = percentOfScreen * screenRefRect.rect.height;
+
         Vector3[] newPos = new Vector3[2];
         newPos[0] = new Vector2(line.GetPosition(0).x, (float)newYPos);
         newPos[1] = new Vector2(line.GetPosition(1).x, (float)newYPos);
         line.SetPositions(newPos);
-        UpdateLabel();
+
+        UpdateLabelPosition(); // to keep the labels locked to their beatlines
     }
-
-
     
     #endregion
     
     #region Internal Functions
-    private void UpdateLabel()
+    private void UpdateLabelPosition()
     {
         beatlineLabel.transform.localPosition = new Vector3(beatlineLabel.transform.localPosition.x, line.GetPosition(1).y - (beatlineLabelRt.rect.height / 2));
     }
@@ -135,17 +146,26 @@ public class Beatline : MonoBehaviour
     private void UpdateThickness(BeatlineType type)
     {
         var thickness = thicknesses[(int)type];
+
+        if (type == BeatlineType.none) line.enabled = false;
+        else line.enabled = true; // VERY IMPORTANT OTHERWISE IT WILL NOT TURN BACK ON EVER
+
         line.startWidth = thickness;
         line.endWidth = thickness;
     }
 
     void Awake()
     {
-        beatlineRt = gameObject.GetComponent<RectTransform>();
+        screenRefRect = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
         beatlineLabel = transform.GetChild(0).gameObject;
         beatlineLabelRt = beatlineLabel.GetComponent<RectTransform>();
         bpmLabel = beatlineLabel.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
         line = gameObject.GetComponent<LineRenderer>();
+    }
+
+    void Start()
+    {
+        BPMLabelVisible = false;
     }
 
     #endregion
