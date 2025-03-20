@@ -43,17 +43,15 @@ public class TempoManager : MonoBehaviour
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
 
-            workedBeatline.BPMLabelVisible = true;
-            workedBeatline.BPMLabelText = currentTick.ToString();
             if (SongTimelineManager.TempoEvents.ContainsKey(currentTick))
             {
-
-                // workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[currentTick].Item1.ToString();
+                workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[currentTick].Item1.ToString();
+                workedBeatline.BPMLabelVisible = true;
                 recognizedChanges.Add(currentTick);
             }
             else
             {
-                //workedBeatline.BPMLabelVisible = false;
+                workedBeatline.BPMLabelVisible = false;
             }
 
             workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown); 
@@ -72,7 +70,7 @@ public class TempoManager : MonoBehaviour
 
                 workedBeatline.BPMLabelVisible = true;
                 workedBeatline.BPMLabelText = validKeys[i].ToString();
-                //workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[validKeys[i]].Item1.ToString();
+                workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[validKeys[i]].Item1.ToString();
 
                 workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(validKeys[i]) - startTime)/timeShown); 
                 workedBeatline.Type = Beatline.BeatlineType.none;
@@ -81,14 +79,7 @@ public class TempoManager : MonoBehaviour
             }
         }
 
-        // CURRENT ISSUE:
-
-        // Beatlines are not rendering properly when presented with improper tempo change
-
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);
-
-
-        // Sweep for special labels (irregular beatline label placement) here
     }
     // 192 / 4 = 48 = sixteenth note
     // 192 / 2 = 96 = eighth note
