@@ -94,7 +94,6 @@ public class ChartParser : MonoBehaviour
             double calculatedTimeSecondDifference = 0;
             try
             {
-                Debug.Log($"Tick: {tickTimeKeys[i]}, Last Tick: {tickTimeKeys[i-1]}, {SongTimelineManager.PLACEHOLDER_RESOLUTION}, 60, {bpmVals[i-1]}");
                 // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
                 calculatedTimeSecondDifference = 
                 (tickTimeKeys[i] - tickTimeKeys[i - 1]) / (double)SongTimelineManager.PLACEHOLDER_RESOLUTION * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally

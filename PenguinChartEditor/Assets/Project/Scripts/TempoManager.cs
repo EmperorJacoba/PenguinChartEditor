@@ -64,7 +64,6 @@ public class TempoManager : MonoBehaviour
         }
 
         var validKeys = SongTimelineManager.TempoEvents.Keys.Where(key => key >= startTick && key <= endTick).ToList();
-        /*
         for (int i = 0; i <= validKeys.Count - 1; i++)
         {
             if (!recognizedChanges.Contains(validKeys[i]))
@@ -77,9 +76,10 @@ public class TempoManager : MonoBehaviour
 
                 workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(validKeys[i]) - startTime)/timeShown); 
                 workedBeatline.Type = Beatline.BeatlineType.none;
+                workedBeatline.line.enabled = false; // The line will show sometimes if this is not here specifically
                 currentBeatline++;
             }
-        } */
+        }
 
         // CURRENT ISSUE:
 

@@ -25,7 +25,7 @@ public class Beatline : MonoBehaviour
     /// <summary>
     /// The line renderer attached to the beatline game object.
     /// </summary>
-    private LineRenderer line;
+    public LineRenderer line;
 
     /// <summary>
     /// The RectTransform attached to the beatline game object.
@@ -134,6 +134,10 @@ public class Beatline : MonoBehaviour
     private void UpdateThickness(BeatlineType type)
     {
         var thickness = thicknesses[(int)type];
+
+        if (type == BeatlineType.none) line.enabled = false;
+        else line.enabled = true; // VERY IMPORTANT OTHERWISE IT WILL NOT TURN BACK ON EVER
+        
         line.startWidth = thickness;
         line.endWidth = thickness;
     }
