@@ -30,7 +30,7 @@ public class TempoManager : MonoBehaviour
 
         // Generate the division and half-division beatlines
         for (
-                int currentTick = SongTimelineManager.CalculateNextBeatlineEvent(startTick); // Calculate the timestamp to start generating beatlines from (GetStartingTimestamp)
+                int currentTick = SongTimelineManager.CalculateNextBeatlineEvent(startTick); // Calculate the tick to start generating beatlines from
                 currentTick < endTick && // Don't generate beatlines outside of the shown time period
                 currentTick < SongTimelineManager.SongLengthTicks; // Don't generate beatlines that don't exist (falls ahead of the end of the audio file) 
                 currentBeatline++

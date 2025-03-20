@@ -90,7 +90,7 @@ public class SongTimelineManager : MonoBehaviour
 
     void Start()
     {
-        (TempoEvents, TimeSignatureEvents) = ChartParser.GetSyncTrackEventDicts("C:/_PCE_files/TestAudioFiles/Burning.chart");
+        (TempoEvents, TimeSignatureEvents) = ChartParser.GetSyncTrackEventDicts(ChartMetadata.ChartPath);
         if (TempoEvents.Count == 0) // if there is no data to load in 
         {
             TempoEvents.Add(0, (120.0f, 0)); // add placeholder bpm

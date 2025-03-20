@@ -94,7 +94,7 @@ public class ChartMetadata : MonoBehaviour
         Stems[StemType.guitar] = stems[1];
     }
 
-    private static int _chartResolution;
+    private static int _chartResolution = 0;
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
     /// </summary>
@@ -102,17 +102,21 @@ public class ChartMetadata : MonoBehaviour
     {
         get
         {
+            if (_chartResolution == 0)
+            {
+                _chartResolution = ChartParser.GetChartResolution(ChartPath);
+            }
             return _chartResolution.ToString();
         }
         set 
         {
-            if (!int.TryParse(value, out int tempResolution))
-            {
-                throw new ArgumentException("Resolution must be an integer!");
-            }
+            if (!int.TryParse(value, out int tempResolution)) throw new ArgumentException("Resolution must be an integer!");
+            if (tempResolution == 0) throw new ArgumentException("Resolution cannot be zero!");
             _chartResolution = tempResolution;
         }
     }
+
+    public static string ChartPath { get; private set;} = "C:/_PCE_files/TestAudioFiles/Burning.chart";
 
     /// <summary>
     /// Stores the directory of the album cover selected by the user.

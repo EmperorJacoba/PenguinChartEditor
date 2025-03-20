@@ -13,21 +13,7 @@ public class ChartParser : MonoBehaviour
     {
         StreamReader chart = new(filePath);
 
-        var line = chart.ReadLine();
-        while (line != null) // Loop through lines until tempo events are found
-        {
-            if (line == "[SyncTrack]")
-            {
-                break;
-            }
-            line = chart.ReadLine();
-        }
-        // User didn't pass in a properly formatted chart file
-        if (line == null) throw new ArgumentException("Could not find [SyncTrack] in file. Please try again.");
-
-        // line after [SyncTrack] should have a curly brace open 
-        line = chart.ReadLine();
-        if (line != "{") throw new ArgumentException("[SyncTrack] is not properly enclosed. Please check file and try again.");
+        chart = GetToSection("[SyncTrack]", chart);
 
         // Set up lists to deposit info into
         // This is not a dictionary because time-second calculations
@@ -36,7 +22,7 @@ public class ChartParser : MonoBehaviour
         List<float> bpmVals = new();
         SortedDictionary<int, (int, int)> tsEvents = new();
 
-        line = chart.ReadLine(); // Get into the meat of [SyncTrack]
+        var line = chart.ReadLine(); // Get into the meat of [SyncTrack]
         while (!line.Contains("}")) // needs to be "Contains" -> Moonscraper generates "} " at the end of SyncTrack files
         {
             if (!CheckTempoEventLegality(line)) throw new ArgumentException("[SyncTrack] has invalid tempo event. Please check file and try again.");
@@ -74,6 +60,7 @@ public class ChartParser : MonoBehaviour
             line = chart.ReadLine();
         }
 
+        chart.Dispose();
         return (tempoTickTimeKeys, bpmVals, tsEvents);
     }
 
@@ -107,6 +94,48 @@ public class ChartParser : MonoBehaviour
         }
 
         return (outputTempoEventsDict, tsEvents);
+    }
+
+    public static StreamReader GetToSection(string section, StreamReader reader)
+    {
+        var line = reader.ReadLine();
+        while (line != null) // Loop through lines until section is found
+        {
+            if (line == section)
+            {
+                break;
+            }
+            line = reader.ReadLine();
+        }
+
+        // User didn't pass in a properly formatted chart file
+        if (line == null) throw new ArgumentException($"Could not find {section} in file. Please try again.");
+
+        // line after [SyncTrack] should have a curly brace open 
+        line = reader.ReadLine();
+        if (!line.Contains("{")) throw new ArgumentException($"{section} is not properly enclosed. Please check file and try again.");
+
+        return reader;
+    }
+
+    public static int GetChartResolution(string filePath)
+    {
+        StreamReader chart = new(filePath);
+
+        chart = GetToSection("[Song]", chart);
+
+        var line = chart.ReadLine();
+        while (!line.Contains("Resolution"))
+        {
+            line = chart.ReadLine();
+        }
+
+        if (!line.Contains("Resolution")) throw new ArgumentException("Chart does not have a resolution. Please use a chart file with a resolution field within the [Song] category.");
+
+        var parts = line.Split(" = ");
+
+        var resolution = parts[1].Trim();
+        return int.Parse(resolution);
     }
 
     static bool CheckTempoEventLegality(string line)
