@@ -6,6 +6,9 @@ using Unity.VisualScripting;
 
 public class SongTimelineManager : MonoBehaviour
 {
+    public const int SECONDS_PER_MINUTE = 60;
+    public const int PLACEHOLDER_RESOLUTION = 320;
+    
     static InputMap inputMap;
     WaveformManager waveformManager;
 
@@ -13,8 +16,8 @@ public class SongTimelineManager : MonoBehaviour
     private float initialMouseY = float.NaN;
     private float currentMouseY;
 
-    public const int SECONDS_PER_MINUTE = 60;
-    public const int PLACEHOLDER_RESOLUTION = 320;
+    #region Properties
+
 
     /// <summary>
     /// The current timestamp of the song at the strikeline.
@@ -28,13 +31,21 @@ public class SongTimelineManager : MonoBehaviour
         private set
         {
             if (_songPos == value) return;
-            value = Math.Round(value, 3); // So that CurrentWFDataPosition comes out clean
+            // value = Math.Round(value, 3); // So that CurrentWFDataPosition comes out clean
             _songPos = value;
 
             TimeChanged?.Invoke();
         }
     }
     private static double _songPos = 0; 
+
+    public delegate void TimeChangedDelegate();
+
+    /// <summary>
+    /// Event that fires whenever the song position changes.
+    /// </summary>
+    public static event TimeChangedDelegate TimeChanged;
+
 
     public static int SongLengthTicks {get; set;} = 0;
 
@@ -54,13 +65,10 @@ public class SongTimelineManager : MonoBehaviour
     /// </summary>
     public static SortedDictionary<int, (int, int)> TimeSignatureEvents {get; set;}
 
-    public delegate void TimeChangedDelegate();
 
-    /// <summary>
-    /// Event that fires whenever the song position changes.
-    /// </summary>
-    public static event TimeChangedDelegate TimeChanged;
+    #endregion
 
+    #region Unity Functions
     void Awake()
     {
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
@@ -105,6 +113,10 @@ public class SongTimelineManager : MonoBehaviour
             SongPositionSeconds = PluginBassManager.GetCurrentAudioPosition();
         }
     }
+
+    #endregion
+
+    #region Time Modification
 
     public static void ToggleChartingInputMap()
     {
@@ -162,6 +174,9 @@ public class SongTimelineManager : MonoBehaviour
         }
     }
 
+    #endregion
+    #region Conversion Tools
+
     public static int ConvertSecondsToTickTime(float timestamp)
     {
         if (timestamp < 0)
@@ -205,19 +220,21 @@ public class SongTimelineManager : MonoBehaviour
         return Mathf.RoundToInt((PLACEHOLDER_RESOLUTION * TempoEvents[lastTickEvent].Item1 * (float)(timestamp - TempoEvents[lastTickEvent].Item2) / SECONDS_PER_MINUTE) + lastTickEvent);
     }
 
-    public static float ConvertTickTimeToSeconds(int ticktime)
+    public static double ConvertTickTimeToSeconds(int ticktime)
     {
         var lastTickEvent = FindPreviousTickEvent(ticktime);
         // Formula from .chart format specifications
-        return ((ticktime - lastTickEvent) / (float)PLACEHOLDER_RESOLUTION * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1) + TempoEvents[lastTickEvent].Item2;
+        return ((ticktime - lastTickEvent) / (double)PLACEHOLDER_RESOLUTION * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1) + TempoEvents[lastTickEvent].Item2;
     }
+
+    // Give ChartParser, this script, and Burning.chart with the icky tempo change and ask it why it would crush both to the same time value
+
 
     public static int FindPreviousTickEvent(int currentTick)
     {
         var tickTimeKeys = TempoEvents.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
-
         if (index < 0) // bitwise complement is negative
         {
             // modify index if the found timestamp is at the end of the array (last tempo event)
@@ -243,10 +260,10 @@ public class SongTimelineManager : MonoBehaviour
     {
         var ts = CalculateLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
-        var tickInterval = PLACEHOLDER_RESOLUTION * TimeSignatureEvents[ts].Item1 / TimeSignatureEvents[ts].Item2 / 2;
-        int numIntervals = (int)Math.Floor(tickDiff / (float)tickInterval);
+        var tickInterval = (float)PLACEHOLDER_RESOLUTION * TimeSignatureEvents[ts].Item1 / TimeSignatureEvents[ts].Item2 / 2;
+        int numIntervals = (int)Math.Floor(tickDiff / tickInterval);
 
-        return ts + numIntervals * tickInterval;
+        return (int)(ts + numIntervals * tickInterval);
     }
 
     public static int CalculateLastTSEventTick(int tick)
@@ -278,10 +295,10 @@ public class SongTimelineManager : MonoBehaviour
         return ts;
     }
 
-    public static int CalculateDivision(int tick)
+    public static float CalculateDivision(int tick)
     {
         int tsTick = CalculateLastTSEventTick(tick);
-        return TimeSignatureEvents[tsTick].Item2 / 4;
+        return (float)TimeSignatureEvents[tsTick].Item2 / 4;
     }
 
     // Time signatures
@@ -318,6 +335,8 @@ public class SongTimelineManager : MonoBehaviour
         }
         return Beatline.BeatlineType.none;
     }
+
+    #endregion
     // have current tick
     // find last TS event
     // move into current window to find next event timestamp

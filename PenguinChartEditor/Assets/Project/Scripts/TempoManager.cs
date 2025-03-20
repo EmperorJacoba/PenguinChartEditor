@@ -1,17 +1,17 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TempoManager : MonoBehaviour
 {  
     private WaveformManager waveformManager;
-    private Strikeline strikeline;
-    
+
     void Awake()
     {
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
-        strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
 
-        SongTimelineManager.TimeChanged += SongTimeChanged; // set up event so that beatlines can update properly
-        WaveformManager.DisplayChanged += SongTimeChanged;
+        SongTimelineManager.TimeChanged += UpdateBeatlines; // set up event so that beatlines can update properly
+        WaveformManager.DisplayChanged += UpdateBeatlines;
     }
 
     void Start()
@@ -21,7 +21,7 @@ public class TempoManager : MonoBehaviour
     /// <summary>
     /// Fires every time the visible waveform changes. Used to update beatlines to new displayed waveform.
     /// </summary>
-    void SongTimeChanged()
+    void UpdateBeatlines()
     {
         // Get the period of time shown on screen and the amount of time shown for position and bounds calculations 
         (var startTime, var endTime) = waveformManager.GetDisplayedAudio();
@@ -29,6 +29,7 @@ public class TempoManager : MonoBehaviour
         int endTick = SongTimelineManager.ConvertSecondsToTickTime((float)endTime);
         var timeShown = endTime - startTime;
 
+        HashSet<int> recognizedChanges = new();
         // Set up different iterators
         int currentBeatline = 0; // Holds which beatline is being modified at the present moment
         // Actually generate beatlines (currently basic quarter note math atm)
@@ -42,25 +43,50 @@ public class TempoManager : MonoBehaviour
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
 
+            workedBeatline.BPMLabelVisible = true;
+            workedBeatline.BPMLabelText = currentTick.ToString();
             if (SongTimelineManager.TempoEvents.ContainsKey(currentTick))
             {
-                workedBeatline.BPMLabelVisible = true;
-                workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[currentTick].Item1.ToString();
+
+                // workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[currentTick].Item1.ToString();
+                recognizedChanges.Add(currentTick);
             }
             else
             {
-                workedBeatline.BPMLabelVisible = false;
+                //workedBeatline.BPMLabelVisible = false;
             }
 
-            // Timestamp is calculated before loop starts, so start by updating the selected beatline's position
             workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown); 
 
             workedBeatline.Type = SongTimelineManager.CalculateBeatlineType(currentTick);
-            workedBeatline.IsVisible = true;
 
-            currentTick += SongTimelineManager.PLACEHOLDER_RESOLUTION / SongTimelineManager.CalculateDivision(currentTick) / 2;
+            currentTick += (int)(SongTimelineManager.PLACEHOLDER_RESOLUTION / SongTimelineManager.CalculateDivision(currentTick) / 2);
         }
+
+        var validKeys = SongTimelineManager.TempoEvents.Keys.Where(key => key >= startTick && key <= endTick).ToList();
+        /*
+        for (int i = 0; i <= validKeys.Count - 1; i++)
+        {
+            if (!recognizedChanges.Contains(validKeys[i]))
+            {
+                var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
+
+                workedBeatline.BPMLabelVisible = true;
+                workedBeatline.BPMLabelText = validKeys[i].ToString();
+                //workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[validKeys[i]].Item1.ToString();
+
+                workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(validKeys[i]) - startTime)/timeShown); 
+                workedBeatline.Type = Beatline.BeatlineType.none;
+                currentBeatline++;
+            }
+        } */
+
+        // CURRENT ISSUE:
+
+        // Beatlines are not rendering properly when presented with improper tempo change
+
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);
+
 
         // Sweep for special labels (irregular beatline label placement) here
     }
