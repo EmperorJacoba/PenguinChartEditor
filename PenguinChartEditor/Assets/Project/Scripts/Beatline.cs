@@ -125,7 +125,7 @@ public class Beatline : MonoBehaviour
         }
         set
         {
-            BPMLabelVisible = true;
+            TSLabelVisible = true;
             tsLabelText.text = value;
         }
     }
@@ -195,7 +195,7 @@ public class Beatline : MonoBehaviour
 
         tsLabel = transform.GetChild(1).gameObject;
         tsLabelRt = tsLabel.GetComponent<RectTransform>();
-        tsLabelText = bpmLabel.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        tsLabelText = tsLabel.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 
         line = gameObject.GetComponent<LineRenderer>();
     }

@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 
 public class SongTimelineManager : MonoBehaviour
 {
@@ -86,11 +85,11 @@ public class SongTimelineManager : MonoBehaviour
 
         inputMap.Charting.MiddleMouseClick.started += x => ChangeMiddleClick(true);
         inputMap.Charting.MiddleMouseClick.canceled += x => ChangeMiddleClick(false);
+        (TempoEvents, TimeSignatureEvents) = ChartParser.GetSyncTrackEventDicts(ChartMetadata.ChartPath);
     }
 
     void Start()
     {
-        (TempoEvents, TimeSignatureEvents) = ChartParser.GetSyncTrackEventDicts(ChartMetadata.ChartPath);
         if (TempoEvents.Count == 0) // if there is no data to load in 
         {
             TempoEvents.Add(0, (120.0f, 0)); // add placeholder bpm
