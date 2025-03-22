@@ -99,7 +99,6 @@ public class Beatline : MonoBehaviour
         }
         set
         {
-            BPMLabelVisible = true;
             bpmLabelText.text = value;
         }
     }
@@ -205,5 +204,27 @@ public class Beatline : MonoBehaviour
         BPMLabelVisible = false;
     }
 
+    public void CheckForEvents(int tickTimestamp)
+    {
+        if (SongTimelineManager.TempoEvents.ContainsKey(tickTimestamp))
+        {
+            BPMLabelVisible = true;
+            BPMLabelText = $"{SongTimelineManager.TempoEvents[tickTimestamp].Item1}";
+        }
+        else
+        {
+            BPMLabelVisible = false;
+        }
+
+        if (SongTimelineManager.TimeSignatureEvents.ContainsKey(tickTimestamp))
+        {
+            TSLabelVisible = true;
+            TSLabelText = $"{SongTimelineManager.TimeSignatureEvents[tickTimestamp].Item1} / {SongTimelineManager.TimeSignatureEvents[tickTimestamp].Item2}";
+        }
+        else
+        {
+            TSLabelVisible = false;
+        }
+    }
     #endregion
 }

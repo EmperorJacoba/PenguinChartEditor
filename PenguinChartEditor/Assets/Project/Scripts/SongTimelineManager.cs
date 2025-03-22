@@ -270,8 +270,9 @@ public class SongTimelineManager : MonoBehaviour
     {
         var ts = CalculateLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
-        var tickInterval = (float)PLACEHOLDER_RESOLUTION * TimeSignatureEvents[ts].Item1 / TimeSignatureEvents[ts].Item2 / 2;
-        int numIntervals = (int)Math.Floor(tickDiff / tickInterval);
+        Debug.Log($"{tickDiff}");
+        var tickInterval = PLACEHOLDER_RESOLUTION / ((float)TimeSignatureEvents[ts].Item2 / 2);
+        int numIntervals = (int)Math.Round(tickDiff / tickInterval);
 
         return (int)(ts + numIntervals * tickInterval);
     }
