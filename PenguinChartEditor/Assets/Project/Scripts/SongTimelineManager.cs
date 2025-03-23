@@ -6,7 +6,6 @@ using System.Linq;
 public class SongTimelineManager : MonoBehaviour
 {
     public const int SECONDS_PER_MINUTE = 60;
-    public const int PLACEHOLDER_RESOLUTION = 320;
     
     static InputMap inputMap;
 
@@ -218,7 +217,7 @@ public class SongTimelineManager : MonoBehaviour
         }
 
         // Rearranging of .chart format specification distance between two ticks - thanks, algebra class!
-        return Mathf.RoundToInt((PLACEHOLDER_RESOLUTION * TempoEvents[lastTickEvent].Item1 * (float)(timestamp - TempoEvents[lastTickEvent].Item2) / SECONDS_PER_MINUTE) + lastTickEvent);
+        return Mathf.RoundToInt((ChartMetadata.ChartResolution * TempoEvents[lastTickEvent].Item1 * (float)(timestamp - TempoEvents[lastTickEvent].Item2) / SECONDS_PER_MINUTE) + lastTickEvent);
         // THIS WILL NOT RETURN A CORRECT VALUE IF THIS DOES NOT DO FLOATING POINT CALCULATIONS
     }
 
@@ -227,7 +226,7 @@ public class SongTimelineManager : MonoBehaviour
         var lastTickEvent = FindPreviousTempoEventTick(ticktime);
 
         // Formula from .chart format specifications
-        return ((ticktime - lastTickEvent) / (double)PLACEHOLDER_RESOLUTION * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1) + TempoEvents[lastTickEvent].Item2;
+        return ((ticktime - lastTickEvent) / (double)ChartMetadata.ChartResolution * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1) + TempoEvents[lastTickEvent].Item2;
     }
 
     /// <summary>
@@ -270,8 +269,7 @@ public class SongTimelineManager : MonoBehaviour
     {
         var ts = CalculateLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
-        Debug.Log($"{tickDiff}");
-        var tickInterval = PLACEHOLDER_RESOLUTION / ((float)TimeSignatureEvents[ts].Item2 / 2);
+        var tickInterval = ChartMetadata.ChartResolution / ((float)TimeSignatureEvents[ts].Item2 / 2);
         int numIntervals = (int)Math.Round(tickDiff / tickInterval);
 
         return (int)(ts + numIntervals * tickInterval);
@@ -351,16 +349,16 @@ public class SongTimelineManager : MonoBehaviour
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
 
         // if the difference is divisible by the # of first-division notes in a bar, it's a barline
-        if (tsDiff % (PLACEHOLDER_RESOLUTION * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
+        if (tsDiff % (ChartMetadata.ChartResolution * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
         {
             return Beatline.BeatlineType.barline;
         }
         // if it's divisible by the first-division, it's a division line
-        else if (tsDiff % (PLACEHOLDER_RESOLUTION * ((float)TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
+        else if (tsDiff % (ChartMetadata.ChartResolution * ((float)TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
         {
             return Beatline.BeatlineType.divisionLine;
         }
-        else if (tsDiff % (PLACEHOLDER_RESOLUTION * ((float)TimeSignatureEvents[lastTSTickTimePos].Item2 / 8)) == 0)
+        else if (tsDiff % (ChartMetadata.ChartResolution * ((float)TimeSignatureEvents[lastTSTickTimePos].Item2 / 8)) == 0)
         {
             return Beatline.BeatlineType.halfDivisionLine;
         }

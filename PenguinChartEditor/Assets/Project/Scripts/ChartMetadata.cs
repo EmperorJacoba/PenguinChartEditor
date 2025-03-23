@@ -102,7 +102,7 @@ public class ChartMetadata : MonoBehaviour
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
     /// </summary>
-    public static string ChartResolution 
+    public static int ChartResolution 
     {
         get
         {
@@ -110,13 +110,12 @@ public class ChartMetadata : MonoBehaviour
             {
                 _chartResolution = ChartParser.GetChartResolution(ChartPath);
             }
-            return _chartResolution.ToString();
+            return _chartResolution;
         }
         set 
         {
-            if (!int.TryParse(value, out int tempResolution)) throw new ArgumentException("Resolution must be an integer!");
-            if (tempResolution == 0) throw new ArgumentException("Resolution cannot be zero!");
-            _chartResolution = tempResolution;
+            if (value == 0) throw new ArgumentException("Resolution cannot be zero!");
+            _chartResolution = value;
         }
     }
 
@@ -142,7 +141,7 @@ public class ChartMetadata : MonoBehaviour
         metadata = this;
         DontDestroyOnLoad(gameObject);
 
-        ChartResolution = Convert.ToString(UserSettings.DefaultResolution);
+        ChartResolution = UserSettings.DefaultResolution;
         resolutionTextBox.text = Convert.ToString(_chartResolution);
     }
 

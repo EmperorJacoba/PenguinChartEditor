@@ -76,6 +76,7 @@ public class ChartParser : MonoBehaviour
 
         (var tickTimeKeys, var bpmVals, var tsEvents) = GetSyncTrackEvents(filePath);
 
+        var chartRes = GetChartResolution(filePath);
         double currentSongTime = 0;
         for (int i = 0; i < tickTimeKeys.Count; i++) // Calculate time-second positions of tempo changes for beatline rendering
         {
@@ -84,7 +85,7 @@ public class ChartParser : MonoBehaviour
             {
                 // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
                 calculatedTimeSecondDifference = 
-                (tickTimeKeys[i] - tickTimeKeys[i - 1]) / (double)SongTimelineManager.PLACEHOLDER_RESOLUTION * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally
+                (tickTimeKeys[i] - tickTimeKeys[i - 1]) / chartRes * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally
             }
             catch
             {

@@ -65,22 +65,18 @@ public class TempoManager : MonoBehaviour
             currentBeatline++;
         }
 
-        // Solutions?
-        // Abstract away label and BPM setting in beatlines themselves
-        // Pass in a tick, and check dictionaries to see if they need to show something - could also be dependent on beatline type?
-        // Still sweep for abnormal TS/BPM changes but most logic in the first for loop could be removed
-        // Also more reliable visibility 
-
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);
     }
 
     int IncreaseByHalfDivision(int tick)
     {
-        return (int)(SongTimelineManager.PLACEHOLDER_RESOLUTION / SongTimelineManager.CalculateDivision(tick) / 2);
+        return (int)(ChartMetadata.ChartResolution / SongTimelineManager.CalculateDivision(tick) / 2);
     }
-    
+
     // Implement moving beatlines and actually tempo mapping
         // They move only in Y-direction -> X-dir is locked
+
+    // Add pre-rendered beatlines/line rendering
 
     // Next steps:
     // Add chart resolution parsing
