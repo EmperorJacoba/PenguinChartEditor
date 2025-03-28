@@ -25,10 +25,7 @@ public class TempoManager : MonoBehaviour
         int endTick = SongTimelineManager.ConvertSecondsToTickTime((float)endTime);
         var timeShown = endTime - startTime;
 
-        HashSet<int> recognizedTempoChanges = new(); // Needed for irregular/out of step tempo changes
-        HashSet<int> recognizedTSChanges = new();
         int currentBeatline = 0;
-
         // Generate the division and half-division beatlines
         for (
                 int currentTick = SongTimelineManager.CalculateNextBeatlineEvent(startTick); // Calculate the tick to start generating beatlines from
@@ -40,26 +37,7 @@ public class TempoManager : MonoBehaviour
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
 
-            // If there is a tempo event on this generated beatline, make sure the label displays the BPM change
-            if (SongTimelineManager.TempoEvents.ContainsKey(currentTick))
-            {
-                workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[currentTick].Item1.ToString();
-                recognizedTempoChanges.Add(currentTick);
-            }
-            else
-            {
-                workedBeatline.BPMLabelVisible = false;
-            }
-
-            if (SongTimelineManager.TimeSignatureEvents.ContainsKey(currentTick))
-            {
-                workedBeatline.TSLabelText = $"{SongTimelineManager.TimeSignatureEvents[currentTick].Item1} / {SongTimelineManager.TimeSignatureEvents[currentTick].Item2}";
-                recognizedTSChanges.Add(currentTick);
-            }
-            else
-            {
-                workedBeatline.TSLabelVisible = false;
-            }
+            workedBeatline.CheckForEvents(currentTick);
 
             workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown); 
 
@@ -67,50 +45,38 @@ public class TempoManager : MonoBehaviour
             workedBeatline.Type = SongTimelineManager.CalculateBeatlineType(currentTick);
 
             // Set up tick for next beatline's calculations
-            currentTick += (int)(SongTimelineManager.PLACEHOLDER_RESOLUTION / SongTimelineManager.CalculateDivision(currentTick) / 2);
+            currentTick += IncreaseByHalfDivision(currentTick);
         }
 
         // Get list of tempo events that *should* be displayed during the visible window  
-        var validTempoKeys = SongTimelineManager.TempoEvents.Keys.Where(key => key >= startTick && key <= endTick).ToList();
+        var ignoredKeys = SongTimelineManager.TempoEvents.Keys.Where(key => key >= startTick && key <= endTick && key % IncreaseByHalfDivision(key) != 0).ToHashSet();
+        var ignoredTSKeys = SongTimelineManager.TimeSignatureEvents.Keys.Where(key => key >= startTick && key <= endTick && key % IncreaseByHalfDivision(key) != 0).ToHashSet();
 
-        // Find all of the tempo events not already accounted for and add a BPM label for it
-        for (int i = 0; i <= validTempoKeys.Count - 1; i++)
+        ignoredKeys.UnionWith(ignoredTSKeys);
+
+        foreach (var tick in ignoredKeys)
         {
-            if (!recognizedTempoChanges.Contains(validTempoKeys[i]))
-            {
-                var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
+            var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
+            workedBeatline.CheckForEvents(tick);
 
-                workedBeatline.BPMLabelText = SongTimelineManager.TempoEvents[validTempoKeys[i]].Item1.ToString();
+            workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(tick) - startTime)/timeShown); 
 
-                workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(validTempoKeys[i]) - startTime)/timeShown); 
-
-                workedBeatline.line.enabled = false; // The line will show sometimes if this is not here specifically
-                
-                currentBeatline++;
-            }
-        }
-
-        var validTSKeys = SongTimelineManager.TimeSignatureEvents.Keys.Where(key => key >= startTick && key <= endTick).ToList();
-        for (int i = 0; i <= validTSKeys.Count - 1; i++)
-        {
-            if (!recognizedTempoChanges.Contains(validTSKeys[i]))
-            {
-                var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
-
-                workedBeatline.TSLabelText = $"{SongTimelineManager.TimeSignatureEvents[validTSKeys[i]].Item1} / {SongTimelineManager.TimeSignatureEvents[validTSKeys[i]].Item2}";
-
-                workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(validTSKeys[i]) - startTime)/timeShown);
-
-                workedBeatline.line.enabled = false; // The line will show sometimes if this is not here specifically
-
-                currentBeatline++;
-            }
+            workedBeatline.Type = Beatline.BeatlineType.none;
+            currentBeatline++;
         }
 
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);
     }
+
+    int IncreaseByHalfDivision(int tick)
+    {
+        return (int)(ChartMetadata.ChartResolution / SongTimelineManager.CalculateDivision(tick) / 2);
+    }
+
     // Implement moving beatlines and actually tempo mapping
         // They move only in Y-direction -> X-dir is locked
+
+    // Add pre-rendered beatlines/line rendering
 
     // Next steps:
     // Add chart resolution parsing

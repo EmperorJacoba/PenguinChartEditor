@@ -17,7 +17,7 @@ public class BeatlinePooler : MonoBehaviour
 
     private List<Beatline> beatlines;
     
-    public int poolAmount = 50;
+    public int poolAmount = 10;
 
     void Awake()
     {

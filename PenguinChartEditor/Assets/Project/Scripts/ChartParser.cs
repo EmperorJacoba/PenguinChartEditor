@@ -9,6 +9,7 @@ public class ChartParser : MonoBehaviour
     // Note: When creating new chart file, make sure [SyncTrack] starts with a BPM and TS declaration!
     const int DEFAULT_TS_DENOMINATOR = 4;
 
+    // There is probably a better way to read a file out there
     static (List<int>, List<float>, SortedDictionary<int, (int, int)>) GetSyncTrackEvents(string filePath)
     {
         StreamReader chart = new(filePath);
@@ -75,6 +76,7 @@ public class ChartParser : MonoBehaviour
 
         (var tickTimeKeys, var bpmVals, var tsEvents) = GetSyncTrackEvents(filePath);
 
+        var chartRes = GetChartResolution(filePath);
         double currentSongTime = 0;
         for (int i = 0; i < tickTimeKeys.Count; i++) // Calculate time-second positions of tempo changes for beatline rendering
         {
@@ -83,7 +85,7 @@ public class ChartParser : MonoBehaviour
             {
                 // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
                 calculatedTimeSecondDifference = 
-                (tickTimeKeys[i] - tickTimeKeys[i - 1]) / (double)SongTimelineManager.PLACEHOLDER_RESOLUTION * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally
+                (tickTimeKeys[i] - tickTimeKeys[i - 1]) / chartRes * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally
             }
             catch
             {

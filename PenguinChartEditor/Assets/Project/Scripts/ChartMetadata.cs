@@ -80,25 +80,29 @@ public class ChartMetadata : MonoBehaviour
 
     // test paths to make this easier
     static string[] stems = new string[6] {
-        "C:/_PCE_files/TestAudioFiles/120BPMTestTrack.opus", // song
-        "C:/_PCE_files/TestAudioFiles/burning.opus", // guitar
-        "", // bass
-        "", // keys
-        "", // vocals
-        ""  // drums
+        "", // song
+        "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Guitar.opus", // guitar
+        "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Bass.opus", // bass
+        "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Keys.opus", // keys
+        "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Vocals.opus", // vocals
+        "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Drums.opus"  // drums
     };
 
     public static void TempSetUpStemDict()
     {
-        Stems[StemType.song] = stems[0];
+        //Stems[StemType.song] = stems[0];
         Stems[StemType.guitar] = stems[1];
+        Stems[StemType.bass] = stems[2];
+        Stems[StemType.keys] = stems[3];
+        Stems[StemType.vocals] = stems[4];
+        Stems[StemType.drums] = stems[5];
     }
 
     private static int _chartResolution = 0;
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
     /// </summary>
-    public static string ChartResolution 
+    public static int ChartResolution 
     {
         get
         {
@@ -106,17 +110,16 @@ public class ChartMetadata : MonoBehaviour
             {
                 _chartResolution = ChartParser.GetChartResolution(ChartPath);
             }
-            return _chartResolution.ToString();
+            return _chartResolution;
         }
         set 
         {
-            if (!int.TryParse(value, out int tempResolution)) throw new ArgumentException("Resolution must be an integer!");
-            if (tempResolution == 0) throw new ArgumentException("Resolution cannot be zero!");
-            _chartResolution = tempResolution;
+            if (value == 0) throw new ArgumentException("Resolution cannot be zero!");
+            _chartResolution = value;
         }
     }
 
-    public static string ChartPath { get; private set;} = "C:/_PCE_files/TestAudioFiles/Burning.chart";
+    public static string ChartPath { get; private set;} = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Perpetual Change.chart";
 
     /// <summary>
     /// Stores the directory of the album cover selected by the user.
@@ -138,7 +141,7 @@ public class ChartMetadata : MonoBehaviour
         metadata = this;
         DontDestroyOnLoad(gameObject);
 
-        ChartResolution = Convert.ToString(UserSettings.DefaultResolution);
+        ChartResolution = UserSettings.DefaultResolution;
         resolutionTextBox.text = Convert.ToString(_chartResolution);
     }
 
