@@ -65,7 +65,7 @@ public class WaveformManager : MonoBehaviour
             DisplayChanged?.Invoke();
         }
     }
-    private static float _shrinkFactor = 0.001f;
+    private static float _shrinkFactor = 0.005f;
 
     /// <summary>
     /// Where the user is by sample count at the strikeline.

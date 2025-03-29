@@ -27,7 +27,7 @@ public class BeatlinePooler : MonoBehaviour
 
     void Start()
     {
-        for(int i = 0; i < poolAmount; i++)
+        for (int i = 0; i < poolAmount; i++)
         {
             CreateNewBeatline();
         }
@@ -50,16 +50,11 @@ public class BeatlinePooler : MonoBehaviour
     /// <returns>The requested beatline.</returns>
     public Beatline GetBeatline(int index)
     {
-        Beatline beatline;
-        try
+        while (beatlines.Count <= index)
         {
-            beatline = beatlines[index]; // attempt fetch of the requested beatline
+            CreateNewBeatline();
         }
-        catch // if the requested beatline does not exist, make a new one and fetch it
-        {
-            CreateNewBeatline(); // this only needs to happen once because accessing a beatline will happen sequentially
-            beatline = beatlines[index];
-        }
+        Beatline beatline = beatlines[index];
         beatline.IsVisible = true; // prepare beatline to display calculations
         return beatline;
     }

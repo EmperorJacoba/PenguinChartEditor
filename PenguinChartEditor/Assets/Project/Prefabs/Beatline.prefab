@@ -295,7 +295,7 @@ GameObject:
   - component: {fileID: 2238320666893824518}
   - component: {fileID: 3465913690773502459}
   m_Layer: 5
-  m_Name: BeatChangeLabel
+  m_Name: BPM_Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -452,7 +452,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6239090009231363197}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -524,7 +524,7 @@ LineRenderer:
   - {x: 319, y: 200, z: 0}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1
+    widthMultiplier: 0.05
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -593,7 +593,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 428f2a1a0e615db4596c578f112caad8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  line: {fileID: 0}
+  bpmLabelText: {fileID: 5022177113425836600}
+  bpmLabel: {fileID: 5791591105546381921}
+  bpmLabelRt: {fileID: 3683065919937997954}
+  tsLabel: {fileID: 2312096276831295752}
+  tsLabelRt: {fileID: 7353612379106410833}
+  tsLabelText: {fileID: 7206844250101663744}
+  line: {fileID: 4691799485850042161}
+  screenRefRect: {fileID: 0}
 --- !u!1 &7448413305208247711
 GameObject:
   m_ObjectHideFlags: 0

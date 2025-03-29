@@ -14,25 +14,24 @@ public class Beatline : MonoBehaviour
     /// <summary>
     /// The BPM label text on the beatline's label.
     /// </summary>
-    private TextMeshProUGUI bpmLabelText;
+    [SerializeField] TextMeshProUGUI bpmLabelText;
 
     /// <summary>
     /// The container for the label object and the label text.
     /// </summary>
-    private GameObject bpmLabel;
-    private RectTransform bpmLabelRt;
+    [SerializeField] GameObject bpmLabel;
+    [SerializeField] RectTransform bpmLabelRt;
 
-    private GameObject tsLabel;
-    private RectTransform tsLabelRt;
-    private TextMeshProUGUI tsLabelText;
+    [SerializeField] GameObject tsLabel;
+    [SerializeField] RectTransform tsLabelRt;
+    [SerializeField] TextMeshProUGUI tsLabelText;
 
     /// <summary>
     /// The line renderer attached to the beatline game object.
     /// </summary>
-    public LineRenderer line;
+    [SerializeField] LineRenderer line;
 
-
-    private RectTransform screenRefRect;
+    RectTransform screenRefRect;
 
     /// <summary>
     /// The possible types of beatlines that exist.
@@ -183,20 +182,10 @@ public class Beatline : MonoBehaviour
         line.startWidth = thickness;
         line.endWidth = thickness;
     }
-
+    
     void Awake()
     {
         screenRefRect = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
-
-        bpmLabel = transform.GetChild(0).gameObject;
-        bpmLabelRt = bpmLabel.GetComponent<RectTransform>();
-        bpmLabelText = bpmLabel.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-
-        tsLabel = transform.GetChild(1).gameObject;
-        tsLabelRt = tsLabel.GetComponent<RectTransform>();
-        tsLabelText = tsLabel.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-
-        line = gameObject.GetComponent<LineRenderer>();
     }
 
     void Start()
