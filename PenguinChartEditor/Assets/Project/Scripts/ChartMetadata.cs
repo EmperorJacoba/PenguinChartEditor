@@ -108,7 +108,7 @@ public class ChartMetadata : MonoBehaviour
         {
             if (_chartResolution == 0)
             {
-                _chartResolution = ChartParser.GetChartResolution(ChartPath);
+                _chartResolution = ChartParser.loadedChartResolution; // this will not work when reloading files, fix later
             }
             return _chartResolution;
         }

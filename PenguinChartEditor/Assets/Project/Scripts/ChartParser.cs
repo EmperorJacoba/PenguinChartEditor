@@ -9,34 +9,33 @@ public class ChartParser : MonoBehaviour
     // Note: When creating new chart file, make sure [SyncTrack] starts with a BPM and TS declaration!
     const int DEFAULT_TS_DENOMINATOR = 4;
 
-    // There is probably a better way to read a file out there
+    public static int loadedChartResolution = UserSettings.DefaultResolution;
+
     static (List<int>, List<float>, SortedDictionary<int, (int, int)>) GetSyncTrackEvents(string filePath)
     {
-        StreamReader chart = new(filePath);
+        string[] chart = File.ReadAllLines(filePath);
+        int syncTrackPos = Array.IndexOf(chart, "[SyncTrack]");
 
-        chart = GetToSection("[SyncTrack]", chart);
+        loadedChartResolution = FindResolution(chart);
 
-        // Set up lists to deposit info into
-        // This is not a dictionary because time-second calculations
-        // are needed so save dictionary compilation until final export 
+        if (syncTrackPos == -1)
+        {
+            throw new ArgumentException("No [SyncTrack] section found in file. Chart files require a [SyncTrack] section to be processed. Please check the file and try again.");
+        }
+
         List<int> tempoTickTimeKeys = new();
         List<float> bpmVals = new();
         SortedDictionary<int, (int, int)> tsEvents = new();
 
-        var line = chart.ReadLine(); // Get into the meat of [SyncTrack]
-        while (!line.Contains("}")) // needs to be "Contains" -> Moonscraper generates "} " at the end of SyncTrack files
+        var lineIndex = syncTrackPos + 2; // + 2 because first line is {
+        var currentLine = chart[lineIndex];
+        while (lineIndex < chart.Length && !currentLine.Contains("}"))
         {
-            if (!CheckTempoEventLegality(line)) throw new ArgumentException("[SyncTrack] has invalid tempo event. Please check file and try again.");
+            if (!CheckTempoEventLegality(currentLine)) throw new ArgumentException("[SyncTrack] has invalid tempo event. Please check file and try again.");
 
-            // Split into key and value pair to put different data types into different lists
-            var parts = line.Split(" = ");
-
-            // Get ready for list input -> get rid of spaces
-            parts[0].Trim(); parts[1].Trim();
-            var tickTimeKey = parts[0];
-
-            // Split into identifier and value
-            var eventValue = parts[1].Split(" ");
+            var dividerIndex = currentLine.IndexOf(" = ");
+            var tickTimeKey = currentLine[..dividerIndex].Trim();
+            var eventValue = currentLine[(dividerIndex + 2)..].Trim().Split(" ");
 
             // Next step based on if the event is a beat or time signature change (identifier in index 0 of the value)
             if (eventValue[0] == "B")
@@ -58,10 +57,10 @@ public class ChartParser : MonoBehaviour
                 }
             }
 
-            line = chart.ReadLine();
+            lineIndex++;
+            currentLine = chart[lineIndex];
         }
 
-        chart.Dispose();
         return (tempoTickTimeKeys, bpmVals, tsEvents);
     }
 
@@ -76,21 +75,18 @@ public class ChartParser : MonoBehaviour
 
         (var tickTimeKeys, var bpmVals, var tsEvents) = GetSyncTrackEvents(filePath);
 
-        var chartRes = GetChartResolution(filePath);
         double currentSongTime = 0;
         for (int i = 0; i < tickTimeKeys.Count; i++) // Calculate time-second positions of tempo changes for beatline rendering
         {
             double calculatedTimeSecondDifference = 0;
-            try
+
+            if (i > 0)
             {
                 // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
                 calculatedTimeSecondDifference = 
-                (tickTimeKeys[i] - tickTimeKeys[i - 1]) / chartRes * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally
+                (tickTimeKeys[i] - tickTimeKeys[i - 1]) / loadedChartResolution * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally
             }
-            catch
-            {
-                calculatedTimeSecondDifference = 0; // avoid OOB error for first event
-            }
+
             currentSongTime += calculatedTimeSecondDifference;
             outputTempoEventsDict.Add(tickTimeKeys[i], (bpmVals[i], (float)currentSongTime));
         }
@@ -98,46 +94,17 @@ public class ChartParser : MonoBehaviour
         return (outputTempoEventsDict, tsEvents);
     }
 
-    public static StreamReader GetToSection(string section, StreamReader reader)
+    static int FindResolution(string[] file)
     {
-        var line = reader.ReadLine();
-        while (line != null) // Loop through lines until section is found
+        for (int i = 0; i < file.Length; i++)
         {
-            if (line == section)
+            if (file[i].Contains("Resolution"))
             {
-                break;
+                var parts = file[i].Split(" = ");
+                return int.Parse(parts[1].Trim());
             }
-            line = reader.ReadLine();
         }
-
-        // User didn't pass in a properly formatted chart file
-        if (line == null) throw new ArgumentException($"Could not find {section} in file. Please try again.");
-
-        // line after [SyncTrack] should have a curly brace open 
-        line = reader.ReadLine();
-        if (!line.Contains("{")) throw new ArgumentException($"{section} is not properly enclosed. Please check file and try again.");
-
-        return reader;
-    }
-
-    public static int GetChartResolution(string filePath)
-    {
-        StreamReader chart = new(filePath);
-
-        chart = GetToSection("[Song]", chart);
-
-        var line = chart.ReadLine();
-        while (!line.Contains("Resolution"))
-        {
-            line = chart.ReadLine();
-        }
-
-        if (!line.Contains("Resolution")) throw new ArgumentException("Chart does not have a resolution. Please use a chart file with a resolution field within the [Song] category.");
-
-        var parts = line.Split(" = ");
-
-        var resolution = parts[1].Trim();
-        return int.Parse(resolution);
+        throw new ArgumentException("Chart does not contain a resolution. Please add the correct resolution to the file and try again.");
     }
 
     static bool CheckTempoEventLegality(string line)
