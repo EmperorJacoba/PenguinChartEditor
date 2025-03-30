@@ -75,13 +75,9 @@ public class TempoManager : MonoBehaviour
     // Implement moving beatlines and actually tempo mapping
         // They move only in Y-direction -> X-dir is locked
 
-    // Add pre-rendered beatlines/line rendering
-
     // Next steps:
-    // Add chart resolution parsing
-    // Add time signature labels
-        // Test more time signature stuff (use Yes songs)
     // Label bar numbers
+    // Add keybinds for basic functionality
     // Add editing functionality for beatlines and time signatures
     // Add volume changing
     // Add speed changing
