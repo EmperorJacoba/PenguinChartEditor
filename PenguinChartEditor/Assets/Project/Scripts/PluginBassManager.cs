@@ -26,7 +26,28 @@ public class PluginBassManager : MonoBehaviour
     /// <summary>
     /// Is the audio currently playing?
     /// </summary>
-    public static bool AudioPlaying {get; private set;}
+    public static bool AudioPlaying 
+    {
+        get
+        {
+            return _playing;
+        }
+        set
+        {
+            if (value == _playing) return;
+            _playing = value;
+            PlaybackStateChanged?.Invoke(_playing);
+        }
+    }
+
+    private static bool _playing = false;
+
+    public delegate void PlayingDelegate(bool state);
+
+    /// <summary>
+    /// Event that fires whenever the song playing state changes.
+    /// </summary>
+    public static event PlayingDelegate PlaybackStateChanged;
 
     /// <summary>
     /// The stem with the longest stream length in StemStreams. All other stem streams are linked to this stem for playback purposes.
@@ -221,7 +242,6 @@ public class PluginBassManager : MonoBehaviour
         {
             PauseAudio();
         }
-
     }
 
     public void PlayAudio()

@@ -161,14 +161,14 @@ public class SongTimelineManager : MonoBehaviour
     /// </summary>
     /// <param name="scrollChange"></param>
     /// <param name="middleClick"></param>
-    void ChangeTime(float scrollChange, bool middleClick = false)
+    public static void ChangeTime(float scrollChange, bool middleClick = false)
     {
         if (float.IsNaN(scrollChange)) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
 
         // If it's a middle click, the delta value is wayyy too large so this is a solution FOR NOW
         var scrollSuppressant = 1;
         if (middleClick) scrollSuppressant = 50;
-        SongPositionSeconds += scrollChange / (UserSettings.Sensitivity * scrollSuppressant);
+        SongPositionSeconds += scrollChange / (UserSettings.ScrollSensitivity * scrollSuppressant);
 
         // Clamp position to within the length of the song
         if (SongPositionSeconds < 0)

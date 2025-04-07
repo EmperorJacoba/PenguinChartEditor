@@ -29,8 +29,6 @@ public static class UserSettings
     /// <para>Example: SustainGap is 50 milliseconds -> Gap between end of sustained note and next note is 50ms, converted approximately to tick time.</para>
     /// </summary>
     public static int SustainGap { get; set; }
-
-    public static int Sensitivity { get; set; } = 10;
     // Note on sustain gaps:
     // Sustain gap is stored in milliseconds, but works in tick time
     // Distance between one note sustain and following note must be converted to ticks from ms, based on tempo
@@ -39,4 +37,7 @@ public static class UserSettings
     // With current vars in scripts:
     // (note2.TickPosition - note1.TickPosition) / ChartMetadata.Resolution * 60 / beatline.Tempo
 
+    public static int ScrollSensitivity { get; set; } = 10;
+
+    public static float ButtonScrollSensitivity { get; set; } = 0.025f;
 }
