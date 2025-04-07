@@ -1,6 +1,8 @@
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
+using Unity.Mathematics;
+using System;
 
 public class UIManager : MonoBehaviour
 {
@@ -33,20 +35,24 @@ public class UIManager : MonoBehaviour
     private void Awake() 
     {
         PluginBassManager.PlaybackStateChanged += state => ManagePlaybackButtonStates(state);
+        SongTimelineManager.TimeChanged += UpdateSongText;
     }
 
     private void Start() 
     {
-        ManagePlaybackButtonStates(false);    
+        ManagePlaybackButtonStates(false);
+        UpdateSongLengthText();
+        UpdateSongText();
     }
 
     void Update()
     {
+        // These two triggers use event triggers, not default button functionality. 
+        // Check for interactability or you can use them even when uninteractable
         if (RWButtonDown && RWButton.interactable)
         {
             SongTimelineManager.ChangeTime(-UserSettings.ButtonScrollSensitivity);
         }
-
         if (FFWButtonDown && FFWButton.interactable)
         {
             SongTimelineManager.ChangeTime(UserSettings.ButtonScrollSensitivity);
@@ -68,12 +74,6 @@ public class UIManager : MonoBehaviour
         pluginBassManager.StopAudio();
     }
 
-    public void RW()
-    {
-
-    }
-    
-
     private void ManagePlaybackButtonStates(bool playbackState)
     {
         // Set button interactiblity based on the current playback state (flip bools where needed)
@@ -82,5 +82,43 @@ public class UIManager : MonoBehaviour
         FFWButton.interactable = !playbackState;
         RWButton.interactable = !playbackState;
         // Stop button stays the same (just a generic reset button)
+    }
+
+    private void UpdateSongText()
+    {
+        SongTimestampLabel.text = ConvertSecondsToTimestamp(SongTimelineManager.SongPositionSeconds);
+    }
+
+    private void UpdateSongLengthText()
+    {
+        SongLengthLabel.text = ConvertSecondsToTimestamp(PluginBassManager.SongLength);
+    }
+
+    private string ConvertSecondsToTimestamp(double position)
+    {
+        var minutes = Math.Floor(position / 60);
+        var secondsWithMS = position - minutes * 60;
+        var seconds = (int)Math.Floor(secondsWithMS);
+        var milliseconds = Math.Round(secondsWithMS - seconds, 3) * 1000;
+
+        string minutesString = minutes.ToString();
+        if (minutes < 10)
+        {
+            minutesString = minutesString.PadLeft(minutesString.Length + 1, '0');
+        }
+
+        string secondsString = seconds.ToString();
+        if (seconds < 10)
+        {
+            secondsString = secondsString.PadLeft(2, '0');
+        }
+
+        string millisecondsString = milliseconds.ToString();
+        if (millisecondsString.Length < 3)
+        {
+            millisecondsString = millisecondsString.PadRight(3, '0');
+        }
+
+        return minutesString + ":" + secondsString + "." + millisecondsString;
     }
 }
