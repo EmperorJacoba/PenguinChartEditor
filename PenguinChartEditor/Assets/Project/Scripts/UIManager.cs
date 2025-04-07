@@ -32,10 +32,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] Button IncreaseDivisionButton;
     [SerializeField] Button DecreaseDivisionButton;
 
+    [SerializeField] Scrollbar SongScrubber;
+
     private void Awake() 
     {
         PluginBassManager.PlaybackStateChanged += state => ManagePlaybackButtonStates(state);
         SongTimelineManager.TimeChanged += UpdateSongText;
+        SongTimelineManager.TimeChanged += UpdateSongScrubber;
+
+        SongScrubber.onValueChanged.AddListener(x => UpdateSongTimeFromScrubber(x));
     }
 
     private void Start() 
@@ -82,6 +87,16 @@ public class UIManager : MonoBehaviour
         FFWButton.interactable = !playbackState;
         RWButton.interactable = !playbackState;
         // Stop button stays the same (just a generic reset button)
+    }
+    
+    void UpdateSongScrubber()
+    {
+        SongScrubber.value = (float)SongTimelineManager.SongPositionSeconds / PluginBassManager.SongLength;
+    }
+
+    void UpdateSongTimeFromScrubber(float newPos)
+    {
+        SongTimelineManager.SongPositionSeconds = PluginBassManager.SongLength * SongScrubber.value;
     }
 
     private void UpdateSongText()

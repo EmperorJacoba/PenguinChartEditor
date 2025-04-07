@@ -365,8 +365,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1022341179}
   m_HandleRect: {fileID: 1022341178}
   m_Direction: 2
-  m_Value: -0.0000005652014
-  m_Size: 0.3404879
+  m_Value: -0.0012074586
+  m_Size: 0.33590823
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2010,6 +2010,7 @@ MonoBehaviour:
   DivisionInput: {fileID: 1354881129}
   IncreaseDivisionButton: {fileID: 795277016}
   DecreaseDivisionButton: {fileID: 2130860644}
+  SongScrubber: {fileID: 588628611}
 --- !u!1 &499641450
 GameObject:
   m_ObjectHideFlags: 0
@@ -2754,8 +2755,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0048828125, y: 1.5527344}
-  m_SizeDelta: {x: 74.94995, y: -3.0999756}
+  m_AnchoredPosition: {x: 0, y: 1.5513916}
+  m_SizeDelta: {x: 74.94995, y: -3.1027527}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &588628611
 MonoBehaviour:
@@ -4481,7 +4482,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00021411432, y: 647.93036}
+  m_AnchoredPosition: {x: 0.00021411432, y: 648.71234}
   m_SizeDelta: {x: 0, y: 982.44}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &948497441

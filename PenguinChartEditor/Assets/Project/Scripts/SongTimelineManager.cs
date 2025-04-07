@@ -177,7 +177,7 @@ public class SongTimelineManager : MonoBehaviour
         }
         else if (SongPositionSeconds >= PluginBassManager.SongLength)
         {
-            SongPositionSeconds = PluginBassManager.SongLength - 0.005; // Can't scroll at all once you hit end of song -> subtract a little time as a TEMP FIX
+            SongPositionSeconds = PluginBassManager.SongLength; // Can't scroll at all once you hit end of song -> subtract a little time as a TEMP FIX
         }
     }
 
