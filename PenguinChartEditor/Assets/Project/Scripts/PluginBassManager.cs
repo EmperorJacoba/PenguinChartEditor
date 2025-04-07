@@ -215,16 +215,46 @@ public class PluginBassManager : MonoBehaviour
     {
         if (!AudioPlaying)
         {
-            SetStreamPositions();
-            Bass.BASS_ChannelPlay(StemStreams[StreamLink], false);
-            AudioPlaying = true;
+            PlayAudio();
         }
         else
         {
+            PauseAudio();
+        }
+
+    }
+
+    public void PlayAudio()
+    {
+        if (!AudioPlaying)
+        {
+            SetStreamPositions();
+            Bass.BASS_ChannelPlay(StemStreams[StreamLink], false);
+            AudioPlaying = true;
+            SongTimelineManager.ToggleChartingInputMap();
+        }
+    }
+
+    public void PauseAudio()
+    {
+        if (AudioPlaying)
+        {
             Bass.BASS_ChannelPause(StemStreams[StreamLink]);
             AudioPlaying = false;
+            SongTimelineManager.ToggleChartingInputMap();
         }
-        SongTimelineManager.ToggleChartingInputMap();
+    }
+
+    public void StopAudio()
+    {
+        SongTimelineManager.SongPositionSeconds = 0;
+        if (AudioPlaying)
+        {
+            Bass.BASS_ChannelPause(StemStreams[StreamLink]);
+            SetStreamPositions();
+            AudioPlaying = false;
+            SongTimelineManager.ToggleChartingInputMap();
+        }
     }
 
     /// <summary>
@@ -240,8 +270,6 @@ public class PluginBassManager : MonoBehaviour
                 (
                     StemStreams[streampair.Key], 
                     SongTimelineManager.SongPositionSeconds
-                    // ^ Item2 holds how many bytes are held for each second of audio
-                    // this rate will vary based on audio formats and stuff
                 );
             }
             catch

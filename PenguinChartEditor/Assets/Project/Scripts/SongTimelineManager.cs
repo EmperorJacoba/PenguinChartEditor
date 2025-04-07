@@ -24,7 +24,7 @@ public class SongTimelineManager : MonoBehaviour
         {
             return _songPos;
         }
-        private set
+        set
         {
             if (_songPos == value) return;
             value = Math.Round(value, 3); // So that CurrentWFDataPosition comes out clean
