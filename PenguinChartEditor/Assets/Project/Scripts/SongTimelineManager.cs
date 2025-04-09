@@ -26,8 +26,8 @@ public class SongTimelineManager : MonoBehaviour
         }
         set
         {
-            if (_songPos == value) return;
             value = Math.Round(value, 3); // So that CurrentWFDataPosition comes out clean
+            if (_songPos == value) return;
             _songPos = value;
 
             TimeChanged?.Invoke();
@@ -177,7 +177,7 @@ public class SongTimelineManager : MonoBehaviour
         }
         else if (SongPositionSeconds >= PluginBassManager.SongLength)
         {
-            SongPositionSeconds = PluginBassManager.SongLength; // Can't scroll at all once you hit end of song -> subtract a little time as a TEMP FIX
+            SongPositionSeconds = PluginBassManager.SongLength;
         }
     }
 
@@ -232,7 +232,6 @@ public class SongTimelineManager : MonoBehaviour
     public static double ConvertTickTimeToSeconds(int ticktime)
     {
         var lastTickEvent = FindPreviousTempoEventTick(ticktime);
-
         // Formula from .chart format specifications
         return ((ticktime - lastTickEvent) / (double)ChartMetadata.ChartResolution * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1) + TempoEvents[lastTickEvent].Item2;
     }

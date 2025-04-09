@@ -91,7 +91,11 @@ public class UIManager : MonoBehaviour
     
     void UpdateSongScrubber()
     {
-        SongScrubber.value = (float)SongTimelineManager.SongPositionSeconds / PluginBassManager.SongLength;
+        var ratio = (float)SongTimelineManager.SongPositionSeconds / PluginBassManager.SongLength;
+        if (SongScrubber.value != ratio)
+        {
+            SongScrubber.value = ratio;
+        }
     }
 
     void UpdateSongTimeFromScrubber(float newPos)
