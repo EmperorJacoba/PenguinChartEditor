@@ -60,6 +60,8 @@ public class PluginBassManager : MonoBehaviour
     /// </summary>
     public static float SongLength {get; set;}
 
+    public static float PlaySpeed {get; set;} = 1;
+
     private void Awake() 
     {
         ChartMetadata.TempSetUpStemDict();

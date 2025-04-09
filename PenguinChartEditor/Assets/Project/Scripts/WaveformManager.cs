@@ -52,7 +52,7 @@ public class WaveformManager : MonoBehaviour
     /// <para>Change shrink factor to modify how tight the waveform looks.</para>
     /// <para>Modified by hyperspeed and audio speed changes.</para>
     /// </summary>
-    public float ShrinkFactor // Needed to compress the points into something legible (y value * shrinkFactor = y position)
+    public static float ShrinkFactor // Needed to compress the points into something legible (y value * shrinkFactor = y position)
     {
         get
         {
@@ -71,7 +71,7 @@ public class WaveformManager : MonoBehaviour
     /// Where the user is by sample count at the strikeline.
     /// <para>This corresponds to an index in the WaveformData arrays.</para>
     /// </summary>
-    public int CurrentWaveformDataPosition
+    public static int CurrentWaveformDataPosition
     {
         get
         {
@@ -81,6 +81,7 @@ public class WaveformManager : MonoBehaviour
         {
             if (_wfPosition == value) return;
             _wfPosition = value;
+            DisplayChanged?.Invoke();
         }
     }
     private static int _wfPosition = 0;
@@ -88,7 +89,7 @@ public class WaveformManager : MonoBehaviour
     /// <summary>
     /// Controls the length of the waveform lines in the editor. BASS-generated values are multiplied by this value to get the final coordinate result. 
     /// </summary>
-    public float Amplitude
+    public static float Amplitude
     {
         get
         {
@@ -101,7 +102,7 @@ public class WaveformManager : MonoBehaviour
             DisplayChanged?.Invoke();
         }
     }
-    private static float _amplitude = 3;
+    private static float _amplitude = 1;
 
     /// <summary>
     /// The currently displayed waveform.

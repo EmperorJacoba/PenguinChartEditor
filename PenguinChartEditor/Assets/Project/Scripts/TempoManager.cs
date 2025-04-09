@@ -9,7 +9,7 @@ public class TempoManager : MonoBehaviour
     {
         waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
 
-        SongTimelineManager.TimeChanged += UpdateBeatlines; // set up events so that beatlines can update whenever anything changes
+        // set up events so that beatlines can update whenever anything changes
         WaveformManager.DisplayChanged += UpdateBeatlines;
     }
     
