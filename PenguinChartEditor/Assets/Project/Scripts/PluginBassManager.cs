@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class PluginBassManager : MonoBehaviour
 {
     WaveformManager waveformManager;
-    int sampleRate = 44100;
+    const int SAMPLE_RATE = 44100;
 
     /// <summary>
     /// Holds a value in seconds for how often to take a sample from all samples (1 millisecond)
@@ -60,8 +60,6 @@ public class PluginBassManager : MonoBehaviour
     /// </summary>
     public static float SongLength {get; set;}
 
-    public static float PlaySpeed {get; set;} = 1;
-
     private void Awake() 
     {
         ChartMetadata.TempSetUpStemDict();
@@ -78,6 +76,13 @@ public class PluginBassManager : MonoBehaviour
         LinkStreams();
     }
 
+    public static void ChangeAudioSpeed(float newSpeed)
+    {
+        foreach (var stream in StemStreams)
+        {
+            Bass.BASS_ChannelSetAttribute(StemStreams[stream.Key], BASSAttribute.BASS_ATTRIB_FREQ, Bass.BASS_ChannelGetInfo(StemStreams[stream.Key]).freq * newSpeed);
+        }
+    }
     /// <summary>
     /// Generate BASS streams from file paths in Stem dict in ChartMetadata.
     /// </summary>
@@ -144,7 +149,7 @@ public class PluginBassManager : MonoBehaviour
 
     void InitializeBassPlugin()
     {
-        if (Bass.BASS_Init(-1, sampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero))
+        if (Bass.BASS_Init(-1, SAMPLE_RATE, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero))
         {
             Bass.BASS_PluginLoadDirectory($"{Application.dataPath}/Plugins/Bassx64");
         }

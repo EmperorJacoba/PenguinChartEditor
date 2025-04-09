@@ -126,7 +126,7 @@ public class SliderBoxLinker : MonoBehaviour
                 WaveformManager.Amplitude = newValue;
                 break;
             case WaveformProperties.playSpeed:
-                PluginBassManager.PlaySpeed = newValue;
+                PluginBassManager.ChangeAudioSpeed(newValue);
                 break;
         } 
     }
