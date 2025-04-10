@@ -48,10 +48,6 @@ public class SliderBoxLinker : MonoBehaviour
     /// <param name="newValue"></param>
     void SliderChange(float newValue)
     {
-        if (newValue < slider.minValue || newValue > slider.maxValue)
-        {
-            return;
-        }
         // Prevent values in entry boxes from looking wonky with 100000 decimal places
         newValue = (float)Math.Round(newValue, 3);
 

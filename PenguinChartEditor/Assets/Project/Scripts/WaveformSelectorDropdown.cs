@@ -5,15 +5,13 @@ using TMPro;
 using UnityEngine;
 public class WaveformSelectorDropdown : MonoBehaviour
 {
-    TMP_Dropdown dropdown;
-    WaveformManager waveformManager;
+    [SerializeField] TMP_Dropdown dropdown;
+    [SerializeField] WaveformManager waveformManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        dropdown = gameObject.GetComponent<TMP_Dropdown>();
         dropdown.ClearOptions();
-        waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
 
         SetUpWaveformOptions();
         dropdown.value = 0;
@@ -40,16 +38,13 @@ public class WaveformSelectorDropdown : MonoBehaviour
         // Add options to dropdown from StemType
         foreach (var entry in ChartMetadata.Stems)
         {
-            var capitalizedEntry = Capitalize(entry.Key.ToString()); // for more polished look
+            var capitalizedEntry = MiscTools.Capitalize(entry.Key.ToString()); // for more polished look
             dropdown.options.Add(new TMP_Dropdown.OptionData(capitalizedEntry));
             dropdownIndexes.Add(entry.Key);
         }
     }
 
-    private string Capitalize(string name)
-    {
-        return char.ToUpper(name[0]) + name.Substring(1); 
-    }
+
 
     /// <summary>
     /// Method that handles changing visible waveform from dropdown selection.

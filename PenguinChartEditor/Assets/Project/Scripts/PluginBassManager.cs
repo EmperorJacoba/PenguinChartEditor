@@ -86,7 +86,7 @@ public class PluginBassManager : MonoBehaviour
     /// <summary>
     /// Generate BASS streams from file paths in Stem dict in ChartMetadata.
     /// </summary>
-    public void UpdateStemStreams()
+    void UpdateStemStreams()
     {
         foreach (var stem in ChartMetadata.Stems)
         {
@@ -99,6 +99,11 @@ public class PluginBassManager : MonoBehaviour
                 continue;
             }
         }
+    }
+
+    public static void UpdateStemVolume(ChartMetadata.StemType stem, float newVolume)
+    {
+        Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, newVolume);
     }
 
     /// <summary>
