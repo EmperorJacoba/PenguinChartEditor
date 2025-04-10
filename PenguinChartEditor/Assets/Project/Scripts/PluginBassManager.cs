@@ -5,7 +5,8 @@ using System.Collections.Generic;
 
 public class PluginBassManager : MonoBehaviour
 {
-    WaveformManager waveformManager;
+    #region Properties
+
     const int SAMPLE_RATE = 44100;
 
     /// <summary>
@@ -39,7 +40,6 @@ public class PluginBassManager : MonoBehaviour
             PlaybackStateChanged?.Invoke(_playing);
         }
     }
-
     private static bool _playing = false;
 
     public delegate void PlayingDelegate(bool state);
@@ -60,13 +60,15 @@ public class PluginBassManager : MonoBehaviour
     /// </summary>
     public static float SongLength {get; set;}
 
+    #endregion
+
+    #region Unity Functions
     private void Awake() 
     {
         ChartMetadata.TempSetUpStemDict();
 
         StemStreams = new();
         AudioPlaying = false;
-        waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
 
         InitializeBassPlugin();
 
@@ -76,81 +78,14 @@ public class PluginBassManager : MonoBehaviour
         LinkStreams();
     }
 
-    public static void ChangeAudioSpeed(float newSpeed)
+    void OnApplicationQuit()
     {
-        foreach (var stream in StemStreams)
-        {
-            Bass.BASS_ChannelSetAttribute(StemStreams[stream.Key], BASSAttribute.BASS_ATTRIB_FREQ, Bass.BASS_ChannelGetInfo(StemStreams[stream.Key]).freq * newSpeed);
-        }
-    }
-    /// <summary>
-    /// Generate BASS streams from file paths in Stem dict in ChartMetadata.
-    /// </summary>
-    void UpdateStemStreams()
-    {
-        foreach (var stem in ChartMetadata.Stems)
-        {
-            try
-            {
-                UpdateAudioStream(stem.Key, stem.Value);
-            }
-            catch
-            {
-                continue;
-            }
-        }
+        Bass.BASS_Free();     
     }
 
-    public static void UpdateStemVolume(ChartMetadata.StemType stem, float newVolume)
-    {
-        Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, newVolume);
-    }
+    #endregion
 
-    /// <summary>
-    /// Get the longest audio file to link playing all other stems to. Needed to properly play audio synchronously.
-    /// </summary>
-    /// <returns>Stem with longest playback length</returns>
-    private ChartMetadata.StemType GetLongestStream()
-    {
-        // Basic max value finder algorithm: get length of each stem, overwrite current longest stem if new longest is found
-        long streamLength = 0;
-        ChartMetadata.StemType longestStream = 0; // if this function returns 0 then it shows nothing has been loaded
-        foreach(var stream in StemStreams)
-        {
-            var currentStreamLength = Bass.BASS_ChannelGetLength(stream.Value);
-            if (currentStreamLength > streamLength)
-            {
-                streamLength = currentStreamLength;
-                longestStream = stream.Key;
-            }
-        }
-        SongLength = (float)Bass.BASS_ChannelBytes2Seconds(StemStreams[longestStream], streamLength);
-        return longestStream;
-    }
-
-    /// <summary>
-    /// Create BASS stream from a file path with a StemType identifier.
-    /// </summary>
-    /// <param name="stemType">The stem that the BASS stream belongs to.</param>
-    /// <param name="songPath">The file path to create a stream from.</param>
-    /// <exception cref="ArgumentException">Thrown when created stem returns an error (0) from BASS</exception>
-    public void UpdateAudioStream(ChartMetadata.StemType stemType, string songPath)
-    {
-        // Make this asynchronous for later? idk
-        // Create master stream in data set to avoid creating a stream over and over during frequent start/stopping
-        if (StemStreams.ContainsKey(stemType))
-        {
-            Bass.BASS_StreamFree(StemStreams[stemType]); // I think I have to do this to prevent memory leaks? Just doing this to be cautious
-            StemStreams.Remove(stemType); // Flush current value just in case
-        }
-
-        StemStreams.Add(stemType, Bass.BASS_StreamCreateFile(songPath, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_STREAM_PRESCAN));
-
-        if (StemStreams[stemType] == 0) // this is here instead of above to avoid creating 2 streams and only being able to release one of them (which would cause a memory leak) 
-        {
-            throw new ArgumentException($"Bad song stem passed into stream update. Try reloading directory or choosing new file. Debug: (Stem: {stemType})");
-        }
-    }
+    #region Audio Setup
 
     void InitializeBassPlugin()
     {
@@ -171,7 +106,7 @@ public class PluginBassManager : MonoBehaviour
     /// <param name="bytesPerSample">Number of bytes in the original track that each sample represents. Can vary based on encoding.</param>
     /// <returns>Float array of an audio file's sample data.</returns>
     /// <exception cref="ArgumentException">Invalid song path</exception>
-    public float[] GetAudioSamples(ChartMetadata.StemType stem, out long bytesPerSample) // testing path as default value
+    public float[] GetAudioSamples(ChartMetadata.StemType stem, out long bytesPerSample)
     {
         // Step 1: Make BASS stream of song path
         var songPath = ChartMetadata.Stems[stem];
@@ -239,6 +174,101 @@ public class PluginBassManager : MonoBehaviour
             monoSamples[i] = (stereoSamples[i*2] + stereoSamples[i*2 + 1]) / 2; // average both stereo samples
         }
         return monoSamples;
+    }
+
+    /// <summary>
+    /// Generate BASS streams from file paths in Stem dict in ChartMetadata.
+    /// </summary>
+    void UpdateStemStreams()
+    {
+        foreach (var stem in ChartMetadata.Stems)
+        {
+            try
+            {
+                UpdateAudioStream(stem.Key, stem.Value);
+            }
+            catch
+            {
+                continue;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Create BASS stream from a file path with a StemType identifier.
+    /// </summary>
+    /// <param name="stemType">The stem that the BASS stream belongs to.</param>
+    /// <param name="songPath">The file path to create a stream from.</param>
+    /// <exception cref="ArgumentException">Thrown when created stem returns an error (0) from BASS</exception>
+    public void UpdateAudioStream(ChartMetadata.StemType stemType, string songPath)
+    {
+        // Make this asynchronous for later? idk
+        // Create master stream in data set to avoid creating a stream over and over during frequent start/stopping
+        if (StemStreams.ContainsKey(stemType))
+        {
+            Bass.BASS_StreamFree(StemStreams[stemType]); // I think I have to do this to prevent memory leaks? Just doing this to be cautious
+            StemStreams.Remove(stemType); // Flush current value just in case
+        }
+
+        StemStreams.Add(stemType, Bass.BASS_StreamCreateFile(songPath, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_STREAM_PRESCAN));
+
+        if (StemStreams[stemType] == 0) // this is here instead of above to avoid creating 2 streams and only being able to release one of them (which would cause a memory leak) 
+        {
+            throw new ArgumentException($"Bad song stem passed into stream update. Try reloading directory or choosing new file. Debug: (Stem: {stemType})");
+        }
+    }
+
+    /// <summary>
+    /// Link all BASS streams to the longest BASS stream for playback purposes.
+    /// </summary>
+    private void LinkStreams()
+    {
+        // In order to play all the streams in sync they must be linked together
+        // All audio must be linked to the longest stream so that pausing the longer stream is possible after other shorter ones have ended
+        foreach (var stream in StemStreams)
+        {
+            Bass.BASS_ChannelSetLink(StemStreams[StreamLink], stream.Value);
+        }
+    }
+
+    /// <summary>
+    /// Get the longest audio file to link playing all other stems to. Needed to properly play audio synchronously.
+    /// </summary>
+    /// <returns>Stem with longest playback length</returns>
+    private ChartMetadata.StemType GetLongestStream()
+    {
+        // Basic max value finder algorithm: get length of each stem, overwrite current longest stem if new longest is found
+        long streamLength = 0;
+        ChartMetadata.StemType longestStream = 0; // if this function returns 0 then it shows nothing has been loaded
+        foreach(var stream in StemStreams)
+        {
+            var currentStreamLength = Bass.BASS_ChannelGetLength(stream.Value);
+            if (currentStreamLength > streamLength)
+            {
+                streamLength = currentStreamLength;
+                longestStream = stream.Key;
+            }
+        }
+        SongLength = (float)Bass.BASS_ChannelBytes2Seconds(StemStreams[longestStream], streamLength);
+        return longestStream;
+    }
+
+    #endregion
+
+    #region Audio Editing
+
+    public static void ChangeAudioSpeed(float newSpeed)
+    {
+        foreach (var stream in StemStreams)
+        {
+            Bass.BASS_ChannelSetAttribute(StemStreams[stream.Key], BASSAttribute.BASS_ATTRIB_FREQ, Bass.BASS_ChannelGetInfo(StemStreams[stream.Key]).freq * newSpeed);
+        }
+    }
+
+
+    public static void ChangeStemVolume(ChartMetadata.StemType stem, float newVolume)
+    {
+        Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, newVolume);
     }
 
     /// <summary>
@@ -312,19 +342,6 @@ public class PluginBassManager : MonoBehaviour
     }
     
     /// <summary>
-    /// Link all BASS streams to the longest BASS stream for playback
-    /// </summary>
-    private void LinkStreams()
-    {
-        // In order to play all the streams in sync they must be linked together
-        // All audio must be linked to the longest stream so that pausing the longer stream is possible after other shorter ones have ended
-        foreach (var stream in StemStreams)
-        {
-            Bass.BASS_ChannelSetLink(StemStreams[StreamLink], stream.Value);
-        }
-    }
-
-    /// <summary>
     /// Get the current audio position of the main audio playback stem.
     /// </summary>
     /// <returns></returns>
@@ -333,10 +350,6 @@ public class PluginBassManager : MonoBehaviour
         return Bass.BASS_ChannelBytes2Seconds(StemStreams[StreamLink], Bass.BASS_ChannelGetPosition(StemStreams[StreamLink]));
     }
 
-    void OnApplicationQuit()
-    {
-        Bass.BASS_Free();     
-    }
-    
+    #endregion
     // need to free streams when switching to different tabs too
 }

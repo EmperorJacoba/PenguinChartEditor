@@ -43,7 +43,7 @@ public class StemVolumeEditor : MonoBehaviour
 
         entryBox.text = newValue.ToString();
 
-        PluginBassManager.UpdateStemVolume(StemType, newValue);
+        PluginBassManager.ChangeStemVolume(StemType, newValue);
     }
 
     /// <summary>
@@ -67,6 +67,6 @@ public class StemVolumeEditor : MonoBehaviour
 
         slider.value = valueAsFloat;
 
-        PluginBassManager.UpdateStemVolume(StemType, valueAsFloat);
+        PluginBassManager.ChangeStemVolume(StemType, valueAsFloat);
     }
 }
