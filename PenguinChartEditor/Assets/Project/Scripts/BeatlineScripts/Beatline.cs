@@ -136,7 +136,6 @@ public class Beatline : MonoBehaviour
         get { return _bt; }
         set
         {
-            if (value == _bt) return;
             UpdateThickness(value);
             _bt = value;
         }
