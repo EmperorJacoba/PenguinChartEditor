@@ -43,31 +43,32 @@ public class BeatlinePreviewer : MonoBehaviour
 
         var tickInterval = ChartMetadata.ChartResolution / ((float)DivisionChanger.CurrentDivision / 4);
 
-        var divisionBasisTick = cursorTickTime - SongTimelineManager.CalculateLastTSEventTick(cursorTickTime);
-
+        var divisionBasisTick = cursorTickTime - SongTimelineManager.FindLastBarline(cursorTickTime);
         var remainder = divisionBasisTick % tickInterval;
 
         int gridSnappedTick;
         if (remainder > (tickInterval / 2))
         {
-            var inverseRemainder = tickInterval - remainder;
-            gridSnappedTick = (int)Math.Floor(cursorTickTime + inverseRemainder);
+            gridSnappedTick = (int)Math.Floor(cursorTickTime - remainder + tickInterval);
         }
         else
         {
             gridSnappedTick = (int)Math.Floor(cursorTickTime - remainder);
         }
 
+
         beatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(gridSnappedTick) - startTime)/timeShown);
         if (percentOfScreenHorizontal < 0.5f)
         {
             beatline.BPMLabelVisible = false;
             beatline.TSLabelVisible = true;
+            beatline.TSLabelText = $"{SongTimelineManager.TimeSignatureEvents[SongTimelineManager.FindLastTSEventTick(gridSnappedTick)].Item1} / {SongTimelineManager.TimeSignatureEvents[SongTimelineManager.FindLastTSEventTick(gridSnappedTick)].Item2}";
         }
         else
         {
             beatline.BPMLabelVisible = true;
             beatline.TSLabelVisible = false;
+            beatline.BPMLabelText = SongTimelineManager.TempoEvents[SongTimelineManager.FindLastTempoEventTick(gridSnappedTick)].Item1.ToString();
         }
         // get current cursor position
         // calculate the timestamp and following tick time

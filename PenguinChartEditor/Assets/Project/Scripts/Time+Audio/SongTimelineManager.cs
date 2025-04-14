@@ -231,7 +231,7 @@ public class SongTimelineManager : MonoBehaviour
 
     public static double ConvertTickTimeToSeconds(int ticktime)
     {
-        var lastTickEvent = FindPreviousTempoEventTick(ticktime);
+        var lastTickEvent = FindLastTempoEventTick(ticktime);
         // Formula from .chart format specifications
         return ((ticktime - lastTickEvent) / (double)ChartMetadata.ChartResolution * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1) + TempoEvents[lastTickEvent].Item2;
     }
@@ -241,7 +241,7 @@ public class SongTimelineManager : MonoBehaviour
     /// </summary>
     /// <param name="currentTick"></param>
     /// <returns>The tick-time timestamp of the previous tempo event.</returns>
-    public static int FindPreviousTempoEventTick(int currentTick)
+    public static int FindLastTempoEventTick(int currentTick)
     {
         var tickTimeKeys = TempoEvents.Keys.ToList();
 
@@ -272,9 +272,9 @@ public class SongTimelineManager : MonoBehaviour
     /// </summary>
     /// <param name="currentTick"></param>
     /// <returns>The tick-time timestamp of the next beatline event.</returns>
-    public static int CalculateNextBeatlineEvent(int currentTick)
+    public static int FindNextBeatlineEvent(int currentTick)
     {
-        var ts = CalculateLastTSEventTick(currentTick);
+        var ts = FindLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
         var tickInterval = ChartMetadata.ChartResolution / ((float)TimeSignatureEvents[ts].Item2 / 2);
         int numIntervals = (int)Math.Round(tickDiff / tickInterval);
@@ -287,7 +287,7 @@ public class SongTimelineManager : MonoBehaviour
     /// </summary>
     /// <param name="currentTick"></param>
     /// <returns>The tick-time timestamp of the last time signature event.</returns>
-    public static int CalculateLastTSEventTick(int currentTick)
+    public static int FindLastTSEventTick(int currentTick)
     {
         var tsEvents = TimeSignatureEvents.Keys.ToList();
 
@@ -316,6 +316,16 @@ public class SongTimelineManager : MonoBehaviour
         return ts;
     }
 
+    public static int FindLastBarline(int currentTick)
+    {
+        var ts = FindLastTSEventTick(currentTick);
+        var tickDiff = currentTick - ts;
+        var tickInterval = (ChartMetadata.ChartResolution*(float)TimeSignatureEvents[ts].Item1) / ((float)TimeSignatureEvents[ts].Item2 / 4);
+        int numIntervals = (int)Math.Floor(tickDiff / tickInterval);
+
+        return (int)(ts + numIntervals * tickInterval);
+    }
+
     /// <summary>
     /// Calculate the amount of divisions are needed from the chart resolution for each first-division event.
     /// <para>Example: TS = 4/4 -> Returns 1, because chart resolution will need to be divided by 1 to reach the number of ticks between first-division (in this case quarter note) events.</para>
@@ -326,7 +336,7 @@ public class SongTimelineManager : MonoBehaviour
     /// <returns>The factor to multiply the chart resolution by to get the first-division tick-time.</returns>
     public static float CalculateDivision(int tick)
     {
-        int tsTick = CalculateLastTSEventTick(tick);
+        int tsTick = FindLastTSEventTick(tick);
         return (float)TimeSignatureEvents[tsTick].Item2 / 4;
     }
 
@@ -352,7 +362,7 @@ public class SongTimelineManager : MonoBehaviour
     /// <returns>The type of beatline at this tick.</returns>
     public static Beatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos)
     {
-        var lastTSTickTimePos = CalculateLastTSEventTick(beatlineTickTimePos); 
+        var lastTSTickTimePos = FindLastTSEventTick(beatlineTickTimePos); 
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
 
         // if the difference is divisible by the # of first-division notes in a bar, it's a barline

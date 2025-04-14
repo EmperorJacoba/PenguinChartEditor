@@ -366,7 +366,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1022341178}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1496,6 +1496,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baf07aa6adfc1404880c5a452cca5d61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entryBox: {fileID: 1354881129}
 --- !u!1 &404017150
 GameObject:
   m_ObjectHideFlags: 0
@@ -3015,7 +3016,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "784\u200B"
+  m_text: "\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f01f78e4bb3db1642887bb9e518db10d, type: 2}
   m_sharedMaterial: {fileID: 7044649426212132050, guid: f01f78e4bb3db1642887bb9e518db10d, type: 2}
@@ -6778,7 +6779,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: 784
+  m_Text: 
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
