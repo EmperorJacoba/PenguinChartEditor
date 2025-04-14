@@ -18,11 +18,7 @@ public class TempoManager : MonoBehaviour
     /// </summary>
     void UpdateBeatlines()
     {
-        // Get the period of time shown on screen and the amount of time shown for position and bounds calculations 
-        (var startTime, var endTime) = waveformManager.GetDisplayedAudio();
-        int startTick = SongTimelineManager.ConvertSecondsToTickTime((float)startTime);
-        int endTick = SongTimelineManager.ConvertSecondsToTickTime((float)endTime);
-        var timeShown = endTime - startTime;
+        waveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
 
         int currentBeatline = 0;
         // Generate the division and half-division beatlines

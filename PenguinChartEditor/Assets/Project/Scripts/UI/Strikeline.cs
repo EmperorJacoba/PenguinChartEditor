@@ -5,17 +5,8 @@ using UnityEngine;
 /// </summary>
 public class Strikeline : MonoBehaviour
 {
-    GameObject screenReference;
-    RectTransform screenReferenceRt;
-    RectTransform strikelineRt;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
-    {
-        screenReference = GameObject.Find("ScreenReference");
-        screenReferenceRt = screenReference.GetComponent<RectTransform>();
-        strikelineRt = gameObject.GetComponent<RectTransform>();
-    }
+    [SerializeField] RectTransform screenReferenceRt;
+    [SerializeField] RectTransform strikelineRt;
 
     /// <summary>
     /// Calculate the proportion of the screen that the strikline is up by

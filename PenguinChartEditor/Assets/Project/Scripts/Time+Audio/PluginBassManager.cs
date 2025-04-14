@@ -100,7 +100,7 @@ public class PluginBassManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Simplify an audio file into x samples taken every CompressedArrayResolution milliseconds from the audio file.
+    /// Simplify an audio file into x samples taken every ArrayResolution milliseconds from the audio file.
     /// </summary>
     /// <param name="songPath">File explorer path to the audio file.</param>
     /// <param name="bytesPerSample">Number of bytes in the original track that each sample represents. Can vary based on encoding.</param>

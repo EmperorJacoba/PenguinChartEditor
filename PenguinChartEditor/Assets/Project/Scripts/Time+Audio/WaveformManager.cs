@@ -280,4 +280,12 @@ public class WaveformManager : MonoBehaviour
 
         return (startPoint, endPoint);
     }
+
+    public void GetCurrentDisplayedWaveformInfo(out int startTick, out int endTick, out double timeShown, out double startTime, out double endTime)
+    {
+        (startTime, endTime) = GetDisplayedAudio();
+        startTick = SongTimelineManager.ConvertSecondsToTickTime((float)startTime);
+        endTick = SongTimelineManager.ConvertSecondsToTickTime((float)endTime);
+        timeShown = endTime - startTime;
+    }
 } 

@@ -1453,6 +1453,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 390477147}
+  - component: {fileID: 390477148}
   m_Layer: 5
   m_Name: Division
   m_TagString: Untagged
@@ -1483,6 +1484,18 @@ RectTransform:
   m_AnchoredPosition: {x: 206.49997, y: -25}
   m_SizeDelta: {x: 383, y: 98}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &390477148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390477146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: baf07aa6adfc1404880c5a452cca5d61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &404017150
 GameObject:
   m_ObjectHideFlags: 0
@@ -2001,12 +2014,6 @@ MonoBehaviour:
   StopButton: {fileID: 1400428973}
   SongTimestampLabel: {fileID: 1908588371}
   SongLengthLabel: {fileID: 2125511247}
-  HyperspeedSlider: {fileID: 1243331546}
-  HyperspeedInput: {fileID: 1824017404}
-  AmplitudeSlider: {fileID: 1252915034}
-  AmplitudeInput: {fileID: 404017152}
-  PlaybackSpeedSlider: {fileID: 129040216}
-  PlaybackSpeedInput: {fileID: 537570158}
   DivisionInput: {fileID: 1354881129}
   IncreaseDivisionButton: {fileID: 795277016}
   DecreaseDivisionButton: {fileID: 2130860644}
@@ -4149,7 +4156,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 795277017}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 390477148}
+        m_TargetAssemblyTypeName: DivisionChanger, Assembly-CSharp
+        m_MethodName: IncreaseDivision
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &795277017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6822,7 +6841,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1368999640}
   - component: {fileID: 1368999642}
-  - component: {fileID: 1368999641}
   m_Layer: 5
   m_Name: Strikeline
   m_TagString: Untagged
@@ -6852,18 +6870,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0.5, y: 180}
   m_SizeDelta: {x: 648, y: 23}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1368999641
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1368999639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 767b38e40f677ad4fa50ac42b8a0c907, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1368999642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6876,6 +6882,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 767b38e40f677ad4fa50ac42b8a0c907, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  screenReferenceRt: {fileID: 1489170079}
+  strikelineRt: {fileID: 1368999640}
 --- !u!1 &1369755911
 GameObject:
   m_ObjectHideFlags: 0
@@ -9972,7 +9980,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2130860645}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 390477148}
+        m_TargetAssemblyTypeName: DivisionChanger, Assembly-CSharp
+        m_MethodName: DecreaseDivision
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2130860645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10085,7 +10105,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000061035156
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -10103,11 +10123,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: BeatlinePreviewer
       objectReference: {fileID: 0}
+    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
+      propertyPath: beatline
+      value: 
+      objectReference: {fileID: 7766536033849242650}
+    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
+      propertyPath: waveformManager
+      value: 
+      objectReference: {fileID: 33159347}
+    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
+      propertyPath: screenReferenceRt
+      value: 
+      objectReference: {fileID: 1489170079}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ae339497fba1d747be207a08701693b, type: 3}
+--- !u!114 &7766536033849242650 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2965000268170862340, guid: 9ae339497fba1d747be207a08701693b, type: 3}
+  m_PrefabInstance: {fileID: 6058908930944286159}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 428f2a1a0e615db4596c578f112caad8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7928344770752854848 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
