@@ -326,6 +326,39 @@ public class SongTimelineManager : MonoBehaviour
         return (int)(ts + numIntervals * tickInterval);
     }
 
+    public static void RecalculateTempoEventDictionary(int modifiedTick)
+    {
+        SortedDictionary<int, (float, float)> outputTempoEventsDict = new();
+
+        var tickEvents = TempoEvents.Keys.ToList();
+        var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick);
+
+        if (positionOfTick == tickEvents.Count - 1) return;
+        for (int i = 0; i <= positionOfTick; i++)
+        {
+            outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, TempoEvents[tickEvents[i]].Item2));
+        }
+
+        double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Item2;
+        for (int i = positionOfTick + 1; i < tickEvents.Count; i++)
+        {
+            double calculatedTimeSecondDifference = 0;
+
+            if (i > 0)
+            {
+                // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
+                calculatedTimeSecondDifference = 
+                (tickEvents[i] - tickEvents[i - 1]) / (double)ChartMetadata.ChartResolution * 60 / TempoEvents[tickEvents[i - 1]].Item1; // 320 is sub-in for chart res right now b/c that's what i use personally
+            }
+
+            currentSongTime += calculatedTimeSecondDifference;
+            outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, (float)currentSongTime));
+            Debug.Log($"{tickEvents[i]}, {TempoEvents[tickEvents[i - 1]].Item1}, {currentSongTime}");
+        }
+
+        TempoEvents = outputTempoEventsDict;
+    }
+
     /// <summary>
     /// Calculate the amount of divisions are needed from the chart resolution for each first-division event.
     /// <para>Example: TS = 4/4 -> Returns 1, because chart resolution will need to be divided by 1 to reach the number of ticks between first-division (in this case quarter note) events.</para>

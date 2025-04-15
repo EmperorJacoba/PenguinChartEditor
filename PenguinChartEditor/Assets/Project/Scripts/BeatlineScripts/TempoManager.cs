@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TempoManager : MonoBehaviour
 {  
-    private WaveformManager waveformManager;
+    private static WaveformManager waveformManager;
 
     void Awake()
     {
@@ -16,7 +16,7 @@ public class TempoManager : MonoBehaviour
     /// <summary>
     /// Fires every time the visible waveform changes. Used to update beatlines to new displayed waveform.
     /// </summary>
-    void UpdateBeatlines()
+    public static void UpdateBeatlines()
     {
         waveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
 
@@ -31,8 +31,9 @@ public class TempoManager : MonoBehaviour
         {
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
+            workedBeatline.HeldTick = currentTick;
 
-            workedBeatline.CheckForEvents(currentTick);
+            workedBeatline.CheckForEvents();
 
             workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown); 
 
@@ -40,33 +41,33 @@ public class TempoManager : MonoBehaviour
             workedBeatline.Type = SongTimelineManager.CalculateBeatlineType(currentTick);
 
             // Set up tick for next beatline's calculations
-            currentTick += IncreaseByHalfDivision(currentTick);
+            currentTick += MiscTools.IncreaseByHalfDivision(currentTick);
         }
 
         // Get list of tempo events that *should* be displayed during the visible window  
-        var ignoredKeys = SongTimelineManager.TempoEvents.Keys.Where(key => key >= startTick && key <= endTick && key % IncreaseByHalfDivision(key) != 0).ToHashSet();
-        var ignoredTSKeys = SongTimelineManager.TimeSignatureEvents.Keys.Where(key => key >= startTick && key <= endTick && key % IncreaseByHalfDivision(key) != 0).ToHashSet();
+        var ignoredKeys = SongTimelineManager.TempoEvents.Keys.Where(key => key >= startTick && key <= endTick && key % MiscTools.IncreaseByHalfDivision(key) != 0).ToHashSet();
+        var ignoredTSKeys = SongTimelineManager.TimeSignatureEvents.Keys.Where(key => key >= startTick && key <= endTick && key % MiscTools.IncreaseByHalfDivision(key) != 0).ToHashSet();
 
         ignoredKeys.UnionWith(ignoredTSKeys);
 
         foreach (var tick in ignoredKeys)
         {
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
-            workedBeatline.CheckForEvents(tick);
+            workedBeatline.HeldTick = tick;
+
+            workedBeatline.CheckForEvents();
 
             workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(tick) - startTime)/timeShown); 
 
             workedBeatline.Type = Beatline.BeatlineType.none;
+
             currentBeatline++;
         }
 
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);
     }
 
-    int IncreaseByHalfDivision(int tick)
-    {
-        return (int)(ChartMetadata.ChartResolution / SongTimelineManager.CalculateDivision(tick) / 2);
-    }
+
 
     // Implement moving beatlines and actually tempo mapping
         // They move only in Y-direction -> X-dir is locked

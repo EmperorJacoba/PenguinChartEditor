@@ -135,6 +135,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""EventSpawnClick"",
+                    ""type"": ""Button"",
+                    ""id"": ""ba7b8267-62c6-4bfc-9b10-1b68da7f9895"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -190,6 +199,17 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""PreviewMousePos"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c9a5fb3d-af82-4648-aa34-486b54f9e6a0"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""EventSpawnClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1256,6 +1276,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_MiddleMouseClick = m_Charting.FindAction("MiddleMouseClick", throwIfNotFound: true);
         m_Charting_MiddleScrollMousePos = m_Charting.FindAction("MiddleScrollMousePos", throwIfNotFound: true);
         m_Charting_PreviewMousePos = m_Charting.FindAction("PreviewMousePos", throwIfNotFound: true);
+        m_Charting_EventSpawnClick = m_Charting.FindAction("EventSpawnClick", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1366,6 +1387,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_MiddleMouseClick;
     private readonly InputAction m_Charting_MiddleScrollMousePos;
     private readonly InputAction m_Charting_PreviewMousePos;
+    private readonly InputAction m_Charting_EventSpawnClick;
     /// <summary>
     /// Provides access to input actions defined in input action map "Charting".
     /// </summary>
@@ -1397,6 +1419,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Charting/PreviewMousePos".
         /// </summary>
         public InputAction @PreviewMousePos => m_Wrapper.m_Charting_PreviewMousePos;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/EventSpawnClick".
+        /// </summary>
+        public InputAction @EventSpawnClick => m_Wrapper.m_Charting_EventSpawnClick;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1438,6 +1464,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @PreviewMousePos.started += instance.OnPreviewMousePos;
             @PreviewMousePos.performed += instance.OnPreviewMousePos;
             @PreviewMousePos.canceled += instance.OnPreviewMousePos;
+            @EventSpawnClick.started += instance.OnEventSpawnClick;
+            @EventSpawnClick.performed += instance.OnEventSpawnClick;
+            @EventSpawnClick.canceled += instance.OnEventSpawnClick;
         }
 
         /// <summary>
@@ -1464,6 +1493,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @PreviewMousePos.started -= instance.OnPreviewMousePos;
             @PreviewMousePos.performed -= instance.OnPreviewMousePos;
             @PreviewMousePos.canceled -= instance.OnPreviewMousePos;
+            @EventSpawnClick.started -= instance.OnEventSpawnClick;
+            @EventSpawnClick.performed -= instance.OnEventSpawnClick;
+            @EventSpawnClick.canceled -= instance.OnEventSpawnClick;
         }
 
         /// <summary>
@@ -1983,6 +2015,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPreviewMousePos(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "EventSpawnClick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnEventSpawnClick(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

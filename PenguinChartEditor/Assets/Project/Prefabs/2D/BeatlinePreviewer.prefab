@@ -458,11 +458,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 428f2a1a0e615db4596c578f112caad8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bpmLabelText: {fileID: 959496874554841439}
+  preview: 1
   bpmLabel: {fileID: 3658754775355419620}
   bpmLabelRt: {fileID: 6237529782501553827}
+  bpmLabelEntryBox: {fileID: 0}
+  bpmLabelText: {fileID: 959496874554841439}
   tsLabel: {fileID: 1766708339074845331}
   tsLabelRt: {fileID: 4005747397363616516}
+  tsLabelEntryBox: {fileID: 0}
   tsLabelText: {fileID: 4514703662007926241}
   line: {fileID: 3447600175084081201}
 --- !u!114 &6097872727427922386
@@ -477,6 +480,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 604db0153aa652e4c8eb0196ab9da536, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waveformManager: {fileID: 0}
+  beatline: {fileID: 0}
+  screenReferenceRt: {fileID: 0}
+  editMode: 1
 --- !u!1 &7056621722754346658
 GameObject:
   m_ObjectHideFlags: 0

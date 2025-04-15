@@ -1,6 +1,7 @@
+using System;
+using System.Diagnostics;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// The script attached to the beatline prefab. 
@@ -11,19 +12,16 @@ public class Beatline : MonoBehaviour
 {
     #region Components
 
-    /// <summary>
-    /// The BPM label text on the beatline's label.
-    /// </summary>
-    [SerializeField] TextMeshProUGUI bpmLabelText;
+    [SerializeField] bool isPreviewBeatline;
 
-    /// <summary>
-    /// The container for the label object and the label text.
-    /// </summary>
     [SerializeField] GameObject bpmLabel;
     [SerializeField] RectTransform bpmLabelRt;
+    [SerializeField] TMP_InputField bpmLabelEntryBox;
+    [SerializeField] TextMeshProUGUI bpmLabelText;
 
     [SerializeField] GameObject tsLabel;
     [SerializeField] RectTransform tsLabelRt;
+    [SerializeField] TMP_InputField tsLabelEntryBox;
     [SerializeField] TextMeshProUGUI tsLabelText;
 
     /// <summary>
@@ -56,6 +54,7 @@ public class Beatline : MonoBehaviour
     #endregion
     #region Properties
 
+    public int HeldTick { get; set; } = 0;
     /// <summary>
     /// Is the beatline currently visible?
     /// </summary>
@@ -83,7 +82,7 @@ public class Beatline : MonoBehaviour
         set
         {
             bpmLabel.SetActive(value);
-            UpdateLabelPositions();
+            UpdateLabels();
         }
     }
 
@@ -111,7 +110,7 @@ public class Beatline : MonoBehaviour
         set
         {
             tsLabel.SetActive(value);
-            UpdateLabelPositions();
+            UpdateLabels();
         }
     }
 
@@ -125,6 +124,36 @@ public class Beatline : MonoBehaviour
         {
             TSLabelVisible = true;
             tsLabelText.text = value;
+        }
+    }
+
+    public BeatlinePreviewer.PreviewType EditType
+    {
+        set
+        {
+            switch (value)
+            {
+                case BeatlinePreviewer.PreviewType.none:
+                    tsLabelEntryBox.gameObject.SetActive(false);
+                    bpmLabelEntryBox.gameObject.SetActive(false);
+                    break;
+                case BeatlinePreviewer.PreviewType.BPM:
+                    bpmLabelEntryBox.gameObject.SetActive(true);
+                    tsLabelEntryBox.gameObject.SetActive(false);
+
+                    bpmLabelEntryBox.ActivateInputField();
+                    bpmLabelEntryBox.text = SongTimelineManager.TempoEvents[HeldTick].Item1.ToString();
+                    BeatlinePreviewer.editMode = false;
+                    break;
+                case BeatlinePreviewer.PreviewType.TS:
+                    tsLabelEntryBox.gameObject.SetActive(true);
+                    bpmLabelEntryBox.gameObject.SetActive(false);
+
+                    tsLabelEntryBox.ActivateInputField();
+                    BeatlinePreviewer.editMode = false;
+                    tsLabelEntryBox.text = $"{SongTimelineManager.TimeSignatureEvents[HeldTick].Item1} / {SongTimelineManager.TimeSignatureEvents[HeldTick].Item2}";
+                    break;
+            }
         }
     }
 
@@ -159,13 +188,13 @@ public class Beatline : MonoBehaviour
         newPos[1] = new Vector2(line.GetPosition(1).x, (float)newYPos);
         line.SetPositions(newPos);
 
-        UpdateLabelPositions(); // to keep the labels locked to their beatlines
+        UpdateLabels(); // to keep the labels locked to their beatlines
     }
     
     #endregion
     
     #region Internal Functions
-    private void UpdateLabelPositions()
+    private void UpdateLabels()
     {
         bpmLabel.transform.localPosition = new Vector3(bpmLabel.transform.localPosition.x, line.GetPosition(1).y - (bpmLabelRt.rect.height / 2));
         tsLabel.transform.localPosition = new Vector3(tsLabel.transform.localPosition.x, line.GetPosition(0).y - (tsLabelRt.rect.height / 2));
@@ -190,29 +219,88 @@ public class Beatline : MonoBehaviour
     void Start()
     {
         BPMLabelVisible = false;
+        if (!isPreviewBeatline)
+        {
+            bpmLabelEntryBox.onEndEdit.AddListener(x => HandleBPMEndEdit(x));
+            tsLabelEntryBox.onEndEdit.AddListener(x => HandleTSEndEdit(x));
+        }
     }
 
-    public void CheckForEvents(int tickTimestamp)
+    public void CheckForEvents()
     {
-        if (SongTimelineManager.TempoEvents.ContainsKey(tickTimestamp))
+        if (SongTimelineManager.TempoEvents.ContainsKey(HeldTick))
         {
             BPMLabelVisible = true;
-            BPMLabelText = $"{SongTimelineManager.TempoEvents[tickTimestamp].Item1}";
+            BPMLabelText = $"{SongTimelineManager.TempoEvents[HeldTick].Item1}";
         }
         else
         {
             BPMLabelVisible = false;
         }
 
-        if (SongTimelineManager.TimeSignatureEvents.ContainsKey(tickTimestamp))
+        if (SongTimelineManager.TimeSignatureEvents.ContainsKey(HeldTick))
         {
             TSLabelVisible = true;
-            TSLabelText = $"{SongTimelineManager.TimeSignatureEvents[tickTimestamp].Item1} / {SongTimelineManager.TimeSignatureEvents[tickTimestamp].Item2}";
+            TSLabelText = $"{SongTimelineManager.TimeSignatureEvents[HeldTick].Item1} / {SongTimelineManager.TimeSignatureEvents[HeldTick].Item2}";
         }
         else
         {
             TSLabelVisible = false;
         }
+
+        if (HeldTick == BeatlinePreviewer.focusedTick.Item1) EditType = BeatlinePreviewer.focusedTick.Item2;
+        else EditType = BeatlinePreviewer.PreviewType.none;
     }
     #endregion
+
+    public void HandleBPMEndEdit(string newBPM)
+    {
+        SongTimelineManager.TempoEvents[HeldTick] = (ProcessBPMChange(newBPM), SongTimelineManager.TempoEvents[HeldTick].Item2);
+        SongTimelineManager.RecalculateTempoEventDictionary(HeldTick);
+
+        BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
+        BeatlinePreviewer.editMode = true;
+
+        bpmLabelEntryBox.gameObject.SetActive(false);
+        TempoManager.UpdateBeatlines();
+    }
+
+    public void HandleBPMDeselect()
+    {
+        BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
+        bpmLabelEntryBox.gameObject.SetActive(false);
+    }
+
+    public void HandleTSEndEdit(string newTS)
+    {
+        BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
+        BeatlinePreviewer.editMode = true;
+        tsLabelEntryBox.gameObject.SetActive(false);   
+    }
+
+    public void HandleTSDeselect()
+    {
+        BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
+        tsLabelEntryBox.gameObject.SetActive(false);
+    }
+
+    float ProcessBPMChange(string newBPM)
+    {
+        var bpmAsFloat = float.Parse(newBPM);
+        if (bpmAsFloat == 0 || bpmAsFloat > 1000.0f)
+        {
+            return SongTimelineManager.TempoEvents[HeldTick].Item1;
+        }
+        bpmAsFloat = (float)Math.Round(bpmAsFloat, 3);
+        return bpmAsFloat;
+    }
 }
+
+// Add code to handle text box actions and committing changes to dictionary
+// Edit by typing
+// Edit by dragging
+// Edit by adding
+// Edit by deleting
+// Anchors
+// Saving
+// Keyybindsa

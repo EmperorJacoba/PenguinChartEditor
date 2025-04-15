@@ -49,6 +49,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "EventSpawnClick",
+                    "type": "Button",
+                    "id": "ba7b8267-62c6-4bfc-9b10-1b68da7f9895",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -104,6 +113,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "PreviewMousePos",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c9a5fb3d-af82-4648-aa34-486b54f9e6a0",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "EventSpawnClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
