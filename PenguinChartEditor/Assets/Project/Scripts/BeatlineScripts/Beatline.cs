@@ -255,7 +255,7 @@ public class Beatline : MonoBehaviour
 
     public void HandleBPMEndEdit(string newBPM)
     {
-        SongTimelineManager.TempoEvents[HeldTick] = (ProcessBPMChange(newBPM), SongTimelineManager.TempoEvents[HeldTick].Item2);
+        SongTimelineManager.TempoEvents[HeldTick] = (ProcessUnsafeBPMString(newBPM), SongTimelineManager.TempoEvents[HeldTick].Item2);
         SongTimelineManager.RecalculateTempoEventDictionary(HeldTick);
 
         BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
@@ -269,22 +269,26 @@ public class Beatline : MonoBehaviour
     {
         BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
         bpmLabelEntryBox.gameObject.SetActive(false);
+        TempoManager.UpdateBeatlines();
     }
 
     public void HandleTSEndEdit(string newTS)
     {
+        SongTimelineManager.TimeSignatureEvents[HeldTick] = (ProcessUnsafeTS(newTS));
         BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
         BeatlinePreviewer.editMode = true;
         tsLabelEntryBox.gameObject.SetActive(false);   
+        TempoManager.UpdateBeatlines();
     }
 
     public void HandleTSDeselect()
     {
         BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
         tsLabelEntryBox.gameObject.SetActive(false);
+        TempoManager.UpdateBeatlines();
     }
 
-    float ProcessBPMChange(string newBPM)
+    float ProcessUnsafeBPMString(string newBPM)
     {
         var bpmAsFloat = float.Parse(newBPM);
         if (bpmAsFloat == 0 || bpmAsFloat > 1000.0f)
@@ -293,6 +297,22 @@ public class Beatline : MonoBehaviour
         }
         bpmAsFloat = (float)Math.Round(bpmAsFloat, 3);
         return bpmAsFloat;
+    }
+
+    (int, int) ProcessUnsafeTS(string newTS)
+    {
+        var currentTS = SongTimelineManager.TimeSignatureEvents[HeldTick];
+        var seperatedTS = newTS.Split("/");
+        if (seperatedTS.Length == 1) return currentTS;
+
+        int num;
+        if (!int.TryParse(seperatedTS[0], out num)) return currentTS;
+
+        int denom;
+        if (!int.TryParse(seperatedTS[1], out denom)) return currentTS;
+        if (!(denom != 0 && (denom & (denom - 1)) == 0)) return currentTS; // taken from https://stackoverflow.com/questions/600293/how-to-check-if-a-number-is-a-power-of-2 
+
+        return (num, denom);
     }
 }
 
@@ -304,3 +324,6 @@ public class Beatline : MonoBehaviour
 // Anchors
 // Saving
 // Keyybindsa
+
+// edit mode bool flipping will not work right right now
+// get better solution
