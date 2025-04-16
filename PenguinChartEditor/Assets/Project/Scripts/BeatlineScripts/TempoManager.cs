@@ -33,6 +33,7 @@ public class TempoManager : MonoBehaviour
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
             workedBeatline.HeldTick = currentTick;
 
+
             workedBeatline.CheckForEvents();
 
             workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown); 
@@ -54,6 +55,7 @@ public class TempoManager : MonoBehaviour
         {
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
             workedBeatline.HeldTick = tick;
+            Debug.Log($"{tick}, {currentBeatline}");
 
             workedBeatline.CheckForEvents();
 
@@ -66,17 +68,4 @@ public class TempoManager : MonoBehaviour
 
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);
     }
-
-
-
-    // Implement moving beatlines and actually tempo mapping
-        // They move only in Y-direction -> X-dir is locked
-
-    // Next steps:
-    // Label bar numbers
-    // Add keybinds for basic functionality
-    // Add editing functionality for beatlines and time signatures
-    // Add volume changing
-    // Add speed changing
-
 }

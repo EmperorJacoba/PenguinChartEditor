@@ -329,16 +329,3 @@ public class Beatline : MonoBehaviour
         return (num, denom);
     }
 }
-
-// Add code to handle text box actions and committing changes to dictionary
-// Edit by typing
-// Edit by dragging
-// Edit by adding
-// Edit by deleting
-// Anchors
-// Saving
-// Keyybindsa
-
-// edit mode bool flipping will not work right right now
-// get better solution
-// validate time signatures

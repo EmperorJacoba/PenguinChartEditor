@@ -409,16 +409,16 @@ public class SongTimelineManager : MonoBehaviour
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
 
         // if the difference is divisible by the # of first-division notes in a bar, it's a barline
-        if (tsDiff % (ChartMetadata.ChartResolution * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 * (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
+        if (tsDiff % (ChartMetadata.ChartResolution * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 / (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
         {
             return Beatline.BeatlineType.barline;
         }
         // if it's divisible by the first-division, it's a division line
-        else if (tsDiff % (ChartMetadata.ChartResolution * ((float)TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
+        else if (tsDiff % (ChartMetadata.ChartResolution / (float)TimeSignatureEvents[lastTSTickTimePos].Item2 * 4) == 0)
         {
             return Beatline.BeatlineType.divisionLine;
         }
-        else if (tsDiff % (ChartMetadata.ChartResolution * ((float)TimeSignatureEvents[lastTSTickTimePos].Item2 / 8)) == 0)
+        else if (tsDiff % (ChartMetadata.ChartResolution / ((float)TimeSignatureEvents[lastTSTickTimePos].Item2 * 2)) == 0)
         {
             return Beatline.BeatlineType.halfDivisionLine;
         }
