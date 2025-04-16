@@ -54,7 +54,11 @@ public class Beatline : MonoBehaviour
     #endregion
     #region Properties
 
+    /// <summary>
+    /// The tick that this beatline object represents.
+    /// </summary>
     public int HeldTick { get; set; } = 0;
+
     /// <summary>
     /// Is the beatline currently visible?
     /// </summary>
@@ -101,6 +105,9 @@ public class Beatline : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Is the TS label currently visible?
+    /// </summary>
     public bool TSLabelVisible
     {
         get
@@ -114,6 +121,9 @@ public class Beatline : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// The text shown by the TS label. 
+    /// </summary>
     public string TSLabelText
     {
         get
@@ -127,6 +137,9 @@ public class Beatline : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set up input fields to display and activate by passing in the type of label to edit.
+    /// </summary>
     public BeatlinePreviewer.PreviewType EditType
     {
         set
@@ -248,6 +261,8 @@ public class Beatline : MonoBehaviour
             TSLabelVisible = false;
         }
 
+        // Check to see if this tick is being edited.
+        // This does have the side effect of wiping input data upon a scroll. Oops
         if (HeldTick == BeatlinePreviewer.focusedTick.Item1) EditType = BeatlinePreviewer.focusedTick.Item2;
         else EditType = BeatlinePreviewer.PreviewType.none;
     }
@@ -305,11 +320,10 @@ public class Beatline : MonoBehaviour
         var seperatedTS = newTS.Split("/");
         if (seperatedTS.Length == 1) return currentTS;
 
-        int num;
-        if (!int.TryParse(seperatedTS[0], out num)) return currentTS;
+        if (!int.TryParse(seperatedTS[0], out int num)) return currentTS; // dunno why this would fail but i have a feeling
 
-        int denom;
-        if (!int.TryParse(seperatedTS[1], out denom)) return currentTS;
+        if (!int.TryParse(seperatedTS[1], out int denom)) return currentTS;
+        // TS denoms are only valid as a power of 2 (1, 2, 4, 8, etc.)
         if (!(denom != 0 && (denom & (denom - 1)) == 0)) return currentTS; // taken from https://stackoverflow.com/questions/600293/how-to-check-if-a-number-is-a-power-of-2 
 
         return (num, denom);
@@ -327,3 +341,4 @@ public class Beatline : MonoBehaviour
 
 // edit mode bool flipping will not work right right now
 // get better solution
+// validate time signatures

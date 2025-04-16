@@ -316,29 +316,40 @@ public class SongTimelineManager : MonoBehaviour
         return ts;
     }
 
+    /// <summary>
+    /// Calculate the last "1" of a bar from a tick-time timestamp.
+    /// </summary>
+    /// <param name="currentTick">The tick-time timestamp to evaluate from.</param>
+    /// <returns>The tick-time timestamp of the last barline.</returns>
     public static int FindLastBarline(int currentTick)
     {
         var ts = FindLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
-        var tickInterval = (ChartMetadata.ChartResolution*(float)TimeSignatureEvents[ts].Item1) / ((float)TimeSignatureEvents[ts].Item2 / 4);
-        int numIntervals = (int)Math.Floor(tickDiff / tickInterval);
+        var tickInterval = (ChartMetadata.ChartResolution * (float)TimeSignatureEvents[ts].Item1) / ((float)TimeSignatureEvents[ts].Item2 / 4);
+        int numIntervals = (int)Math.Floor(tickDiff / tickInterval); // floor is to snap it back to the minimum interval (get LAST barline, not closest)
 
         return (int)(ts + numIntervals * tickInterval);
     }
 
+    /// <summary>
+    /// Recalculate all tempo events from the tick-time timestamp modified onward.
+    /// </summary>
+    /// <param name="modifiedTick">The last tick modified to update all future ticks from.</param>
     public static void RecalculateTempoEventDictionary(int modifiedTick)
     {
         SortedDictionary<int, (float, float)> outputTempoEventsDict = new();
 
         var tickEvents = TempoEvents.Keys.ToList();
-        var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick);
+        var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick); 
+        if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
 
-        if (positionOfTick == tickEvents.Count - 1) return;
+        // Keep all events before change when creating new dictionary
         for (int i = 0; i <= positionOfTick; i++)
         {
             outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, TempoEvents[tickEvents[i]].Item2));
         }
 
+        // Start new data with the song timestamp of the change
         double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Item2;
         for (int i = positionOfTick + 1; i < tickEvents.Count; i++)
         {
@@ -348,12 +359,11 @@ public class SongTimelineManager : MonoBehaviour
             {
                 // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
                 calculatedTimeSecondDifference = 
-                (tickEvents[i] - tickEvents[i - 1]) / (double)ChartMetadata.ChartResolution * 60 / TempoEvents[tickEvents[i - 1]].Item1; // 320 is sub-in for chart res right now b/c that's what i use personally
+                (tickEvents[i] - tickEvents[i - 1]) / (double)ChartMetadata.ChartResolution * 60 / TempoEvents[tickEvents[i - 1]].Item1;
             }
 
             currentSongTime += calculatedTimeSecondDifference;
             outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, (float)currentSongTime));
-            Debug.Log($"{tickEvents[i]}, {TempoEvents[tickEvents[i - 1]].Item1}, {currentSongTime}");
         }
 
         TempoEvents = outputTempoEventsDict;
@@ -393,7 +403,7 @@ public class SongTimelineManager : MonoBehaviour
     /// </summary>
     /// <param name="beatlineTickTimePos"></param>
     /// <returns>The type of beatline at this tick.</returns>
-    public static Beatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos)
+    public static Beatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos) // NEEDS FIXING
     {
         var lastTSTickTimePos = FindLastTSEventTick(beatlineTickTimePos); 
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
