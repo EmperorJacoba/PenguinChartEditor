@@ -409,7 +409,7 @@ public class SongTimelineManager : MonoBehaviour
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
 
         // if the difference is divisible by the # of first-division notes in a bar, it's a barline
-        if (tsDiff % (ChartMetadata.ChartResolution * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 / (TimeSignatureEvents[lastTSTickTimePos].Item2 / 4)) == 0)
+        if (tsDiff % (ChartMetadata.ChartResolution * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 / (float)(TimeSignatureEvents[lastTSTickTimePos].Item2 / 4.0f)) == 0)
         {
             return Beatline.BeatlineType.barline;
         }
@@ -426,7 +426,4 @@ public class SongTimelineManager : MonoBehaviour
     }
 
     #endregion
-    // have current tick
-    // find last TS event
-    // move into current window to find next event timestamp
 }

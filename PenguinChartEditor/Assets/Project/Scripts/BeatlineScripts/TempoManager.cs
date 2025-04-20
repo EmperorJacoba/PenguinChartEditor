@@ -33,7 +33,6 @@ public class TempoManager : MonoBehaviour
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
             workedBeatline.HeldTick = currentTick;
 
-
             workedBeatline.CheckForEvents();
 
             workedBeatline.UpdateBeatlinePosition((SongTimelineManager.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown); 
@@ -55,7 +54,6 @@ public class TempoManager : MonoBehaviour
         {
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
             workedBeatline.HeldTick = tick;
-            Debug.Log($"{tick}, {currentBeatline}");
 
             workedBeatline.CheckForEvents();
 
