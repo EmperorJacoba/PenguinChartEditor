@@ -41,12 +41,12 @@ public class TempoManager : MonoBehaviour
             workedBeatline.Type = SongTimelineManager.CalculateBeatlineType(currentTick);
 
             // Set up tick for next beatline's calculations
-            currentTick += MiscTools.IncreaseByHalfDivision(currentTick);
+            currentTick += SongTimelineManager.IncreaseByHalfDivision(currentTick);
         }
 
         // Get list of tempo events that *should* be displayed during the visible window  
-        var ignoredKeys = SongTimelineManager.TempoEvents.Keys.Where(key => key >= startTick && key <= endTick && key % MiscTools.IncreaseByHalfDivision(key) != 0).ToHashSet();
-        var ignoredTSKeys = SongTimelineManager.TimeSignatureEvents.Keys.Where(key => key >= startTick && key <= endTick && key % MiscTools.IncreaseByHalfDivision(key) != 0).ToHashSet();
+        var ignoredKeys = SongTimelineManager.TempoEvents.Keys.Where(key => key >= startTick && key <= endTick && key % SongTimelineManager.IncreaseByHalfDivision(key) != 0).ToHashSet();
+        var ignoredTSKeys = SongTimelineManager.TimeSignatureEvents.Keys.Where(key => key >= startTick && key <= endTick && key % SongTimelineManager.IncreaseByHalfDivision(key) != 0).ToHashSet();
 
         ignoredKeys.UnionWith(ignoredTSKeys);
 

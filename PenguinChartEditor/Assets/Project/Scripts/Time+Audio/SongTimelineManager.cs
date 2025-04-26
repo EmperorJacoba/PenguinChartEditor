@@ -383,6 +383,45 @@ public class SongTimelineManager : MonoBehaviour
         return (float)TimeSignatureEvents[tsTick].Item2 / 4;
     }
 
+    public static int IncreaseByHalfDivision(int tick)
+    {
+        return (int)(ChartMetadata.ChartResolution / SongTimelineManager.CalculateDivision(tick) / 2);
+    }
+
+    /// <summary>
+    /// Take a number of seconds (in S.ms form - ex. 61.1 seconds) and convert it to MM:SS.mmm format (where 61.1 returns 01:01.100)
+    /// </summary>
+    /// <param name="position">The unformatted second count.</param>
+    /// <returns>The formatted MM:SS:mmm timestamp of the second position</returns>
+    public static string ConvertSecondsToTimestamp(double position)
+    {
+        var minutes = Math.Floor(position / 60);
+        var secondsWithMS = position - minutes * 60;
+        var seconds = (int)Math.Floor(secondsWithMS);
+        var milliseconds = Math.Round(secondsWithMS - seconds, 3) * 1000;
+
+        string minutesString = minutes.ToString();
+        if (minutes < 10)
+        {
+            minutesString = minutesString.PadLeft(minutesString.Length + 1, '0');
+        }
+
+        string secondsString = seconds.ToString();
+        if (seconds < 10)
+        {
+            secondsString = secondsString.PadLeft(2, '0');
+        }
+
+        string millisecondsString = milliseconds.ToString();
+        if (millisecondsString.Length < 3)
+        {
+            millisecondsString = millisecondsString.PadRight(3, '0');
+        }
+
+        return minutesString + ":" + secondsString + "." + millisecondsString;
+    }
+
+
     // Time signatures
     // Get the last time signature
     // # of quarter-beats in a bar is numerator multiplied by the chart resolution 

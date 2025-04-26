@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using TMPro;
 using UnityEngine;
 
@@ -191,7 +190,7 @@ public class Beatline : MonoBehaviour
     /// Update the position of the beatline to a specified proportion up the screen.
     /// </summary>
     /// <param name="percentOfScreen">The percent of the screen that should exist between the bottom and the beatline.</param>
-    public void UpdateBeatlinePosition(double percentOfScreen) // change this to percentage later
+    public void UpdateBeatlinePosition(double percentOfScreen)
     {
         // use screen ref to calculate percent of screen -> scale is 1:1 in the line renderer (scale must be 1, 1, 1)
         var newYPos = percentOfScreen * screenRefRect.rect.height;
@@ -270,7 +269,15 @@ public class Beatline : MonoBehaviour
 
     public void HandleBPMEndEdit(string newBPM)
     {
-        SongTimelineManager.TempoEvents[HeldTick] = (ProcessUnsafeBPMString(newBPM), SongTimelineManager.TempoEvents[HeldTick].Item2);
+        try 
+        {
+            SongTimelineManager.TempoEvents[HeldTick] = (ProcessUnsafeBPMString(newBPM), SongTimelineManager.TempoEvents[HeldTick].Item2);
+        }
+        catch 
+        {
+            return;
+        }
+
         SongTimelineManager.RecalculateTempoEventDictionary(HeldTick);
 
         BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);

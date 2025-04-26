@@ -366,7 +366,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1022341178}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1963,62 +1963,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 468164741}
   m_CullTransparentMesh: 1
---- !u!1 &497505744
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 497505745}
-  - component: {fileID: 497505746}
-  m_Layer: 0
-  m_Name: UIManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &497505745
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 497505744}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 811879983}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &497505746
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 497505744}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a904c8fa2ef05c43ba2166691c676ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pluginBassManager: {fileID: 1722031495}
-  PlayButton: {fileID: 506818617}
-  PauseButton: {fileID: 1701251713}
-  RWButton: {fileID: 634430146}
-  FFWButton: {fileID: 979774608}
-  StopButton: {fileID: 1400428973}
-  SongTimestampLabel: {fileID: 1908588371}
-  SongLengthLabel: {fileID: 2125511247}
-  DivisionInput: {fileID: 1354881129}
-  IncreaseDivisionButton: {fileID: 795277016}
-  DecreaseDivisionButton: {fileID: 2130860644}
-  SongScrubber: {fileID: 588628611}
 --- !u!1 &499641450
 GameObject:
   m_ObjectHideFlags: 0
@@ -2126,11 +2070,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1369755912}
-  m_Father: {fileID: 1845218769}
+  m_Father: {fileID: 1359926901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -52.079987, y: 48.090088}
+  m_AnchoredPosition: {x: -54.07998, y: 104.36001}
   m_SizeDelta: {x: 91.84, y: 91.84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &506818617
@@ -2177,9 +2121,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 497505746}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: Play
+      - m_Target: {fileID: 1722031495}
+        m_TargetAssemblyTypeName: PluginBassManager, Assembly-CSharp
+        m_MethodName: PlayAudio
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2739,6 +2683,7 @@ GameObject:
   - component: {fileID: 588628613}
   - component: {fileID: 588628612}
   - component: {fileID: 588628611}
+  - component: {fileID: 588628614}
   m_Layer: 5
   m_Name: SongScrubber
   m_TagString: Untagged
@@ -2853,6 +2798,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 588628609}
   m_CullTransparentMesh: 1
+--- !u!114 &588628614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 588628609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a73003f93b024c43b3384d4902b91de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrubber: {fileID: 588628611}
 --- !u!1 &609910792
 GameObject:
   m_ObjectHideFlags: 0
@@ -3128,11 +3086,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 821068021}
-  m_Father: {fileID: 1845218769}
+  m_Father: {fileID: 1359926901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -52.080017, y: -55.829895}
+  m_AnchoredPosition: {x: -54.08001, y: 0.44002533}
   m_SizeDelta: {x: 91.84, y: 91.84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &634430146
@@ -3234,8 +3192,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 497505746}
-          m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        - m_Target: {fileID: 1359926902}
+          m_TargetAssemblyTypeName: AudioNavigationButtons, Assembly-CSharp
           m_MethodName: set_RWButtonDown
           m_Mode: 6
           m_Arguments:
@@ -3250,8 +3208,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 497505746}
-          m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        - m_Target: {fileID: 1359926902}
+          m_TargetAssemblyTypeName: AudioNavigationButtons, Assembly-CSharp
           m_MethodName: set_RWButtonDown
           m_Mode: 6
           m_Arguments:
@@ -4315,7 +4273,6 @@ Transform:
   - {fileID: 1722031496}
   - {fileID: 1300568346}
   - {fileID: 1751141774}
-  - {fileID: 497505745}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &814876386
@@ -4726,11 +4683,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1730517521}
-  m_Father: {fileID: 1845218769}
+  m_Father: {fileID: 1359926901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 56.08, y: -55.829926}
+  m_AnchoredPosition: {x: 54.08001, y: 0.4399948}
   m_SizeDelta: {x: 91.84, y: 91.84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &979774608
@@ -4832,8 +4789,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 497505746}
-          m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        - m_Target: {fileID: 1359926902}
+          m_TargetAssemblyTypeName: AudioNavigationButtons, Assembly-CSharp
           m_MethodName: set_FFWButtonDown
           m_Mode: 6
           m_Arguments:
@@ -4848,8 +4805,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 497505746}
-          m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        - m_Target: {fileID: 1359926902}
+          m_TargetAssemblyTypeName: AudioNavigationButtons, Assembly-CSharp
           m_MethodName: set_FFWButtonDown
           m_Mode: 6
           m_Arguments:
@@ -6832,6 +6789,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1354881127}
   m_CullTransparentMesh: 1
+--- !u!1 &1359926900
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1359926901}
+  - component: {fileID: 1359926902}
+  m_Layer: 5
+  m_Name: AudioNavigationButtons
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1359926901
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1359926900}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 506818616}
+  - {fileID: 1701251712}
+  - {fileID: 634430145}
+  - {fileID: 979774607}
+  - {fileID: 1400428972}
+  m_Father: {fileID: 1845218769}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 1.9999924, y: -56.269928}
+  m_SizeDelta: {x: 200.00002, y: 300.56}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1359926902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1359926900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c46cb069dd953b7458bf78e6433939e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayButton: {fileID: 506818617}
+  PauseButton: {fileID: 1701251713}
+  RWButton: {fileID: 634430146}
+  FFWButton: {fileID: 979774608}
 --- !u!1 &1368999639
 GameObject:
   m_ObjectHideFlags: 0
@@ -6992,11 +7006,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 803516178}
-  m_Father: {fileID: 1845218769}
+  m_Father: {fileID: 1359926901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.9999695, y: -160.62991}
+  m_AnchoredPosition: {x: -0.000022888184, y: -104.35997}
   m_SizeDelta: {x: 91.84, y: 91.84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1400428973
@@ -7043,9 +7057,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 497505746}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: Stop
+      - m_Target: {fileID: 1722031495}
+        m_TargetAssemblyTypeName: PluginBassManager, Assembly-CSharp
+        m_MethodName: StopAudio
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8104,11 +8118,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1861110129}
-  m_Father: {fileID: 1845218769}
+  m_Father: {fileID: 1359926901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 56.08, y: 48.090088}
+  m_AnchoredPosition: {x: 54.08001, y: 104.36001}
   m_SizeDelta: {x: 91.84, y: 91.84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1701251713
@@ -8155,9 +8169,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 497505746}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: Pause
+      - m_Target: {fileID: 1722031495}
+        m_TargetAssemblyTypeName: PluginBassManager, Assembly-CSharp
+        m_MethodName: PauseAudio
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8654,11 +8668,7 @@ RectTransform:
   - {fileID: 1908588370}
   - {fileID: 692019868}
   - {fileID: 2125511246}
-  - {fileID: 506818616}
-  - {fileID: 1701251712}
-  - {fileID: 634430145}
-  - {fileID: 979774607}
-  - {fileID: 1400428972}
+  - {fileID: 1359926901}
   m_Father: {fileID: 1606916094}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
@@ -8901,6 +8911,7 @@ GameObject:
   - component: {fileID: 1908588370}
   - component: {fileID: 1908588372}
   - component: {fileID: 1908588371}
+  - component: {fileID: 1908588373}
   m_Layer: 5
   m_Name: SongTimestamp
   m_TagString: Untagged
@@ -9026,6 +9037,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1908588369}
   m_CullTransparentMesh: 1
+--- !u!114 &1908588373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1908588369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 438c09f28d6abca4a90e8aa1882c0227, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SongTimestampLabel: {fileID: 1908588371}
 --- !u!1 &1967574737
 GameObject:
   m_ObjectHideFlags: 0
@@ -9700,6 +9724,7 @@ GameObject:
   - component: {fileID: 2125511246}
   - component: {fileID: 2125511248}
   - component: {fileID: 2125511247}
+  - component: {fileID: 2125511249}
   m_Layer: 5
   m_Name: SongLength
   m_TagString: Untagged
@@ -9825,6 +9850,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2125511245}
   m_CullTransparentMesh: 1
+--- !u!114 &2125511249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125511245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f285b998b18435b41a2015bb7f261d14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SongLengthLabel: {fileID: 2125511247}
 --- !u!1 &2129793758
 GameObject:
   m_ObjectHideFlags: 0
