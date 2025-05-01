@@ -18,7 +18,7 @@ public class TempoManager : MonoBehaviour
     /// </summary>
     public static void UpdateBeatlines()
     {
-        waveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
+        WaveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
 
         int currentBeatline = 0;
         // Generate the division and half-division beatlines

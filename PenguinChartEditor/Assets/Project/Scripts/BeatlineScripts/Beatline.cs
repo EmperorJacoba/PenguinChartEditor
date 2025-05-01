@@ -1,6 +1,8 @@
 using System;
+using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// The script attached to the beatline prefab. 
@@ -137,6 +139,12 @@ public class Beatline : MonoBehaviour
     }
 
     /// <summary>
+    /// Is the pointer in this beatline's BPM label?
+    /// <para>This is controlled by an event handler attached to the BPM object nested under the Beatline game object.</para>
+    /// </summary>
+    public bool pointerInBPMLabel {get; set;}
+
+    /// <summary>
     /// Set up input fields to display and activate by passing in the type of label to edit.
     /// </summary>
     public BeatlinePreviewer.PreviewType EditType
@@ -204,12 +212,51 @@ public class Beatline : MonoBehaviour
     }
     
     #endregion
-    
+
     #region Internal Functions
     private void UpdateLabels()
     {
         bpmLabel.transform.localPosition = new Vector3(bpmLabel.transform.localPosition.x, line.GetPosition(1).y - (bpmLabelRt.rect.height / 2));
         tsLabel.transform.localPosition = new Vector3(tsLabel.transform.localPosition.x, line.GetPosition(0).y - (tsLabelRt.rect.height / 2));
+    }
+
+    float originalMouseY = float.NaN;
+
+    /// <summary>
+    /// Change the data associated with a beatline event based on a click + drag from the user.
+    /// </summary>
+    /// <param name="currentMouseY">The current mouse position.</param>
+    private void ChangeBeatlinePositionFromDrag(float currentMouseY)
+    {
+        WaveformManager.GetCurrentDisplayedWaveformInfo(out var _, out var _, out var timeShown, out var _, out var _);
+
+        // Calculate the amount of time that the mouse has traversed in the last frame
+        var mouseDelta = currentMouseY - originalMouseY; // Original Y comes from the previous frame. If it came from the start of the drag, the timeChange addition to newTime would stack.
+        var percentOfScreenMoved = mouseDelta / screenRefRect.rect.height;
+        var timeChange = percentOfScreenMoved * timeShown;
+
+        // Use exclusive function because this needs to find the tempo event before this beatline's tempo event.
+        // Inclusive would always return the same event, which causes to be 0/0 and thus NaN.
+        var lastBPMTick = SongTimelineManager.FindLastTempoEventTickExclusive(HeldTick);
+
+        var newTime = SongTimelineManager.TempoEvents[HeldTick].Item2 + (float)timeChange;
+
+        // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
+        // Calculate the new BPM based on the time change
+        float newBPS = ((HeldTick - lastBPMTick) / (float)ChartMetadata.ChartResolution) / (newTime - SongTimelineManager.TempoEvents[lastBPMTick].Item2);
+        float newBPM = (float)Math.Round((newBPS * 60), 3);
+
+        if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
+
+        // Write new data - time changes for this beatline's tick, BPM changes for the last tick event.
+        SongTimelineManager.TempoEvents[HeldTick] = (SongTimelineManager.TempoEvents[HeldTick].Item1, newTime);
+        SongTimelineManager.TempoEvents[lastBPMTick] = (newBPM, SongTimelineManager.TempoEvents[lastBPMTick].Item2);
+
+        // Update rest of dictionary to account for the time change.
+        SongTimelineManager.RecalculateTempoEventDictionary(HeldTick, (float)timeChange);
+
+        // Display the changes
+        TempoManager.UpdateBeatlines();
     }
 
     private void UpdateThickness(BeatlineType type)
@@ -235,6 +282,55 @@ public class Beatline : MonoBehaviour
         {
             bpmLabelEntryBox.onEndEdit.AddListener(x => HandleBPMEndEdit(x));
             tsLabelEntryBox.onEndEdit.AddListener(x => HandleTSEndEdit(x));
+        }
+    }
+
+    static int activeDragTick;
+    private void Update() 
+    {
+        CheckForActiveDragEdits();
+        originalMouseY = Input.mousePosition.y;
+
+        // Reset active drag tick to inactive state if either pair of the drag keybind is lifted
+        if (!Input.GetKey(KeyCode.LeftControl) || !Input.GetMouseButton(0))
+        {
+            activeDragTick = -1;
+            originalMouseY = float.NaN;
+        }
+    }
+    
+    void CheckForActiveDragEdits()
+    {
+        // For some reason the pointing logic isn't 100% accurate and will select a beatline
+        // w/o a flag (and thus without an event, which cannot be dragged).
+        // No idea why it does this, but the dict check prevents this logic from trying to change a nonreal event in the TempoEvents dictionary.
+        // This really shouldn't be an issue that needs to be checked for, but here we are.
+        // I don't know what I'm overlooking to cause it. Confusion hath overtaken me.
+        // tick timestamp 0 cannot be dragged (because there is no prior BPM to modify)
+        if (!SongTimelineManager.TempoEvents.ContainsKey(HeldTick) || HeldTick == 0) return;
+
+        // I'm using old input system for this b/c it's easier to implement with the individual BPM events
+        // Check if the user is trying to make an edit (LCTRL + Click) and if they're over a label. 
+        // activeDragTick stores the tick for the beatline that is being dragged. 
+        // Without it, this can fire for multiple ticks at the same time
+        // (I don't know how it's possible, because pointerInBPMLabel should only be true for one flag, but it will return true for two events w/o it)
+        // activeDragTick also (primarily) allows a beatline to continue being dragged even if the pointer leaves the BPM label (which is common when moving up & down within the same drag)
+        if (activeDragTick == -1 && pointerInBPMLabel && Input.GetKey(KeyCode.LeftControl) && Input.GetMouseButton(0))
+        {
+            activeDragTick = HeldTick;
+
+            if (float.IsNaN(originalMouseY)) // First frame of an edit, show delta to be 0
+            {
+                originalMouseY = Input.mousePosition.y;
+            }
+
+            ChangeBeatlinePositionFromDrag(Input.mousePosition.y);
+
+        }
+        // Once the drag starts, this check will run instead because activeDragTick will be initialized.
+        else if (activeDragTick == HeldTick && Input.GetKey(KeyCode.LeftControl) && Input.GetMouseButton(0))
+        {
+            ChangeBeatlinePositionFromDrag(Input.mousePosition.y);
         }
     }
 

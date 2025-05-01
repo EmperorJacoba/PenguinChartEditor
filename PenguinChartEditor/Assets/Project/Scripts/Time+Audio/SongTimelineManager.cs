@@ -231,22 +231,46 @@ public class SongTimelineManager : MonoBehaviour
 
     public static double ConvertTickTimeToSeconds(int ticktime)
     {
-        var lastTickEvent = FindLastTempoEventTick(ticktime);
+        var lastTickEvent = FindLastTempoEventTickInclusive(ticktime);
         // Formula from .chart format specifications
         return ((ticktime - lastTickEvent) / (double)ChartMetadata.ChartResolution * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1) + TempoEvents[lastTickEvent].Item2;
     }
 
     /// <summary>
-    /// Find the last tempo event before a specified tick. 
+    /// Find the last tempo event before a specified tick. Can return the passed in tick if an event exists at that position.
     /// </summary>
     /// <param name="currentTick"></param>
     /// <returns>The tick-time timestamp of the previous tempo event.</returns>
-    public static int FindLastTempoEventTick(int currentTick)
+    public static int FindLastTempoEventTickInclusive(int currentTick)
     {
         var tickTimeKeys = TempoEvents.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
         if (index < 0) // bitwise complement is negative
+        {
+            // modify index if the found timestamp is at the end of the array (last tempo event)
+            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
+            // else just get the index proper 
+            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+            return tickTimeKeys[index]; 
+        }
+        else 
+        {
+            return tickTimeKeys[index];
+        }
+    }
+
+    /// <summary>
+    /// Find the last tempo event before a specified tick. WILL NOT return the passed in tick if an event exists at that position, and will instead return the true last event.
+    /// </summary>
+    /// <param name="currentTick"></param>
+    /// <returns></returns>
+    public static int FindLastTempoEventTickExclusive(int currentTick)
+    {
+        var tickTimeKeys = TempoEvents.Keys.ToList();
+
+        var index = tickTimeKeys.BinarySearch(currentTick);
+        if (index <= 0) // bitwise complement is negative
         {
             // modify index if the found timestamp is at the end of the array (last tempo event)
             if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
@@ -263,7 +287,7 @@ public class SongTimelineManager : MonoBehaviour
         }
         else 
         {
-            return tickTimeKeys[index];
+            return tickTimeKeys[index - 1];
         }
     }
 
@@ -364,6 +388,30 @@ public class SongTimelineManager : MonoBehaviour
 
             currentSongTime += calculatedTimeSecondDifference;
             outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, (float)currentSongTime));
+        }
+
+        TempoEvents = outputTempoEventsDict;
+    }
+
+    public static void RecalculateTempoEventDictionary(int modifiedTick, float timeChange)
+    {
+        SortedDictionary<int, (float, float)> outputTempoEventsDict = new();
+
+        var tickEvents = TempoEvents.Keys.ToList();
+        var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick); 
+        if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
+
+        // Keep all events before change when creating new dictionary
+        for (int i = 0; i <= positionOfTick; i++)
+        {
+            outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, TempoEvents[tickEvents[i]].Item2));
+        }
+
+                // Start new data with the song timestamp of the change
+        double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Item2;
+        for (int i = positionOfTick + 1; i < tickEvents.Count; i++)
+        {
+            outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, TempoEvents[tickEvents[i]].Item2 + timeChange));
         }
 
         TempoEvents = outputTempoEventsDict;

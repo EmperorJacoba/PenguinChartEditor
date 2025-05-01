@@ -98,7 +98,7 @@ public class BeatlinePreviewer : MonoBehaviour
             return;
         }
 
-        waveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
+        WaveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
 
         var cursorTimestamp = (percentOfScreenVertical * timeShown) + startTime;
         var cursorTickTime = SongTimelineManager.ConvertSecondsToTickTime((float)cursorTimestamp); 
@@ -144,7 +144,7 @@ public class BeatlinePreviewer : MonoBehaviour
         {
             beatline.BPMLabelVisible = true;
             beatline.TSLabelVisible = false;
-            beatline.BPMLabelText = SongTimelineManager.TempoEvents[SongTimelineManager.FindLastTempoEventTick(tick)].Item1.ToString();
+            beatline.BPMLabelText = SongTimelineManager.TempoEvents[SongTimelineManager.FindLastTempoEventTickInclusive(tick)].Item1.ToString();
         }
     }
 
@@ -166,7 +166,7 @@ public class BeatlinePreviewer : MonoBehaviour
             }
             else // If we click on an existing event, edit the event instead of adding it
             {
-                focusedTick = (tick, PreviewType.BPM);
+               // focusedTick = (tick, PreviewType.BPM);
             }
         }
         else if (beatline.TSLabelVisible)
@@ -178,7 +178,7 @@ public class BeatlinePreviewer : MonoBehaviour
             }
             else // If we click on an existing event, edit the event instead of adding it
             {
-                focusedTick = (tick, PreviewType.TS);
+                //focusedTick = (tick, PreviewType.TS);
             }
         }
         else return;

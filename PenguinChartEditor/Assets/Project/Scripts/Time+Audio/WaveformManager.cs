@@ -7,7 +7,7 @@ using UnityEngine;
 public class WaveformManager : MonoBehaviour
 {
     PluginBassManager pluginBassManager;
-    Strikeline strikeline;
+    static Strikeline strikeline;
 
     #region Properties
     /// <summary>
@@ -32,7 +32,7 @@ public class WaveformManager : MonoBehaviour
     /// <summary>
     /// Height of the RectTransform component attached to the waveform's container GameObject.
     /// </summary>
-    private float rtHeight;
+    private static float rtHeight;
 
     /// <summary>
     /// Panel that is always the size of the screen. Used to set waveform object at right distance from camera.
@@ -238,7 +238,7 @@ public class WaveformManager : MonoBehaviour
     /// <param name="masterWaveformData">Current array of waveform data to pull from.</param>
     /// <param name="samplesPerScreen">The number of sample points that can be displayed on screen, based on the current shrinkFactor.</param>
     /// <param name="strikeSamplePoint">The number of sample points displayed from the bottom of the screen to the strikeline. THIS VALUE IS NEGATIVE BY DEFAULT</param>
-    public void GetWaveformProperties(out float[] masterWaveformData, out int samplesPerScreen, out int strikeSamplePoint)
+    public static void GetWaveformProperties(out float[] masterWaveformData, out int samplesPerScreen, out int strikeSamplePoint)
     {
         masterWaveformData = WaveformData[CurrentWaveform].Item1;
         samplesPerScreen = (int)Mathf.Round(rtHeight / ShrinkFactor);
@@ -269,7 +269,7 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     /// <param name="startPoint">The first waveform point visible, in seconds.</param>
     /// <param name="endPoint">The last waveform point visible, in seconds</param>
-    public (double, double) GetDisplayedAudio()
+    public static (double, double) GetDisplayedAudio()
     {
         GetWaveformProperties(out var _, out var samplesPerScreen, out var strikeSamplePoint);
 
@@ -281,7 +281,7 @@ public class WaveformManager : MonoBehaviour
         return (startPoint, endPoint);
     }
 
-    public void GetCurrentDisplayedWaveformInfo(out int startTick, out int endTick, out double timeShown, out double startTime, out double endTime)
+    public static void GetCurrentDisplayedWaveformInfo(out int startTick, out int endTick, out double timeShown, out double startTime, out double endTime)
     {
         (startTime, endTime) = GetDisplayedAudio();
         startTick = SongTimelineManager.ConvertSecondsToTickTime((float)startTime);

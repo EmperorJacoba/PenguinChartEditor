@@ -144,6 +144,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MouseMoveBPM"",
+                    ""type"": ""Button"",
+                    ""id"": ""88b380a4-76b2-4ff9-9a6e-cdc9ed148547"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -212,6 +221,39 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""action"": ""EventSpawnClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""b930992c-bc9d-4187-9e7a-c6016eba3d27"",
+                    ""path"": ""OneModifier(overrideModifiersNeedToBePressedFirst=true,modifiersOrder=1)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseMoveBPM"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""7e151f2e-e1ce-4d65-b3c5-9c1f20892dee"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseMoveBPM"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""4c846835-b7af-49dd-b43e-3b4d9ee8a26f"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseMoveBPM"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -1277,6 +1319,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_MiddleScrollMousePos = m_Charting.FindAction("MiddleScrollMousePos", throwIfNotFound: true);
         m_Charting_PreviewMousePos = m_Charting.FindAction("PreviewMousePos", throwIfNotFound: true);
         m_Charting_EventSpawnClick = m_Charting.FindAction("EventSpawnClick", throwIfNotFound: true);
+        m_Charting_MouseMoveBPM = m_Charting.FindAction("MouseMoveBPM", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1388,6 +1431,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_MiddleScrollMousePos;
     private readonly InputAction m_Charting_PreviewMousePos;
     private readonly InputAction m_Charting_EventSpawnClick;
+    private readonly InputAction m_Charting_MouseMoveBPM;
     /// <summary>
     /// Provides access to input actions defined in input action map "Charting".
     /// </summary>
@@ -1423,6 +1467,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Charting/EventSpawnClick".
         /// </summary>
         public InputAction @EventSpawnClick => m_Wrapper.m_Charting_EventSpawnClick;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/MouseMoveBPM".
+        /// </summary>
+        public InputAction @MouseMoveBPM => m_Wrapper.m_Charting_MouseMoveBPM;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1467,6 +1515,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @EventSpawnClick.started += instance.OnEventSpawnClick;
             @EventSpawnClick.performed += instance.OnEventSpawnClick;
             @EventSpawnClick.canceled += instance.OnEventSpawnClick;
+            @MouseMoveBPM.started += instance.OnMouseMoveBPM;
+            @MouseMoveBPM.performed += instance.OnMouseMoveBPM;
+            @MouseMoveBPM.canceled += instance.OnMouseMoveBPM;
         }
 
         /// <summary>
@@ -1496,6 +1547,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @EventSpawnClick.started -= instance.OnEventSpawnClick;
             @EventSpawnClick.performed -= instance.OnEventSpawnClick;
             @EventSpawnClick.canceled -= instance.OnEventSpawnClick;
+            @MouseMoveBPM.started -= instance.OnMouseMoveBPM;
+            @MouseMoveBPM.performed -= instance.OnMouseMoveBPM;
+            @MouseMoveBPM.canceled -= instance.OnMouseMoveBPM;
         }
 
         /// <summary>
@@ -2022,6 +2076,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnEventSpawnClick(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MouseMoveBPM" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMouseMoveBPM(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
