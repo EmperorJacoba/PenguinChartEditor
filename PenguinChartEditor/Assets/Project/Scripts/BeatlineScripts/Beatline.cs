@@ -145,34 +145,74 @@ public class Beatline : MonoBehaviour
     public bool pointerInBPMLabel {get; set;}
 
     /// <summary>
+    /// Is the pointer currently in this beatline's TS label?
+    /// <para>This is controlled by an event handler attached to the TS object nested under the Beatline game object.</para>
+    /// </summary>
+    public bool pointerInTSLabel {get; set;}
+
+    /// <summary>
     /// Set up input fields to display and activate by passing in the type of label to edit.
     /// </summary>
     public BeatlinePreviewer.PreviewType EditType
     {
         set
         {
-            switch (value)
+            if (!isPreviewBeatline)
             {
-                case BeatlinePreviewer.PreviewType.none:
-                    tsLabelEntryBox.gameObject.SetActive(false);
-                    bpmLabelEntryBox.gameObject.SetActive(false);
-                    break;
-                case BeatlinePreviewer.PreviewType.BPM:
-                    bpmLabelEntryBox.gameObject.SetActive(true);
-                    tsLabelEntryBox.gameObject.SetActive(false);
+                switch (value)
+                {
+                    case BeatlinePreviewer.PreviewType.none:
+                        tsLabelEntryBox.gameObject.SetActive(false);
+                        bpmLabelEntryBox.gameObject.SetActive(false);
 
-                    bpmLabelEntryBox.ActivateInputField();
-                    bpmLabelEntryBox.text = SongTimelineManager.TempoEvents[HeldTick].Item1.ToString();
-                    BeatlinePreviewer.editMode = false;
-                    break;
-                case BeatlinePreviewer.PreviewType.TS:
-                    tsLabelEntryBox.gameObject.SetActive(true);
-                    bpmLabelEntryBox.gameObject.SetActive(false);
+                        SongTimelineManager.EnableChartingInputMap();
+                        break;
+                    case BeatlinePreviewer.PreviewType.BPM:
+                        bpmLabelEntryBox.gameObject.SetActive(true);
+                        tsLabelEntryBox.gameObject.SetActive(false);
 
-                    tsLabelEntryBox.ActivateInputField();
-                    BeatlinePreviewer.editMode = false;
-                    tsLabelEntryBox.text = $"{SongTimelineManager.TimeSignatureEvents[HeldTick].Item1} / {SongTimelineManager.TimeSignatureEvents[HeldTick].Item2}";
-                    break;
+                        bpmLabelEntryBox.ActivateInputField();
+
+                        // I am bewildered as to why this activates for beatlines that
+                        // don't have tick entries in TempoEvents, on the same exact frame as
+                        // another label being selected, when that should not be possible, because
+                        // a) beatlines without entries do not have labels and thus cannot access this variable (never edited)
+                        // b) this is activated when a pointer is in a label and clicked, and no other way, which should not be true for more than one beatline
+                        // sooo this is here to keep it from throwing an error when trying to access a nonexistent tick (which, again, should not be possible)
+                        // i have no idea why this happens and it doesn't break everything if i just check it here
+                        // please someone more intelligent than me fix this weird as heck error
+                        try 
+                        {
+                            bpmLabelEntryBox.text = SongTimelineManager.TempoEvents[HeldTick].Item1.ToString();
+                        }
+                        catch
+                        {
+                            return;
+                        }
+                        BeatlinePreviewer.editMode = false;
+
+                        SongTimelineManager.DisableChartingInputMap();
+                        break;
+                    case BeatlinePreviewer.PreviewType.TS:
+                        tsLabelEntryBox.gameObject.SetActive(true);
+                        bpmLabelEntryBox.gameObject.SetActive(false);
+
+                        tsLabelEntryBox.ActivateInputField();
+                        BeatlinePreviewer.editMode = false;
+
+                        // see above comment over BPM equivilent
+                        try
+                        {
+                            tsLabelEntryBox.text = $"{SongTimelineManager.TimeSignatureEvents[HeldTick].Item1} / {SongTimelineManager.TimeSignatureEvents[HeldTick].Item2}";
+                        }
+                        catch
+                        {
+                            return;
+                        }
+
+                        SongTimelineManager.DisableChartingInputMap();
+                        break;
+                }
             }
         }
     }
@@ -288,8 +328,17 @@ public class Beatline : MonoBehaviour
     static int activeDragTick;
     private void Update() 
     {
-        CheckForActiveDragEdits();
-        originalMouseY = Input.mousePosition.y;
+        if (!CheckForActiveDragEdits())
+        {
+            if (pointerInBPMLabel && Input.GetMouseButtonDown(0))
+            {
+                EditType = BeatlinePreviewer.PreviewType.BPM;
+            }
+            else if (pointerInTSLabel && Input.GetMouseButtonDown(0))
+            {
+                EditType = BeatlinePreviewer.PreviewType.TS;
+            }
+        }
 
         // Reset active drag tick to inactive state if either pair of the drag keybind is lifted
         if (!Input.GetKey(KeyCode.LeftControl) || !Input.GetMouseButton(0))
@@ -299,7 +348,11 @@ public class Beatline : MonoBehaviour
         }
     }
     
-    void CheckForActiveDragEdits()
+    /// <summary>
+    /// Runs every frame to check if the user is making a change to BPM via control+drag.
+    /// </summary>
+    /// <returns>Is the user making changes to a BPM label via dragging?</returns>
+    bool CheckForActiveDragEdits()
     {
         // For some reason the pointing logic isn't 100% accurate and will select a beatline
         // w/o a flag (and thus without an event, which cannot be dragged).
@@ -307,7 +360,7 @@ public class Beatline : MonoBehaviour
         // This really shouldn't be an issue that needs to be checked for, but here we are.
         // I don't know what I'm overlooking to cause it. Confusion hath overtaken me.
         // tick timestamp 0 cannot be dragged (because there is no prior BPM to modify)
-        if (!SongTimelineManager.TempoEvents.ContainsKey(HeldTick) || HeldTick == 0) return;
+        if (!SongTimelineManager.TempoEvents.ContainsKey(HeldTick) || HeldTick == 0) return false;
 
         // I'm using old input system for this b/c it's easier to implement with the individual BPM events
         // Check if the user is trying to make an edit (LCTRL + Click) and if they're over a label. 
@@ -325,13 +378,17 @@ public class Beatline : MonoBehaviour
             }
 
             ChangeBeatlinePositionFromDrag(Input.mousePosition.y);
-
+            return true;
         }
         // Once the drag starts, this check will run instead because activeDragTick will be initialized.
         else if (activeDragTick == HeldTick && Input.GetKey(KeyCode.LeftControl) && Input.GetMouseButton(0))
         {
             ChangeBeatlinePositionFromDrag(Input.mousePosition.y);
+            return true;
         }
+        return false;
+
+        // Change pointerInBPMLabel event trigger to be based on pointer click instead of enter?
     }
 
     public void CheckForEvents()
@@ -358,8 +415,8 @@ public class Beatline : MonoBehaviour
 
         // Check to see if this tick is being edited.
         // This does have the side effect of wiping input data upon a scroll. Oops
-        if (HeldTick == BeatlinePreviewer.focusedTick.Item1) EditType = BeatlinePreviewer.focusedTick.Item2;
-        else EditType = BeatlinePreviewer.PreviewType.none;
+        // if (HeldTick == BeatlinePreviewer.focusedTick.Item1) EditType = BeatlinePreviewer.focusedTick.Item2;
+        // else EditType = BeatlinePreviewer.PreviewType.none;
     }
     #endregion
 
@@ -376,34 +433,39 @@ public class Beatline : MonoBehaviour
 
         SongTimelineManager.RecalculateTempoEventDictionary(HeldTick);
 
-        BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
         BeatlinePreviewer.editMode = true;
-
-        bpmLabelEntryBox.gameObject.SetActive(false);
-        TempoManager.UpdateBeatlines();
+        ConcludeBPMEdit();
     }
 
     public void HandleBPMDeselect()
     {
-        BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
-        bpmLabelEntryBox.gameObject.SetActive(false);
-        TempoManager.UpdateBeatlines();
+        ConcludeBPMEdit();
     }
 
     public void HandleTSEndEdit(string newTS)
     {
         SongTimelineManager.TimeSignatureEvents[HeldTick] = (ProcessUnsafeTS(newTS));
-        BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
         BeatlinePreviewer.editMode = true;
-        tsLabelEntryBox.gameObject.SetActive(false);   
-        TempoManager.UpdateBeatlines();
+        ConcludeTSEdit();
     }
 
     public void HandleTSDeselect()
     {
-        BeatlinePreviewer.focusedTick = (0, BeatlinePreviewer.PreviewType.none);
+        ConcludeTSEdit();
+    }
+
+    void ConcludeBPMEdit()
+    {
+        bpmLabelEntryBox.gameObject.SetActive(false);
+        TempoManager.UpdateBeatlines();
+        EditType = BeatlinePreviewer.PreviewType.none;
+    }
+
+    void ConcludeTSEdit()
+    {
         tsLabelEntryBox.gameObject.SetActive(false);
         TempoManager.UpdateBeatlines();
+        EditType = BeatlinePreviewer.PreviewType.none;
     }
 
     float ProcessUnsafeBPMString(string newBPM)

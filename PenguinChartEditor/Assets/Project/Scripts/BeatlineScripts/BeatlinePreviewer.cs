@@ -9,7 +9,6 @@ using UnityEngine.UI;
 /// </summary>
 public class BeatlinePreviewer : MonoBehaviour
 {
-    [SerializeField] WaveformManager waveformManager;
     [SerializeField] Beatline beatline;
     [SerializeField] RectTransform screenReferenceRt;
 
@@ -36,11 +35,6 @@ public class BeatlinePreviewer : MonoBehaviour
     /// Holds
     /// </summary>
     (int, int) displayedTS = (4, 4);
-
-    /// <summary>
-    /// Holds the tick that should show an input field and which label that input field should be on top of.
-    /// </summary>
-    public static (int, PreviewType) focusedTick;
 
     /// <summary>
     /// Which input field is targeted by the focused tick for editing?
@@ -162,11 +156,6 @@ public class BeatlinePreviewer : MonoBehaviour
             if (!SongTimelineManager.TempoEvents.ContainsKey(tick))
             {
                 SongTimelineManager.TempoEvents.Add(tick, (float.Parse(beatline.BPMLabelText), (float)timestamp));
-                focusedTick = (0, PreviewType.none);
-            }
-            else // If we click on an existing event, edit the event instead of adding it
-            {
-               // focusedTick = (tick, PreviewType.BPM);
             }
         }
         else if (beatline.TSLabelVisible)
@@ -174,11 +163,6 @@ public class BeatlinePreviewer : MonoBehaviour
             if (!SongTimelineManager.TimeSignatureEvents.ContainsKey(tick))
             {
                 SongTimelineManager.TimeSignatureEvents.Add(tick, displayedTS);
-                focusedTick = (0, PreviewType.none);
-            }
-            else // If we click on an existing event, edit the event instead of adding it
-            {
-                //focusedTick = (tick, PreviewType.TS);
             }
         }
         else return;

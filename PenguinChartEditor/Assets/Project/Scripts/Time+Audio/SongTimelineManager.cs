@@ -127,6 +127,16 @@ public class SongTimelineManager : MonoBehaviour
         else inputMap.Charting.Enable();
     }
 
+    public static void DisableChartingInputMap()
+    {
+        inputMap.Charting.Disable();
+    }
+
+    public static void EnableChartingInputMap()
+    {
+        inputMap.Charting.Enable();
+    }
+
     #endregion
 
     #region Time Modification
