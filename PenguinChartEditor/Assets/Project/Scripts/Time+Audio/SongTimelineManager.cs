@@ -26,6 +26,7 @@ public class SongTimelineManager : MonoBehaviour
         }
         set
         {
+            if (value > PluginBassManager.SongLength) return;
             value = Math.Round(value, 3); // So that CurrentWFDataPosition comes out clean
             if (_songPos == value) return;
             _songPos = value;

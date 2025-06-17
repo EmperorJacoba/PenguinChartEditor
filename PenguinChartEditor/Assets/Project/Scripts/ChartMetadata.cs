@@ -28,7 +28,7 @@ public class ChartMetadata : MonoBehaviour
         video_start_time,
     }
 
-    public Dictionary<MetadataType, string> SongInfo = new();
+    public static Dictionary<MetadataType, string> SongInfo = new();
 
     // All of these values store difficulties in a value from 0-6, although values higher than 6 are allowed for some niche CH uses.
     // Set up these values in the CHART tab - no sense setting them up when you don't have the tracks charted yet!
@@ -53,7 +53,7 @@ public class ChartMetadata : MonoBehaviour
         diff_vocals_harm
     }
 
-    public Dictionary<InstrumentDifficultyType, int> Difficulties = new();
+    public static Dictionary<InstrumentDifficultyType, int> Difficulties = new();
 
     /// <summary>
     /// Stores valid types of audio stems.
@@ -120,6 +120,7 @@ public class ChartMetadata : MonoBehaviour
     }
 
     public static string ChartPath { get; private set;} = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Perpetual Change.chart";
+    public static string IniPath { get; private set; } = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/song.ini";
 
     /// <summary>
     /// Stores the directory of the album cover selected by the user.
@@ -276,4 +277,3 @@ public class ChartMetadata : MonoBehaviour
         }
     }
 }
-

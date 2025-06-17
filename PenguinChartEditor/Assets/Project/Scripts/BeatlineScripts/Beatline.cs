@@ -1,8 +1,6 @@
 using System;
-using System.Threading;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// <summary>
 /// The script attached to the beatline prefab. 
@@ -384,6 +382,7 @@ public class Beatline : MonoBehaviour
         else if (activeDragTick == HeldTick && Input.GetKey(KeyCode.LeftControl) && Input.GetMouseButton(0))
         {
             ChangeBeatlinePositionFromDrag(Input.mousePosition.y);
+            originalMouseY = Input.mousePosition.y;
             return true;
         }
         return false;
