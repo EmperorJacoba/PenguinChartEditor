@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,6 +14,9 @@ public class Beatline : MonoBehaviour
 {
     #region Components
 
+    /// <summary>
+    /// Property used to turn off some editing features not available for the "preview" beatline object.
+    /// </summary>
     [SerializeField] bool isPreviewBeatline;
 
     [SerializeField] GameObject bpmLabel;
@@ -25,12 +29,15 @@ public class Beatline : MonoBehaviour
     [SerializeField] TMP_InputField tsLabelEntryBox;
     [SerializeField] TextMeshProUGUI tsLabelText;
 
+    [SerializeField] GameObject bpmSelectionOverlay;
+    [SerializeField] GameObject tsSelectionOverlay;
+
     /// <summary>
     /// The line renderer attached to the beatline game object.
     /// </summary>
     [SerializeField] LineRenderer line;
 
-    RectTransform screenRefRect;
+    RectTransform screenRef;
 
     /// <summary>
     /// The possible types of beatlines that exist.
@@ -50,7 +57,7 @@ public class Beatline : MonoBehaviour
     /// <summary>
     /// Line renderer thicknesses corresponding to each beatline type in the BeatlineType enum. 
     /// </summary>
-    float[] thicknesses = {0, 0.05f, 0.02f, 0.005f};
+    float[] thicknesses = { 0, 0.05f, 0.02f, 0.005f };
 
     #endregion
     #region Properties
@@ -60,7 +67,56 @@ public class Beatline : MonoBehaviour
     /// </summary>
     public int HeldTick { get; set; } = 0;
 
-    public static HashSet<int> SelectedTicks { get; set; } = new();
+    /// <summary>
+    /// Holds a reference for all the BPM events currently selected.
+    /// </summary>
+    public static HashSet<int> SelectedBPMTicks { get; set; } = new();
+
+    /// <summary>
+    /// Holds a reference for all the TS events currently selected.
+    /// </summary>
+    public static HashSet<int> SelectedTSTicks { get; set; } = new();
+
+    /// <summary>
+    /// Holds the tick that was last interacted with in a selection. Used for shift-click capabilities.
+    /// </summary>
+    public static int lastTickSelection = 0;
+
+    /// <summary>
+    /// Is the BPM event attached to this beatline currently selected?
+    /// <para>Selection overlay/indicator is triggered when the value of this property is set.</para>
+    /// </summary>
+    public bool BpmSelected
+    {
+        get
+        {
+            return _bpmSelected;
+        }
+        set
+        {
+            bpmSelectionOverlay.SetActive(value);
+            _bpmSelected = value;
+        }
+    }
+    bool _bpmSelected = false;
+
+    /// <summary>
+    /// Is the TS event attached to this beatline currently selected?
+    /// <para>Selection overlay/indicator is triggered when the value of this property is set.</para>
+    /// </summary>
+    public bool TsSelected
+    {
+        get
+        {
+            return _tsSelected;
+        }
+        set
+        {
+            tsSelectionOverlay.SetActive(value);
+            _tsSelected = value;
+        }
+    }
+    bool _tsSelected = false;
 
     /// <summary>
     /// Is the beatline currently visible?
@@ -89,7 +145,7 @@ public class Beatline : MonoBehaviour
         set
         {
             bpmLabel.SetActive(value);
-            UpdateLabelPos();
+            UpdateLabelPosition();
         }
     }
 
@@ -120,7 +176,7 @@ public class Beatline : MonoBehaviour
         set
         {
             tsLabel.SetActive(value);
-            UpdateLabelPos();
+            UpdateLabelPosition();
         }
     }
 
@@ -139,20 +195,6 @@ public class Beatline : MonoBehaviour
             tsLabelText.text = value;
         }
     }
-
-    /// <summary>
-    /// Is the pointer in this beatline's BPM label?
-    /// <para>This is controlled by an event handler attached to the BPM object nested under the Beatline game object.</para>
-    /// </summary>
-    public bool pointerInBPMLabel {get; set;}
-
-    /// <summary>
-    /// Is the pointer currently in this beatline's TS label?
-    /// <para>This is controlled by an event handler attached to the TS object nested under the Beatline game object.</para>
-    /// </summary>
-    public bool pointerInTSLabel { get; set; }
-    
-    public bool bpmLabelHeld { get; set; }
 
     /// <summary>
     /// Set up input fields to display and activate by passing in the type of label to edit.
@@ -236,7 +278,8 @@ public class Beatline : MonoBehaviour
     BeatlineType _bt = BeatlineType.none;
 
     #endregion
-    #region Functions 
+
+    #region Functions
 
     /// <summary>
     /// Update the position of the beatline to a specified proportion up the screen.
@@ -245,112 +288,14 @@ public class Beatline : MonoBehaviour
     public void UpdateBeatlinePosition(double percentOfScreen)
     {
         // use screen ref to calculate percent of screen -> scale is 1:1 in the line renderer (scale must be 1, 1, 1)
-        var newYPos = percentOfScreen * screenRefRect.rect.height;
+        var newYPos = percentOfScreen * screenRef.rect.height;
 
         Vector3[] newPos = new Vector3[2];
         newPos[0] = new Vector2(line.GetPosition(0).x, (float)newYPos);
         newPos[1] = new Vector2(line.GetPosition(1).x, (float)newYPos);
         line.SetPositions(newPos);
 
-        UpdateLabelPos(); // to keep the labels locked to their beatlines
-    }
-    
-    #endregion
-
-    #region Internal Functions
-    private void UpdateLabelPos()
-    {
-        bpmLabel.transform.localPosition = new Vector3(bpmLabel.transform.localPosition.x, line.GetPosition(1).y - (bpmLabelRt.rect.height / 2));
-        tsLabel.transform.localPosition = new Vector3(tsLabel.transform.localPosition.x, line.GetPosition(0).y - (tsLabelRt.rect.height / 2));
-    }
-
-    /// <summary>
-    /// Change the data associated with a beatline event based on a click + drag from the user.
-    /// </summary>
-    /// <param name="currentMouseY">The current mouse position.</param>
-    private void ChangeBeatlinePositionFromDrag(float mouseDelta)
-    {
-        WaveformManager.GetCurrentDisplayedWaveformInfo(out var _, out var _, out var timeShown, out var _, out var _);
-
-        var percentOfScreenMoved = mouseDelta / screenRefRect.rect.height;
-        var timeChange = percentOfScreenMoved * timeShown;
-
-        // Use exclusive function because this needs to find the tempo event before this beatline's tempo event.
-        // Inclusive would always return the same event, which causes 0/0 and thus NaN.
-        var lastBPMTick = SongTimelineManager.FindLastTempoEventTickExclusive(HeldTick);
-
-        var newTime = SongTimelineManager.TempoEvents[HeldTick].Item2 + (float)timeChange;
-
-        // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
-        // Calculate the new BPM based on the time change
-        float newBPS = ((HeldTick - lastBPMTick) / (float)ChartMetadata.ChartResolution) / (newTime - SongTimelineManager.TempoEvents[lastBPMTick].Item2);
-        float newBPM = (float)Math.Round((newBPS * 60), 3);
-
-        if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
-
-        // Write new data - time changes for this beatline's tick, BPM changes for the last tick event.
-        SongTimelineManager.TempoEvents[HeldTick] = (SongTimelineManager.TempoEvents[HeldTick].Item1, newTime);
-        SongTimelineManager.TempoEvents[lastBPMTick] = (newBPM, SongTimelineManager.TempoEvents[lastBPMTick].Item2);
-
-        // Update rest of dictionary to account for the time change.
-        SongTimelineManager.RecalculateTempoEventDictionary(HeldTick, (float)timeChange);
-
-        // Display the changes
-        TempoManager.UpdateBeatlines();
-    }
-
-    private void UpdateThickness(BeatlineType type)
-    {
-        var thickness = thicknesses[(int)type];
-
-        if (type == BeatlineType.none) line.enabled = false;
-        else line.enabled = true; // VERY IMPORTANT OTHERWISE IT WILL NOT TURN BACK ON EVER
-
-        line.startWidth = thickness;
-        line.endWidth = thickness;
-    }
-    
-    void Awake()
-    {
-        screenRefRect = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
-    }
-
-    void Start()
-    {
-        BPMLabelVisible = false;
-        if (!isPreviewBeatline)
-        {
-            bpmLabelEntryBox.onEndEdit.AddListener(x => HandleBPMEndEdit(x));
-            tsLabelEntryBox.onEndEdit.AddListener(x => HandleTSEndEdit(x));
-        }
-    }
-
-    public void HandleBPMLabelClick(BaseEventData data)
-    {
-        var clickdata = (PointerEventData)data;
-        if (!Input.GetKey(KeyCode.LeftControl) && clickdata.button == PointerEventData.InputButton.Left && clickdata.clickCount == 2)
-        {
-            EditType = BeatlinePreviewer.PreviewType.BPM;
-        }
-    }
-
-    public void HandleTSLabelClick(BaseEventData data)
-    {
-        var clickdata = (PointerEventData)data;
-        if (!Input.GetKey(KeyCode.LeftControl) && clickdata.button == PointerEventData.InputButton.Left && clickdata.clickCount == 2)
-        {
-            EditType = BeatlinePreviewer.PreviewType.TS;
-        }
-    }
-
-    public void HandleBPMDragEvent(BaseEventData data)
-    {
-        var clickdata = (PointerEventData)data;
-
-        if (HeldTick == 0) return;
-        if (!Input.GetKey(KeyCode.LeftControl)) return;
-
-        ChangeBeatlinePositionFromDrag(clickdata.delta.y);
+        UpdateLabelPosition(); // to keep the labels locked to their beatlines
     }
 
     public void CheckForEvents()
@@ -374,16 +319,207 @@ public class Beatline : MonoBehaviour
         {
             TSLabelVisible = false;
         }
+
+        BpmSelected = CheckForBPMSelected();
+        TsSelected = CheckForTSSelected();
     }
+
     #endregion
 
+    #region Calculators
+
+    private void UpdateLabelPosition()
+    {
+        bpmLabel.transform.localPosition = new Vector3(bpmLabel.transform.localPosition.x, line.GetPosition(1).y - (bpmLabelRt.rect.height / 2));
+        tsLabel.transform.localPosition = new Vector3(tsLabel.transform.localPosition.x, line.GetPosition(0).y - (tsLabelRt.rect.height / 2));
+    }
+
+    /// <summary>
+    /// Change the data associated with a beatline event based on a click + drag from the user.
+    /// </summary>
+    /// <param name="mouseDelta">The difference between the mouse on this frame versus the last frame.</param>
+    private void ChangeBeatlinePositionFromDrag(float mouseDelta)
+    {
+        WaveformManager.GetCurrentDisplayedWaveformInfo(out var _, out var _, out var timeShown, out var _, out var _);
+
+        var percentOfScreenMoved = mouseDelta / screenRef.rect.height;
+        var timeChange = percentOfScreenMoved * timeShown;
+
+        // Use exclusive function because this needs to find the tempo event before this beatline's tempo event.
+        // Inclusive would always return the same event, which causes 0/0 and thus NaN.
+        var lastBPMTick = SongTimelineManager.FindLastTempoEventTickExclusive(HeldTick);
+
+        var newTime = SongTimelineManager.TempoEvents[HeldTick].Item2 + (float)timeChange;
+
+        // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
+        // Calculate the new BPM based on the time change
+        float newBPS = ((HeldTick - lastBPMTick) / (float)ChartMetadata.ChartResolution) / (newTime - SongTimelineManager.TempoEvents[lastBPMTick].Item2);
+        float newBPM = (float)Math.Round((newBPS * 60), 3);
+
+        if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
+
+        // Write new data: time changes for this beatline's tick, BPM changes for the last tick event.
+        SongTimelineManager.TempoEvents[HeldTick] = (SongTimelineManager.TempoEvents[HeldTick].Item1, newTime);
+        SongTimelineManager.TempoEvents[lastBPMTick] = (newBPM, SongTimelineManager.TempoEvents[lastBPMTick].Item2);
+
+        // Update rest of dictionary to account for the time change.
+        SongTimelineManager.RecalculateTempoEventDictionary(HeldTick, (float)timeChange);
+
+        // Display the changes
+        TempoManager.UpdateBeatlines();
+    }
+
+    /// <summary>
+    /// Calculate the event(s) to be selected based on the last click event.
+    /// </summary>
+    /// <param name="clickButton">PointerEventData.button</param>
+    /// <param name="targetSelectionSet">The selection hash set that contains this event type's selection data.</param>
+    /// <param name="targetEventSet">The keys of a sorted dictionary that holds event data (beatlines, TS, etc)</param>
+    void CalculateSelectionStatus(PointerEventData.InputButton clickButton, HashSet<int> targetSelectionSet, List<int> targetEventSet)
+    {
+        // Goal is to follow standard selection functionality of most productivity programs
+
+        if (clickButton != PointerEventData.InputButton.Left) return;
+
+        // Shift-click functionality
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            targetSelectionSet.Clear();
+            var minNum = Math.Min(lastTickSelection, HeldTick);
+            var maxNum = Math.Max(lastTickSelection, HeldTick);
+            HashSet<int> selectedEvents = targetEventSet.Where(x => x <= maxNum && x >= minNum).ToHashSet();
+            targetSelectionSet.UnionWith(selectedEvents);
+        }
+        // Left control if item is already selected
+        else if (Input.GetKey(KeyCode.LeftControl) && targetSelectionSet.Contains(HeldTick))
+        {
+            targetSelectionSet.Remove(HeldTick);
+            return; // prevent lastTickSelection from being stored as an unselected number
+        }
+        // Left control if item is not currently selected
+        else if (Input.GetKey(KeyCode.LeftControl))
+        {
+            targetSelectionSet.Add(HeldTick);
+        }
+        // Regular click, no extra significant keybinds
+        else
+        {
+            targetSelectionSet.Clear();
+            targetSelectionSet.Add(HeldTick);
+        }
+        // Record the last selection data for shift-click selection
+        lastTickSelection = HeldTick;
+    }
+
+    bool CheckForBPMSelected()
+    {
+        if (SelectedBPMTicks.Contains(HeldTick)) return true;
+        else return false;
+    }
+
+    bool CheckForTSSelected()
+    {
+        if (SelectedTSTicks.Contains(HeldTick)) return true;
+        else return false;
+    }
+
+    private void UpdateThickness(BeatlineType type)
+    {
+        var thickness = thicknesses[(int)type];
+
+        if (type == BeatlineType.none) line.enabled = false;
+        else line.enabled = true; // VERY IMPORTANT OTHERWISE IT WILL NOT TURN BACK ON EVER
+
+        line.startWidth = thickness;
+        line.endWidth = thickness;
+    }
+
+    #endregion
+
+    #region Unity Functions
+
+    void Awake()
+    {
+        screenRef = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
+    }
+
+    void Start()
+    {
+        BPMLabelVisible = false;
+        if (!isPreviewBeatline)
+        {
+            bpmLabelEntryBox.onEndEdit.AddListener(x => HandleBPMEndEdit(x));
+            tsLabelEntryBox.onEndEdit.AddListener(x => HandleTSEndEdit(x));
+        }
+    }
+
+    #endregion
+
+    #region Event Handlers
+
+    /// <summary>
+    /// Called by the event trigger on the BPM label when the label is clicked.
+    /// </summary>
+    /// <param name="data"></param>
+    public void HandleBPMLabelClick(BaseEventData data)
+    {
+        var clickdata = (PointerEventData)data;
+
+        CalculateSelectionStatus(clickdata.button, SelectedBPMTicks, SongTimelineManager.TempoEvents.Keys.ToList());
+
+        // Double click functionality for manual entry of beatline number
+        if (!Input.GetKey(KeyCode.LeftControl) && clickdata.button == PointerEventData.InputButton.Left && clickdata.clickCount == 2)
+        {
+            EditType = BeatlinePreviewer.PreviewType.BPM;
+        }
+
+        TempoManager.UpdateBeatlines();
+    }
+
+    /// <summary>
+    /// Called by the event trigger on the TS label when the label is clicked.
+    /// </summary>
+    /// <param name="data"></param>
+    public void HandleTSLabelClick(BaseEventData data)
+    {
+        var clickdata = (PointerEventData)data;
+
+        CalculateSelectionStatus(clickdata.button, SelectedTSTicks, SongTimelineManager.TimeSignatureEvents.Keys.ToList());
+
+        // Double click functionality for manual entry of time signature
+        if (!Input.GetKey(KeyCode.LeftControl) && clickdata.button == PointerEventData.InputButton.Left && clickdata.clickCount == 2)
+        {
+            EditType = BeatlinePreviewer.PreviewType.TS;
+        }
+
+        TempoManager.UpdateBeatlines();
+    }
+
+    /// <summary>
+    /// Called by the event trigger on the BPM event when a drag is registered
+    /// </summary>
+    /// <param name="data"></param>
+    public void HandleBPMDragEvent(BaseEventData data)
+    {
+        var clickdata = (PointerEventData)data;
+
+        if (HeldTick == 0) return;
+        if (!Input.GetKey(KeyCode.LeftControl)) return;
+
+        ChangeBeatlinePositionFromDrag(clickdata.delta.y);
+    }
+
+    /// <summary>
+    /// Called when the BPM input field is submitted.
+    /// </summary>
+    /// <param name="newBPM"></param>
     public void HandleBPMEndEdit(string newBPM)
     {
-        try 
+        try
         {
             SongTimelineManager.TempoEvents[HeldTick] = (ProcessUnsafeBPMString(newBPM), SongTimelineManager.TempoEvents[HeldTick].Item2);
         }
-        catch 
+        catch
         {
             return;
         }
@@ -394,18 +530,28 @@ public class Beatline : MonoBehaviour
         ConcludeBPMEdit();
     }
 
+    /// <summary>
+    /// Called when the BPM input field is deselected.
+    /// </summary>
     public void HandleBPMDeselect()
     {
         ConcludeBPMEdit();
     }
 
+    /// <summary>
+    /// Called when the TS input field is submitted.
+    /// </summary>
+    /// <param name="newTS"></param>
     public void HandleTSEndEdit(string newTS)
     {
-        SongTimelineManager.TimeSignatureEvents[HeldTick] = (ProcessUnsafeTS(newTS));
+        SongTimelineManager.TimeSignatureEvents[HeldTick] = ProcessUnsafeTSString(newTS);
         BeatlinePreviewer.editMode = true;
         ConcludeTSEdit();
     }
 
+    /// <summary>
+    /// Called when the TS input field is deselected.
+    /// </summary>
     public void HandleTSDeselect()
     {
         ConcludeTSEdit();
@@ -425,6 +571,15 @@ public class Beatline : MonoBehaviour
         EditType = BeatlinePreviewer.PreviewType.none;
     }
 
+    #endregion
+
+    #region Validators
+
+    /// <summary>
+    /// Take a BPM string generated by user and turn it into a dictionary-safe float value
+    /// </summary>
+    /// <param name="newBPM"></param>
+    /// <returns></returns>
     float ProcessUnsafeBPMString(string newBPM)
     {
         var bpmAsFloat = float.Parse(newBPM);
@@ -436,7 +591,12 @@ public class Beatline : MonoBehaviour
         return bpmAsFloat;
     }
 
-    (int, int) ProcessUnsafeTS(string newTS)
+    /// <summary>
+    /// Take a TS string generated by user and turn it into a dictionary safe tuple
+    /// </summary>
+    /// <param name="newTS"></param>
+    /// <returns></returns>
+    (int, int) ProcessUnsafeTSString(string newTS)
     {
         var currentTS = SongTimelineManager.TimeSignatureEvents[HeldTick];
         var seperatedTS = newTS.Split("/");
@@ -450,4 +610,6 @@ public class Beatline : MonoBehaviour
 
         return (num, denom);
     }
+    
+    #endregion
 }

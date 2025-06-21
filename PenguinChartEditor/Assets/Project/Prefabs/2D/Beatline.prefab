@@ -880,38 +880,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates:
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: set_pointerInBPMLabel
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: set_pointerInBPMLabel
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
   - eventID: 4
     callback:
       m_PersistentCalls:
@@ -935,22 +903,6 @@ MonoBehaviour:
         - m_Target: {fileID: 2056373037687670694}
           m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
           m_MethodName: HandleBPMDragEvent
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 9
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandleSelectEvent
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1136,6 +1088,8 @@ MonoBehaviour:
   tsLabelRt: {fileID: 7353612379106410833}
   tsLabelEntryBox: {fileID: 3014718018325258834}
   tsLabelText: {fileID: 7206844250101663744}
+  bpmSelectionOverlay: {fileID: 7251365425260148493}
+  tsSelectionOverlay: {fileID: 7215973731456500984}
   line: {fileID: 4691799485850042161}
 --- !u!1 &6500526054470389412
 GameObject:

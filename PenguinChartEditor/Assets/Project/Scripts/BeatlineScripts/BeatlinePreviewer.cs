@@ -156,6 +156,8 @@ public class BeatlinePreviewer : MonoBehaviour
             if (!SongTimelineManager.TempoEvents.ContainsKey(tick))
             {
                 SongTimelineManager.TempoEvents.Add(tick, (float.Parse(beatline.BPMLabelText), (float)timestamp));
+                Beatline.SelectedBPMTicks.Clear();
+                Beatline.SelectedTSTicks.Clear();
             }
         }
         else if (beatline.TSLabelVisible)
@@ -163,6 +165,8 @@ public class BeatlinePreviewer : MonoBehaviour
             if (!SongTimelineManager.TimeSignatureEvents.ContainsKey(tick))
             {
                 SongTimelineManager.TimeSignatureEvents.Add(tick, displayedTS);
+                Beatline.SelectedBPMTicks.Clear();
+                Beatline.SelectedTSTicks.Clear();
             }
         }
         else return;
