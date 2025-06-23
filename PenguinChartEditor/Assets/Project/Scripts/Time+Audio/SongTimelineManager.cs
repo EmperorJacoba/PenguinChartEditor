@@ -372,7 +372,6 @@ public class SongTimelineManager : MonoBehaviour
     /// <param name="modifiedTick">The last tick modified to update all future ticks from.</param>
     public static void RecalculateTempoEventDictionary(int modifiedTick)
     {
-        Debug.Log($"{modifiedTick}");
         SortedDictionary<int, (float, float)> outputTempoEventsDict = new();
 
         var tickEvents = TempoEvents.Keys.ToList();
@@ -385,10 +384,6 @@ public class SongTimelineManager : MonoBehaviour
             outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, TempoEvents[tickEvents[i]].Item2));
         }
 
-        Debug.Log($"{positionOfTick}");
-        Debug.Log($"{tickEvents[positionOfTick]}");
-        Debug.Log($"{outputTempoEventsDict[tickEvents[positionOfTick]]}");
-        Debug.Log($"{outputTempoEventsDict[tickEvents[positionOfTick]].Item2}");
         // Start new data with the song timestamp of the change
         double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Item2;
         for (int i = positionOfTick + 1; i < tickEvents.Count; i++)

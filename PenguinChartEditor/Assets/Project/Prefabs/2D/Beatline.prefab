@@ -399,30 +399,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates:
-  - eventID: 0
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 2056373037687670694}
           m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: set_pointerInTSLabel
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: set_pointerInTSLabel
-          m_Mode: 6
+          m_MethodName: HandleTSLabelClick
+          m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -431,13 +415,29 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 4
+  - eventID: 2
     callback:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 2056373037687670694}
           m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandleTSLabelClick
+          m_MethodName: HandleTSPointerDown
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 3
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2056373037687670694}
+          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
+          m_MethodName: HandleTSPointerUp
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -903,6 +903,38 @@ MonoBehaviour:
         - m_Target: {fileID: 2056373037687670694}
           m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
           m_MethodName: HandleBPMDragEvent
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2056373037687670694}
+          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
+          m_MethodName: HandlBPMPointerDown
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 3
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2056373037687670694}
+          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
+          m_MethodName: HandleBPMPointerUp
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.EventSystems;
 
 /// <summary>
@@ -388,7 +389,7 @@ public class Beatline : MonoBehaviour
         {
             SelectedBPMTicks.Clear();
             SelectedBPMTicks.Clear();
-            
+
             var minNum = Math.Min(lastTickSelection, HeldTick);
             var maxNum = Math.Max(lastTickSelection, HeldTick);
             HashSet<int> selectedEvents = targetEventSet.Where(x => x <= maxNum && x >= minNum).ToHashSet();
@@ -497,6 +498,45 @@ public class Beatline : MonoBehaviour
         TempoManager.UpdateBeatlines();
     }
 
+    bool bpmDeletePrimed = false;
+    bool tsDeletePrimed = false;
+
+    public void HandlBPMPointerDown(BaseEventData baseEventData)
+    {
+        var pointerData = (PointerEventData)baseEventData;
+        if (pointerData.button == PointerEventData.InputButton.Right)
+        {
+            bpmDeletePrimed = true;
+        }
+    }
+
+    public void HandleBPMPointerUp(BaseEventData baseEventData)
+    {
+        var pointerData = (PointerEventData)baseEventData;
+        if (pointerData.button == PointerEventData.InputButton.Right)
+        {
+            bpmDeletePrimed = false;
+        }
+    }
+
+    public void HandleTSPointerDown(BaseEventData baseEventData)
+    {
+        var pointerData = (PointerEventData)baseEventData;
+        if (pointerData.button == PointerEventData.InputButton.Right)
+        {
+            tsDeletePrimed = true;
+        }
+    }
+
+    public void HandleTSPointerUp(BaseEventData baseEventData)
+    {
+        var pointerData = (PointerEventData)baseEventData;
+        if (pointerData.button == PointerEventData.InputButton.Right)
+        {
+            tsDeletePrimed = false;
+        }
+    }
+
     /// <summary>
     /// Called by the event trigger on the BPM label when the label is clicked.
     /// </summary>
@@ -512,6 +552,8 @@ public class Beatline : MonoBehaviour
         {
             EditType = BeatlinePreviewer.PreviewType.BPM;
         }
+
+        if (bpmDeletePrimed && clickdata.button == PointerEventData.InputButton.Left) DeleteSelection();
 
         TempoManager.UpdateBeatlines();
     }
@@ -531,6 +573,8 @@ public class Beatline : MonoBehaviour
         {
             EditType = BeatlinePreviewer.PreviewType.TS;
         }
+
+        if (tsDeletePrimed && clickdata.button == PointerEventData.InputButton.Left) DeleteSelection();
 
         TempoManager.UpdateBeatlines();
     }
