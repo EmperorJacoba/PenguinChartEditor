@@ -3,12 +3,8 @@ using UnityEngine;
 
 public class TempoManager : MonoBehaviour
 {  
-    private static WaveformManager waveformManager;
-
     void Awake()
     {
-        waveformManager = GameObject.Find("WaveformManager").GetComponent<WaveformManager>();
-
         // set up events so that beatlines can update whenever anything changes
         WaveformManager.DisplayChanged += UpdateBeatlines;
     }

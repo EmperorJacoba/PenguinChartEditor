@@ -14,6 +14,8 @@ public class Beatline : MonoBehaviour
 {
     #region Components
 
+    InputMap inputMap;
+
     /// <summary>
     /// Property used to turn off some editing features not available for the "preview" beatline object.
     /// </summary>
@@ -384,7 +386,9 @@ public class Beatline : MonoBehaviour
         // Shift-click functionality
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            targetSelectionSet.Clear();
+            SelectedBPMTicks.Clear();
+            SelectedBPMTicks.Clear();
+            
             var minNum = Math.Min(lastTickSelection, HeldTick);
             var maxNum = Math.Max(lastTickSelection, HeldTick);
             HashSet<int> selectedEvents = targetEventSet.Where(x => x <= maxNum && x >= minNum).ToHashSet();
@@ -404,7 +408,8 @@ public class Beatline : MonoBehaviour
         // Regular click, no extra significant keybinds
         else
         {
-            targetSelectionSet.Clear();
+            SelectedBPMTicks.Clear();
+            SelectedTSTicks.Clear();
             targetSelectionSet.Add(HeldTick);
         }
         // Record the last selection data for shift-click selection
@@ -441,6 +446,11 @@ public class Beatline : MonoBehaviour
     void Awake()
     {
         screenRef = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
+
+        inputMap = new();
+        inputMap.Enable();
+
+        inputMap.Charting.Delete.performed += x => DeleteSelection();
     }
 
     void Start()
@@ -456,6 +466,36 @@ public class Beatline : MonoBehaviour
     #endregion
 
     #region Event Handlers
+
+    void DeleteSelection()
+    {
+        if (SelectedBPMTicks.Count != 0)
+        {
+            var earliestTick = SelectedBPMTicks.Min();
+            foreach (var tick in SelectedBPMTicks)
+            {
+                if (tick != 0)
+                {
+                    SongTimelineManager.TempoEvents.Remove(tick);
+                }
+            }
+            SongTimelineManager.RecalculateTempoEventDictionary(SongTimelineManager.FindLastTempoEventTickInclusive(earliestTick));
+        }
+        if (SelectedTSTicks.Count != 0)
+        {
+            foreach (var tick in SelectedTSTicks)
+            {
+                if (tick != 0)
+                {
+                    SongTimelineManager.TimeSignatureEvents.Remove(tick);
+                }
+            }
+        }
+        SelectedBPMTicks.Clear();
+        SelectedTSTicks.Clear();
+
+        TempoManager.UpdateBeatlines();
+    }
 
     /// <summary>
     /// Called by the event trigger on the BPM label when the label is clicked.
