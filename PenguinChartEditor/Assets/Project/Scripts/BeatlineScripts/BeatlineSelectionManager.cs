@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.EventSystems;
 using System;
+using System.Net;
 
 public class BeatlineSelectionManager : MonoBehaviour
 {
@@ -51,11 +52,9 @@ public class BeatlineSelectionManager : MonoBehaviour
             {
                 continue;
             }
-
         }
         foreach (var tick in SelectedTSTicks)
         {
-
             tsClipboard.Add(tick - lowestTSTick, SongTimelineManager.TimeSignatureEvents[tick]);
         }
     }
@@ -64,14 +63,17 @@ public class BeatlineSelectionManager : MonoBehaviour
     {
         var startPasteTick = BeatlinePreviewer.currentPreviewTick;
 
+        // This works because the event does end up in the target dictionary, but event dictionary events get all screwed up
+        // and overwrite each other (???)
+        // Check dictionaries to see what is actually outputted
         if (bpmClipboard.Count > 0)
         {
             var endBPMPasteTick = bpmClipboard.Keys.Max() + startPasteTick;
-            SortedDictionary<int, (float, float)> tempTempoEventDictionary = new(SongTimelineManager.TempoEvents.Where(x => x.Key < startPasteTick && x.Key > endBPMPasteTick).ToDictionary(x => x.Key, x => x.Value));
+            SortedDictionary<int, (float, float)> tempTempoEventDictionary = GetNonOverwritableDictEvents(SongTimelineManager.TempoEvents, startPasteTick, endBPMPasteTick);
             foreach (var tick in bpmClipboard)
             {
                 Debug.Log($"{tick.Key + startPasteTick}, {tick.Value}");
-                tempTempoEventDictionary.Add(tick.Key + startPasteTick, (bpmClipboard[tick.Key], float.NaN));
+                tempTempoEventDictionary.Add(tick.Key + startPasteTick, (bpmClipboard[tick.Key], 0));
             }
             SongTimelineManager.TempoEvents = tempTempoEventDictionary;
             SongTimelineManager.RecalculateTempoEventDictionary(startPasteTick);
@@ -79,7 +81,7 @@ public class BeatlineSelectionManager : MonoBehaviour
         if (tsClipboard.Count > 0)
         {
             var endTSPasteTick = tsClipboard.Keys.Max() + startPasteTick;
-            SortedDictionary<int, (int, int)> tempTSEventDictionary = new(SongTimelineManager.TimeSignatureEvents.Where(x => x.Key < startPasteTick && x.Key > endTSPasteTick).ToDictionary(x => x.Key, x => x.Value));
+            SortedDictionary<int, (int, int)> tempTSEventDictionary = GetNonOverwritableDictEvents(SongTimelineManager.TimeSignatureEvents, startPasteTick, endTSPasteTick);
             foreach (var tick in tsClipboard)
             {
                 tempTSEventDictionary.Add(tick.Key, tsClipboard[tick.Key]);
@@ -88,6 +90,26 @@ public class BeatlineSelectionManager : MonoBehaviour
         }
 
         TempoManager.UpdateBeatlines();
+    }
+
+    /// <summary>
+    /// Copy all events from an event dictionary that are not within a paste zone (startTick to endTick)
+    /// </summary>
+    /// <typeparam name="Key">Key is a tick (int)</typeparam>
+    /// <typeparam name="Value">Value is event data -> ex. TS: (int, int)</typeparam>
+    /// <param name="originalDict">Target dictionary of events to extract from.</param>
+    /// <param name="startTick">Start of paste zone (events to overwrite)</param>
+    /// <param name="endTick">End of paste zone (events to overwrite)</param>
+    /// <returns>Event dictionary with all events in the paste zone removed.</returns>
+    SortedDictionary<Key, Value> GetNonOverwritableDictEvents<Key, Value>(SortedDictionary<Key, Value> originalDict, int startTick, int endTick) where Key : IComparable<Key>
+    {
+        SortedDictionary<Key, Value> tempDictionary = new();
+        foreach (var item in originalDict)
+        {
+            var keyAsInt = Convert.ToInt32(item.Key);
+            if (keyAsInt < startTick || keyAsInt > endTick) tempDictionary.Add(item.Key, item.Value);
+        }
+        return tempDictionary;
     }
 
     /// <summary>
