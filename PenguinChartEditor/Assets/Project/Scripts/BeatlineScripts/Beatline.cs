@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.EventSystems;
 
 /// <summary>
@@ -70,20 +70,6 @@ public class Beatline : MonoBehaviour
     /// </summary>
     public int HeldTick { get; set; } = 0;
 
-    /// <summary>
-    /// Holds a reference for all the BPM events currently selected.
-    /// </summary>
-    public static HashSet<int> SelectedBPMTicks { get; set; } = new();
-
-    /// <summary>
-    /// Holds a reference for all the TS events currently selected.
-    /// </summary>
-    public static HashSet<int> SelectedTSTicks { get; set; } = new();
-
-    /// <summary>
-    /// Holds the tick that was last interacted with in a selection. Used for shift-click capabilities.
-    /// </summary>
-    public static int lastTickSelection = 0;
 
     /// <summary>
     /// Is the BPM event attached to this beatline currently selected?
@@ -323,8 +309,8 @@ public class Beatline : MonoBehaviour
             TSLabelVisible = false;
         }
 
-        BpmSelected = CheckForBPMSelected();
-        TsSelected = CheckForTSSelected();
+        BpmSelected = BeatlineSelectionManager.CheckForBPMSelected(HeldTick);
+        TsSelected = BeatlineSelectionManager.CheckForTSSelected(HeldTick);
     }
 
     #endregion
@@ -372,62 +358,7 @@ public class Beatline : MonoBehaviour
         TempoManager.UpdateBeatlines();
     }
 
-    /// <summary>
-    /// Calculate the event(s) to be selected based on the last click event.
-    /// </summary>
-    /// <param name="clickButton">PointerEventData.button</param>
-    /// <param name="targetSelectionSet">The selection hash set that contains this event type's selection data.</param>
-    /// <param name="targetEventSet">The keys of a sorted dictionary that holds event data (beatlines, TS, etc)</param>
-    void CalculateSelectionStatus(PointerEventData.InputButton clickButton, HashSet<int> targetSelectionSet, List<int> targetEventSet)
-    {
-        // Goal is to follow standard selection functionality of most productivity programs
 
-        if (clickButton != PointerEventData.InputButton.Left) return;
-
-        // Shift-click functionality
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            SelectedBPMTicks.Clear();
-            SelectedBPMTicks.Clear();
-
-            var minNum = Math.Min(lastTickSelection, HeldTick);
-            var maxNum = Math.Max(lastTickSelection, HeldTick);
-            HashSet<int> selectedEvents = targetEventSet.Where(x => x <= maxNum && x >= minNum).ToHashSet();
-            targetSelectionSet.UnionWith(selectedEvents);
-        }
-        // Left control if item is already selected
-        else if (Input.GetKey(KeyCode.LeftControl) && targetSelectionSet.Contains(HeldTick))
-        {
-            targetSelectionSet.Remove(HeldTick);
-            return; // prevent lastTickSelection from being stored as an unselected number
-        }
-        // Left control if item is not currently selected
-        else if (Input.GetKey(KeyCode.LeftControl))
-        {
-            targetSelectionSet.Add(HeldTick);
-        }
-        // Regular click, no extra significant keybinds
-        else
-        {
-            SelectedBPMTicks.Clear();
-            SelectedTSTicks.Clear();
-            targetSelectionSet.Add(HeldTick);
-        }
-        // Record the last selection data for shift-click selection
-        lastTickSelection = HeldTick;
-    }
-
-    bool CheckForBPMSelected()
-    {
-        if (SelectedBPMTicks.Contains(HeldTick)) return true;
-        else return false;
-    }
-
-    bool CheckForTSSelected()
-    {
-        if (SelectedTSTicks.Contains(HeldTick)) return true;
-        else return false;
-    }
 
     private void UpdateThickness(BeatlineType type)
     {
@@ -447,11 +378,6 @@ public class Beatline : MonoBehaviour
     void Awake()
     {
         screenRef = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
-
-        inputMap = new();
-        inputMap.Enable();
-
-        inputMap.Charting.Delete.performed += x => DeleteSelection();
     }
 
     void Start()
@@ -467,36 +393,6 @@ public class Beatline : MonoBehaviour
     #endregion
 
     #region Event Handlers
-
-    void DeleteSelection()
-    {
-        if (SelectedBPMTicks.Count != 0)
-        {
-            var earliestTick = SelectedBPMTicks.Min();
-            foreach (var tick in SelectedBPMTicks)
-            {
-                if (tick != 0)
-                {
-                    SongTimelineManager.TempoEvents.Remove(tick);
-                }
-            }
-            SongTimelineManager.RecalculateTempoEventDictionary(SongTimelineManager.FindLastTempoEventTickInclusive(earliestTick));
-        }
-        if (SelectedTSTicks.Count != 0)
-        {
-            foreach (var tick in SelectedTSTicks)
-            {
-                if (tick != 0)
-                {
-                    SongTimelineManager.TimeSignatureEvents.Remove(tick);
-                }
-            }
-        }
-        SelectedBPMTicks.Clear();
-        SelectedTSTicks.Clear();
-
-        TempoManager.UpdateBeatlines();
-    }
 
     bool bpmDeletePrimed = false;
     bool tsDeletePrimed = false;
@@ -545,7 +441,7 @@ public class Beatline : MonoBehaviour
     {
         var clickdata = (PointerEventData)data;
 
-        CalculateSelectionStatus(clickdata.button, SelectedBPMTicks, SongTimelineManager.TempoEvents.Keys.ToList());
+        BeatlineSelectionManager.CalculateSelectionStatus(clickdata.button, BeatlineSelectionManager.SelectedBPMTicks, SongTimelineManager.TempoEvents.Keys.ToList(), HeldTick);
 
         // Double click functionality for manual entry of beatline number
         if (!Input.GetKey(KeyCode.LeftControl) && clickdata.button == PointerEventData.InputButton.Left && clickdata.clickCount == 2)
@@ -553,7 +449,7 @@ public class Beatline : MonoBehaviour
             EditType = BeatlinePreviewer.PreviewType.BPM;
         }
 
-        if (bpmDeletePrimed && clickdata.button == PointerEventData.InputButton.Left) DeleteSelection();
+        if (bpmDeletePrimed && clickdata.button == PointerEventData.InputButton.Left) BeatlineSelectionManager.DeleteSelection();
 
         TempoManager.UpdateBeatlines();
     }
@@ -566,7 +462,7 @@ public class Beatline : MonoBehaviour
     {
         var clickdata = (PointerEventData)data;
 
-        CalculateSelectionStatus(clickdata.button, SelectedTSTicks, SongTimelineManager.TimeSignatureEvents.Keys.ToList());
+        BeatlineSelectionManager.CalculateSelectionStatus(clickdata.button, BeatlineSelectionManager.SelectedTSTicks, SongTimelineManager.TimeSignatureEvents.Keys.ToList(), HeldTick);
 
         // Double click functionality for manual entry of time signature
         if (!Input.GetKey(KeyCode.LeftControl) && clickdata.button == PointerEventData.InputButton.Left && clickdata.clickCount == 2)
@@ -574,7 +470,7 @@ public class Beatline : MonoBehaviour
             EditType = BeatlinePreviewer.PreviewType.TS;
         }
 
-        if (tsDeletePrimed && clickdata.button == PointerEventData.InputButton.Left) DeleteSelection();
+        if (tsDeletePrimed && clickdata.button == PointerEventData.InputButton.Left) BeatlineSelectionManager.DeleteSelection();
 
         TempoManager.UpdateBeatlines();
     }

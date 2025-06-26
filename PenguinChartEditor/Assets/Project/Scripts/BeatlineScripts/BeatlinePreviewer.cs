@@ -9,12 +9,17 @@ using UnityEngine.UI;
 /// </summary>
 public class BeatlinePreviewer : MonoBehaviour
 {
+    /// <summary>
+    /// A reference to the underlying beatline game object this script is attached to.
+    /// </summary>
     [SerializeField] Beatline beatline;
     [SerializeField] RectTransform screenReferenceRt;
 
     [SerializeField] GraphicRaycaster overlayUIRaycaster;
 
     static InputMap inputMap;
+
+    public static int currentPreviewTick;
 
     /// <summary>
     /// Temporary solution to prevent editing capabilities in some circumstances
@@ -123,6 +128,9 @@ public class BeatlinePreviewer : MonoBehaviour
         timestamp = SongTimelineManager.ConvertTickTimeToSeconds(tick);
         beatline.UpdateBeatlinePosition((timestamp - startTime) / timeShown);
 
+        // store the current previewed tick for copy/pasting selections from the preview onward
+        currentPreviewTick = tick;
+
         // preview TS event or BPM event based on what side of the track cursor is on (track is centered)
         if (percentOfScreenHorizontal < 0.5f)
         {
@@ -156,8 +164,8 @@ public class BeatlinePreviewer : MonoBehaviour
             if (!SongTimelineManager.TempoEvents.ContainsKey(tick))
             {
                 SongTimelineManager.TempoEvents.Add(tick, (float.Parse(beatline.BPMLabelText), (float)timestamp));
-                Beatline.SelectedBPMTicks.Clear();
-                Beatline.SelectedTSTicks.Clear();
+                BeatlineSelectionManager.SelectedBPMTicks.Clear();
+                BeatlineSelectionManager.SelectedTSTicks.Clear();
             }
         }
         else if (beatline.TSLabelVisible)
@@ -165,8 +173,8 @@ public class BeatlinePreviewer : MonoBehaviour
             if (!SongTimelineManager.TimeSignatureEvents.ContainsKey(tick))
             {
                 SongTimelineManager.TimeSignatureEvents.Add(tick, displayedTS);
-                Beatline.SelectedBPMTicks.Clear();
-                Beatline.SelectedTSTicks.Clear();
+                BeatlineSelectionManager.SelectedBPMTicks.Clear();
+                BeatlineSelectionManager.SelectedTSTicks.Clear();
             }
         }
         else return;
