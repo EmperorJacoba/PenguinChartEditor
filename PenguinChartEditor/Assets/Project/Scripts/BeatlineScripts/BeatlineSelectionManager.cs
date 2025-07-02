@@ -62,22 +62,27 @@ public class BeatlineSelectionManager : MonoBehaviour
     void PasteSelection()
     {
         var startPasteTick = BeatlinePreviewer.currentPreviewTick;
-
-        // This works because the event does end up in the target dictionary, but event dictionary events get all screwed up
-        // and overwrite each other (???)
-        // Check dictionaries to see what is actually outputted
+        
+        // Check each individual clipboard for events to paste
         if (bpmClipboard.Count > 0)
         {
-            var endBPMPasteTick = bpmClipboard.Keys.Max() + startPasteTick;
+            var endBPMPasteTick = bpmClipboard.Keys.Max() + startPasteTick; // Get selection zone to overwrite
+            // Find events that will not be overwritten to preserve
             SortedDictionary<int, (float, float)> tempTempoEventDictionary = GetNonOverwritableDictEvents(SongTimelineManager.TempoEvents, startPasteTick, endBPMPasteTick);
+
+            // Write selected events to combine with existing events
             foreach (var tick in bpmClipboard)
             {
-                Debug.Log($"{tick.Key + startPasteTick}, {tick.Value}");
-                tempTempoEventDictionary.Add(tick.Key + startPasteTick, (bpmClipboard[tick.Key], 0));
+                tempTempoEventDictionary.Add(tick.Key + startPasteTick, (bpmClipboard[tick.Key], 0)); // 0 is a placeholder that will be overwritten (timestamp is irrelevant here because dictionary is not read yet)
             }
             SongTimelineManager.TempoEvents = tempTempoEventDictionary;
-            SongTimelineManager.RecalculateTempoEventDictionary(startPasteTick);
+
+            // Recalculate to replace 0 timestamps with correct timestamps
+            // Find the tick event BEFORE the first pasted tick-time to avoid using the zero placeholder as the starting point
+            // If recalculation starts from the first event then the calculations start from zero and two sets of beatlines appear
+            SongTimelineManager.RecalculateTempoEventDictionary(SongTimelineManager.FindLastTempoEventTickExclusive(startPasteTick));
         }
+
         if (tsClipboard.Count > 0)
         {
             var endTSPasteTick = tsClipboard.Keys.Max() + startPasteTick;
