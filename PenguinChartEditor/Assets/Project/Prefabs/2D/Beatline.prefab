@@ -252,6 +252,7 @@ GameObject:
   - component: {fileID: 2101186017953797880}
   - component: {fileID: 5002406228092669672}
   - component: {fileID: 4548908705391643177}
+  - component: {fileID: 6623864532696733896}
   m_Layer: 5
   m_Name: TS_Label
   m_TagString: Untagged
@@ -447,6 +448,23 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &6623864532696733896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2312096276831295752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02381e1b7d5442549b8dea5a339cd9d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Label>k__BackingField: {fileID: 2312096276831295752}
+  <LabelRectTransform>k__BackingField: {fileID: 7353612379106410833}
+  <LabelEntryBox>k__BackingField: {fileID: 3014718018325258834}
+  <LabelText>k__BackingField: {fileID: 7206844250101663744}
+  <SelectionOverlay>k__BackingField: {fileID: 7215973731456500984}
 --- !u!1 &4437381644692860612
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,6 +751,7 @@ GameObject:
   - component: {fileID: 2238320666893824518}
   - component: {fileID: 3465913690773502459}
   - component: {fileID: 7889340691155385051}
+  - component: {fileID: 4318642463002473110}
   m_Layer: 5
   m_Name: BPM_Label
   m_TagString: Untagged
@@ -944,6 +963,23 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &4318642463002473110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5791591105546381921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd05fffeeb21a9d42a2d063d2c067b0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Label>k__BackingField: {fileID: 5791591105546381921}
+  <LabelRectTransform>k__BackingField: {fileID: 3683065919937997954}
+  <LabelEntryBox>k__BackingField: {fileID: 230840468891664329}
+  <LabelText>k__BackingField: {fileID: 5022177113425836600}
+  <SelectionOverlay>k__BackingField: {fileID: 7251365425260148493}
 --- !u!1 &6239090009231363197
 GameObject:
   m_ObjectHideFlags: 0

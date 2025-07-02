@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.EventSystems;
 using System;
-using System.Net;
 
 public class BeatlineSelectionManager : MonoBehaviour
 {

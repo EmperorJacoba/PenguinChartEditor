@@ -15,25 +15,13 @@ public class Beatline : MonoBehaviour
 {
     #region Components
 
-    InputMap inputMap;
+    [SerializeField] BPMLabel bpmLabel;
+    [SerializeField] TSLabel tsLabel;
 
     /// <summary>
     /// Property used to turn off some editing features not available for the "preview" beatline object.
     /// </summary>
     [SerializeField] bool isPreviewBeatline;
-
-    [SerializeField] GameObject bpmLabel;
-    [SerializeField] RectTransform bpmLabelRt;
-    [SerializeField] TMP_InputField bpmLabelEntryBox;
-    [SerializeField] TextMeshProUGUI bpmLabelText;
-
-    [SerializeField] GameObject tsLabel;
-    [SerializeField] RectTransform tsLabelRt;
-    [SerializeField] TMP_InputField tsLabelEntryBox;
-    [SerializeField] TextMeshProUGUI tsLabelText;
-
-    [SerializeField] GameObject bpmSelectionOverlay;
-    [SerializeField] GameObject tsSelectionOverlay;
 
     /// <summary>
     /// The line renderer attached to the beatline game object.
@@ -64,126 +52,6 @@ public class Beatline : MonoBehaviour
 
     #endregion
     #region Properties
-
-    /// <summary>
-    /// The tick that this beatline object represents.
-    /// </summary>
-    public int HeldTick { get; set; } = 0;
-
-
-    /// <summary>
-    /// Is the BPM event attached to this beatline currently selected?
-    /// <para>Selection overlay/indicator is triggered when the value of this property is set.</para>
-    /// </summary>
-    public bool BpmSelected
-    {
-        get
-        {
-            return _bpmSelected;
-        }
-        set
-        {
-            bpmSelectionOverlay.SetActive(value);
-            _bpmSelected = value;
-        }
-    }
-    bool _bpmSelected = false;
-
-    /// <summary>
-    /// Is the TS event attached to this beatline currently selected?
-    /// <para>Selection overlay/indicator is triggered when the value of this property is set.</para>
-    /// </summary>
-    public bool TsSelected
-    {
-        get
-        {
-            return _tsSelected;
-        }
-        set
-        {
-            tsSelectionOverlay.SetActive(value);
-            _tsSelected = value;
-        }
-    }
-    bool _tsSelected = false;
-
-    /// <summary>
-    /// Is the beatline currently visible?
-    /// </summary>
-    public bool IsVisible
-    {
-        get
-        {
-            return gameObject.activeInHierarchy;
-        }
-        set
-        {
-            gameObject.SetActive(value);
-        }
-    }
-
-    /// <summary>
-    /// Is the BPM label currently visible?
-    /// </summary>
-    public bool BPMLabelVisible
-    {
-        get
-        {
-            return bpmLabel.activeInHierarchy;
-        }
-        set
-        {
-            bpmLabel.SetActive(value);
-            UpdateLabelPosition();
-        }
-    }
-
-    /// <summary>
-    /// The text shown by the BPM label.
-    /// </summary>
-    public string BPMLabelText
-    {
-        get
-        {
-            return bpmLabelText.text;
-        }
-        set
-        {
-            bpmLabelText.text = value;
-        }
-    }
-
-    /// <summary>
-    /// Is the TS label currently visible?
-    /// </summary>
-    public bool TSLabelVisible
-    {
-        get
-        {
-            return tsLabel.activeInHierarchy;
-        }
-        set
-        {
-            tsLabel.SetActive(value);
-            UpdateLabelPosition();
-        }
-    }
-
-    /// <summary>
-    /// The text shown by the TS label. 
-    /// </summary>
-    public string TSLabelText
-    {
-        get
-        {
-            return tsLabelText.text;
-        }
-        set
-        {
-            TSLabelVisible = true;
-            tsLabelText.text = value;
-        }
-    }
 
     /// <summary>
     /// Set up input fields to display and activate by passing in the type of label to edit.
@@ -357,8 +225,6 @@ public class Beatline : MonoBehaviour
         // Display the changes
         TempoManager.UpdateBeatlines();
     }
-
-
 
     private void UpdateThickness(BeatlineType type)
     {

@@ -481,22 +481,6 @@ public class SongTimelineManager : MonoBehaviour
         return minutesString + ":" + secondsString + "." + millisecondsString;
     }
 
-
-    // Time signatures
-    // Get the last time signature
-    // # of quarter-beats in a bar is numerator multiplied by the chart resolution 
-    // If current beat tick-time - tick-time of last time sig % chartres * num * (denom / 4) == 0, then we've hit a new bar
-        // If this is not true for a TS with its last TS, there's a TS error
-        // Notify the user
-    // Check for new time signature
-        // If there is a time signature on the current beatline tick-time timestamp, that beatline is the first note of the bar and gets the bar line thickness
-        // OR if it satisfies the modulo above, it gets the bar line thickness
-            // If not true, we're on a secondary beat
-            // Check to see if it's a first-div
-                // current beat tick time - tick time of last TS event % chartres * (denom / 4)
-            // If not, check for second-div
-                // current beat tick time - tick time of last TS event % chartres * (denom / 8)
-
     /// <summary>
     /// Calculate the type of barline a specified tick-time position should be.
     /// </summary>
