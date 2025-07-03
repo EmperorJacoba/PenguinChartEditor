@@ -27,7 +27,7 @@ public class TempoManager : MonoBehaviour
         {
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
-            workedBeatline.HeldTick = currentTick;
+            workedBeatline.Tick = currentTick;
 
             workedBeatline.CheckForEvents();
 
@@ -49,7 +49,7 @@ public class TempoManager : MonoBehaviour
         foreach (var tick in ignoredKeys)
         {
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
-            workedBeatline.HeldTick = tick;
+            workedBeatline.Tick = tick;
 
             workedBeatline.CheckForEvents();
 

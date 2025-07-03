@@ -39,7 +39,7 @@ public class BeatlinePooler : MonoBehaviour
         tmp = Instantiate(beatlinePrefab, canvas.transform); // MUST BE A CHILD OF THE CANVAS
         beatlines.Add(tmp.GetComponent<Beatline>());
     
-        beatlines[^1].IsVisible = false;
+        beatlines[^1].Visible = false;
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class BeatlinePooler : MonoBehaviour
             CreateNewBeatline();
         }
         Beatline beatline = beatlines[index];
-        beatline.IsVisible = true; // prepare beatline to display calculations
+        beatline.Visible = true; // prepare beatline to display calculations
         return beatline;
     }
 
@@ -71,9 +71,9 @@ public class BeatlinePooler : MonoBehaviour
         {
             try 
             {
-                if (beatlines[lastIndex].IsVisible) 
+                if (beatlines[lastIndex].Visible) 
                 {
-                    beatlines[lastIndex].IsVisible = false;
+                    beatlines[lastIndex].Visible = false;
                 }
                 else break;
             }

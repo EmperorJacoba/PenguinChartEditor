@@ -366,7 +366,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1022341178}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10907,54 +10907,19 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2965000268170862340, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: isPreviewBeatline
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4005747397363616516, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 175.00002
-      objectReference: {fileID: 0}
     - target: {fileID: 4846121271480106457, guid: 9ae339497fba1d747be207a08701693b, type: 3}
       propertyPath: m_Name
       value: BeatlinePreviewer
       objectReference: {fileID: 0}
     - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: beatline
-      value: 
-      objectReference: {fileID: 7766536033849242650}
-    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: waveformManager
-      value: 
-      objectReference: {fileID: 33159347}
-    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: screenReferenceRt
-      value: 
-      objectReference: {fileID: 1489170079}
-    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
       propertyPath: overlayUIRaycaster
       value: 
       objectReference: {fileID: 1606916091}
-    - target: {fileID: 6237529782501553827, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 175.00002
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ae339497fba1d747be207a08701693b, type: 3}
---- !u!114 &7766536033849242650 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2965000268170862340, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-  m_PrefabInstance: {fileID: 6058908930944286159}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 428f2a1a0e615db4596c578f112caad8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &7928344770752854848 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}

@@ -370,7 +370,7 @@ public class SongTimelineManager : MonoBehaviour
     /// Recalculate all tempo events from the tick-time timestamp modified onward.
     /// </summary>
     /// <param name="modifiedTick">The last tick modified to update all future ticks from.</param>
-    public static void RecalculateTempoEventDictionary(int modifiedTick)
+    public static void RecalculateTempoEventDictionary(int modifiedTick = 0)
     {
         Debug.Log($"{modifiedTick}");
         SortedDictionary<int, (float, float)> outputTempoEventsDict = new();

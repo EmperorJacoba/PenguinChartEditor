@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7789284369410390961}
   - component: {fileID: 7019133480320165363}
   - component: {fileID: 4139873964407510275}
+  - component: {fileID: 4307625940550189028}
   m_Layer: 5
   m_Name: TS_Label
   m_TagString: Untagged
@@ -37,7 +38,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -457.6, y: 175}
+  m_AnchoredPosition: {x: -457.6, y: 175.00002}
   m_SizeDelta: {x: 134.9142, y: 50}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &7722521355714012645
@@ -145,6 +146,23 @@ TextMesh:
   m_Color:
     serializedVersion: 2
     rgba: 4294967295
+--- !u!114 &4307625940550189028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766708339074845331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02381e1b7d5442549b8dea5a339cd9d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <SelectionOverlay>k__BackingField: {fileID: 0}
+  <LabelObject>k__BackingField: {fileID: 1766708339074845331}
+  <LabelRectTransform>k__BackingField: {fileID: 4005747397363616516}
+  <LabelEntryBox>k__BackingField: {fileID: 0}
+  <_labelText>k__BackingField: {fileID: 4514703662007926241}
 --- !u!1 &3658754775355419620
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,6 +176,7 @@ GameObject:
   - component: {fileID: 464500120128314278}
   - component: {fileID: 564071508602432603}
   - component: {fileID: 9055653011793265303}
+  - component: {fileID: 8870578129598013075}
   m_Layer: 5
   m_Name: BPM_Label
   m_TagString: Untagged
@@ -182,7 +201,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 325, y: 175}
+  m_AnchoredPosition: {x: 325, y: 175.00002}
   m_SizeDelta: {x: 175, y: 50}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &1674293021324577897
@@ -290,6 +309,23 @@ TextMesh:
   m_Color:
     serializedVersion: 2
     rgba: 4294967295
+--- !u!114 &8870578129598013075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3658754775355419620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd05fffeeb21a9d42a2d063d2c067b0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <SelectionOverlay>k__BackingField: {fileID: 0}
+  <LabelObject>k__BackingField: {fileID: 3658754775355419620}
+  <LabelRectTransform>k__BackingField: {fileID: 6237529782501553827}
+  <LabelEntryBox>k__BackingField: {fileID: 0}
+  <_labelText>k__BackingField: {fileID: 959496874554841439}
 --- !u!1 &4846121271480106457
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,7 +337,6 @@ GameObject:
   - component: {fileID: 2695614294042374604}
   - component: {fileID: 6580937424143591166}
   - component: {fileID: 3447600175084081201}
-  - component: {fileID: 2965000268170862340}
   - component: {fileID: 6097872727427922386}
   m_Layer: 0
   m_Name: BeatlinePreviewer
@@ -446,28 +481,6 @@ LineRenderer:
   m_UseWorldSpace: 0
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
---- !u!114 &2965000268170862340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4846121271480106457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 428f2a1a0e615db4596c578f112caad8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  preview: 1
-  bpmLabel: {fileID: 3658754775355419620}
-  bpmLabelRt: {fileID: 6237529782501553827}
-  bpmLabelEntryBox: {fileID: 0}
-  bpmLabelText: {fileID: 959496874554841439}
-  tsLabel: {fileID: 1766708339074845331}
-  tsLabelRt: {fileID: 4005747397363616516}
-  tsLabelEntryBox: {fileID: 0}
-  tsLabelText: {fileID: 4514703662007926241}
-  line: {fileID: 3447600175084081201}
 --- !u!114 &6097872727427922386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -480,10 +493,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 604db0153aa652e4c8eb0196ab9da536, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveformManager: {fileID: 0}
-  beatline: {fileID: 0}
-  screenReferenceRt: {fileID: 0}
-  editMode: 1
+  <SelectionOverlay>k__BackingField: {fileID: 0}
+  bpmLabel: {fileID: 8870578129598013075}
+  tsLabel: {fileID: 4307625940550189028}
+  line: {fileID: 3447600175084081201}
+  overlayUIRaycaster: {fileID: 0}
 --- !u!1 &7056621722754346658
 GameObject:
   m_ObjectHideFlags: 0
