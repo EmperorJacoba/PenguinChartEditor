@@ -18,14 +18,16 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         var selection = GetSelectedEvents();
         var targetEventSet = GetTargetEventSet();
 
+        clipboard.Clear();
+
         int lowestTick = 0;
         if (selection.Count > 0) lowestTick = selection.Min();
 
-        foreach (var tick in selection)
+        foreach (var selectedTick in selection)
         {
             try
             {
-                clipboard.Add(tick - lowestTick, targetEventSet[Tick]);
+                clipboard.Add(selectedTick - lowestTick, targetEventSet[selectedTick]);
             }
             catch
             {
@@ -46,9 +48,9 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
             var endPasteTick = clipboard.Keys.Max() + startPasteTick;
             SortedDictionary<int, DataType> tempDict = GetNonOverwritableDictEvents(targetEventSet, startPasteTick, endPasteTick);
 
-            foreach (var tick in clipboard)
+            foreach (var clippedTick in clipboard)
             {
-                tempDict.Add(tick.Key + startPasteTick, tempDict[tick.Key]);
+                tempDict.Add(clippedTick.Key + startPasteTick, clipboard[clippedTick.Key]);
             }
             targetEventSet = tempDict;
         }
@@ -85,13 +87,12 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
     /// <param name="startTick">Start of paste zone (events to overwrite)</param>
     /// <param name="endTick">End of paste zone (events to overwrite)</param>
     /// <returns>Event dictionary with all events in the paste zone removed.</returns>
-    protected SortedDictionary<int, DataType> GetNonOverwritableDictEvents<DataType>(SortedDictionary<int, DataType> originalDict, int startTick, int endTick)
+    protected SortedDictionary<int, DataType> GetNonOverwritableDictEvents(SortedDictionary<int, DataType> originalDict, int startTick, int endTick)
     {
         SortedDictionary<int, DataType> tempDictionary = new();
         foreach (var item in originalDict)
         {
-            var keyAsInt = Convert.ToInt32(item.Key);
-            if (keyAsInt < startTick || keyAsInt > endTick) tempDictionary.Add(item.Key, item.Value);
+            if (item.Key < startTick || item.Key > endTick) tempDictionary.Add(item.Key, item.Value);
         }
         return tempDictionary;
     }

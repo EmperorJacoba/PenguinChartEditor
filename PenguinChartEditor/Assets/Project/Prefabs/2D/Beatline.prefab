@@ -404,9 +404,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandleTSLabelClick
+        - m_Target: {fileID: 6623864532696733896}
+          m_TargetAssemblyTypeName: Label`1[[System.ValueTuple`2[[System.Int32, mscorlib
+          m_MethodName: HandleLabelClick
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -420,9 +420,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandleTSPointerDown
+        - m_Target: {fileID: 6623864532696733896}
+          m_TargetAssemblyTypeName: Event`1[[System.ValueTuple`2[[System.Int32, mscorlib
+          m_MethodName: HandlePointerDown
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -436,9 +436,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandleTSPointerUp
+        - m_Target: {fileID: 6623864532696733896}
+          m_TargetAssemblyTypeName: Event`1[[System.ValueTuple`2[[System.Int32, mscorlib
+          m_MethodName: HandlePointerUp
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -465,6 +465,7 @@ MonoBehaviour:
   <LabelRectTransform>k__BackingField: {fileID: 7353612379106410833}
   <LabelEntryBox>k__BackingField: {fileID: 3014718018325258834}
   <_labelText>k__BackingField: {fileID: 7206844250101663744}
+  lastTickSelection: 0
 --- !u!1 &4437381644692860612
 GameObject:
   m_ObjectHideFlags: 0
@@ -980,6 +981,7 @@ MonoBehaviour:
   <LabelRectTransform>k__BackingField: {fileID: 3683065919937997954}
   <LabelEntryBox>k__BackingField: {fileID: 230840468891664329}
   <_labelText>k__BackingField: {fileID: 5022177113425836600}
+  lastTickSelection: 0
 --- !u!1 &6239090009231363197
 GameObject:
   m_ObjectHideFlags: 0
@@ -1150,7 +1152,6 @@ MonoBehaviour:
   <SelectionOverlay>k__BackingField: {fileID: 0}
   bpmLabel: {fileID: 4318642463002473110}
   tsLabel: {fileID: 6623864532696733896}
-  isPreviewBeatline: 0
   line: {fileID: 4691799485850042161}
 --- !u!1 &6500526054470389412
 GameObject:

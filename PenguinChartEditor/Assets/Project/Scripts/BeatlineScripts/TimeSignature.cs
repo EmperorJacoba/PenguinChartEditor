@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TimeSignature : Label<(int, int)>
 {
-    public static HashSet<int> SelectedTSEvents { get; set; }
+    public static HashSet<int> SelectedTSEvents { get; set; } = new();
     bool selectionActionsEnabled = false;
 
     public override HashSet<int> GetSelectedEvents()
@@ -35,7 +35,7 @@ public class TimeSignature : Label<(int, int)>
         return SongTimelineManager.TimeSignatureEvents;
     }
 
-    SortedDictionary<int, (int, int)> tsClipboard;
+    SortedDictionary<int, (int, int)> tsClipboard = new();
 
     public override void HandleManualEndEdit(string newVal)
     {
