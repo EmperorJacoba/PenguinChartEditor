@@ -1,5 +1,4 @@
 using UnityEngine;
-using TMPro;
 using System.Collections.Generic;
 using System;
 using UnityEngine.EventSystems;
@@ -9,9 +8,16 @@ public class BPM : Label<(float, float)>
 {
     public static HashSet<int> SelectedBPMEvents { get; set; } = new();
     bool selectionActionsEnabled = false;
+    const int SECONDS_PER_MINUTE = 60;
 
+    /// <summary>
+    /// Dictionary that contains tempo changes and corresponding tick time positions. 
+    /// <para> Key = Tick-time position. Value = BPM to three decimal places, time-second value of the tempo change. </para>
+    /// <para>Example: 192 = 102.201, 0.237</para>
+    /// <remarks>When writing to file, multiply BPM value by 100 to get proper .chart format (where example would show as 192 = B 102201)</remarks>
+    /// </summary>
     public static SortedDictionary<int, (float, float)> Events { get; set; } = new();
-    
+
     public override HashSet<int> GetSelectedEvents()
     {
         return SelectedBPMEvents;
@@ -57,7 +63,7 @@ public class BPM : Label<(float, float)>
             return;
         }
 
-        SongTimelineManager.RecalculateTempoEventDictionary(Tick);
+        RecalculateTempoEventDictionary(Tick);
 
         BeatlinePreviewer.editMode = true;
         ConcludeManualEdit();
@@ -67,7 +73,7 @@ public class BPM : Label<(float, float)>
     {
         return bpmClipboard;
     }
-    
+
     public override void PasteSelection()
     {
         var startPasteTick = BeatlinePreviewer.currentPreviewTick;
@@ -89,7 +95,7 @@ public class BPM : Label<(float, float)>
             // Recalculate to replace 0 timestamps with correct timestamps
             // Find the tick event BEFORE the first pasted tick-time to avoid using the zero placeholder as the starting point
             // If recalculation starts from the first event then the calculations start from zero and two sets of beatlines appear
-            SongTimelineManager.RecalculateTempoEventDictionary(SongTimelineManager.FindLastTempoEventTickExclusive(startPasteTick));
+            RecalculateTempoEventDictionary(FindLastTempoEventTickExclusive(startPasteTick));
         }
     }
 
@@ -107,7 +113,7 @@ public class BPM : Label<(float, float)>
                     Events.Remove(tick);
                 }
             }
-            SongTimelineManager.RecalculateTempoEventDictionary(SongTimelineManager.FindLastTempoEventTickInclusive(earliestTick));
+            RecalculateTempoEventDictionary(FindLastTempoEventTickInclusive(earliestTick));
         }
         selection.Clear();
 
@@ -155,7 +161,7 @@ public class BPM : Label<(float, float)>
 
         // Use exclusive function because this needs to find the tempo event before this beatline's tempo event.
         // Inclusive would always return the same event, which causes 0/0 and thus NaN.
-        var lastBPMTick = SongTimelineManager.FindLastTempoEventTickExclusive(Tick);
+        var lastBPMTick = FindLastTempoEventTickExclusive(Tick);
 
         var newTime = Events[Tick].Item2 + (float)timeChange;
 
@@ -171,9 +177,210 @@ public class BPM : Label<(float, float)>
         Events[lastBPMTick] = (newBPM, Events[lastBPMTick].Item2);
 
         // Update rest of dictionary to account for the time change.
-        SongTimelineManager.RecalculateTempoEventDictionary(Tick, (float)timeChange);
+        RecalculateTempoEventDictionary(Tick, (float)timeChange);
 
         // Display the changes
         TempoManager.UpdateBeatlines();
+    }
+    public static int ConvertSecondsToTickTime(float timestamp)
+    {
+        if (timestamp < 0)
+        {
+            return 0;
+        }
+        else if (timestamp > PluginBassManager.SongLength)
+        {
+            return SongTimelineManager.SongLengthTicks;
+        }
+
+        // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
+        var tempoTickTimeEvents = Events.Keys.ToList();
+        var tempoTimeSecondEvents = Events.Values.Select(x => x.Item2).ToList();
+
+        // Attempt a binary search for the current timestamp, 
+        // which will return a bitwise complement of the index of the next highest timesecond value 
+        // OR tempoTimeSecondEvents.Count if there are no more elements
+        var index = tempoTimeSecondEvents.BinarySearch(timestamp);
+        int lastTickEvent;
+        if (index <= 0) // bitwise complement is negative or zero
+        {
+            // modify index if the found timestamp is at the end of the array (last tempo event)
+            if (~index == tempoTimeSecondEvents.Count) index = tempoTimeSecondEvents.Count - 1;
+            // else just get the index proper 
+            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+            try
+            {
+                lastTickEvent = tempoTickTimeEvents[index];
+            }
+            catch
+            {
+                lastTickEvent = tempoTickTimeEvents[0]; // if ~index - 1 is -1, then the index should be itself
+            }
+        }
+        else
+        {
+            lastTickEvent = tempoTickTimeEvents[index];
+        }
+
+        // Rearranging of .chart format specification distance between two ticks - thanks, algebra class!
+        return Mathf.RoundToInt((ChartMetadata.ChartResolution * Events[lastTickEvent].Item1 * (float)(timestamp - BPM.Events[lastTickEvent].Item2) / SECONDS_PER_MINUTE) + lastTickEvent);
+        // THIS WILL NOT RETURN A CORRECT VALUE IF THIS DOES NOT DO FLOATING POINT CALCULATIONS
+    }
+    
+    
+    public static double ConvertTickTimeToSeconds(int ticktime)
+    {
+        var lastTickEvent = FindLastTempoEventTickInclusive(ticktime);
+        // Formula from .chart format specifications
+        return ((ticktime - lastTickEvent) / (double)ChartMetadata.ChartResolution * SECONDS_PER_MINUTE / BPM.Events[lastTickEvent].Item1) + BPM.Events[lastTickEvent].Item2;
+    }
+
+    /// <summary>
+    /// Find the last tempo event before a specified tick. Can return the passed in tick if an event exists at that position.
+    /// </summary>
+    /// <param name="currentTick"></param>
+    /// <returns>The tick-time timestamp of the previous tempo event.</returns>
+    public static int FindLastTempoEventTickInclusive(int currentTick)
+    {
+        var tickTimeKeys = BPM.Events.Keys.ToList();
+
+        var index = tickTimeKeys.BinarySearch(currentTick);
+        if (index < 0) // bitwise complement is negative
+        {
+            // modify index if the found timestamp is at the end of the array (last tempo event)
+            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
+            // else just get the index proper 
+            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+            return tickTimeKeys[index]; 
+        }
+        else 
+        {
+            return tickTimeKeys[index];
+        }
+    }
+
+    /// <summary>
+    /// Find the last tempo event before a specified tick. WILL NOT return the passed in tick if an event exists at that position, and will instead return the true last event.
+    /// </summary>
+    /// <param name="currentTick"></param>
+    /// <returns></returns>
+    public static int FindLastTempoEventTickExclusive(int currentTick)
+    {
+        var tickTimeKeys = BPM.Events.Keys.ToList();
+
+        var index = tickTimeKeys.BinarySearch(currentTick);
+        if (index <= 0) // bitwise complement is negative
+        {
+            // modify index if the found timestamp is at the end of the array (last tempo event)
+            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
+            // else just get the index proper 
+            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+            try
+            {
+                return tickTimeKeys[index]; 
+            }
+            catch
+            {
+                return tickTimeKeys[0]; // if ~index - 1 is -1, then the index should be itself
+            }
+        }
+        else 
+        {
+            return tickTimeKeys[index - 1];
+        }
+    }
+
+    /// <summary>
+    /// Recalculate all tempo events from the tick-time timestamp modified onward.
+    /// </summary>
+    /// <param name="modifiedTick">The last tick modified to update all future ticks from.</param>
+    public static void RecalculateTempoEventDictionary(int modifiedTick = 0)
+    {
+        SortedDictionary<int, (float, float)> outputTempoEventsDict = new();
+
+        var tickEvents = BPM.Events.Keys.ToList();
+        var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick); 
+        if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
+
+        // Keep all events before change when creating new dictionary
+        for (int i = 0; i <= positionOfTick; i++)
+        {
+            outputTempoEventsDict.Add(tickEvents[i], (BPM.Events[tickEvents[i]].Item1, BPM.Events[tickEvents[i]].Item2));
+        }
+        // Start new data with the song timestamp of the change
+        double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Item2;
+        for (int i = positionOfTick + 1; i < tickEvents.Count; i++)
+        {
+            double calculatedTimeSecondDifference = 0;
+
+            if (i > 0)
+            {
+                // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
+                calculatedTimeSecondDifference = 
+                (tickEvents[i] - tickEvents[i - 1]) / (double)ChartMetadata.ChartResolution * 60 / BPM.Events[tickEvents[i - 1]].Item1;
+            }
+
+            currentSongTime += calculatedTimeSecondDifference;
+            outputTempoEventsDict.Add(tickEvents[i], (BPM.Events[tickEvents[i]].Item1, (float)currentSongTime));
+        }
+
+        BPM.Events = outputTempoEventsDict;
+    }
+
+    public static void RecalculateTempoEventDictionary(int modifiedTick, float timeChange)
+    {
+        SortedDictionary<int, (float, float)> outputTempoEventsDict = new();
+
+        var tickEvents = BPM.Events.Keys.ToList();
+        var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick); 
+        if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
+
+        // Keep all events before change when creating new dictionary
+        for (int i = 0; i <= positionOfTick; i++)
+        {
+            outputTempoEventsDict.Add(tickEvents[i], (BPM.Events[tickEvents[i]].Item1, BPM.Events[tickEvents[i]].Item2));
+        }
+
+                // Start new data with the song timestamp of the change
+        double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Item2;
+        for (int i = positionOfTick + 1; i < tickEvents.Count; i++)
+        {
+            outputTempoEventsDict.Add(tickEvents[i], (BPM.Events[tickEvents[i]].Item1, BPM.Events[tickEvents[i]].Item2 + timeChange));
+        }
+
+        BPM.Events = outputTempoEventsDict;
+    }
+
+    /// <summary>
+    /// Take a number of seconds (in S.ms form - ex. 61.1 seconds) and convert it to MM:SS.mmm format (where 61.1 returns 01:01.100)
+    /// </summary>
+    /// <param name="position">The unformatted second count.</param>
+    /// <returns>The formatted MM:SS:mmm timestamp of the second position</returns>
+    public static string ConvertSecondsToTimestamp(double position)
+    {
+        var minutes = Math.Floor(position / 60);
+        var secondsWithMS = position - minutes * 60;
+        var seconds = (int)Math.Floor(secondsWithMS);
+        var milliseconds = Math.Round(secondsWithMS - seconds, 3) * 1000;
+
+        string minutesString = minutes.ToString();
+        if (minutes < 10)
+        {
+            minutesString = minutesString.PadLeft(minutesString.Length + 1, '0');
+        }
+
+        string secondsString = seconds.ToString();
+        if (seconds < 10)
+        {
+            secondsString = secondsString.PadLeft(2, '0');
+        }
+
+        string millisecondsString = milliseconds.ToString();
+        if (millisecondsString.Length < 3)
+        {
+            millisecondsString = millisecondsString.PadRight(3, '0');
+        }
+
+        return minutesString + ":" + secondsString + "." + millisecondsString;
     }
 }

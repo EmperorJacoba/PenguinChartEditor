@@ -87,13 +87,13 @@ public class BeatlinePreviewer : Beatline
         WaveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
 
         var cursorTimestamp = (percentOfScreenVertical * timeShown) + startTime;
-        var cursorTickTime = SongTimelineManager.ConvertSecondsToTickTime((float)cursorTimestamp); 
+        var cursorTickTime = BPM.ConvertSecondsToTickTime((float)cursorTimestamp); 
 
         // Calculate the Tick grid to snap the event to
         var TickInterval = ChartMetadata.ChartResolution / ((float)DivisionChanger.CurrentDivision / 4);
 
         // Calculate the cursor's Tick position in the context of the origin of the grid (last barline) 
-        var divisionBasisTick = cursorTickTime - SongTimelineManager.FindLastBarline(cursorTickTime);
+        var divisionBasisTick = cursorTickTime - TimeSignature.FindLastBarline(cursorTickTime);
 
         // Find how many Ticks off the cursor position is from the grid 
         var remainder = divisionBasisTick % TickInterval;
@@ -112,7 +112,7 @@ public class BeatlinePreviewer : Beatline
         }
 
         // store what time the preview is at so that adding an event is merely inserting the preview's current position into the dictionary
-        timestamp = SongTimelineManager.ConvertTickTimeToSeconds(Tick);
+        timestamp = BPM.ConvertTickTimeToSeconds(Tick);
         UpdateBeatlinePosition((timestamp - startTime) / timeShown);
 
         // store the current previewed Tick for copy/pasting selections from the preview onward
@@ -124,8 +124,8 @@ public class BeatlinePreviewer : Beatline
             bpmLabel.Visible = false;
             tsLabel.Visible = true;
 
-            var num = TimeSignature.Events[SongTimelineManager.FindLastTSEventTick(Tick)].Item1;
-            var denom = TimeSignature.Events[SongTimelineManager.FindLastTSEventTick(Tick)].Item2;
+            var num = TimeSignature.Events[TimeSignature.FindLastTSEventTick(Tick)].Item1;
+            var denom = TimeSignature.Events[TimeSignature.FindLastTSEventTick(Tick)].Item2;
             tsLabel.LabelText = $"{num} / {denom}";
             displayedTS = (num, denom);
         }
@@ -133,7 +133,7 @@ public class BeatlinePreviewer : Beatline
         {
             bpmLabel.Visible = true;
             tsLabel.Visible = false;
-            bpmLabel.LabelText = BPM.Events[SongTimelineManager.FindLastTempoEventTickInclusive(Tick)].Item1.ToString();
+            bpmLabel.LabelText = BPM.Events[BPM.FindLastTempoEventTickInclusive(Tick)].Item1.ToString();
         }
     }
 
