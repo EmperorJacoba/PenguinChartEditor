@@ -124,8 +124,8 @@ public class BeatlinePreviewer : Beatline
             bpmLabel.Visible = false;
             tsLabel.Visible = true;
 
-            var num = SongTimelineManager.TimeSignatureEvents[SongTimelineManager.FindLastTSEventTick(Tick)].Item1;
-            var denom = SongTimelineManager.TimeSignatureEvents[SongTimelineManager.FindLastTSEventTick(Tick)].Item2;
+            var num = TimeSignature.Events[SongTimelineManager.FindLastTSEventTick(Tick)].Item1;
+            var denom = TimeSignature.Events[SongTimelineManager.FindLastTSEventTick(Tick)].Item2;
             tsLabel.LabelText = $"{num} / {denom}";
             displayedTS = (num, denom);
         }
@@ -133,7 +133,7 @@ public class BeatlinePreviewer : Beatline
         {
             bpmLabel.Visible = true;
             tsLabel.Visible = false;
-            bpmLabel.LabelText = SongTimelineManager.TempoEvents[SongTimelineManager.FindLastTempoEventTickInclusive(Tick)].Item1.ToString();
+            bpmLabel.LabelText = BPM.Events[SongTimelineManager.FindLastTempoEventTickInclusive(Tick)].Item1.ToString();
         }
     }
 
@@ -148,18 +148,18 @@ public class BeatlinePreviewer : Beatline
         // Modify the dictionaries based on which event change is previewed
         if (bpmLabel.Visible)
         {
-            if (!SongTimelineManager.TempoEvents.ContainsKey(Tick))
+            if (!BPM.Events.ContainsKey(Tick))
             {
-                SongTimelineManager.TempoEvents.Add(Tick, (float.Parse(bpmLabel.LabelText), (float)timestamp));
+                BPM.Events.Add(Tick, (float.Parse(bpmLabel.LabelText), (float)timestamp));
                 BPM.SelectedBPMEvents.Clear();
                 TimeSignature.SelectedTSEvents.Clear(); // clear selection generic? attack all children?
             }
         }
         else if (tsLabel.Visible)
         {
-            if (!SongTimelineManager.TimeSignatureEvents.ContainsKey(Tick))
+            if (!TimeSignature.Events.ContainsKey(Tick))
             {
-                SongTimelineManager.TimeSignatureEvents.Add(Tick, displayedTS);
+                TimeSignature.Events.Add(Tick, displayedTS);
                 BPM.SelectedBPMEvents.Clear();
                 TimeSignature.SelectedTSEvents.Clear();
             }

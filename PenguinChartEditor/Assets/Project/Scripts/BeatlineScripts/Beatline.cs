@@ -18,11 +18,27 @@ public class Beatline : Event<bool>
     {
         throw new NotImplementedException();
     }
-
-    public override SortedDictionary<int, bool> GetTargetEventSet()
+    public override SortedDictionary<int, bool> GetEvents()
     {
         throw new NotImplementedException();
     }
+
+    public override void SetEvents(SortedDictionary<int, bool> newEvents)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override int Tick
+    {
+        get { return _tick; }
+        set
+        {
+            bpmLabel.Tick = value;
+            tsLabel.Tick = value;
+            _tick = value;
+        }
+    }
+    private int _tick = 0;
 
     #region Components
 
@@ -97,20 +113,20 @@ public class Beatline : Event<bool>
 
     public void CheckForEvents()
     {
-        if (SongTimelineManager.TempoEvents.ContainsKey(Tick))
+        if (BPM.Events.ContainsKey(Tick))
         {
             bpmLabel.Visible = true;
-            bpmLabel.LabelText = $"{SongTimelineManager.TempoEvents[Tick].Item1}";
+            bpmLabel.LabelText = bpmLabel.ConvertDataToPreviewString();
         }
         else
         {
             bpmLabel.Visible = false;
         }
 
-        if (SongTimelineManager.TimeSignatureEvents.ContainsKey(Tick))
+        if (TimeSignature.Events.ContainsKey(Tick))
         {
             tsLabel.Visible = true;
-            tsLabel.LabelText = $"{SongTimelineManager.TimeSignatureEvents[Tick].Item1} / {SongTimelineManager.TimeSignatureEvents[Tick].Item2}";
+            tsLabel.LabelText = tsLabel.ConvertDataToPreviewString();
         }
         else
         {

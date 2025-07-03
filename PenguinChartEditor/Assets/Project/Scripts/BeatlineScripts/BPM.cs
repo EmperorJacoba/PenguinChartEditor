@@ -9,9 +9,27 @@ public class BPM : Label<(float, float)>
 {
     public static HashSet<int> SelectedBPMEvents { get; set; } = new();
     bool selectionActionsEnabled = false;
+
+    public static SortedDictionary<int, (float, float)> Events { get; set; } = new();
+    
     public override HashSet<int> GetSelectedEvents()
     {
         return SelectedBPMEvents;
+    }
+
+    public override void SetEvents(SortedDictionary<int, (float, float)> newEvents)
+    {
+        Events = newEvents;
+    }
+
+    public override SortedDictionary<int, (float, float)> GetEvents()
+    {
+        return Events;
+    }
+
+    public override string ConvertDataToPreviewString()
+    {
+        return $"{Events[Tick].Item1}";
     }
 
     void Awake()
@@ -32,7 +50,7 @@ public class BPM : Label<(float, float)>
     {
         try
         {
-            SongTimelineManager.TempoEvents[Tick] = (ProcessUnsafeBPMString(newVal), SongTimelineManager.TempoEvents[Tick].Item2);
+            Events[Tick] = (ProcessUnsafeBPMString(newVal), Events[Tick].Item2);
         }
         catch
         {
@@ -49,29 +67,24 @@ public class BPM : Label<(float, float)>
     {
         return bpmClipboard;
     }
-
-    public override SortedDictionary<int, (float, float)> GetTargetEventSet()
-    {
-        return SongTimelineManager.TempoEvents;
-    }
-
+    
     public override void PasteSelection()
     {
         var startPasteTick = BeatlinePreviewer.currentPreviewTick;
-        
+
         // Check each individual clipboard for events to paste
         if (bpmClipboard.Count > 0)
         {
             var endBPMPasteTick = bpmClipboard.Keys.Max() + startPasteTick; // Get selection zone to overwrite
             // Find events that will not be overwritten to preserve
-            SortedDictionary<int, (float, float)> tempTempoEventDictionary = GetNonOverwritableDictEvents(SongTimelineManager.TempoEvents, startPasteTick, endBPMPasteTick);
+            SortedDictionary<int, (float, float)> tempTempoEventDictionary = GetNonOverwritableDictEvents(Events, startPasteTick, endBPMPasteTick);
 
             // Write selected events to combine with existing events
             foreach (var tick in bpmClipboard)
             {
                 tempTempoEventDictionary.Add(tick.Key + startPasteTick, (bpmClipboard[tick.Key].Item1, 0)); // 0 is a placeholder that will be overwritten (timestamp is irrelevant here because dictionary is not read yet)
             }
-            SongTimelineManager.TempoEvents = tempTempoEventDictionary;
+            Events = tempTempoEventDictionary;
 
             // Recalculate to replace 0 timestamps with correct timestamps
             // Find the tick event BEFORE the first pasted tick-time to avoid using the zero placeholder as the starting point
@@ -83,7 +96,6 @@ public class BPM : Label<(float, float)>
     public override void DeleteSelection()
     {
         var selection = GetSelectedEvents();
-        var targetEventSet = GetTargetEventSet();
 
         if (selection.Count != 0)
         {
@@ -92,7 +104,7 @@ public class BPM : Label<(float, float)>
             {
                 if (tick != 0)
                 {
-                    targetEventSet.Remove(tick);
+                    Events.Remove(tick);
                 }
             }
             SongTimelineManager.RecalculateTempoEventDictionary(SongTimelineManager.FindLastTempoEventTickInclusive(earliestTick));
@@ -114,7 +126,7 @@ public class BPM : Label<(float, float)>
         var bpmAsFloat = float.Parse(newBPM);
         if (bpmAsFloat == 0 || bpmAsFloat > 1000.0f)
         {
-            return SongTimelineManager.TempoEvents[Tick].Item1;
+            return Events[Tick].Item1;
         }
         bpmAsFloat = (float)Math.Round(bpmAsFloat, 3);
         return bpmAsFloat;
@@ -145,18 +157,18 @@ public class BPM : Label<(float, float)>
         // Inclusive would always return the same event, which causes 0/0 and thus NaN.
         var lastBPMTick = SongTimelineManager.FindLastTempoEventTickExclusive(Tick);
 
-        var newTime = SongTimelineManager.TempoEvents[Tick].Item2 + (float)timeChange;
+        var newTime = Events[Tick].Item2 + (float)timeChange;
 
         // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
         // Calculate the new BPM based on the time change
-        float newBPS = ((Tick - lastBPMTick) / (float)ChartMetadata.ChartResolution) / (newTime - SongTimelineManager.TempoEvents[lastBPMTick].Item2);
+        float newBPS = ((Tick - lastBPMTick) / (float)ChartMetadata.ChartResolution) / (newTime - Events[lastBPMTick].Item2);
         float newBPM = (float)Math.Round((newBPS * 60), 3);
 
         if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
 
         // Write new data: time changes for this beatline's tick, BPM changes for the last tick event.
-        SongTimelineManager.TempoEvents[Tick] = (SongTimelineManager.TempoEvents[Tick].Item1, newTime);
-        SongTimelineManager.TempoEvents[lastBPMTick] = (newBPM, SongTimelineManager.TempoEvents[lastBPMTick].Item2);
+        Events[Tick] = (Events[Tick].Item1, newTime);
+        Events[lastBPMTick] = (newBPM, Events[lastBPMTick].Item2);
 
         // Update rest of dictionary to account for the time change.
         SongTimelineManager.RecalculateTempoEventDictionary(Tick, (float)timeChange);

@@ -7,9 +7,32 @@ public class TimeSignature : Label<(int, int)>
     public static HashSet<int> SelectedTSEvents { get; set; } = new();
     bool selectionActionsEnabled = false;
 
+    /// <summary>
+    /// Dictionary that contains time signature changes and corresponding tick time positions.
+    /// <para>Key = Tick-time position. Value = Numerator (num of beats per bar), Denominator (type of beat)</para>
+    /// <para>Example: 192 = 4, 4</para>
+    /// <remarks>When writing to file, take the base 2 logarithm of the denominator to get proper .chart format. (where example would show as 192 = TS 4 2)</remarks>
+    /// </summary>
+    public static SortedDictionary<int, (int, int)> Events { get; set; } = new();
+
+    public override void SetEvents(SortedDictionary<int, (int, int)> newEvents)
+    {
+        Events = newEvents;
+    }
+
+    public override SortedDictionary<int, (int, int)> GetEvents()
+    {
+        return Events;
+    }
+
     public override HashSet<int> GetSelectedEvents()
     {
         return SelectedTSEvents;
+    }
+
+    public override string ConvertDataToPreviewString()
+    {
+        return $"{Events[Tick].Item1} / {Events[Tick].Item2}";
     }
 
     void Awake()
@@ -30,16 +53,11 @@ public class TimeSignature : Label<(int, int)>
         return tsClipboard;
     }
 
-    public override SortedDictionary<int, (int, int)> GetTargetEventSet()
-    {
-        return SongTimelineManager.TimeSignatureEvents;
-    }
-
     SortedDictionary<int, (int, int)> tsClipboard = new();
 
     public override void HandleManualEndEdit(string newVal)
     {
-        SongTimelineManager.TimeSignatureEvents[Tick] = ProcessUnsafeTSString(newVal);
+        Events[Tick] = ProcessUnsafeTSString(newVal);
 
         BeatlinePreviewer.editMode = true;
         ConcludeManualEdit();
@@ -52,7 +70,7 @@ public class TimeSignature : Label<(int, int)>
     /// <returns></returns>
     (int, int) ProcessUnsafeTSString(string newTS)
     {
-        var currentTS = SongTimelineManager.TimeSignatureEvents[Tick];
+        var currentTS = Events[Tick];
         var seperatedTS = newTS.Split("/");
         if (seperatedTS.Length == 1) return currentTS;
 

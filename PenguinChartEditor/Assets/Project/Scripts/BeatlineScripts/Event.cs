@@ -7,16 +7,17 @@ using System;
 public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
 {
     protected InputMap inputMap;
-    public int Tick { get; set; }
+    public virtual int Tick { get; set; }
     public abstract HashSet<int> GetSelectedEvents();
     public abstract SortedDictionary<int, DataType> GetEventClipboard();
-    public abstract SortedDictionary<int, DataType> GetTargetEventSet();
+    public abstract SortedDictionary<int, DataType> GetEvents();
+    public abstract void SetEvents(SortedDictionary<int, DataType> newEvents);
 
     public void CopySelection()
     {
         var clipboard = GetEventClipboard();
         var selection = GetSelectedEvents();
-        var targetEventSet = GetTargetEventSet();
+        var targetEventSet = GetEvents();
 
         clipboard.Clear();
 
@@ -41,7 +42,7 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         var startPasteTick = BeatlinePreviewer.currentPreviewTick;
 
         var clipboard = GetEventClipboard();
-        var targetEventSet = GetTargetEventSet();
+        var targetEventSet = GetEvents();
 
         if (clipboard.Count > 0)
         {
@@ -52,7 +53,7 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
             {
                 tempDict.Add(clippedTick.Key + startPasteTick, clipboard[clippedTick.Key]);
             }
-            targetEventSet = tempDict;
+            SetEvents(tempDict);
         }
 
         TempoManager.UpdateBeatlines();
@@ -61,7 +62,7 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
     public virtual void DeleteSelection()
     {
         var selection = GetSelectedEvents();
-        var targetEventSet = GetTargetEventSet();
+        var targetEventSet = GetEvents();
 
         if (selection.Count != 0)
         {
@@ -168,5 +169,8 @@ public interface IEvent<DataType>
     public void CopySelection();
     public void PasteSelection();
     public void DeleteSelection();
-    public SortedDictionary<int, DataType> GetTargetEventSet();
+
+    public SortedDictionary<int, DataType> GetEvents();
+    public void SetEvents(SortedDictionary<int, DataType> newEvents);
+    
 }

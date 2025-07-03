@@ -18,6 +18,7 @@ public interface ILabel
     public void HandleLabelClick(BaseEventData data);
     public void ConcludeManualEdit();
     public void HandleEntryBoxDeselect();
+    public string ConvertDataToPreviewString();
 }
 
 public abstract class Label<DataType> : Event<DataType>, ILabel
@@ -26,6 +27,8 @@ public abstract class Label<DataType> : Event<DataType>, ILabel
     [field: SerializeField] public RectTransform LabelRectTransform { get; set; }
     [field: SerializeField] public TMP_InputField LabelEntryBox { get; set; }
     [field: SerializeField] protected TextMeshProUGUI _labelText { get; set; }
+
+    public abstract string ConvertDataToPreviewString();
     public string LabelText
     {
         get
@@ -49,7 +52,7 @@ public abstract class Label<DataType> : Event<DataType>, ILabel
         LabelEntryBox.gameObject.SetActive(true);
         LabelEntryBox.ActivateInputField();
 
-        LabelEntryBox.text = SongTimelineManager.TempoEvents[Tick].Item1.ToString();
+        LabelEntryBox.text = ConvertDataToPreviewString();
         BeatlinePreviewer.editMode = false;
 
         SongTimelineManager.DisableChartingInputMap();
@@ -99,7 +102,7 @@ public abstract class Label<DataType> : Event<DataType>, ILabel
     public void CalculateSelectionStatus(PointerEventData.InputButton clickButton)
     {
         var selection = GetSelectedEvents();
-        List<int> targetEventSet = GetTargetEventSet().Keys.ToList();
+        List<int> targetEventSet = GetEvents().Keys.ToList();
         // Goal is to follow standard selection functionality of most productivity programs
         if (clickButton != PointerEventData.InputButton.Left) return;
 
