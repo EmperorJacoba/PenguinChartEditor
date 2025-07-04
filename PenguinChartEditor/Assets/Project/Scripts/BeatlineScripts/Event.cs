@@ -4,6 +4,50 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
+public interface IEvent<DataType>
+{
+    /// <summary>
+    /// The tick-time timestamp that this event occurs at.
+    /// </summary>
+    public int Tick { get; set; }
+
+    /// <summary>
+    /// Is this event selected?
+    /// </summary>
+    public bool Selected { get; set; }
+
+    /// <summary>
+    /// The GameObject with the green highlight that displays selection status to the user.
+    /// </summary>
+    public GameObject SelectionOverlay { get; set; }
+
+    /// <summary>
+    /// Is this event currently visible?
+    /// </summary>
+    public bool Visible { get; set; }
+
+    /// <summary>
+    /// Is the right-click button currently being held down over this event? (for rclick + lclick functionality)
+    /// </summary>
+    public bool DeletePrimed { get; set; }
+
+    void HandlePointerDown(BaseEventData baseEventData);
+    void HandlePointerUp(BaseEventData baseEventData);
+
+    SortedDictionary<int, DataType> GetEventClipboard();
+    
+    HashSet<int> GetSelectedEvents();
+
+    void CopySelection();
+    void PasteSelection();
+    void DeleteSelection();
+
+    // Get and set functions are required for common abstract functions (ex. copy/paste)
+    SortedDictionary<int, DataType> GetEvents();
+    void SetEvents(SortedDictionary<int, DataType> newEvents);
+
+}
+
 public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
 {
     protected InputMap inputMap;
@@ -12,6 +56,8 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
     public abstract SortedDictionary<int, DataType> GetEventClipboard();
     public abstract SortedDictionary<int, DataType> GetEvents();
     public abstract void SetEvents(SortedDictionary<int, DataType> newEvents);
+    [field: SerializeField] public GameObject SelectionOverlay { get; set; }
+    public bool DeletePrimed { get; set; }
 
     public void CopySelection()
     {
@@ -19,11 +65,14 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         var selection = GetSelectedEvents();
         var targetEventSet = GetEvents();
 
-        clipboard.Clear();
+        clipboard.Clear(); // prep dictionary for new copy data
 
+        // copy data is shifted to zero for relative pasting 
+        // (ex. an event sequence 100, 200, 300 is converted to 0, 100, 200)
         int lowestTick = 0;
         if (selection.Count > 0) lowestTick = selection.Min();
 
+        // add relevant data for each tick into clipboard
         foreach (var selectedTick in selection)
         {
             try
@@ -40,41 +89,25 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
     public virtual void PasteSelection()
     {
         var startPasteTick = BeatlinePreviewer.currentPreviewTick;
-
         var clipboard = GetEventClipboard();
         var targetEventSet = GetEvents();
 
-        if (clipboard.Count > 0)
+        if (clipboard.Count > 0) // avoid index error
         {
+            // Create a temp dictionary without events within the size of the clipboard from the origin of the paste 
+            // (ex. clipboard with 0, 100, 400 has a zone of 400, paste starts at tick 700, all events tick 700-1100 are wiped)
             var endPasteTick = clipboard.Keys.Max() + startPasteTick;
             SortedDictionary<int, DataType> tempDict = GetNonOverwritableDictEvents(targetEventSet, startPasteTick, endPasteTick);
 
+            // Add clipboard data to temp dict, now cleaned of obstructing events
             foreach (var clippedTick in clipboard)
             {
                 tempDict.Add(clippedTick.Key + startPasteTick, clipboard[clippedTick.Key]);
             }
+            // Commit the temporary dictionary to the real dictionary
+            // (cannot use targetEventSet as that results with a local reassignment)
             SetEvents(tempDict);
         }
-
-        TempoManager.UpdateBeatlines();
-    }
-
-    public virtual void DeleteSelection()
-    {
-        var selection = GetSelectedEvents();
-        var targetEventSet = GetEvents();
-
-        if (selection.Count != 0)
-        {
-            foreach (var tick in selection)
-            {
-                if (tick != 0)
-                {
-                    targetEventSet.Remove(tick);
-                }
-            }
-        }
-        selection.Clear();
 
         TempoManager.UpdateBeatlines();
     }
@@ -98,6 +131,26 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         return tempDictionary;
     }
 
+    public virtual void DeleteSelection()
+    {
+        var selection = GetSelectedEvents();
+        var targetEventSet = GetEvents();
+
+        if (selection.Count != 0)
+        {
+            foreach (var tick in selection)
+            {
+                if (tick != 0)
+                {
+                    targetEventSet.Remove(tick);
+                }
+            }
+        }
+        selection.Clear();
+
+        TempoManager.UpdateBeatlines();
+    }
+
     public bool Selected
     {
         get
@@ -118,7 +171,50 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         else return false;
     }
 
-    [field: SerializeField] public GameObject SelectionOverlay { get; set; }
+    public int lastTickSelection;
+    /// <summary>
+    /// Calculate the event(s) to be selected based on the last click event.
+    /// </summary>
+    /// <param name="clickButton">PointerEventData.button</param>
+    /// <param name="targetSelectionSet">The selection hash set that contains this event type's selection data.</param>
+    /// <param name="targetEventSet">The keys of a sorted dictionary that holds event data (beatlines, TS, etc)</param>
+    public void CalculateSelectionStatus(PointerEventData.InputButton clickButton)
+    {
+        var selection = GetSelectedEvents();
+        List<int> targetEventSet = GetEvents().Keys.ToList();
+        // Goal is to follow standard selection functionality of most productivity programs
+        if (clickButton != PointerEventData.InputButton.Left) return;
+
+        // Shift-click functionality
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            selection.Clear();
+
+            var minNum = Math.Min(lastTickSelection, Tick);
+            var maxNum = Math.Max(lastTickSelection, Tick);
+            HashSet<int> selectedEvents = targetEventSet.Where(x => x <= maxNum && x >= minNum).ToHashSet();
+            selection.UnionWith(selectedEvents);
+        }
+        // Left control if item is already selected
+        else if (Input.GetKey(KeyCode.LeftControl) && selection.Contains(Tick))
+        {
+            selection.Remove(Tick);
+            return; // prevent lastTickSelection from being stored as an unselected number
+        }
+        // Left control if item is not currently selected
+        else if (Input.GetKey(KeyCode.LeftControl))
+        {
+            selection.Add(Tick);
+        }
+        // Regular click, no extra significant keybinds
+        else
+        {
+            selection.Clear();
+            selection.Add(Tick);
+        }
+        // Record the last selection data for shift-click selection
+        lastTickSelection = Tick;
+    }
 
     public bool Visible
     {
@@ -131,8 +227,6 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
             gameObject.SetActive(value);
         }
     }
-
-    public bool DeletePrimed { get; set; }
 
     public void HandlePointerDown(BaseEventData baseEventData)
     {
@@ -151,26 +245,4 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
             DeletePrimed = false;
         }
     }
-}
-
-public interface IEvent<DataType>
-{
-    HashSet<int> GetSelectedEvents();
-    public int Tick { get; set; }
-    public bool Selected { get; set; }
-    public GameObject SelectionOverlay { get; set; }
-    public bool Visible { get; set; }
-    public bool DeletePrimed { get; set; }
-
-    void HandlePointerDown(BaseEventData baseEventData);
-    void HandlePointerUp(BaseEventData baseEventData);
-    public SortedDictionary<int, DataType> GetEventClipboard();
-
-    public void CopySelection();
-    public void PasteSelection();
-    public void DeleteSelection();
-
-    public SortedDictionary<int, DataType> GetEvents();
-    public void SetEvents(SortedDictionary<int, DataType> newEvents);
-    
 }

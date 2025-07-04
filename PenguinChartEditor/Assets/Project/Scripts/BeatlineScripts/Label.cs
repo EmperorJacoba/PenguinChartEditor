@@ -7,10 +7,12 @@ using UnityEngine.EventSystems;
 
 public interface ILabel
 {
+    /// <summary>
+    /// Reference to the game object label itself.
+    /// </summary>
     GameObject LabelObject { get; set; }
     RectTransform LabelRectTransform { get; set; }
     TMP_InputField LabelEntryBox { get; set; }
-
     string LabelText { get; set; }
     public void HandleManualEndEdit(string newVal);
     public void DeactivateManualInput();
@@ -90,50 +92,5 @@ public abstract class Label<DataType> : Event<DataType>, ILabel
     public void HandleEntryBoxDeselect()
     {
         ConcludeManualEdit();
-    }
-
-    public int lastTickSelection;
-    /// <summary>
-    /// Calculate the event(s) to be selected based on the last click event.
-    /// </summary>
-    /// <param name="clickButton">PointerEventData.button</param>
-    /// <param name="targetSelectionSet">The selection hash set that contains this event type's selection data.</param>
-    /// <param name="targetEventSet">The keys of a sorted dictionary that holds event data (beatlines, TS, etc)</param>
-    public void CalculateSelectionStatus(PointerEventData.InputButton clickButton)
-    {
-        var selection = GetSelectedEvents();
-        List<int> targetEventSet = GetEvents().Keys.ToList();
-        // Goal is to follow standard selection functionality of most productivity programs
-        if (clickButton != PointerEventData.InputButton.Left) return;
-
-        // Shift-click functionality
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            selection.Clear();
-
-            var minNum = Math.Min(lastTickSelection, Tick);
-            var maxNum = Math.Max(lastTickSelection, Tick);
-            HashSet<int> selectedEvents = targetEventSet.Where(x => x <= maxNum && x >= minNum).ToHashSet();
-            selection.UnionWith(selectedEvents);
-        }
-        // Left control if item is already selected
-        else if (Input.GetKey(KeyCode.LeftControl) && selection.Contains(Tick))
-        {
-            selection.Remove(Tick);
-            return; // prevent lastTickSelection from being stored as an unselected number
-        }
-        // Left control if item is not currently selected
-        else if (Input.GetKey(KeyCode.LeftControl))
-        {
-            selection.Add(Tick);
-        }
-        // Regular click, no extra significant keybinds
-        else
-        {
-            selection.Clear();
-            selection.Add(Tick);
-        }
-        // Record the last selection data for shift-click selection
-        lastTickSelection = Tick;
     }
 }

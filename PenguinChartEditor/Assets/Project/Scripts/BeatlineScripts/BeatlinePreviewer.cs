@@ -28,16 +28,6 @@ public class BeatlinePreviewer : Beatline
     /// </summary>
     (int, int) displayedTS = (4, 4);
 
-    /// <summary>
-    /// Which input field is targeted by the focused Tick for editing?
-    /// </summary>
-    public enum PreviewType
-    {
-        none = 0,
-        BPM = 1,
-        TS = 2
-    }
-
     void Awake()
     {
         inputMap = new();
