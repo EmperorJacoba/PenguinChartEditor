@@ -284,8 +284,8 @@ public class WaveformManager : MonoBehaviour
     public static void GetCurrentDisplayedWaveformInfo(out int startTick, out int endTick, out double timeShown, out double startTime, out double endTime)
     {
         (startTime, endTime) = GetDisplayedAudio();
-        startTick = SongTimelineManager.ConvertSecondsToTickTime((float)startTime);
-        endTick = SongTimelineManager.ConvertSecondsToTickTime((float)endTime);
+        startTick = BPM.ConvertSecondsToTickTime((float)startTime);
+        endTick = BPM.ConvertSecondsToTickTime((float)endTime);
         timeShown = endTime - startTime;
     }
 } 

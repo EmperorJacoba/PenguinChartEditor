@@ -7,17 +7,9 @@ using UnityEngine.UI;
 /// <summary>
 /// Script attached to the object that "previews" a potential event change. This object is configured like a beatline.
 /// </summary>
-public class BeatlinePreviewer : MonoBehaviour
+public class BeatlinePreviewer : Beatline
 {
-    /// <summary>
-    /// A reference to the underlying beatline game object this script is attached to.
-    /// </summary>
-    [SerializeField] Beatline beatline;
-    [SerializeField] RectTransform screenReferenceRt;
-
     [SerializeField] GraphicRaycaster overlayUIRaycaster;
-
-    static InputMap inputMap;
 
     public static int currentPreviewTick;
 
@@ -25,11 +17,6 @@ public class BeatlinePreviewer : MonoBehaviour
     /// Temporary solution to prevent editing capabilities in some circumstances
     /// </summary>
     public static bool editMode = true;
-
-    /// <summary>
-    /// Holds the tick position of the preview beatline.
-    /// </summary>
-    int tick = 0;
 
     /// <summary>
     /// Holds the time position of the preview beatline.
@@ -41,22 +28,12 @@ public class BeatlinePreviewer : MonoBehaviour
     /// </summary>
     (int, int) displayedTS = (4, 4);
 
-    /// <summary>
-    /// Which input field is targeted by the focused tick for editing?
-    /// </summary>
-    public enum PreviewType
-    {
-        none = 0,
-        BPM = 1,
-        TS = 2
-    }
-
     void Awake()
     {
         inputMap = new();
         inputMap.Enable();
 
-        inputMap.Charting.PreviewMousePos.performed += position => UpdatePreviewPosition(position.ReadValue<Vector2>().y / screenReferenceRt.rect.height, position.ReadValue<Vector2>().x / screenReferenceRt.rect.width);
+        inputMap.Charting.PreviewMousePos.performed += position => UpdatePreviewPosition(position.ReadValue<Vector2>().y / Screen.height, position.ReadValue<Vector2>().x / Screen.width);
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
 
         // Preview also needs to update when waveform moves
@@ -65,9 +42,9 @@ public class BeatlinePreviewer : MonoBehaviour
 
     void Start()
     {
-        beatline.Type = Beatline.BeatlineType.none;
-        beatline.BPMLabelVisible = false;
-        beatline.TSLabelVisible = false;
+        Type = Beatline.BeatlineType.none;
+        tsLabel.Visible = false;
+        bpmLabel.Visible = false;
     }
 
     /// <summary>
@@ -75,7 +52,7 @@ public class BeatlinePreviewer : MonoBehaviour
     /// </summary>
     void UpdatePreviewPosition()
     {
-        UpdatePreviewPosition(Input.mousePosition.y / screenReferenceRt.rect.height, Input.mousePosition.x / screenReferenceRt.rect.width);
+        UpdatePreviewPosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
     }
 
     /// <summary>
@@ -92,61 +69,61 @@ public class BeatlinePreviewer : MonoBehaviour
         // In which case, disable visibility of the preview.
         if (IsOverlayRaycasterHit())
         {
-            beatline.TSLabelVisible = false;
-            beatline.BPMLabelVisible = false;
+            tsLabel.Visible = false;
+            bpmLabel.Visible = false;
             return;
         }
 
         WaveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
 
         var cursorTimestamp = (percentOfScreenVertical * timeShown) + startTime;
-        var cursorTickTime = SongTimelineManager.ConvertSecondsToTickTime((float)cursorTimestamp); 
+        var cursorTickTime = BPM.ConvertSecondsToTickTime((float)cursorTimestamp); 
 
-        // Calculate the tick grid to snap the event to
-        var tickInterval = ChartMetadata.ChartResolution / ((float)DivisionChanger.CurrentDivision / 4);
+        // Calculate the Tick grid to snap the event to
+        var TickInterval = ChartMetadata.ChartResolution / ((float)DivisionChanger.CurrentDivision / 4);
 
-        // Calculate the cursor's tick position in the context of the origin of the grid (last barline) 
-        var divisionBasisTick = cursorTickTime - SongTimelineManager.FindLastBarline(cursorTickTime);
+        // Calculate the cursor's Tick position in the context of the origin of the grid (last barline) 
+        var divisionBasisTick = cursorTickTime - TimeSignature.FindLastBarline(cursorTickTime);
 
-        // Find how many ticks off the cursor position is from the grid 
-        var remainder = divisionBasisTick % tickInterval;
+        // Find how many Ticks off the cursor position is from the grid 
+        var remainder = divisionBasisTick % TickInterval;
 
-        // Remainder will show how many ticks off from the last event we are
+        // Remainder will show how many Ticks off from the last event we are
         // Use remainder to determine which grid snap we are closest to and round to that
-        if (remainder > (tickInterval / 2)) // Closer to following snap
+        if (remainder > (TickInterval / 2)) // Closer to following snap
         {
             // Regress to last grid snap and then add a snap to get to next grid position
-            tick = (int)Math.Floor(cursorTickTime - remainder + tickInterval);
+            Tick = (int)Math.Floor(cursorTickTime - remainder + TickInterval);
         }
         else // Closer to previous grid snap or dead on a snap (subtract 0 = no change)
         {
             // Regress to last grid snap
-            tick = (int)Math.Floor(cursorTickTime - remainder);
+            Tick = (int)Math.Floor(cursorTickTime - remainder);
         }
 
         // store what time the preview is at so that adding an event is merely inserting the preview's current position into the dictionary
-        timestamp = SongTimelineManager.ConvertTickTimeToSeconds(tick);
-        beatline.UpdateBeatlinePosition((timestamp - startTime) / timeShown);
+        timestamp = BPM.ConvertTickTimeToSeconds(Tick);
+        UpdateBeatlinePosition((timestamp - startTime) / timeShown);
 
-        // store the current previewed tick for copy/pasting selections from the preview onward
-        currentPreviewTick = tick;
+        // store the current previewed Tick for copy/pasting selections from the preview onward
+        currentPreviewTick = Tick;
 
         // preview TS event or BPM event based on what side of the track cursor is on (track is centered)
         if (percentOfScreenHorizontal < 0.5f)
         {
-            beatline.BPMLabelVisible = false;
-            beatline.TSLabelVisible = true;
+            bpmLabel.Visible = false;
+            tsLabel.Visible = true;
 
-            var num = SongTimelineManager.TimeSignatureEvents[SongTimelineManager.FindLastTSEventTick(tick)].Item1;
-            var denom = SongTimelineManager.TimeSignatureEvents[SongTimelineManager.FindLastTSEventTick(tick)].Item2;
-            beatline.TSLabelText = $"{num} / {denom}";
+            var num = TimeSignature.Events[TimeSignature.FindLastTSEventTick(Tick)].Item1;
+            var denom = TimeSignature.Events[TimeSignature.FindLastTSEventTick(Tick)].Item2;
+            tsLabel.LabelText = $"{num} / {denom}";
             displayedTS = (num, denom);
         }
         else
         {
-            beatline.BPMLabelVisible = true;
-            beatline.TSLabelVisible = false;
-            beatline.BPMLabelText = SongTimelineManager.TempoEvents[SongTimelineManager.FindLastTempoEventTickInclusive(tick)].Item1.ToString();
+            bpmLabel.Visible = true;
+            tsLabel.Visible = false;
+            bpmLabel.LabelText = BPM.Events[BPM.FindLastTempoEventTickInclusive(Tick)].Item1.ToString();
         }
     }
 
@@ -159,22 +136,22 @@ public class BeatlinePreviewer : MonoBehaviour
         if (IsOverlayRaycasterHit()) return;
 
         // Modify the dictionaries based on which event change is previewed
-        if (beatline.BPMLabelVisible)
+        if (bpmLabel.Visible)
         {
-            if (!SongTimelineManager.TempoEvents.ContainsKey(tick))
+            if (!BPM.Events.ContainsKey(Tick))
             {
-                SongTimelineManager.TempoEvents.Add(tick, (float.Parse(beatline.BPMLabelText), (float)timestamp));
-                BeatlineSelectionManager.SelectedBPMTicks.Clear();
-                BeatlineSelectionManager.SelectedTSTicks.Clear();
+                BPM.Events.Add(Tick, (float.Parse(bpmLabel.LabelText), (float)timestamp));
+                BPM.SelectedBPMEvents.Clear();
+                TimeSignature.SelectedTSEvents.Clear(); // clear selection generic? attack all children?
             }
         }
-        else if (beatline.TSLabelVisible)
+        else if (tsLabel.Visible)
         {
-            if (!SongTimelineManager.TimeSignatureEvents.ContainsKey(tick))
+            if (!TimeSignature.Events.ContainsKey(Tick))
             {
-                SongTimelineManager.TimeSignatureEvents.Add(tick, displayedTS);
-                BeatlineSelectionManager.SelectedBPMTicks.Clear();
-                BeatlineSelectionManager.SelectedTSTicks.Clear();
+                TimeSignature.Events.Add(Tick, displayedTS);
+                BPM.SelectedBPMEvents.Clear();
+                TimeSignature.SelectedTSEvents.Clear();
             }
         }
         else return;

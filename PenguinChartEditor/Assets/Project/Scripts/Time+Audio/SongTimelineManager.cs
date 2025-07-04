@@ -1,11 +1,8 @@
 using System;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
 
 public class SongTimelineManager : MonoBehaviour
 {
-    public const int SECONDS_PER_MINUTE = 60;
     
     static InputMap inputMap;
 
@@ -50,25 +47,9 @@ public class SongTimelineManager : MonoBehaviour
     {
         get
         {
-            return ConvertSecondsToTickTime(PluginBassManager.SongLength);
+            return BPM.ConvertSecondsToTickTime(PluginBassManager.SongLength);
         }
     }
-
-    /// <summary>
-    /// Dictionary that contains tempo changes and corresponding tick time positions. 
-    /// <para> Key = Tick-time position. Value = BPM to three decimal places, time-second value of the tempo change. </para>
-    /// <para>Example: 192 = 102.201, 0.237</para>
-    /// <remarks>When writing to file, multiply BPM value by 100 to get proper .chart format (where example would show as 192 = B 102201)</remarks>
-    /// </summary>
-    public static SortedDictionary<int, (float, float)> TempoEvents {get; set;} // This is sorted dict so that it is easier to read & write tempo changes
-
-    /// <summary>
-    /// Dictionary that contains time signature changes and corresponding tick time positions.
-    /// <para>Key = Tick-time position. Value = Numerator (num of beats per bar), Denominator (type of beat)</para>
-    /// <para>Example: 192 = 4, 4</para>
-    /// <remarks>When writing to file, take the base 2 logarithm of the denominator to get proper .chart format. (where example would show as 192 = TS 4 2)</remarks>
-    /// </summary>
-    public static SortedDictionary<int, (int, int)> TimeSignatureEvents {get; set;}
 
     #endregion
 
@@ -86,17 +67,15 @@ public class SongTimelineManager : MonoBehaviour
         inputMap.Charting.MiddleMouseClick.started += x => ChangeMiddleClick(true);
         inputMap.Charting.MiddleMouseClick.canceled += x => ChangeMiddleClick(false);
 
-        TempoEvents = new();
-        TimeSignatureEvents = new();
-        (TempoEvents, TimeSignatureEvents) = ChartParser.GetSyncTrackEventDicts(ChartMetadata.ChartPath);
+        (BPM.Events, TimeSignature.Events) = ChartParser.GetSyncTrackEventDicts(ChartMetadata.ChartPath);
 
-        if (TempoEvents.Count == 0) // if there is no data to load in 
+        if (BPM.Events.Count == 0) // if there is no data to load in 
         {
-            TempoEvents.Add(0, (120.0f, 0)); // add placeholder bpm
+            BPM.Events.Add(0, (120.0f, 0)); // add placeholder bpm
         }
-        if (TimeSignatureEvents.Count == 0)
+        if (TimeSignature.Events.Count == 0)
         {
-            TimeSignatureEvents.Add(0, (4, 4));
+            TimeSignature.Events.Add(0, (4, 4));
         }
     }
 
@@ -190,338 +169,6 @@ public class SongTimelineManager : MonoBehaviour
         {
             SongPositionSeconds = PluginBassManager.SongLength;
         }
-    }
-
-    #endregion
-    #region Conversion Tools
-
-    public static int ConvertSecondsToTickTime(float timestamp)
-    {
-        if (timestamp < 0)
-        {
-            return 0;
-        }
-        else if (timestamp > PluginBassManager.SongLength)
-        {
-            return SongLengthTicks;
-        }
-
-        // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
-        var tempoTickTimeEvents = TempoEvents.Keys.ToList();
-        var tempoTimeSecondEvents = TempoEvents.Values.Select(x => x.Item2).ToList();
-
-        // Attempt a binary search for the current timestamp, 
-        // which will return a bitwise complement of the index of the next highest timesecond value 
-        // OR tempoTimeSecondEvents.Count if there are no more elements
-        var index = tempoTimeSecondEvents.BinarySearch(timestamp);
-        int lastTickEvent;
-        if (index <= 0) // bitwise complement is negative or zero
-        {
-            // modify index if the found timestamp is at the end of the array (last tempo event)
-            if (~index == tempoTimeSecondEvents.Count) index = tempoTimeSecondEvents.Count - 1;
-            // else just get the index proper 
-            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
-            try
-            {
-                lastTickEvent = tempoTickTimeEvents[index]; 
-            }
-            catch
-            {
-                lastTickEvent = tempoTickTimeEvents[0]; // if ~index - 1 is -1, then the index should be itself
-            }
-        }
-        else 
-        {
-            lastTickEvent = tempoTickTimeEvents[index];
-        }
-
-        // Rearranging of .chart format specification distance between two ticks - thanks, algebra class!
-        return Mathf.RoundToInt((ChartMetadata.ChartResolution * TempoEvents[lastTickEvent].Item1 * (float)(timestamp - TempoEvents[lastTickEvent].Item2) / SECONDS_PER_MINUTE) + lastTickEvent);
-        // THIS WILL NOT RETURN A CORRECT VALUE IF THIS DOES NOT DO FLOATING POINT CALCULATIONS
-    }
-
-    public static double ConvertTickTimeToSeconds(int ticktime)
-    {
-        var lastTickEvent = FindLastTempoEventTickInclusive(ticktime);
-        // Formula from .chart format specifications
-        return ((ticktime - lastTickEvent) / (double)ChartMetadata.ChartResolution * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].Item1) + TempoEvents[lastTickEvent].Item2;
-    }
-
-    /// <summary>
-    /// Find the last tempo event before a specified tick. Can return the passed in tick if an event exists at that position.
-    /// </summary>
-    /// <param name="currentTick"></param>
-    /// <returns>The tick-time timestamp of the previous tempo event.</returns>
-    public static int FindLastTempoEventTickInclusive(int currentTick)
-    {
-        var tickTimeKeys = TempoEvents.Keys.ToList();
-
-        var index = tickTimeKeys.BinarySearch(currentTick);
-        if (index < 0) // bitwise complement is negative
-        {
-            // modify index if the found timestamp is at the end of the array (last tempo event)
-            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
-            // else just get the index proper 
-            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
-            return tickTimeKeys[index]; 
-        }
-        else 
-        {
-            return tickTimeKeys[index];
-        }
-    }
-
-    /// <summary>
-    /// Find the last tempo event before a specified tick. WILL NOT return the passed in tick if an event exists at that position, and will instead return the true last event.
-    /// </summary>
-    /// <param name="currentTick"></param>
-    /// <returns></returns>
-    public static int FindLastTempoEventTickExclusive(int currentTick)
-    {
-        var tickTimeKeys = TempoEvents.Keys.ToList();
-
-        var index = tickTimeKeys.BinarySearch(currentTick);
-        if (index <= 0) // bitwise complement is negative
-        {
-            // modify index if the found timestamp is at the end of the array (last tempo event)
-            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
-            // else just get the index proper 
-            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
-            try
-            {
-                return tickTimeKeys[index]; 
-            }
-            catch
-            {
-                return tickTimeKeys[0]; // if ~index - 1 is -1, then the index should be itself
-            }
-        }
-        else 
-        {
-            return tickTimeKeys[index - 1];
-        }
-    }
-
-    /// <summary>
-    /// Calculate the next beatline to be generated from a specified tick-time timestamp.
-    /// </summary>
-    /// <param name="currentTick"></param>
-    /// <returns>The tick-time timestamp of the next beatline event.</returns>
-    public static int FindNextBeatlineEvent(int currentTick)
-    {
-        var ts = FindLastTSEventTick(currentTick);
-        var tickDiff = currentTick - ts;
-        var tickInterval = ChartMetadata.ChartResolution / ((float)TimeSignatureEvents[ts].Item2 / 2);
-        int numIntervals = (int)Math.Round(tickDiff / tickInterval);
-
-        return (int)(ts + numIntervals * tickInterval);
-    }
-
-    /// <summary>
-    /// Calculate the last time signature event that occurs before a specified tick.
-    /// </summary>
-    /// <param name="currentTick"></param>
-    /// <returns>The tick-time timestamp of the last time signature event.</returns>
-    public static int FindLastTSEventTick(int currentTick)
-    {
-        var tsEvents = TimeSignatureEvents.Keys.ToList();
-
-        var index = tsEvents.BinarySearch(currentTick);
-
-        int ts;
-        if (index < 0) // bitwise complement is negative
-        {
-            // modify index if the found timestamp is at the end of the array (last tempo event)
-            if (~index == tsEvents.Count) index = tsEvents.Count - 1;
-            // else just get the index proper 
-            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
-            try
-            {
-                ts = tsEvents[index]; 
-            }
-            catch
-            {
-                ts = tsEvents[0]; // if ~index - 1 is -1, then the index should be itself
-            }
-        }
-        else 
-        {
-            ts = tsEvents[index];
-        }
-        return ts;
-    }
-
-    /// <summary>
-    /// Calculate the last "1" of a bar from a tick-time timestamp.
-    /// </summary>
-    /// <param name="currentTick">The tick-time timestamp to evaluate from.</param>
-    /// <returns>The tick-time timestamp of the last barline.</returns>
-    public static int FindLastBarline(int currentTick)
-    {
-        var ts = FindLastTSEventTick(currentTick);
-        var tickDiff = currentTick - ts;
-        var tickInterval = (ChartMetadata.ChartResolution * (float)TimeSignatureEvents[ts].Item1) / ((float)TimeSignatureEvents[ts].Item2 / 4);
-        int numIntervals = (int)Math.Floor(tickDiff / tickInterval); // floor is to snap it back to the minimum interval (get LAST barline, not closest)
-
-        return (int)(ts + numIntervals * tickInterval);
-    }
-
-    /// <summary>
-    /// Recalculate all tempo events from the tick-time timestamp modified onward.
-    /// </summary>
-    /// <param name="modifiedTick">The last tick modified to update all future ticks from.</param>
-    public static void RecalculateTempoEventDictionary(int modifiedTick)
-    {
-        Debug.Log($"{modifiedTick}");
-        SortedDictionary<int, (float, float)> outputTempoEventsDict = new();
-
-        var tickEvents = TempoEvents.Keys.ToList();
-        var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick); 
-        if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
-
-        // Keep all events before change when creating new dictionary
-        for (int i = 0; i <= positionOfTick; i++)
-        {
-            outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, TempoEvents[tickEvents[i]].Item2));
-        }
-        Debug.Log($"{positionOfTick}");
-        // Start new data with the song timestamp of the change
-        double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Item2;
-        for (int i = positionOfTick + 1; i < tickEvents.Count; i++)
-        {
-            double calculatedTimeSecondDifference = 0;
-
-            if (i > 0)
-            {
-                // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
-                calculatedTimeSecondDifference = 
-                (tickEvents[i] - tickEvents[i - 1]) / (double)ChartMetadata.ChartResolution * 60 / TempoEvents[tickEvents[i - 1]].Item1;
-            }
-
-            currentSongTime += calculatedTimeSecondDifference;
-            outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, (float)currentSongTime));
-        }
-
-        TempoEvents = outputTempoEventsDict;
-    }
-
-    public static void RecalculateTempoEventDictionary(int modifiedTick, float timeChange)
-    {
-        SortedDictionary<int, (float, float)> outputTempoEventsDict = new();
-
-        var tickEvents = TempoEvents.Keys.ToList();
-        var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick); 
-        if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
-
-        // Keep all events before change when creating new dictionary
-        for (int i = 0; i <= positionOfTick; i++)
-        {
-            outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, TempoEvents[tickEvents[i]].Item2));
-        }
-
-                // Start new data with the song timestamp of the change
-        double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Item2;
-        for (int i = positionOfTick + 1; i < tickEvents.Count; i++)
-        {
-            outputTempoEventsDict.Add(tickEvents[i], (TempoEvents[tickEvents[i]].Item1, TempoEvents[tickEvents[i]].Item2 + timeChange));
-        }
-
-        TempoEvents = outputTempoEventsDict;
-    }
-
-    /// <summary>
-    /// Calculate the amount of divisions are needed from the chart resolution for each first-division event.
-    /// <para>Example: TS = 4/4 -> Returns 1, because chart resolution will need to be divided by 1 to reach the number of ticks between first-division (in this case quarter note) events.</para>
-    /// <para>Example: TS = 3/8 -> Returns 2, because res will need to be div by 2 to reach eighth note events.</para>
-    /// <para>Example: TS = 2/2 -> Returns 0.5
-    /// </summary>
-    /// <param name="tick"></param>
-    /// <returns>The factor to multiply the chart resolution by to get the first-division tick-time.</returns>
-    public static float CalculateDivision(int tick)
-    {
-        int tsTick = FindLastTSEventTick(tick);
-        return (float)TimeSignatureEvents[tsTick].Item2 / 4;
-    }
-
-    public static int IncreaseByHalfDivision(int tick)
-    {
-        return (int)(ChartMetadata.ChartResolution / SongTimelineManager.CalculateDivision(tick) / 2);
-    }
-
-    /// <summary>
-    /// Take a number of seconds (in S.ms form - ex. 61.1 seconds) and convert it to MM:SS.mmm format (where 61.1 returns 01:01.100)
-    /// </summary>
-    /// <param name="position">The unformatted second count.</param>
-    /// <returns>The formatted MM:SS:mmm timestamp of the second position</returns>
-    public static string ConvertSecondsToTimestamp(double position)
-    {
-        var minutes = Math.Floor(position / 60);
-        var secondsWithMS = position - minutes * 60;
-        var seconds = (int)Math.Floor(secondsWithMS);
-        var milliseconds = Math.Round(secondsWithMS - seconds, 3) * 1000;
-
-        string minutesString = minutes.ToString();
-        if (minutes < 10)
-        {
-            minutesString = minutesString.PadLeft(minutesString.Length + 1, '0');
-        }
-
-        string secondsString = seconds.ToString();
-        if (seconds < 10)
-        {
-            secondsString = secondsString.PadLeft(2, '0');
-        }
-
-        string millisecondsString = milliseconds.ToString();
-        if (millisecondsString.Length < 3)
-        {
-            millisecondsString = millisecondsString.PadRight(3, '0');
-        }
-
-        return minutesString + ":" + secondsString + "." + millisecondsString;
-    }
-
-
-    // Time signatures
-    // Get the last time signature
-    // # of quarter-beats in a bar is numerator multiplied by the chart resolution 
-    // If current beat tick-time - tick-time of last time sig % chartres * num * (denom / 4) == 0, then we've hit a new bar
-        // If this is not true for a TS with its last TS, there's a TS error
-        // Notify the user
-    // Check for new time signature
-        // If there is a time signature on the current beatline tick-time timestamp, that beatline is the first note of the bar and gets the bar line thickness
-        // OR if it satisfies the modulo above, it gets the bar line thickness
-            // If not true, we're on a secondary beat
-            // Check to see if it's a first-div
-                // current beat tick time - tick time of last TS event % chartres * (denom / 4)
-            // If not, check for second-div
-                // current beat tick time - tick time of last TS event % chartres * (denom / 8)
-
-    /// <summary>
-    /// Calculate the type of barline a specified tick-time position should be.
-    /// </summary>
-    /// <param name="beatlineTickTimePos"></param>
-    /// <returns>The type of beatline at this tick.</returns>
-    public static Beatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos) // NEEDS FIXING
-    {
-        var lastTSTickTimePos = FindLastTSEventTick(beatlineTickTimePos); 
-        var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
-
-        // if the difference is divisible by the # of first-division notes in a bar, it's a barline
-        if (tsDiff % (ChartMetadata.ChartResolution * (float)TimeSignatureEvents[lastTSTickTimePos].Item1 / (float)(TimeSignatureEvents[lastTSTickTimePos].Item2 / 4.0f)) == 0)
-        {
-            return Beatline.BeatlineType.barline;
-        }
-        // if it's divisible by the first-division, it's a division line
-        else if (tsDiff % (ChartMetadata.ChartResolution / (float)TimeSignatureEvents[lastTSTickTimePos].Item2 * 4) == 0)
-        {
-            return Beatline.BeatlineType.divisionLine;
-        }
-        else if (tsDiff % (ChartMetadata.ChartResolution / ((float)TimeSignatureEvents[lastTSTickTimePos].Item2 * 2)) == 0)
-        {
-            return Beatline.BeatlineType.halfDivisionLine;
-        }
-        return Beatline.BeatlineType.none;
     }
 
     #endregion

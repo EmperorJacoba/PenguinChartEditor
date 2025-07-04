@@ -366,7 +366,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1022341178}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10775,50 +10775,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2130860642}
   m_CullTransparentMesh: 1
---- !u!1 &2133074304
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2133074306}
-  - component: {fileID: 2133074305}
-  m_Layer: 0
-  m_Name: BeatlineSelectionManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2133074305
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2133074304}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a44ab6ff3aac234ea87debc488bd2b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &2133074306
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2133074304}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.679306, y: 0.99991965, z: -1.7628717}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6058908930944286159
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10907,54 +10863,19 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2965000268170862340, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: isPreviewBeatline
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4005747397363616516, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 175.00002
-      objectReference: {fileID: 0}
     - target: {fileID: 4846121271480106457, guid: 9ae339497fba1d747be207a08701693b, type: 3}
       propertyPath: m_Name
       value: BeatlinePreviewer
       objectReference: {fileID: 0}
     - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: beatline
-      value: 
-      objectReference: {fileID: 7766536033849242650}
-    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: waveformManager
-      value: 
-      objectReference: {fileID: 33159347}
-    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: screenReferenceRt
-      value: 
-      objectReference: {fileID: 1489170079}
-    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
       propertyPath: overlayUIRaycaster
       value: 
       objectReference: {fileID: 1606916091}
-    - target: {fileID: 6237529782501553827, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 175.00002
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ae339497fba1d747be207a08701693b, type: 3}
---- !u!114 &7766536033849242650 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2965000268170862340, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-  m_PrefabInstance: {fileID: 6058908930944286159}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 428f2a1a0e615db4596c578f112caad8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &7928344770752854848 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
@@ -10972,4 +10893,3 @@ SceneRoots:
   - {fileID: 609910796}
   - {fileID: 1466467684}
   - {fileID: 95747494}
-  - {fileID: 2133074306}

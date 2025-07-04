@@ -252,6 +252,7 @@ GameObject:
   - component: {fileID: 2101186017953797880}
   - component: {fileID: 5002406228092669672}
   - component: {fileID: 4548908705391643177}
+  - component: {fileID: 6623864532696733896}
   m_Layer: 5
   m_Name: TS_Label
   m_TagString: Untagged
@@ -403,9 +404,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandleTSLabelClick
+        - m_Target: {fileID: 6623864532696733896}
+          m_TargetAssemblyTypeName: Label`1[[System.ValueTuple`2[[System.Int32, mscorlib
+          m_MethodName: HandleLabelClick
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -419,9 +420,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandleTSPointerDown
+        - m_Target: {fileID: 6623864532696733896}
+          m_TargetAssemblyTypeName: Event`1[[System.ValueTuple`2[[System.Int32, mscorlib
+          m_MethodName: HandlePointerDown
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -435,9 +436,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandleTSPointerUp
+        - m_Target: {fileID: 6623864532696733896}
+          m_TargetAssemblyTypeName: Event`1[[System.ValueTuple`2[[System.Int32, mscorlib
+          m_MethodName: HandlePointerUp
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -447,6 +448,24 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &6623864532696733896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2312096276831295752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02381e1b7d5442549b8dea5a339cd9d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <SelectionOverlay>k__BackingField: {fileID: 7215973731456500984}
+  <LabelObject>k__BackingField: {fileID: 2312096276831295752}
+  <LabelRectTransform>k__BackingField: {fileID: 7353612379106410833}
+  <LabelEntryBox>k__BackingField: {fileID: 3014718018325258834}
+  <_labelText>k__BackingField: {fileID: 7206844250101663744}
+  lastTickSelection: 0
 --- !u!1 &4437381644692860612
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,6 +752,7 @@ GameObject:
   - component: {fileID: 2238320666893824518}
   - component: {fileID: 3465913690773502459}
   - component: {fileID: 7889340691155385051}
+  - component: {fileID: 4318642463002473110}
   m_Layer: 5
   m_Name: BPM_Label
   m_TagString: Untagged
@@ -884,9 +904,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandleBPMLabelClick
+        - m_Target: {fileID: 4318642463002473110}
+          m_TargetAssemblyTypeName: Label, Assembly-CSharp
+          m_MethodName: HandleLabelClick
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -900,9 +920,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandleBPMDragEvent
+        - m_Target: {fileID: 4318642463002473110}
+          m_TargetAssemblyTypeName: BPM, Assembly-CSharp
+          m_MethodName: HandleDragEvent
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -916,9 +936,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandlBPMPointerDown
+        - m_Target: {fileID: 4318642463002473110}
+          m_TargetAssemblyTypeName: Event, Assembly-CSharp
+          m_MethodName: HandlePointerDown
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -932,9 +952,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2056373037687670694}
-          m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-          m_MethodName: HandleBPMPointerUp
+        - m_Target: {fileID: 4318642463002473110}
+          m_TargetAssemblyTypeName: Event, Assembly-CSharp
+          m_MethodName: HandlePointerUp
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -944,6 +964,24 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &4318642463002473110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5791591105546381921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd05fffeeb21a9d42a2d063d2c067b0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <SelectionOverlay>k__BackingField: {fileID: 7251365425260148493}
+  <LabelObject>k__BackingField: {fileID: 5791591105546381921}
+  <LabelRectTransform>k__BackingField: {fileID: 3683065919937997954}
+  <LabelEntryBox>k__BackingField: {fileID: 230840468891664329}
+  <_labelText>k__BackingField: {fileID: 5022177113425836600}
+  lastTickSelection: 0
 --- !u!1 &6239090009231363197
 GameObject:
   m_ObjectHideFlags: 0
@@ -1111,17 +1149,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 428f2a1a0e615db4596c578f112caad8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isPreviewBeatline: 0
-  bpmLabel: {fileID: 5791591105546381921}
-  bpmLabelRt: {fileID: 3683065919937997954}
-  bpmLabelEntryBox: {fileID: 230840468891664329}
-  bpmLabelText: {fileID: 5022177113425836600}
-  tsLabel: {fileID: 2312096276831295752}
-  tsLabelRt: {fileID: 7353612379106410833}
-  tsLabelEntryBox: {fileID: 3014718018325258834}
-  tsLabelText: {fileID: 7206844250101663744}
-  bpmSelectionOverlay: {fileID: 7251365425260148493}
-  tsSelectionOverlay: {fileID: 7215973731456500984}
+  <SelectionOverlay>k__BackingField: {fileID: 0}
+  bpmLabel: {fileID: 4318642463002473110}
+  tsLabel: {fileID: 6623864532696733896}
   line: {fileID: 4691799485850042161}
 --- !u!1 &6500526054470389412
 GameObject:
@@ -1262,7 +1292,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6623864532696733896}
+        m_TargetAssemblyTypeName: TimeSignature, Assembly-CSharp
+        m_MethodName: HandleEndEdit
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
@@ -1272,9 +1314,9 @@ MonoBehaviour:
   m_OnDeselect:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2056373037687670694}
-        m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-        m_MethodName: HandleTSDeselect
+      - m_Target: {fileID: 6623864532696733896}
+        m_TargetAssemblyTypeName: Label, Assembly-CSharp
+        m_MethodName: HandleEntryBoxDeselect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1753,7 +1795,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4318642463002473110}
+        m_TargetAssemblyTypeName: BPM, Assembly-CSharp
+        m_MethodName: HandleEndEdit
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
@@ -1763,9 +1817,9 @@ MonoBehaviour:
   m_OnDeselect:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2056373037687670694}
-        m_TargetAssemblyTypeName: Beatline, Assembly-CSharp
-        m_MethodName: HandleBPMDeselect
+      - m_Target: {fileID: 4318642463002473110}
+        m_TargetAssemblyTypeName: Label, Assembly-CSharp
+        m_MethodName: HandleEntryBoxDeselect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
