@@ -46,6 +46,7 @@ public class TimeSignature : Label<(int, int)>
             inputMap.Charting.Delete.performed += x => DeleteSelection();
             inputMap.Charting.Copy.performed += x => CopySelection();
             inputMap.Charting.Paste.performed += x => PasteSelection();
+            inputMap.Charting.Cut.performed += x => CutSelection();
             selectionActionsEnabled = true;
         }
     }

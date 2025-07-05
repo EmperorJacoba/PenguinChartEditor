@@ -171,6 +171,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cut"",
+                    ""type"": ""Button"",
+                    ""id"": ""5e5c11af-6e5b-4532-b4cd-28c167e4ba41"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -325,6 +334,39 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Paste"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""8801537e-34f8-459f-926a-c5f5e0060614"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cut"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""54d65b6b-a37d-4eac-8240-ff2ab236f677"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""708bc418-b989-4f31-8c2b-a1926d17f998"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cut"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 }
@@ -1395,6 +1437,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_Delete = m_Charting.FindAction("Delete", throwIfNotFound: true);
         m_Charting_Copy = m_Charting.FindAction("Copy", throwIfNotFound: true);
         m_Charting_Paste = m_Charting.FindAction("Paste", throwIfNotFound: true);
+        m_Charting_Cut = m_Charting.FindAction("Cut", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1509,6 +1552,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_Delete;
     private readonly InputAction m_Charting_Copy;
     private readonly InputAction m_Charting_Paste;
+    private readonly InputAction m_Charting_Cut;
     /// <summary>
     /// Provides access to input actions defined in input action map "Charting".
     /// </summary>
@@ -1556,6 +1600,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Charting/Paste".
         /// </summary>
         public InputAction @Paste => m_Wrapper.m_Charting_Paste;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/Cut".
+        /// </summary>
+        public InputAction @Cut => m_Wrapper.m_Charting_Cut;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1609,6 +1657,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Paste.started += instance.OnPaste;
             @Paste.performed += instance.OnPaste;
             @Paste.canceled += instance.OnPaste;
+            @Cut.started += instance.OnCut;
+            @Cut.performed += instance.OnCut;
+            @Cut.canceled += instance.OnCut;
         }
 
         /// <summary>
@@ -1647,6 +1698,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Paste.started -= instance.OnPaste;
             @Paste.performed -= instance.OnPaste;
             @Paste.canceled -= instance.OnPaste;
+            @Cut.started -= instance.OnCut;
+            @Cut.performed -= instance.OnCut;
+            @Cut.canceled -= instance.OnCut;
         }
 
         /// <summary>
@@ -2194,6 +2248,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPaste(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Cut" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCut(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

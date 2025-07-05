@@ -87,6 +87,8 @@ public class Beatline : Event<bool>
     }
     BeatlineType _bt = BeatlineType.none;
 
+    private float yScreenProportion = 0;
+
     #endregion
 
     #region Functions
@@ -98,11 +100,11 @@ public class Beatline : Event<bool>
     public void UpdateBeatlinePosition(double percentOfScreen)
     {
         // use screen ref to calculate percent of screen -> scale is 1:1 in the line renderer (scale must be 1, 1, 1)
-        var newYPos = percentOfScreen * Screen.height;
+        yScreenProportion = (float)(percentOfScreen * Screen.height);
 
         Vector3[] newPos = new Vector3[2];
-        newPos[0] = new Vector2(line.GetPosition(0).x, (float)newYPos);
-        newPos[1] = new Vector2(line.GetPosition(1).x, (float)newYPos);
+        newPos[0] = new Vector2(line.GetPosition(0).x, (float)yScreenProportion);
+        newPos[1] = new Vector2(line.GetPosition(1).x, (float)yScreenProportion);
         line.SetPositions(newPos);
 
         bpmLabel.Tick = Tick;

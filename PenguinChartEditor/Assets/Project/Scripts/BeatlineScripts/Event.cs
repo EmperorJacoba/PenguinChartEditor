@@ -112,6 +112,12 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         TempoManager.UpdateBeatlines();
     }
 
+    public void CutSelection()
+    {
+        CopySelection();
+        DeleteSelection();
+    }
+
     /// <summary>
     /// Copy all events from an event dictionary that are not within a paste zone (startTick to endTick)
     /// </summary>

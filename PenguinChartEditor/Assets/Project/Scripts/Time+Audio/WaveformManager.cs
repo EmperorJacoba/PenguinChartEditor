@@ -6,19 +6,19 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class WaveformManager : MonoBehaviour
 {
-    PluginBassManager pluginBassManager;
+    [SerializeField] PluginBassManager pluginBassManager;
     static Strikeline strikeline;
 
     #region Properties
     /// <summary>
     /// Line renderer that contains rightward (positive dir) waveform render
     /// </summary>
-    LineRenderer lineRendererMain;
+    [SerializeField] LineRenderer lineRendererMain;
 
     /// <summary>
     /// Line renderer that contains leftward (negative dir) waveform render
     /// </summary>
-    LineRenderer lineRendererMirror;
+    [SerializeField] LineRenderer lineRendererMirror;
 
         // Note: Line renderer uses local positioning to more easily align with the screen
         // both of these line renderers combine to make a symmetrical waveform
@@ -27,7 +27,7 @@ public class WaveformManager : MonoBehaviour
     /// <summary>
     /// RectTransform attached to the waveform container.
     /// </summary>
-    RectTransform rt;
+    [SerializeField] RectTransform rt;
 
     /// <summary>
     /// Height of the RectTransform component attached to the waveform's container GameObject.
@@ -35,9 +35,9 @@ public class WaveformManager : MonoBehaviour
     private static float rtHeight;
 
     /// <summary>
-    /// Panel that is always the size of the screen. Used to set waveform object at right distance from camera.
+    /// Panel that is always the size of the bounds of the waveform. Used to set waveform object at right distance from camera/background.
     /// </summary>
-    GameObject screenReference; 
+    [SerializeField] GameObject boundaryReference; // in tempo map, screen 
 
     public delegate void WaveformDisplayDelegate();
 
@@ -106,14 +106,14 @@ public class WaveformManager : MonoBehaviour
     /// <summary>
     /// The currently displayed waveform.
     /// </summary>
-    private static ChartMetadata.StemType CurrentWaveform {get; set;} 
+    private static ChartMetadata.StemType CurrentWaveform {get; set;}
 
     /// <summary>
     /// Dictionary that contains waveform point data for each song stem.
     /// <para>ChartMetadata.StemType is the audio stem the data belongs to</para>
     /// <para>The tuple in the value holds the data (float[]) and the number of bytes per sample (long)</para>
     /// </summary>
-    public static Dictionary<ChartMetadata.StemType, (float[], long)> WaveformData {get; private set;}
+    public static Dictionary<ChartMetadata.StemType, (float[], long)> WaveformData { get; private set; } = new();
     // The number of bytes per sample is needed in order to accurately play and seek through the track in PluginBassManager
     // The number of bytes can vary based on the type of audio file the user inputs, like if they use .opus, .mp3 together, etc.
     // long is just what Bass returns and I don't want to do a million casts just to make this a regular int
@@ -123,20 +123,6 @@ public class WaveformManager : MonoBehaviour
     #region Unity Functions
     void Awake() 
     {
-        InitializeComponents();
-    }
-
-    private void InitializeComponents()
-    {
-        WaveformData = new();
-
-        lineRendererMain = GetComponent<LineRenderer>();
-        lineRendererMirror = transform.GetChild(0).gameObject.GetComponent<LineRenderer>();
-
-        rt = gameObject.GetComponent<RectTransform>();
-
-        pluginBassManager = GameObject.Find("PluginBassManager").GetComponent<PluginBassManager>();
-        screenReference = GameObject.Find("ScreenReference");
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
     }
 
@@ -149,7 +135,7 @@ public class WaveformManager : MonoBehaviour
         SongTimelineManager.TimeChanged += ChangeWaveformSegment; // when the time is changed, update the points displayed
         DisplayChanged += GenerateWaveformPoints; // when local properties are changed, update the display
         
-        rt.pivot = screenReference.GetComponent<RectTransform>().pivot;
+        rt.pivot = boundaryReference.GetComponent<RectTransform>().pivot;
         rtHeight = rt.rect.height;
 
         CurrentWaveform = ChartMetadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default
@@ -189,9 +175,9 @@ public class WaveformManager : MonoBehaviour
     
     public void SetWaveformVisibility(bool isVisible)
     {
-        if (isVisible) transform.position = screenReference.transform.position + Vector3.back;
+        if (isVisible) transform.position = boundaryReference.transform.position + Vector3.back;
         // ^^ In order for the waveform to be visible the container game object has to be moved in front of the background panel & vice versa
-        else transform.position = screenReference.transform.position - 2*Vector3.back; // 2* b/c this looks weird in the scene view otherwise
+        else transform.position = boundaryReference.transform.position - 2*Vector3.back; // 2* b/c this looks weird in the scene view otherwise
     }
     
     /// <summary>

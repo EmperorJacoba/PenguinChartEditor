@@ -178,6 +178,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738d9bc210d45aa4b81e6a3e70d082a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pluginBassManager: {fileID: 1722031495}
+  lineRendererMain: {fileID: 33159348}
+  lineRendererMirror: {fileID: 1675851788}
+  rt: {fileID: 33159344}
+  boundaryReference: {fileID: 1489170078}
 --- !u!120 &33159348
 LineRenderer:
   serializedVersion: 2
@@ -366,7 +371,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1022341178}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7321,7 +7326,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 767b38e40f677ad4fa50ac42b8a0c907, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  screenReferenceRt: {fileID: 1489170079}
   strikelineRt: {fileID: 1368999640}
 --- !u!1 &1369755911
 GameObject:
