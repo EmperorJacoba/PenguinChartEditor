@@ -12,9 +12,8 @@ public class BPM : Label<BPMData>
 
     /// <summary>
     /// Dictionary that contains tempo changes and corresponding tick time positions. 
-    /// <para> Key = Tick-time position. Value = BPM to three decimal places, time-second value of the tempo change. </para>
-    /// <para>Example: 192 = 102.201, 0.237</para>
-    /// <remarks>When writing to file, multiply BPM value by 100 to get proper .chart format (where example would show as 192 = B 102201)</remarks>
+    /// <para> Key = Tick-time position. Value = See BPMData struct</para>
+    /// <remarks>When writing to file, multiply BPMChange value by 100 to get proper .chart format (where example would show as 192 = B 102201)</remarks>
     /// </summary>
     public static SortedDictionary<int, BPMData> Events { get; set; } = new();
 
@@ -25,7 +24,28 @@ public class BPM : Label<BPMData>
 
     public override void SetEvents(SortedDictionary<int, BPMData> newEvents)
     {
+        var breakKey = GetFirstVariableEvent(newEvents);
         Events = newEvents;
+        if (breakKey != -1)
+        {
+            RecalculateTempoEventDictionary(FindLastTempoEventTickExclusive(breakKey));
+        }
+    }
+
+    public int GetFirstVariableEvent(SortedDictionary<int, BPMData> newData)
+    {
+        var currentKeys = Events.Keys.ToHashSet<int>();
+        currentKeys.UnionWith(newData.Keys.ToHashSet<int>());
+        currentKeys.OrderBy(x => x);
+
+        foreach (var key in currentKeys)
+        {
+            if (newData[key] != Events[key])
+            {
+                return key;
+            }
+        }
+        return -1;
     }
 
     public override SortedDictionary<int, BPMData> GetEvents()
@@ -395,5 +415,19 @@ public struct BPMData
     {
         BPMChange = bpm;
         Timestamp = timestamp;
+    }
+
+    public static bool operator !=(BPMData one, BPMData two)
+    {
+        if (one.BPMChange != two.BPMChange) return true;
+        else if (one.Timestamp != two.Timestamp) return true;
+        else return false;
+    }
+
+    public static bool operator ==(BPMData one, BPMData two)
+    {
+        if (one.BPMChange != two.BPMChange) return false;
+        else if (one.Timestamp != two.Timestamp) return false;
+        else return true;
     }
 }
