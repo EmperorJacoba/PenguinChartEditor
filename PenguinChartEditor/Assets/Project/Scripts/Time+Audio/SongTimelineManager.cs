@@ -71,11 +71,11 @@ public class SongTimelineManager : MonoBehaviour
 
         if (BPM.Events.Count == 0) // if there is no data to load in 
         {
-            BPM.Events.Add(0, (120.0f, 0)); // add placeholder bpm
+            BPM.Events.Add(0, new BPMData(120.0f, 0)); // add placeholder bpm
         }
         if (TimeSignature.Events.Count == 0)
         {
-            TimeSignature.Events.Add(0, (4, 4));
+            TimeSignature.Events.Add(0, new TSData(4, 4));
         }
     }
 

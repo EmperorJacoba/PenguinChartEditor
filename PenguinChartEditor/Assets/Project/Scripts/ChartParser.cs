@@ -10,7 +10,7 @@ public class ChartParser : MonoBehaviour
 
     public static int loadedChartResolution = UserSettings.DefaultResolution;
 
-    static (List<int>, List<float>, SortedDictionary<int, (int, int)>) GetSyncTrackEvents(string filePath)
+    static (List<int>, List<float>, SortedDictionary<int, TSData>) GetSyncTrackEvents(string filePath)
     {
         string[] chart = File.ReadAllLines(filePath);
         int syncTrackPos = Array.IndexOf(chart, "[SyncTrack]");
@@ -24,7 +24,7 @@ public class ChartParser : MonoBehaviour
 
         List<int> tempoTickTimeKeys = new();
         List<float> bpmVals = new();
-        SortedDictionary<int, (int, int)> tsEvents = new();
+        SortedDictionary<int, TSData> tsEvents = new();
 
         var lineIndex = syncTrackPos + 2; // + 2 because first line is {
         var currentLine = chart[lineIndex];
@@ -47,12 +47,12 @@ public class ChartParser : MonoBehaviour
                 string[] tsParts = eventValue[1].Split(" ");
                 if (tsParts.Length == 1) // There is no space in the event value (only one number)
                 {
-                    tsEvents.Add(int.Parse(tickTimeKey), (int.Parse(eventValue[1]), DEFAULT_TS_DENOMINATOR)); // Add default TS denom
+                    tsEvents.Add(int.Parse(tickTimeKey), new TSData(int.Parse(eventValue[1]), DEFAULT_TS_DENOMINATOR)); // Add default TS denom
                 }
                 else
                 {
                     // If there is a TS event with two parts, undo the log in the second term (refer to format specs)
-                    tsEvents.Add(int.Parse(tickTimeKey), (int.Parse(tsParts[0]), (int)Math.Pow(2, int.Parse(tsParts[1]))));
+                    tsEvents.Add(int.Parse(tickTimeKey), new TSData(int.Parse(tsParts[0]), (int)Math.Pow(2, int.Parse(tsParts[1]))));
                 }
             }
 
@@ -68,9 +68,9 @@ public class ChartParser : MonoBehaviour
     /// </summary>
     /// <param name="filePath">The path of the .chart file.</param>
     /// <returns>The sorted dictionary of TempoEvent values.</returns>
-    public static (SortedDictionary<int, (float, float)>, SortedDictionary<int, (int, int)>) GetSyncTrackEventDicts(string filePath)
+    public static (SortedDictionary<int, BPMData>, SortedDictionary<int, TSData>) GetSyncTrackEventDicts(string filePath)
     {
-        SortedDictionary<int, (float, float)> outputTempoEventsDict = new();
+        SortedDictionary<int, BPMData> outputTempoEventsDict = new();
 
         (var tickTimeKeys, var bpmVals, var tsEvents) = GetSyncTrackEvents(filePath);
 
@@ -87,7 +87,7 @@ public class ChartParser : MonoBehaviour
             }
 
             currentSongTime += calculatedTimeSecondDifference;
-            outputTempoEventsDict.Add(tickTimeKeys[i], (bpmVals[i], (float)currentSongTime));
+            outputTempoEventsDict.Add(tickTimeKeys[i], new BPMData(bpmVals[i], (float)currentSongTime));
         }
 
         return (outputTempoEventsDict, tsEvents);

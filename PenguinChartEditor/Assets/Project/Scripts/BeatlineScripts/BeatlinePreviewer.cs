@@ -26,7 +26,7 @@ public class BeatlinePreviewer : Beatline
     /// <summary>
     /// Holds
     /// </summary>
-    (int, int) displayedTS = (4, 4);
+    TSData displayedTS = new(4, 4);
 
     void Awake()
     {
@@ -114,16 +114,16 @@ public class BeatlinePreviewer : Beatline
             bpmLabel.Visible = false;
             tsLabel.Visible = true;
 
-            var num = TimeSignature.Events[TimeSignature.FindLastTSEventTick(Tick)].Item1;
-            var denom = TimeSignature.Events[TimeSignature.FindLastTSEventTick(Tick)].Item2;
+            var num = TimeSignature.Events[TimeSignature.FindLastTSEventTick(Tick)].Numerator;
+            var denom = TimeSignature.Events[TimeSignature.FindLastTSEventTick(Tick)].Denominator;
             tsLabel.LabelText = $"{num} / {denom}";
-            displayedTS = (num, denom);
+            displayedTS = new(num, denom);
         }
         else
         {
             bpmLabel.Visible = true;
             tsLabel.Visible = false;
-            bpmLabel.LabelText = BPM.Events[BPM.FindLastTempoEventTickInclusive(Tick)].Item1.ToString();
+            bpmLabel.LabelText = BPM.Events[BPM.FindLastTempoEventTickInclusive(Tick)].BPMChange.ToString();
         }
     }
 
@@ -140,7 +140,7 @@ public class BeatlinePreviewer : Beatline
         {
             if (!BPM.Events.ContainsKey(Tick))
             {
-                BPM.Events.Add(Tick, (float.Parse(bpmLabel.LabelText), (float)timestamp));
+                BPM.Events.Add(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp));
                 BPM.SelectedBPMEvents.Clear();
                 TimeSignature.SelectedTSEvents.Clear(); // clear selection generic? attack all children?
             }
