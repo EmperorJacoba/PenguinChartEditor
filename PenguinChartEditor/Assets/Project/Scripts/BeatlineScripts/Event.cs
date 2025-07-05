@@ -51,7 +51,7 @@ public interface IEvent<DataType>
 public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
 {
     protected InputMap inputMap;
-    public virtual int Tick { get; set; }
+    public int Tick { get; set; }
     public abstract HashSet<int> GetSelectedEvents();
     public abstract SortedDictionary<int, DataType> GetEventClipboard();
     public abstract SortedDictionary<int, DataType> GetEvents();
@@ -137,10 +137,12 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         return tempDictionary;
     }
 
-    public virtual void DeleteSelection()
+    public void DeleteSelection()
     {
         var selection = GetSelectedEvents();
-        var targetEventSet = GetEvents();
+
+        // This makes a copy so that it works for BPM along with other data types
+        var targetEventSet = new SortedDictionary<int, DataType>(GetEvents());
 
         if (selection.Count != 0)
         {
@@ -153,6 +155,11 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
             }
         }
         selection.Clear();
+
+        // BPM dict needs to be recalculated after every modification
+        // So copy + overwrite with new dictionary is needed to cleanly fit into this system
+        // (BPM.SetEvents() recalculates the event dictionary timestamps every time it is used)
+        SetEvents(targetEventSet);
 
         TempoManager.UpdateBeatlines();
     }

@@ -34,18 +34,25 @@ public class BPM : Label<BPMData>
 
     public int GetFirstVariableEvent(SortedDictionary<int, BPMData> newData)
     {
-        var currentKeys = Events.Keys.ToHashSet<int>();
-        currentKeys.UnionWith(newData.Keys.ToHashSet<int>());
+        var currentKeys = Events.Keys.ToHashSet();
+        currentKeys.UnionWith(newData.Keys.ToHashSet());
         currentKeys.OrderBy(x => x);
 
         foreach (var key in currentKeys)
         {
-            if (newData[key] != Events[key])
+            try
+            {
+                if (newData[key] != Events[key]) // Data has been edited at this point
+                {
+                    return key;
+                }
+            }
+            catch // The key cannot be accessed in one of the dictionaries (addition/removal)
             {
                 return key;
             }
         }
-        return -1;
+        return -1; // No discrepency
     }
 
     public override SortedDictionary<int, BPMData> GetEvents()
@@ -389,6 +396,11 @@ public struct BPMData
     public bool Equals(BPMData other)
     {
         return BPMChange == other.BPMChange && Timestamp == other.Timestamp;
+    }
+
+    public override string ToString()
+    {
+        return $"{BPMChange}, {Timestamp}";
     }
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me

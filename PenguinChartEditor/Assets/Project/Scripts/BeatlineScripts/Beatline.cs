@@ -7,28 +7,10 @@ using UnityEngine;
 /// <para>The beatline prefab is a UI element with a line renderer with two points set to the width of the track.</para>
 /// <remarks>Beatline game object control should happen through this class.</remarks>
 /// </summary>
-public class Beatline : Event<bool>
+public class Beatline : MonoBehaviour
 {
-    public override HashSet<int> GetSelectedEvents()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override SortedDictionary<int, bool> GetEventClipboard()
-    {
-        throw new NotImplementedException();
-    }
-    public override SortedDictionary<int, bool> GetEvents()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void SetEvents(SortedDictionary<int, bool> newEvents)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override int Tick
+    protected InputMap inputMap;
+    public int Tick
     {
         get { return _tick; }
         set
@@ -38,6 +20,19 @@ public class Beatline : Event<bool>
             _tick = value;
         }
     }
+
+    public bool Visible
+    {
+        get
+        {
+            return gameObject.activeInHierarchy;
+        }
+        set
+        {
+            gameObject.SetActive(value);
+        }
+    }
+    
     private int _tick = 0;
 
     #region Components
