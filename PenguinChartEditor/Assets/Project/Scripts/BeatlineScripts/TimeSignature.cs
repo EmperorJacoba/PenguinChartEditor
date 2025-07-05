@@ -196,7 +196,7 @@ public class TimeSignature : Label<TSData>
     }
 }
 
-public struct TSData
+public struct TSData : IEquatable<TSData>
 {
     public int Numerator;
     public int Denominator;
@@ -205,5 +205,25 @@ public struct TSData
     {
         Numerator = numerator;
         Denominator = denominator;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is TSData other && Equals(other);
+    }
+    public bool Equals(TSData other)
+    {
+        return Numerator == other.Numerator && Denominator == other.Denominator;
+    }
+
+    public override int GetHashCode() // literally just doing this because VSCode is yelling at me
+    {
+        unchecked
+        {
+            int hash = 17;
+            hash *= 23 + Numerator.GetHashCode();
+            hash *= 23 + Denominator.GetHashCode();
+            return hash;
+        }
     }
 }

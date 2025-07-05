@@ -135,27 +135,10 @@ public class BeatlinePreviewer : Beatline
         // No creating events while user is messing with other UI parts (volume, etc.)
         if (IsOverlayRaycasterHit()) return;
 
-        // Modify the dictionaries based on which event change is previewed
-        if (bpmLabel.Visible)
-        {
-            if (!BPM.Events.ContainsKey(Tick))
-            {
-                BPM.Events.Add(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp));
-                BPM.SelectedBPMEvents.Clear();
-                TimeSignature.SelectedTSEvents.Clear(); // clear selection generic? attack all children?
-            }
-        }
-        else if (tsLabel.Visible)
-        {
-            if (!TimeSignature.Events.ContainsKey(Tick))
-            {
-                TimeSignature.Events.Add(Tick, displayedTS);
-                BPM.SelectedBPMEvents.Clear();
-                TimeSignature.SelectedTSEvents.Clear();
-            }
-        }
+        if (bpmLabel.Visible) bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp));
+        else if (tsLabel.Visible) tsLabel.CreateEvent(Tick, displayedTS);
         else return;
-
+        
         // Show changes to user
         TempoManager.UpdateBeatlines();
     }

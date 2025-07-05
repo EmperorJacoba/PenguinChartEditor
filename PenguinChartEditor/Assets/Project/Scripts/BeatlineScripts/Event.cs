@@ -57,7 +57,7 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
     public abstract SortedDictionary<int, DataType> GetEvents();
     public abstract void SetEvents(SortedDictionary<int, DataType> newEvents);
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
-    public bool DeletePrimed { get; set; }
+    public bool DeletePrimed { get; set; } // make global across events 
 
     public void CopySelection()
     {
@@ -257,5 +257,22 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         {
             DeletePrimed = false;
         }
+    }
+
+    /// <summary>
+    /// Add the currently previewed event to the real dictionary.
+    /// </summary>
+    public void CreateEvent(int newTick, DataType newData)
+    {
+        var eventDict = new SortedDictionary<int, DataType>(GetEvents());
+
+        eventDict.Remove(newTick);
+        eventDict.Add(newTick, newData);
+        GetSelectedEvents().Clear(); // global clear dict?
+
+        SetEvents(eventDict);
+
+        // Show changes to user
+        TempoManager.UpdateBeatlines();
     }
 }

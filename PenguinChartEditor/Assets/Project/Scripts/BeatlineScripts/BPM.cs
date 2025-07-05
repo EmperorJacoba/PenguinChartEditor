@@ -367,7 +367,7 @@ public class BPM : Label<BPMData>
     }
 }
 
-public struct BPMData
+public struct BPMData : IEquatable<BPMData>
 {
     public float BPMChange;
     public float Timestamp;
