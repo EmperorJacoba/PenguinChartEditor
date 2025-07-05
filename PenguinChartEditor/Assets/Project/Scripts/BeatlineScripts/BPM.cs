@@ -95,52 +95,6 @@ public class BPM : Label<BPMData>
         return bpmClipboard;
     }
 
-    public override void PasteSelection()
-    {
-        var startPasteTick = BeatlinePreviewer.currentPreviewTick;
-
-        // Check each individual clipboard for events to paste
-        if (bpmClipboard.Count > 0)
-        {
-            var endBPMPasteTick = bpmClipboard.Keys.Max() + startPasteTick; // Get selection zone to overwrite
-            // Find events that will not be overwritten to preserve
-            SortedDictionary<int, BPMData> tempTempoEventDictionary = GetNonOverwritableDictEvents(Events, startPasteTick, endBPMPasteTick);
-
-            // Write selected events to combine with existing events
-            foreach (var tick in bpmClipboard)
-            {
-                tempTempoEventDictionary.Add(tick.Key + startPasteTick, new BPMData(bpmClipboard[tick.Key].BPMChange, 0)); // 0 is a placeholder that will be overwritten (timestamp is irrelevant here because dictionary is not read yet)
-            }
-            Events = tempTempoEventDictionary;
-
-            // Recalculate to replace 0 timestamps with correct timestamps
-            // Find the tick event BEFORE the first pasted tick-time to avoid using the zero placeholder as the starting point
-            // If recalculation starts from the first event then the calculations start from zero and two sets of beatlines appear
-            RecalculateTempoEventDictionary(FindLastTempoEventTickExclusive(startPasteTick));
-        }
-    }
-
-    public override void DeleteSelection()
-    {
-        var selection = GetSelectedEvents();
-
-        if (selection.Count != 0)
-        {
-            var earliestTick = selection.Min();
-            foreach (var tick in selection)
-            {
-                if (tick != 0)
-                {
-                    Events.Remove(tick);
-                }
-            }
-            RecalculateTempoEventDictionary(FindLastTempoEventTickInclusive(earliestTick));
-        }
-        selection.Clear();
-
-        TempoManager.UpdateBeatlines();
-    }
-
     SortedDictionary<int, BPMData> bpmClipboard = new();
 
     /// <summary>
