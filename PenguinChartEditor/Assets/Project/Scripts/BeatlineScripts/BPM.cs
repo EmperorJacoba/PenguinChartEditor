@@ -373,15 +373,32 @@ public struct BPMData
 
     public static bool operator !=(BPMData one, BPMData two)
     {
-        if (one.BPMChange != two.BPMChange) return true;
-        else if (one.Timestamp != two.Timestamp) return true;
-        else return false;
+        return !one.Equals(two);
     }
 
     public static bool operator ==(BPMData one, BPMData two)
     {
-        if (one.BPMChange != two.BPMChange) return false;
-        else if (one.Timestamp != two.Timestamp) return false;
-        else return true;
+        return one.Equals(two);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is BPMData other && Equals(other);
+    }
+
+    public bool Equals(BPMData other)
+    {
+        return BPMChange == other.BPMChange && Timestamp == other.Timestamp;
+    }
+
+    public override int GetHashCode() // literally just doing this because VSCode is yelling at me
+    {
+        unchecked
+        {
+            int hash = 17;
+            hash *= 23 + BPMChange.GetHashCode();
+            hash *= 23 + Timestamp.GetHashCode();
+            return hash;
+        }
     }
 }
