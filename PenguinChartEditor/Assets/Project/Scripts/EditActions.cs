@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // Based on https://refactoring.guru/design-patterns/command
 public interface IEditAction<DataType>
@@ -46,58 +48,57 @@ public class Copy<DataType> : IEditAction<DataType>
 public class Paste<DataType> : IEditAction<DataType>
 {
     public SortedDictionary<int, DataType> SaveData { get; set; }
+    SortedDictionary<int, DataType> eventSetReference;
 
-    public SortedDictionary<int, DataType> Execute(int startPasteTick, SortedDictionary<int, DataType> clipboard, SortedDictionary<int, DataType> targetEventSet)
+    public bool Execute(int startPasteTick, SortedDictionary<int, DataType> clipboard, SortedDictionary<int, DataType> targetEventSet)
     {
-        SortedDictionary<int, DataType> newDict;
         if (clipboard.Count > 0) // avoid index error
         {
+            SaveData = new(targetEventSet);
+            eventSetReference = targetEventSet;
+
             // Create a temp dictionary without events within the size of the clipboard from the origin of the paste 
             // (ex. clipboard with 0, 100, 400 has a zone of 400, paste starts at tick 700, all events tick 700-1100 are wiped)
             var endPasteTick = clipboard.Keys.Max() + startPasteTick;
-            SortedDictionary<int, DataType> tempDict = GetNonOverwritableDictEvents(targetEventSet, startPasteTick, endPasteTick);
 
-            // Add clipboard data to temp dict, now cleaned of obstructing events
+            // get overwritable dictionary events
+            // remove those events
+            // add new events
+            var overwritableEvents = GetOverwritableDictEvents(targetEventSet, startPasteTick, endPasteTick);
+            foreach (var tick in overwritableEvents)
+            {
+                targetEventSet.Remove(tick);
+            }
+
+            // Add clipboard data to dict, now cleaned of obstructing events
             foreach (var clippedTick in clipboard)
             {
-                tempDict.Add(clippedTick.Key + startPasteTick, clipboard[clippedTick.Key]);
-                SaveData.Add(clippedTick.Key + startPasteTick, clipboard[clippedTick.Key]);
+                targetEventSet.Add(clippedTick.Key + startPasteTick, clipboard[clippedTick.Key]);
             }
-            // Commit the temporary dictionary to the real dictionary
-            // (cannot use targetEventSet as that results with a local reassignment)
-            newDict = tempDict;
-            SaveData = tempDict;
-        }
-        else newDict = targetEventSet;
 
-        return newDict;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void Undo()
     {
-
-    }
-
-    /// <summary>
-    /// Copy all events from an event dictionary that are not within a paste zone (startTick to endTick)
-    /// </summary>
-    /// <typeparam name="Key">Key is a tick (int)</typeparam>
-    /// <typeparam name="DataType">Event data -> ex. TS: (int, int)</typeparam>
-    /// <param name="originalDict">Target dictionary of events to extract from.</param>
-    /// <param name="startTick">Start of paste zone (events to overwrite)</param>
-    /// <param name="endTick">End of paste zone (events to overwrite)</param>
-    /// <returns>Event dictionary with all events in the paste zone removed.</returns>
-    protected SortedDictionary<int, DataType> GetNonOverwritableDictEvents(SortedDictionary<int, DataType> originalDict, int startTick, int endTick)
-    {
-        SortedDictionary<int, DataType> tempDictionary = new();
-        foreach (var item in originalDict)
+        eventSetReference.Clear();
+        foreach (var tick in SaveData)
         {
-            if (item.Key < startTick || item.Key > endTick) tempDictionary.Add(item.Key, item.Value);
+            eventSetReference.Add(tick.Key, tick.Value);
         }
-        return tempDictionary;
     }
-}
 
+    HashSet<int> GetOverwritableDictEvents(SortedDictionary<int, DataType> eventSet, int startPasteTick, int endPasteTick)
+    {
+        return eventSet.Keys.Where(x => x > startPasteTick && x < endPasteTick).ToHashSet();
+    }
+
+}
 // Each command has data that explains how to undo itself
 // When command is executed, add that command to an array of commands, and have a function that calls the undo on whatever command is next in the array of commands when undo is clicked
 // 

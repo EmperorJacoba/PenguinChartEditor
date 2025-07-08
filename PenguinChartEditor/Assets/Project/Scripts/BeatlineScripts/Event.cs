@@ -59,34 +59,6 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
     public bool DeletePrimed { get; set; } // make global across events 
 
-    /*
-        public void CopySelection()
-        {
-            var clipboard = GetEventClipboard();
-            var selection = GetSelectedEvents();
-            var targetEventSet = GetEvents();
-
-            clipboard.Clear(); // prep dictionary for new copy data
-
-            // copy data is shifted to zero for relative pasting 
-            // (ex. an event sequence 100, 200, 300 is converted to 0, 100, 200)
-            int lowestTick = 0;
-            if (selection.Count > 0) lowestTick = selection.Min();
-
-            // add relevant data for each tick into clipboard
-            foreach (var selectedTick in selection)
-            {
-                try
-                {
-                    clipboard.Add(selectedTick - lowestTick, targetEventSet[selectedTick]);
-                }
-                catch
-                {
-                    continue;
-                }
-            }
-        } */
-
     public void CopySelection()
     {
         var copyAction = new Copy<DataType>();
@@ -192,7 +164,7 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         else return false;
     }
 
-    public int lastTickSelection;
+    public static int lastTickSelection;
     /// <summary>
     /// Calculate the event(s) to be selected based on the last click event.
     /// </summary>
@@ -203,6 +175,7 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
     {
         var selection = GetSelectedEvents();
         List<int> targetEventSet = GetEvents().Keys.ToList();
+
         // Goal is to follow standard selection functionality of most productivity programs
         if (clickButton != PointerEventData.InputButton.Left) return;
 
@@ -274,9 +247,12 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
     {
         var eventDict = new SortedDictionary<int, DataType>(GetEvents());
 
+        if (!eventDict.ContainsKey(newTick))
+        {
+            GetSelectedEvents().Clear(); // global clear dict?
+        }   
         eventDict.Remove(newTick);
         eventDict.Add(newTick, newData);
-        GetSelectedEvents().Clear(); // global clear dict?
 
         SetEvents(eventDict);
 
