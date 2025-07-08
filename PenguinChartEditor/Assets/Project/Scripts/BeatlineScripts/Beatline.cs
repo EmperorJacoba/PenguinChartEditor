@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -32,7 +30,7 @@ public class Beatline : MonoBehaviour
             gameObject.SetActive(value);
         }
     }
-    
+
     private int _tick = 0;
 
     #region Components

@@ -12,19 +12,8 @@ public interface IEditAction<DataType>
 
 public class Copy<DataType> : IEditAction<DataType>
 {
-    SortedDictionary<int, DataType> clipboard;
-    HashSet<int> selection;
-    SortedDictionary<int, DataType> targetEventSet;
     public SortedDictionary<int, DataType> SaveData { get; set; }
-
-    public Copy(SortedDictionary<int, DataType> clipboard, HashSet<int> selection, SortedDictionary<int, DataType> targetEventSet)
-    {
-        this.clipboard = clipboard;
-        this.selection = selection;
-        this.targetEventSet = targetEventSet;
-    }
-
-    public bool Execute()
+    public bool Execute(SortedDictionary<int, DataType> clipboard, HashSet<int> selection, SortedDictionary<int, DataType> targetEventSet)
     {
         clipboard.Clear(); // prep dictionary for new copy data
 
@@ -45,7 +34,7 @@ public class Copy<DataType> : IEditAction<DataType>
                 continue;
             }
         }
-        return false;
+        return false; // method is NOT undoable
     }
 
     public void Undo()
@@ -89,9 +78,6 @@ public class Paste<DataType> : IEditAction<DataType>
 
     }
 
-    
-
-    
     /// <summary>
     /// Copy all events from an event dictionary that are not within a paste zone (startTick to endTick)
     /// </summary>

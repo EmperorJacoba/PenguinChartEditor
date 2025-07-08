@@ -138,7 +138,7 @@ public class BeatlinePreviewer : Beatline
         if (bpmLabel.Visible) bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp));
         else if (tsLabel.Visible) tsLabel.CreateEvent(Tick, displayedTS);
         else return;
-        
+
         // Show changes to user
         TempoManager.UpdateBeatlines();
     }

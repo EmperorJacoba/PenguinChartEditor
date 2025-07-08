@@ -7,7 +7,7 @@ using System.Linq;
 public class BPM : Label<BPMData>
 {
     public static HashSet<int> SelectedBPMEvents { get; set; } = new();
-    bool selectionActionsEnabled = false;
+    static bool selectionActionsEnabled = false;
     const int SECONDS_PER_MINUTE = 60;
 
     /// <summary>
@@ -26,10 +26,25 @@ public class BPM : Label<BPMData>
     {
         var breakKey = GetFirstVariableEvent(newEvents);
         Events = newEvents;
+
+        // Safety check before recalculating dictionary
+        // When pasting into dictionary, tick 0 might inherit data
+        // from a pasted event that has a timestamp which is not 0.
+        // Since the broad paste function directly copies the data (including the timestamp)
+        // into the pasted ticks, tick 0 may have a timestamp that is not 0, even though tick 0 is always at time 0.
+        // For other events that inherit another event's timestamp, this is okay, because the event dictionary is recalculated
+        // from the LAST tick event before the paste, which overwrites the inaccurate timestamp.
+        // Tick 0 does not have this luxary. It is its own last tick event. Always. Thus, this must be cleaned before doing any calculations.
+        if (Events[0].Timestamp != 0)
+        {
+            Events[0] = new BPMData(Events[0].BPMChange, 0);
+        }
+        
         if (breakKey != -1)
         {
             RecalculateTempoEventDictionary(FindLastTempoEventTickExclusive(breakKey));
         }
+
     }
 
     public int GetFirstVariableEvent(SortedDictionary<int, BPMData> newData)
@@ -224,7 +239,7 @@ public class BPM : Label<BPMData>
     /// <returns>The tick-time timestamp of the previous tempo event.</returns>
     public static int FindLastTempoEventTickInclusive(int currentTick)
     {
-        var tickTimeKeys = BPM.Events.Keys.ToList();
+        var tickTimeKeys = Events.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
         if (index < 0) // bitwise complement is negative
@@ -248,7 +263,7 @@ public class BPM : Label<BPMData>
     /// <returns></returns>
     public static int FindLastTempoEventTickExclusive(int currentTick)
     {
-        var tickTimeKeys = BPM.Events.Keys.ToList();
+        var tickTimeKeys = Events.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
         if (index <= 0) // bitwise complement is negative
@@ -280,7 +295,7 @@ public class BPM : Label<BPMData>
     {
         SortedDictionary<int, BPMData> outputTempoEventsDict = new();
 
-        var tickEvents = BPM.Events.Keys.ToList();
+        var tickEvents = Events.Keys.ToList();
         var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick);
         if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
 

@@ -59,31 +59,38 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
     public bool DeletePrimed { get; set; } // make global across events 
 
+    /*
+        public void CopySelection()
+        {
+            var clipboard = GetEventClipboard();
+            var selection = GetSelectedEvents();
+            var targetEventSet = GetEvents();
+
+            clipboard.Clear(); // prep dictionary for new copy data
+
+            // copy data is shifted to zero for relative pasting 
+            // (ex. an event sequence 100, 200, 300 is converted to 0, 100, 200)
+            int lowestTick = 0;
+            if (selection.Count > 0) lowestTick = selection.Min();
+
+            // add relevant data for each tick into clipboard
+            foreach (var selectedTick in selection)
+            {
+                try
+                {
+                    clipboard.Add(selectedTick - lowestTick, targetEventSet[selectedTick]);
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+        } */
+
     public void CopySelection()
     {
-        var clipboard = GetEventClipboard();
-        var selection = GetSelectedEvents();
-        var targetEventSet = GetEvents();
-
-        clipboard.Clear(); // prep dictionary for new copy data
-
-        // copy data is shifted to zero for relative pasting 
-        // (ex. an event sequence 100, 200, 300 is converted to 0, 100, 200)
-        int lowestTick = 0;
-        if (selection.Count > 0) lowestTick = selection.Min();
-
-        // add relevant data for each tick into clipboard
-        foreach (var selectedTick in selection)
-        {
-            try
-            {
-                clipboard.Add(selectedTick - lowestTick, targetEventSet[selectedTick]);
-            }
-            catch
-            {
-                continue;
-            }
-        }
+        var copyAction = new Copy<DataType>();
+        copyAction.Execute(GetEventClipboard(), GetSelectedEvents(), GetEvents());
     }
 
     public virtual void PasteSelection()
@@ -91,7 +98,7 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         var startPasteTick = BeatlinePreviewer.currentPreviewTick;
         var clipboard = GetEventClipboard();
         var targetEventSet = GetEvents();
-
+    
         if (clipboard.Count > 0) // avoid index error
         {
             // Create a temp dictionary without events within the size of the clipboard from the origin of the paste 
@@ -106,6 +113,7 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
             }
             // Commit the temporary dictionary to the real dictionary
             // (cannot use targetEventSet as that results with a local reassignment)
+
             SetEvents(tempDict);
         }
 
@@ -159,7 +167,7 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         // BPM dict needs to be recalculated after every modification
         // So copy + overwrite with new dictionary is needed to cleanly fit into this system
         // (BPM.SetEvents() recalculates the event dictionary timestamps every time it is used)
-        SetEvents(targetEventSet);
+        SetEvents(targetEventSet); // maybe augment .Add/remove? for create event?
 
         TempoManager.UpdateBeatlines();
     }

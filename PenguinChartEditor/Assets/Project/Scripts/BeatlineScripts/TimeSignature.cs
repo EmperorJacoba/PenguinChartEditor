@@ -6,7 +6,7 @@ using UnityEngine;
 public class TimeSignature : Label<TSData>
 {
     public static HashSet<int> SelectedTSEvents { get; set; } = new();
-    bool selectionActionsEnabled = false;
+    static bool selectionActionsEnabled = false;
 
     /// <summary>
     /// Dictionary that contains time signature changes and corresponding tick time positions.
