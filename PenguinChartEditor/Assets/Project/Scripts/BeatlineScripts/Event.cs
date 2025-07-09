@@ -57,90 +57,41 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
     public abstract SortedDictionary<int, DataType> GetEvents();
     public abstract void SetEvents(SortedDictionary<int, DataType> newEvents);
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
-    public bool DeletePrimed { get; set; } // make global across events 
+    public bool DeletePrimed { get; set; } // future: make global across events 
 
     public void CopySelection()
     {
-        var copyAction = new Copy<DataType>();
-        copyAction.Execute(GetEventClipboard(), GetSelectedEvents(), GetEvents());
+        var copyAction = new Copy<DataType>(GetEvents());
+        copyAction.Execute(GetEventClipboard(), GetSelectedEvents());
     }
 
     public virtual void PasteSelection()
     {
-        var startPasteTick = BeatlinePreviewer.currentPreviewTick;
-        var clipboard = GetEventClipboard();
-        var targetEventSet = GetEvents();
-    
-        if (clipboard.Count > 0) // avoid index error
-        {
-            // Create a temp dictionary without events within the size of the clipboard from the origin of the paste 
-            // (ex. clipboard with 0, 100, 400 has a zone of 400, paste starts at tick 700, all events tick 700-1100 are wiped)
-            var endPasteTick = clipboard.Keys.Max() + startPasteTick;
-            SortedDictionary<int, DataType> tempDict = GetNonOverwritableDictEvents(targetEventSet, startPasteTick, endPasteTick);
+        var pasteAction = new Paste<DataType>(GetEvents());
+        pasteAction.Execute(BeatlinePreviewer.currentPreviewTick, GetEventClipboard());
+        TempoManager.UpdateBeatlines();
 
-            // Add clipboard data to temp dict, now cleaned of obstructing events
-            foreach (var clippedTick in clipboard)
-            {
-                tempDict.Add(clippedTick.Key + startPasteTick, clipboard[clippedTick.Key]);
-            }
-            // Commit the temporary dictionary to the real dictionary
-            // (cannot use targetEventSet as that results with a local reassignment)
+        // paste currently crashes when paste zone exceeds the screen - fix
+        // implement other event actions!!
+    }
 
-            SetEvents(tempDict);
-        }
+    public virtual void CutSelection()
+    {
+        var cutAction = new Cut<DataType>(GetEvents());
+        cutAction.Execute(GetEventClipboard(), GetSelectedEvents());
+    }
 
+    public virtual void DeleteSelection()
+    {
+        var deleteAction = new Delete<DataType>(GetEvents());
+        deleteAction.Execute(GetSelectedEvents());
         TempoManager.UpdateBeatlines();
     }
 
-    public void CutSelection()
+    public virtual void CreateEvent(int newTick, DataType newData)
     {
-        CopySelection();
-        DeleteSelection();
-    }
-
-    /// <summary>
-    /// Copy all events from an event dictionary that are not within a paste zone (startTick to endTick)
-    /// </summary>
-    /// <typeparam name="Key">Key is a tick (int)</typeparam>
-    /// <typeparam name="DataType">Event data -> ex. TS: (int, int)</typeparam>
-    /// <param name="originalDict">Target dictionary of events to extract from.</param>
-    /// <param name="startTick">Start of paste zone (events to overwrite)</param>
-    /// <param name="endTick">End of paste zone (events to overwrite)</param>
-    /// <returns>Event dictionary with all events in the paste zone removed.</returns>
-    protected SortedDictionary<int, DataType> GetNonOverwritableDictEvents(SortedDictionary<int, DataType> originalDict, int startTick, int endTick)
-    {
-        SortedDictionary<int, DataType> tempDictionary = new();
-        foreach (var item in originalDict)
-        {
-            if (item.Key < startTick || item.Key > endTick) tempDictionary.Add(item.Key, item.Value);
-        }
-        return tempDictionary;
-    }
-
-    public void DeleteSelection()
-    {
-        var selection = GetSelectedEvents();
-
-        // This makes a copy so that it works for BPM along with other data types
-        var targetEventSet = new SortedDictionary<int, DataType>(GetEvents());
-
-        if (selection.Count != 0)
-        {
-            foreach (var tick in selection)
-            {
-                if (tick != 0)
-                {
-                    targetEventSet.Remove(tick);
-                }
-            }
-        }
-        selection.Clear();
-
-        // BPM dict needs to be recalculated after every modification
-        // So copy + overwrite with new dictionary is needed to cleanly fit into this system
-        // (BPM.SetEvents() recalculates the event dictionary timestamps every time it is used)
-        SetEvents(targetEventSet); // maybe augment .Add/remove? for create event?
-
+        var createAction = new Create<DataType>(GetEvents());
+        createAction.Execute(newTick, newData, GetSelectedEvents());
         TempoManager.UpdateBeatlines();
     }
 
@@ -238,25 +189,5 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
         {
             DeletePrimed = false;
         }
-    }
-
-    /// <summary>
-    /// Add the currently previewed event to the real dictionary.
-    /// </summary>
-    public void CreateEvent(int newTick, DataType newData)
-    {
-        var eventDict = new SortedDictionary<int, DataType>(GetEvents());
-
-        if (!eventDict.ContainsKey(newTick))
-        {
-            GetSelectedEvents().Clear(); // global clear dict?
-        }   
-        eventDict.Remove(newTick);
-        eventDict.Add(newTick, newData);
-
-        SetEvents(eventDict);
-
-        // Show changes to user
-        TempoManager.UpdateBeatlines();
     }
 }

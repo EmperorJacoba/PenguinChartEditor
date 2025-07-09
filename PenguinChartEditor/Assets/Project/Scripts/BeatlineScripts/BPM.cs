@@ -112,6 +112,35 @@ public class BPM : Label<BPMData>
         ConcludeManualEdit();
     }
 
+    public override void PasteSelection()
+    {
+        base.PasteSelection();
+        FinishEventAction();
+    }
+
+    public override void DeleteSelection()
+    {
+        base.DeleteSelection();
+        FinishEventAction();
+    }
+
+    public override void CreateEvent(int newTick, BPMData newData)
+    {
+        base.CreateEvent(newTick, newData);
+        FinishEventAction();
+    }
+    public override void CutSelection()
+    {
+        base.CutSelection();
+        FinishEventAction();
+    }
+
+    void FinishEventAction()
+    {
+        RecalculateTempoEventDictionary();
+        TempoManager.UpdateBeatlines();
+    }
+
     public override SortedDictionary<int, BPMData> GetEventClipboard()
     {
         return bpmClipboard;
