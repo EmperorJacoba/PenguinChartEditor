@@ -61,6 +61,7 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
 
     public void CopySelection()
     {
+        GetEventClipboard().Clear();
         var copyAction = new Copy<DataType>(GetEvents());
         copyAction.Execute(GetEventClipboard(), GetSelectedEvents());
     }

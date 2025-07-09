@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
+using UnityEngine;
 
 // Based on https://refactoring.guru/design-patterns/command
 public interface IEditAction<DataType>
@@ -101,7 +102,7 @@ public class Paste<DataType> : IEditAction<DataType>
 
     HashSet<int> GetOverwritableDictEvents(SortedDictionary<int, DataType> eventSet, int startPasteTick, int endPasteTick)
     {
-        return eventSet.Keys.ToList().Where(x => x > startPasteTick && x < endPasteTick).ToHashSet();
+        return eventSet.Keys.ToList().Where(x => x >= startPasteTick && x <= endPasteTick).ToHashSet();
     }
 
 }
