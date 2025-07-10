@@ -22,7 +22,7 @@ public class PluginBassManager : MonoBehaviour
     /// <summary>
     /// Holds BASS stream data for playing audio. Stem is audio stem identifier, int is BASS stream data.
     /// </summary>
-    public static Dictionary<ChartMetadata.StemType, int> StemStreams {get; private set;}
+    public static Dictionary<ChartMetadata.StemType, int> StemStreams { get; private set; } = new();
     
     /// <summary>
     /// Is the audio currently playing?
@@ -68,7 +68,6 @@ public class PluginBassManager : MonoBehaviour
     {
         ChartMetadata.TempSetUpStemDict();
 
-        StemStreams = new();
         AudioPlaying = false;
 
         InitializeBassPlugin();
@@ -320,6 +319,17 @@ public class PluginBassManager : MonoBehaviour
         }
     }
 
+    static int metronomeStreamHandle = -1;
+    public static void PlayMetronomeSound()
+    {
+        if (metronomeStreamHandle == -1)
+        {
+            metronomeStreamHandle = Bass.BASS_StreamCreateFile($"{Application.streamingAssetsPath}/metronomeclick.mp3", 0, 0, BASSFlag.BASS_DEFAULT);
+        }
+        Bass.BASS_ChannelPlay(metronomeStreamHandle, false);
+        Debug.Log($"{Bass.BASS_ErrorGetCode()}");
+    }
+
     /// <summary>
     /// Set the stream position to the waveform's current position for every stream in StemStreams. 
     /// </summary>
@@ -331,7 +341,7 @@ public class PluginBassManager : MonoBehaviour
             {
                 Bass.BASS_ChannelSetPosition
                 (
-                    StemStreams[streampair.Key], 
+                    StemStreams[streampair.Key],
                     SongTimelineManager.SongPositionSeconds
                 );
             }

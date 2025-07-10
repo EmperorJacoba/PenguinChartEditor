@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class SongTimelineManager : MonoBehaviour
 {
-    
     static InputMap inputMap;
 
     // Needed for delta calculations when scrolling using MMB
@@ -29,6 +28,14 @@ public class SongTimelineManager : MonoBehaviour
             _songPos = value;
 
             TimeChanged?.Invoke();
+        }
+    }
+
+    public static int SongPositionTicks
+    {
+        get
+        {
+            return BPM.ConvertSecondsToTickTime((float)_songPos);
         }
     }
     private static double _songPos = 0; 

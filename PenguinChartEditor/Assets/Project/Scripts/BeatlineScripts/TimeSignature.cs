@@ -162,6 +162,21 @@ public class TimeSignature : Label<TSData>
     }
 
     /// <summary>
+    /// Calculate the next "1" of a bar from a tick-time timestamp.
+    /// </summary>
+    /// <param name="currentTick">The tick-time timestamp to evaluate from.</param>
+    /// <returns>The tick-time timestamp of the nextd barline.</returns>
+    public static int FindNextBarline(int currentTick)
+    {
+        var ts = FindLastTSEventTick(currentTick);
+        var tickDiff = currentTick - ts;
+        var tickInterval = (ChartMetadata.ChartResolution * (float)Events[ts].Numerator) / ((float)Events[ts].Denominator / 4);
+        int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
+
+        return (int)(ts + numIntervals * tickInterval);
+    }
+
+    /// <summary>
     /// Calculate the next beatline to be generated from a specified tick-time timestamp.
     /// </summary>
     /// <param name="currentTick"></param>
@@ -171,7 +186,17 @@ public class TimeSignature : Label<TSData>
         var ts = FindLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
         var tickInterval = ChartMetadata.ChartResolution / ((float)Events[ts].Denominator / 2);
-        int numIntervals = (int)Math.Round(tickDiff / tickInterval);
+        int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
+
+        return (int)(ts + numIntervals * tickInterval);
+    }
+
+    public static int FindNextDivisionEvent(int currentTick)
+    {
+        var ts = FindLastTSEventTick(currentTick);
+        var tickDiff = currentTick - ts;
+        var tickInterval = ChartMetadata.ChartResolution / ((float)Events[ts].Denominator / 4);
+        int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
 
         return (int)(ts + numIntervals * tickInterval);
     }
