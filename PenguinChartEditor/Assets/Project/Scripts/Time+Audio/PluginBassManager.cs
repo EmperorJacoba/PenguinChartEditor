@@ -327,7 +327,6 @@ public class PluginBassManager : MonoBehaviour
             metronomeStreamHandle = Bass.BASS_StreamCreateFile($"{Application.streamingAssetsPath}/metronomeclick.mp3", 0, 0, BASSFlag.BASS_DEFAULT);
         }
         Bass.BASS_ChannelPlay(metronomeStreamHandle, false);
-        Debug.Log($"{Bass.BASS_ErrorGetCode()}");
     }
 
     /// <summary>

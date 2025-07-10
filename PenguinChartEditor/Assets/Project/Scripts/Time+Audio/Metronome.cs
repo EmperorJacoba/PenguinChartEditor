@@ -27,7 +27,6 @@ public class Metronome : MonoBehaviour
 
         if (SongTimelineManager.SongPositionTicks >= nextPromisedMetronomeHit)
         {
-            Debug.Log($"{nextPromisedMetronomeHit}, {SongTimelineManager.SongPositionTicks}");
             PluginBassManager.PlayMetronomeSound();
             nextPromisedMetronomeHit = TimeSignature.FindNextDivisionEvent(SongTimelineManager.SongPositionTicks + 1);
         }
