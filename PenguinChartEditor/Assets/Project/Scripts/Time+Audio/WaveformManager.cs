@@ -37,7 +37,7 @@ public class WaveformManager : MonoBehaviour
     /// <summary>
     /// Panel that is always the size of the bounds of the waveform. Used to set waveform object at right distance from camera/background.
     /// </summary>
-    [SerializeField] GameObject boundaryReference; // in tempo map, screen 
+    static GameObject boundaryReference; // in tempo map, screen 
 
     public delegate void WaveformDisplayDelegate();
 
@@ -121,9 +121,10 @@ public class WaveformManager : MonoBehaviour
 
     #endregion
     #region Unity Functions
-    void Awake() 
+    void Awake()
     {
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
+        boundaryReference = GameObject.Find("ScreenReference");
     }
 
     void Start()
@@ -134,8 +135,9 @@ public class WaveformManager : MonoBehaviour
 
         SongTimelineManager.TimeChanged += ChangeWaveformSegment; // when the time is changed, update the points displayed
         DisplayChanged += GenerateWaveformPoints; // when local properties are changed, update the display
-        
-        rt.pivot = boundaryReference.GetComponent<RectTransform>().pivot;
+
+        var boundsRectTransform = boundaryReference.GetComponent<RectTransform>();
+        rt.pivot = boundsRectTransform.pivot;
         rtHeight = rt.rect.height;
 
         CurrentWaveform = ChartMetadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default

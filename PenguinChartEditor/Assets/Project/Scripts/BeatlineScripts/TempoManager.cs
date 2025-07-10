@@ -2,11 +2,13 @@ using System.Linq;
 using UnityEngine;
 
 public class TempoManager : MonoBehaviour
-{  
+{
+    static RectTransform boundaryReference;
     void Awake()
     {
         // set up events so that beatlines can update whenever anything changes
         WaveformManager.DisplayChanged += UpdateBeatlines;
+        boundaryReference = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
     }
     
     /// <summary>
@@ -14,8 +16,8 @@ public class TempoManager : MonoBehaviour
     /// </summary>
     public static void UpdateBeatlines()
     {
+        Debug.Log($"{Screen.height}, {boundaryReference.rect.height}");
         WaveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
-
         int currentBeatline = 0;
         // Generate the division and half-division beatlines
         for (
@@ -31,7 +33,7 @@ public class TempoManager : MonoBehaviour
 
             workedBeatline.CheckForEvents();
 
-            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown); 
+            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown, boundaryReference.rect.height); 
 
             // Needed to generate correct thickness
             workedBeatline.Type = TimeSignature.CalculateBeatlineType(currentTick);
@@ -53,7 +55,7 @@ public class TempoManager : MonoBehaviour
 
             workedBeatline.CheckForEvents();
 
-            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(tick) - startTime)/timeShown); 
+            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(tick) - startTime)/timeShown, boundaryReference.rect.height); 
 
             workedBeatline.Type = Beatline.BeatlineType.none;
 

@@ -90,10 +90,10 @@ public class Beatline : MonoBehaviour
     /// Update the position of the beatline to a specified proportion up the screen.
     /// </summary>
     /// <param name="percentOfScreen">The percent of the screen that should exist between the bottom and the beatline.</param>
-    public void UpdateBeatlinePosition(double percentOfScreen)
+    public void UpdateBeatlinePosition(double percentOfScreen, float screenHeight)
     {
         // use screen ref to calculate percent of screen -> scale is 1:1 in the line renderer (scale must be 1, 1, 1)
-        yScreenProportion = (float)(percentOfScreen * Screen.height);
+        yScreenProportion = (float)(percentOfScreen * screenHeight);
 
         Vector3[] newPos = new Vector3[2];
         newPos[0] = new Vector2(line.GetPosition(0).x, (float)yScreenProportion);

@@ -10,6 +10,7 @@ using UnityEngine.UI;
 public class BeatlinePreviewer : Beatline
 {
     [SerializeField] GraphicRaycaster overlayUIRaycaster;
+    [SerializeField] RectTransform boundaryReference;
 
     public static int currentPreviewTick;
 
@@ -103,7 +104,7 @@ public class BeatlinePreviewer : Beatline
 
         // store what time the preview is at so that adding an event is merely inserting the preview's current position into the dictionary
         timestamp = BPM.ConvertTickTimeToSeconds(Tick);
-        UpdateBeatlinePosition((timestamp - startTime) / timeShown);
+        UpdateBeatlinePosition((timestamp - startTime) / timeShown, boundaryReference.rect.height);
 
         // store the current previewed Tick for copy/pasting selections from the preview onward
         currentPreviewTick = Tick;

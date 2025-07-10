@@ -182,7 +182,6 @@ MonoBehaviour:
   lineRendererMain: {fileID: 33159348}
   lineRendererMirror: {fileID: 1675851788}
   rt: {fileID: 33159344}
-  boundaryReference: {fileID: 1489170078}
 --- !u!120 &33159348
 LineRenderer:
   serializedVersion: 2
@@ -7372,6 +7371,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   strikelineRt: {fileID: 1368999640}
+  boundaryReference: {fileID: 1489170079}
 --- !u!1 &1369755911
 GameObject:
   m_ObjectHideFlags: 0
@@ -10916,6 +10916,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BeatlinePreviewer
       objectReference: {fileID: 0}
+    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
+      propertyPath: boundaryReference
+      value: 
+      objectReference: {fileID: 1489170079}
     - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
       propertyPath: overlayUIRaycaster
       value: 
