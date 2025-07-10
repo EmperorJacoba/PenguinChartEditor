@@ -122,7 +122,7 @@ public class Delete<DataType> : IEditAction<DataType>
         {
             foreach (var tick in selectedEvents)
             {
-                if (tick != 0)
+                if (tick != 0 && eventSetReference.ContainsKey(tick))
                 {
                     DataType data;
                     eventSetReference.Remove(tick, out data);
@@ -200,6 +200,49 @@ public class Create<DataType> : IEditAction<DataType>
         }
     }
 }
+
+public class Move<DataType> : IEditAction<DataType>
+{
+    public SortedDictionary<int, DataType> SaveData { get; set; } = new();
+    SortedDictionary<int, DataType> eventSetReference;
+    Create<DataType> createAction;
+    Delete<DataType> deleteAction;
+
+    public Move(SortedDictionary<int, DataType> targetEventSet)
+    {
+        eventSetReference = targetEventSet;
+        createAction = new(targetEventSet);
+        deleteAction = new(targetEventSet);
+    }
+
+    public bool Execute(int targetTick, int destinationTick, HashSet<int> selectedEvents)
+    {
+        var copiedData = eventSetReference[targetTick];
+        if (eventSetReference.ContainsKey(destinationTick)) SaveData.Add(destinationTick, eventSetReference[destinationTick]);
+        HashSet<int> ticksToWipe = new()
+        {
+            targetTick,
+            destinationTick
+        };
+
+        deleteAction.Execute(ticksToWipe);
+        createAction.Execute(destinationTick, copiedData, selectedEvents);
+
+        return true;
+    }
+
+    public void Undo()
+    {
+        createAction.Undo();
+        foreach (var tick in SaveData) // undo overwrite in case overwrite occurs
+        {
+            eventSetReference.Add(tick.Key, tick.Value);
+        }
+        deleteAction.Undo();
+    }
+}
+// need better solution over passing in a selected events set...also need master selected events dictionary
+    // BPM/TS structs inherit from IEventData interface for value tagging?
 // Each command has data that explains how to undo itself
 // When command is executed, add that command to an array of commands, and have a function that calls the undo on whatever command is next in the array of commands when undo is clicked
 // 
