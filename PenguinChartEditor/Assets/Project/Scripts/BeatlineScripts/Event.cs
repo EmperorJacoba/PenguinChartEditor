@@ -33,6 +33,7 @@ public interface IEvent<DataType>
 
     void HandlePointerDown(BaseEventData baseEventData);
     void HandlePointerUp(BaseEventData baseEventData);
+    void HandleDragEvent(BaseEventData baseEventData);
 
     SortedDictionary<int, DataType> GetEventClipboard();
     
@@ -48,6 +49,7 @@ public interface IEvent<DataType>
 
 }
 
+[RequireComponent(typeof(EventTrigger))]
 public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
 {
     protected InputMap inputMap;
@@ -55,6 +57,7 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
     public abstract HashSet<int> GetSelectedEvents();
     public abstract SortedDictionary<int, DataType> GetEventClipboard();
     public abstract SortedDictionary<int, DataType> GetEvents();
+    public abstract void HandleDragEvent(BaseEventData baseEventData);
     public abstract void SetEvents(SortedDictionary<int, DataType> newEvents);
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
     public bool DeletePrimed { get; set; } // future: make global across events 

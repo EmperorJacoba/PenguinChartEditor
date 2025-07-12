@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TimeSignature : Label<TSData>
 {
@@ -53,6 +54,11 @@ public class TimeSignature : Label<TSData>
     public override SortedDictionary<int, TSData> GetEventClipboard()
     {
         return tsClipboard;
+    }
+
+    public override void HandleDragEvent(BaseEventData baseEventData)
+    {
+        
     }
 
     SortedDictionary<int, TSData> tsClipboard = new();

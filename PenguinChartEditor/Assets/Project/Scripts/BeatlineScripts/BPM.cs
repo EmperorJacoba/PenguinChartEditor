@@ -164,7 +164,7 @@ public class BPM : Label<BPMData>
         return bpmAsFloat;
     }
 
-    public void HandleDragEvent(BaseEventData data)
+    public override void HandleDragEvent(BaseEventData data)
     {
         var clickdata = (PointerEventData)data;
 
