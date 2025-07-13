@@ -27,11 +27,6 @@ public class TimeSignature : Label<TSData>
         return Events;
     }
 
-    public override HashSet<int> GetSelectedEvents()
-    {
-        return SelectedTSEvents;
-    }
-
     public override string ConvertDataToPreviewString()
     {
         return $"{Events[Tick].Numerator} / {Events[Tick].Denominator}";
@@ -50,10 +45,6 @@ public class TimeSignature : Label<TSData>
             inputMap.Charting.Cut.performed += x => CutSelection();
             selectionActionsEnabled = true;
         }
-    }
-    public override SortedDictionary<int, TSData> GetEventClipboard()
-    {
-        return tsClipboard;
     }
 
     public override void HandleDragEvent(BaseEventData baseEventData)

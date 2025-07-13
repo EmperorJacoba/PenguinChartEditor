@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SelectionManager : MonoBehaviour
 {
-    public SortedDictionary<int, IEventData> clipboard;
-    public SortedDictionary<int, IEventData> selection;
-    
+    public static SortedDictionary<int, HashSet<IEventData>> clipboard = new();
+    public static SortedDictionary<int, HashSet<IEventData>> selection = new();
+
 }

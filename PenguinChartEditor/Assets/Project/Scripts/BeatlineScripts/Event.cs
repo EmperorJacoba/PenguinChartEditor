@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using UnityEditor;
 
 public interface IEvent<DataType>
 {
@@ -35,10 +36,6 @@ public interface IEvent<DataType>
     void HandlePointerUp(BaseEventData baseEventData);
     void HandleDragEvent(BaseEventData baseEventData);
 
-    SortedDictionary<int, DataType> GetEventClipboard();
-    
-    HashSet<int> GetSelectedEvents();
-
     void CopySelection();
     void PasteSelection();
     void DeleteSelection();
@@ -50,29 +47,26 @@ public interface IEvent<DataType>
 }
 
 [RequireComponent(typeof(EventTrigger))]
-public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
+public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 {
     protected InputMap inputMap;
     public int Tick { get; set; }
-    public abstract HashSet<int> GetSelectedEvents();
-    public abstract SortedDictionary<int, DataType> GetEventClipboard();
-    public abstract SortedDictionary<int, DataType> GetEvents();
+    public abstract SortedDictionary<int, T> GetEvents();
     public abstract void HandleDragEvent(BaseEventData baseEventData);
-    public abstract void SetEvents(SortedDictionary<int, DataType> newEvents);
+    public abstract void SetEvents(SortedDictionary<int, T> newEvents);
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
     public bool DeletePrimed { get; set; } // future: make global across events 
 
     public void CopySelection()
     {
-        GetEventClipboard().Clear();
-        var copyAction = new Copy<DataType>(GetEvents());
-        copyAction.Execute(GetEventClipboard(), GetSelectedEvents());
+        var copyAction = new Copy<T>(GetEvents());
+        copyAction.Execute();
     }
 
     public virtual void PasteSelection()
     {
-        var pasteAction = new Paste<DataType>(GetEvents());
-        pasteAction.Execute(BeatlinePreviewer.currentPreviewTick, GetEventClipboard());
+        var pasteAction = new Paste<T>(GetEvents());
+        pasteAction.Execute(BeatlinePreviewer.currentPreviewTick);
         TempoManager.UpdateBeatlines();
 
         // paste currently crashes when paste zone exceeds the screen - fix
@@ -81,21 +75,21 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
 
     public virtual void CutSelection()
     {
-        var cutAction = new Cut<DataType>(GetEvents());
-        cutAction.Execute(GetEventClipboard(), GetSelectedEvents());
+        var cutAction = new Cut<T>(GetEvents());
+        cutAction.Execute();
     }
 
     public virtual void DeleteSelection()
     {
-        var deleteAction = new Delete<DataType>(GetEvents());
-        deleteAction.Execute(GetSelectedEvents());
+        var deleteAction = new Delete<T>(GetEvents());
+        deleteAction.Execute();
         TempoManager.UpdateBeatlines();
     }
 
-    public virtual void CreateEvent(int newTick, DataType newData)
+    public virtual void CreateEvent(int newTick, T newData)
     {
-        var createAction = new Create<DataType>(GetEvents());
-        createAction.Execute(newTick, newData, GetSelectedEvents());
+        var createAction = new Create<T>(GetEvents());
+        createAction.Execute(newTick, newData);
         TempoManager.UpdateBeatlines();
     }
 
@@ -115,54 +109,54 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
 
     public bool CheckForSelection()
     {
-        if (GetSelectedEvents().Contains(Tick)) return true;
+        if (CheckIfDataPresentInSelection(GetEvents())) return true;
         else return false;
     }
 
     public static int lastTickSelection;
-    /// <summary>
-    /// Calculate the event(s) to be selected based on the last click event.
-    /// </summary>
-    /// <param name="clickButton">PointerEventData.button</param>
-    /// <param name="targetSelectionSet">The selection hash set that contains this event type's selection data.</param>
-    /// <param name="targetEventSet">The keys of a sorted dictionary that holds event data (beatlines, TS, etc)</param>
     public void CalculateSelectionStatus(PointerEventData.InputButton clickButton)
     {
-        var selection = GetSelectedEvents();
-        List<int> targetEventSet = GetEvents().Keys.ToList();
+        var targetEventSet = GetEvents();
 
         // Goal is to follow standard selection functionality of most productivity programs
+
         if (clickButton != PointerEventData.InputButton.Left) return;
 
-        // Shift-click functionality
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            selection.Clear();
+            SelectionManager.selection.Clear();
 
             var minNum = Math.Min(lastTickSelection, Tick);
             var maxNum = Math.Max(lastTickSelection, Tick);
-            HashSet<int> selectedEvents = targetEventSet.Where(x => x <= maxNum && x >= minNum).ToHashSet();
-            selection.UnionWith(selectedEvents);
+
+            var selection = targetEventSet.Where(x => x.Key <= maxNum && x.Key >= minNum);
+
+            foreach (var @event in selection)
+            {
+                SelectionManager.selection.Add(@event.Key, new() { @event.Value });
+            }
         }
-        // Left control if item is already selected
-        else if (Input.GetKey(KeyCode.LeftControl) && selection.Contains(Tick))
+        else if (Input.GetKey(KeyCode.LeftControl) && CheckIfDataPresentInSelection(targetEventSet))
         {
-            selection.Remove(Tick);
-            return; // prevent lastTickSelection from being stored as an unselected number
+            SelectionManager.selection[Tick].Remove(targetEventSet[Tick]);
+            return;
         }
-        // Left control if item is not currently selected
         else if (Input.GetKey(KeyCode.LeftControl))
         {
-            selection.Add(Tick);
+            SelectionManager.selection[Tick].Add(targetEventSet[Tick]);
         }
-        // Regular click, no extra significant keybinds
         else
         {
-            selection.Clear();
-            selection.Add(Tick);
+            SelectionManager.selection.Clear();
+            SelectionManager.selection.Add(Tick, new() { targetEventSet[Tick] });
         }
-        // Record the last selection data for shift-click selection
-        lastTickSelection = Tick;
+    }
+
+    bool CheckIfDataPresentInSelection(SortedDictionary<int, T> targetEventSet)
+    {
+        if (!SelectionManager.selection.ContainsKey(Tick)) return false;
+        else if (SelectionManager.selection[Tick].Contains(targetEventSet[Tick])) return true;
+        return false;
     }
 
     public bool Visible

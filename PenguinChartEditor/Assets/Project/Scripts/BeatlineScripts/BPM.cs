@@ -17,11 +17,6 @@ public class BPM : Label<BPMData>
     /// </summary>
     public static SortedDictionary<int, BPMData> Events { get; set; } = new();
 
-    public override HashSet<int> GetSelectedEvents()
-    {
-        return SelectedBPMEvents;
-    }
-
     public override void SetEvents(SortedDictionary<int, BPMData> newEvents)
     {
         var breakKey = GetFirstVariableEvent(newEvents);
@@ -139,11 +134,6 @@ public class BPM : Label<BPMData>
     {
         RecalculateTempoEventDictionary();
         TempoManager.UpdateBeatlines();
-    }
-
-    public override SortedDictionary<int, BPMData> GetEventClipboard()
-    {
-        return bpmClipboard;
     }
 
     SortedDictionary<int, BPMData> bpmClipboard = new();

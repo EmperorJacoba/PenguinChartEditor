@@ -23,7 +23,7 @@ public interface ILabel
     public string ConvertDataToPreviewString();
 }
 
-public abstract class Label<DataType> : Event<DataType>, ILabel
+public abstract class Label<T> : Event<T>, ILabel where T : IEventData
 {
     [field: SerializeField] public GameObject LabelObject { get; set; }
     [field: SerializeField] public RectTransform LabelRectTransform { get; set; }
