@@ -143,19 +143,27 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         }
         else if (Input.GetKey(KeyCode.LeftControl))
         {
-            SelectionManager.selection[Tick].Add(targetEventSet[Tick]);
+            if (SelectionManager.selection.ContainsKey(Tick))
+            {
+                SelectionManager.selection[Tick].Add(targetEventSet[Tick]);
+            }
+            else
+            {
+                SelectionManager.selection.Add(Tick, new() { targetEventSet[Tick] });
+            }
         }
         else
         {
             SelectionManager.selection.Clear();
             SelectionManager.selection.Add(Tick, new() { targetEventSet[Tick] });
         }
+        lastTickSelection = Tick;
     }
 
     bool CheckIfDataPresentInSelection(SortedDictionary<int, T> targetEventSet)
     {
         if (!SelectionManager.selection.ContainsKey(Tick)) return false;
-        else if (SelectionManager.selection[Tick].Contains(targetEventSet[Tick])) return true;
+        else if (SelectionManager.selection[Tick].OfType<T>().Any()) return true;
         return false;
     }
 
