@@ -36,7 +36,6 @@ public interface IEvent<DataType>
     void HandlePointerUp(BaseEventData baseEventData);
     void HandleDragEvent(BaseEventData baseEventData);
 
-    void CopySelection();
     void PasteSelection();
     void DeleteSelection();
 
@@ -57,15 +56,9 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
     public bool DeletePrimed { get; set; } // future: make global across events 
 
-    public void CopySelection()
-    {
-        var copyAction = new Copy<T>(GetEvents());
-        copyAction.Execute();
-    }
-
     public virtual void PasteSelection()
     {
-        var pasteAction = new Paste<T>(GetEvents());
+        var pasteAction = new Paste();
         pasteAction.Execute(BeatlinePreviewer.currentPreviewTick);
         TempoManager.UpdateBeatlines();
 
@@ -75,13 +68,13 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public virtual void CutSelection()
     {
-        var cutAction = new Cut<T>(GetEvents());
+        var cutAction = new Cut();
         cutAction.Execute();
     }
 
     public virtual void DeleteSelection()
     {
-        var deleteAction = new Delete<T>(GetEvents());
+        var deleteAction = new Delete();
         deleteAction.Execute();
         TempoManager.UpdateBeatlines();
     }
@@ -109,7 +102,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public bool CheckForSelection()
     {
-        if (CheckIfDataPresentInSelection(GetEvents())) return true;
+        if (CheckIfDataPresentInSelection()) return true;
         else return false;
     }
 
@@ -136,7 +129,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
                 SelectionManager.selection.Add(@event.Key, new() { @event.Value });
             }
         }
-        else if (Input.GetKey(KeyCode.LeftControl) && CheckIfDataPresentInSelection(targetEventSet))
+        else if (Input.GetKey(KeyCode.LeftControl) && CheckIfDataPresentInSelection())
         {
             SelectionManager.selection[Tick].Remove(targetEventSet[Tick]);
             return;
@@ -160,7 +153,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         lastTickSelection = Tick;
     }
 
-    bool CheckIfDataPresentInSelection(SortedDictionary<int, T> targetEventSet)
+    bool CheckIfDataPresentInSelection()
     {
         if (!SelectionManager.selection.ContainsKey(Tick)) return false;
         else if (SelectionManager.selection[Tick].OfType<T>().Any()) return true;
@@ -196,4 +189,23 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             DeletePrimed = false;
         }
     }
+
+    public void TestDelete()
+    {
+        var x = EventMapper.testDictMapper[typeof(BPMData)];
+        x.Clear();
+        x.Add(0, new BPMData(100, 0));
+        TempoManager.UpdateBeatlines();
+    }
+}
+
+class EventMapper
+{
+    public static Dictionary<Type, IDictionary<int, IEventData>> testDictMapper = new()
+    {
+        [typeof(BPMData)] = (IDictionary<int, IEventData>)BPM.Events,
+        [typeof(TSData)] = (IDictionary<int, IEventData>)TimeSignature.Events
+    };
+
+
 }

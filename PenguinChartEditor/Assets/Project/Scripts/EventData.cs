@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// This interface serves to group event data (e.g BPMData) for functions like clipboards/selection/etc.
 /// </summary>
-public interface IEventData { }
+public interface IEventData {}
 
 public struct TSData : IEquatable<TSData>, IEventData
 {
@@ -35,6 +36,11 @@ public struct TSData : IEquatable<TSData>, IEventData
             hash *= 23 + Denominator.GetHashCode();
             return hash;
         }
+    }
+
+    public SortedDictionary<int, TSData> GetParentEventSet<T>()
+    {
+        return TimeSignature.Events;
     }
 }
 
@@ -84,6 +90,11 @@ public struct BPMData : IEquatable<BPMData>, IEventData
             return hash;
         }
     }
+
+    public SortedDictionary<int, BPMData> GetParentEventSet<T>()
+    {
+        return BPM.Events;
+    }
 }
 
 public struct SectionData : IEventData
@@ -94,5 +105,10 @@ public struct SectionData : IEventData
     {
         Text = text;
         Local = local;
+    }
+
+    public SortedDictionary<int, SectionData> GetParentEventSet<T>()
+    {
+        throw new NotImplementedException();
     }
 }
