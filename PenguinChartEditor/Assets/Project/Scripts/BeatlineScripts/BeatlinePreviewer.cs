@@ -84,7 +84,7 @@ public class BeatlinePreviewer : Beatline
         var TickInterval = ChartMetadata.ChartResolution / ((float)DivisionChanger.CurrentDivision / 4);
 
         // Calculate the cursor's Tick position in the context of the origin of the grid (last barline) 
-        var divisionBasisTick = cursorTickTime - TimeSignature.FindLastBarline(cursorTickTime);
+        var divisionBasisTick = cursorTickTime - TimeSignature.GetLastBarline(cursorTickTime);
 
         // Find how many Ticks off the cursor position is from the grid 
         var remainder = divisionBasisTick % TickInterval;
@@ -115,8 +115,8 @@ public class BeatlinePreviewer : Beatline
             bpmLabel.Visible = false;
             tsLabel.Visible = true;
 
-            var num = TimeSignature.Events[TimeSignature.FindLastTSEventTick(Tick)].Numerator;
-            var denom = TimeSignature.Events[TimeSignature.FindLastTSEventTick(Tick)].Denominator;
+            var num = TimeSignature.Events[TimeSignature.GetLastTSEventTick(Tick)].Numerator;
+            var denom = TimeSignature.Events[TimeSignature.GetLastTSEventTick(Tick)].Denominator;
             tsLabel.LabelText = $"{num} / {denom}";
             displayedTS = new(num, denom);
         }
@@ -124,7 +124,7 @@ public class BeatlinePreviewer : Beatline
         {
             bpmLabel.Visible = true;
             tsLabel.Visible = false;
-            bpmLabel.LabelText = BPM.Events[BPM.FindLastTempoEventTickInclusive(Tick)].BPMChange.ToString();
+            bpmLabel.LabelText = BPM.Events[BPM.GetLastTempoEventTickInclusive(Tick)].BPMChange.ToString();
         }
     }
 

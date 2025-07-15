@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -23,7 +20,7 @@ public interface ILabel
     public string ConvertDataToPreviewString();
 }
 
-public abstract class Label<DataType> : Event<DataType>, ILabel
+public abstract class Label<T> : Event<T>, ILabel
 {
     [field: SerializeField] public GameObject LabelObject { get; set; }
     [field: SerializeField] public RectTransform LabelRectTransform { get; set; }
@@ -45,7 +42,8 @@ public abstract class Label<DataType> : Event<DataType>, ILabel
 
     void Start()
     {
-        if (LabelEntryBox != null) LabelEntryBox.onEndEdit.AddListener(x => HandleManualEndEdit(x));
+        if (LabelEntryBox != null)
+            LabelEntryBox.onEndEdit.AddListener(x => HandleManualEndEdit(x));
     }
 
     public abstract void HandleManualEndEdit(string newVal);

@@ -6,10 +6,9 @@ using System.Linq;
 
 public class BPM : Label<BPMData>
 {
-    public static HashSet<int> SelectedBPMEvents { get; set; } = new();
-    static bool selectionActionsEnabled = false;
     const int SECONDS_PER_MINUTE = 60;
 
+    #region Event Sets
     /// <summary>
     /// Dictionary that contains tempo changes and corresponding tick time positions. 
     /// <para> Key = Tick-time position. Value = See BPMData struct</para>
@@ -17,9 +16,9 @@ public class BPM : Label<BPMData>
     /// </summary>
     public static SortedDictionary<int, BPMData> Events { get; set; } = new();
 
-    public override HashSet<int> GetSelectedEvents()
+    public override SortedDictionary<int, BPMData> GetEvents()
     {
-        return SelectedBPMEvents;
+        return Events;
     }
 
     public override void SetEvents(SortedDictionary<int, BPMData> newEvents)
@@ -30,21 +29,16 @@ public class BPM : Label<BPMData>
         // Safety check before recalculating dictionary
         // When pasting into dictionary, tick 0 might inherit data
         // from a pasted event that has a timestamp which is not 0.
-        // Since the broad paste function directly copies the data (including the timestamp)
-        // into the pasted ticks, tick 0 may have a timestamp that is not 0, even though tick 0 is always at time 0.
-        // For other events that inherit another event's timestamp, this is okay, because the event dictionary is recalculated
-        // from the LAST tick event before the paste, which overwrites the inaccurate timestamp.
-        // Tick 0 does not have this luxary. It is its own last tick event. Always. Thus, this must be cleaned before doing any calculations.
+        // Tick 0's timestamp is always 0
         if (Events[0].Timestamp != 0)
         {
             Events[0] = new BPMData(Events[0].BPMChange, 0);
         }
-        
+
         if (breakKey != -1)
         {
-            RecalculateTempoEventDictionary(FindLastTempoEventTickExclusive(breakKey));
+            RecalculateTempoEventDictionary(GetLastTempoEventTickExclusive(breakKey));
         }
-
     }
 
     public int GetFirstVariableEvent(SortedDictionary<int, BPMData> newData)
@@ -70,16 +64,27 @@ public class BPM : Label<BPMData>
         return -1; // No discrepency
     }
 
-    public override SortedDictionary<int, BPMData> GetEvents()
+    public static HashSet<int> SelectedBPMEvents { get; set; } = new();
+    public override HashSet<int> GetSelectedEvents()
     {
-        return Events;
+        return SelectedBPMEvents;
     }
 
-    public override string ConvertDataToPreviewString()
+    SortedDictionary<int, BPMData> bpmClipboard = new();
+    public override SortedDictionary<int, BPMData> GetEventClipboard()
     {
-        return $"{Events[Tick].BPMChange}";
+        return bpmClipboard;
     }
 
+    #endregion
+
+    #region Unity Functions
+
+    // This is currently a temporary solution
+    // to avoid multiple objects doing edit actions
+    // in response to the same trigger
+    // Move to dedicated script in future!
+    static bool selectionActionsEnabled = false;
     void Awake()
     {
         inputMap = new();
@@ -93,6 +98,27 @@ public class BPM : Label<BPMData>
             inputMap.Charting.Cut.performed += x => CutSelection();
             selectionActionsEnabled = true;
         }
+    }
+
+    #endregion
+
+    #region Event Handlers
+
+    public override void PasteSelection() => ExecuteWithRecalculate(base.PasteSelection);
+    public override void DeleteSelection() => ExecuteWithRecalculate(base.DeleteSelection);
+    public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
+    public override void CutSelection() => ExecuteWithRecalculate(base.CutSelection);
+
+    void ExecuteWithRecalculate(Action action)
+    {
+        action();
+        FinishEventAction();
+    }
+
+    void FinishEventAction()
+    {
+        RecalculateTempoEventDictionary();
+        TempoManager.UpdateBeatlines();
     }
 
     public override void HandleManualEndEdit(string newVal)
@@ -112,41 +138,19 @@ public class BPM : Label<BPMData>
         ConcludeManualEdit();
     }
 
-    public override void PasteSelection()
+    public override void HandleDragEvent(BaseEventData data)
     {
-        base.PasteSelection();
-        FinishEventAction();
+        var clickdata = (PointerEventData)data;
+
+        if (Tick == 0) return;
+        if (!Input.GetKey(KeyCode.LeftControl)) return;
+
+        ChangeBPMPositionFromDrag(clickdata.delta.y);
     }
 
-    public override void DeleteSelection()
-    {
-        base.DeleteSelection();
-        FinishEventAction();
-    }
+    #endregion
 
-    public override void CreateEvent(int newTick, BPMData newData)
-    {
-        base.CreateEvent(newTick, newData);
-        FinishEventAction();
-    }
-    public override void CutSelection()
-    {
-        base.CutSelection();
-        FinishEventAction();
-    }
-
-    void FinishEventAction()
-    {
-        RecalculateTempoEventDictionary();
-        TempoManager.UpdateBeatlines();
-    }
-
-    public override SortedDictionary<int, BPMData> GetEventClipboard()
-    {
-        return bpmClipboard;
-    }
-
-    SortedDictionary<int, BPMData> bpmClipboard = new();
+    #region Conversions
 
     /// <summary>
     /// Take a BPM string generated by user and turn it into a dictionary-safe float value
@@ -164,60 +168,51 @@ public class BPM : Label<BPMData>
         return bpmAsFloat;
     }
 
-    public override void HandleDragEvent(BaseEventData data)
+    public override string ConvertDataToPreviewString()
     {
-        var clickdata = (PointerEventData)data;
-
-        if (Tick == 0) return;
-        if (!Input.GetKey(KeyCode.LeftControl)) return;
-
-        ChangeBPMPositionFromDrag(clickdata.delta.y);
+        return $"{Events[Tick].BPMChange}";
     }
 
     /// <summary>
-    /// Change the data associated with a beatline event based on a click + drag from the user.
+    /// Take a number of seconds (in S.ms form - ex. 61.1 seconds) and convert it to MM:SS.mmm format (where 61.1 returns 01:01.100)
     /// </summary>
-    /// <param name="mouseDelta">The difference between the mouse on this frame versus the last frame.</param>
-    private void ChangeBPMPositionFromDrag(float mouseDelta)
+    /// <param name="position">The unformatted second count.</param>
+    /// <returns>The formatted MM:SS:mmm timestamp of the second position</returns>
+    public static string ConvertSecondsToTimestamp(double position)
     {
-        WaveformManager.GetCurrentDisplayedWaveformInfo(out var _, out var _, out var timeShown, out var _, out var _);
+        var minutes = Math.Floor(position / 60);
+        var secondsWithMS = position - minutes * 60;
+        var seconds = (int)Math.Floor(secondsWithMS);
+        var milliseconds = Math.Round(secondsWithMS - seconds, 3) * 1000;
 
-        var percentOfScreenMoved = mouseDelta / Screen.height; // CHECK THIS
-        var timeChange = percentOfScreenMoved * timeShown;
+        string minutesString = minutes.ToString();
+        if (minutes < 10)
+        {
+            minutesString = minutesString.PadLeft(minutesString.Length + 1, '0');
+        }
 
-        // Use exclusive function because this needs to find the tempo event before this beatline's tempo event.
-        // Inclusive would always return the same event, which causes 0/0 and thus NaN.
-        var lastBPMTick = FindLastTempoEventTickExclusive(Tick);
+        string secondsString = seconds.ToString();
+        if (seconds < 10)
+        {
+            secondsString = secondsString.PadLeft(2, '0');
+        }
 
-        var newTime = Events[Tick].Timestamp + (float)timeChange;
+        string millisecondsString = milliseconds.ToString();
+        if (millisecondsString.Length < 3)
+        {
+            millisecondsString = millisecondsString.PadRight(3, '0');
+        }
 
-        // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
-        // Calculate the new BPM based on the time change
-        float newBPS = ((Tick - lastBPMTick) / (float)ChartMetadata.ChartResolution) / (newTime - Events[lastBPMTick].Timestamp);
-        float newBPM = (float)Math.Round((newBPS * 60), 3);
-
-        if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
-
-        // Write new data: time changes for this beatline's tick, BPM changes for the last tick event.
-        Events[Tick] = new BPMData(Events[Tick].BPMChange, newTime);
-        Events[lastBPMTick] = new BPMData(newBPM, Events[lastBPMTick].Timestamp);
-
-        // Update rest of dictionary to account for the time change.
-        RecalculateTempoEventDictionary(Tick, (float)timeChange);
-
-        // Display the changes
-        TempoManager.UpdateBeatlines();
+        return minutesString + ":" + secondsString + "." + millisecondsString;
     }
+
     public static int ConvertSecondsToTickTime(float timestamp)
     {
-        if (timestamp < 0)
-        {
+        if (timestamp <= 0)
             return 0;
-        }
+
         else if (timestamp > PluginBassManager.SongLength)
-        {
             return SongTimelineManager.SongLengthTicks;
-        }
 
         // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
         var tempoTickTimeEvents = Events.Keys.ToList();
@@ -227,6 +222,7 @@ public class BPM : Label<BPMData>
         // which will return a bitwise complement of the index of the next highest timesecond value 
         // OR tempoTimeSecondEvents.Count if there are no more elements
         var index = tempoTimeSecondEvents.BinarySearch(timestamp);
+
         int lastTickEvent;
         if (index <= 0) // bitwise complement is negative or zero
         {
@@ -249,71 +245,53 @@ public class BPM : Label<BPMData>
         }
 
         // Rearranging of .chart format specification distance between two ticks - thanks, algebra class!
-        return Mathf.RoundToInt((ChartMetadata.ChartResolution * Events[lastTickEvent].BPMChange * (float)(timestamp - BPM.Events[lastTickEvent].Timestamp) / SECONDS_PER_MINUTE) + lastTickEvent);
-        // THIS WILL NOT RETURN A CORRECT VALUE IF THIS DOES NOT DO FLOATING POINT CALCULATIONS
+        return Mathf.RoundToInt((ChartMetadata.ChartResolution * Events[lastTickEvent].BPMChange * (float)(timestamp - Events[lastTickEvent].Timestamp) / SECONDS_PER_MINUTE) + lastTickEvent);
     }
-
 
     public static double ConvertTickTimeToSeconds(int ticktime)
     {
-        var lastTickEvent = FindLastTempoEventTickInclusive(ticktime);
+        var lastTickEvent = GetLastTempoEventTickInclusive(ticktime);
         // Formula from .chart format specifications
-        return ((ticktime - lastTickEvent) / (double)ChartMetadata.ChartResolution * SECONDS_PER_MINUTE / BPM.Events[lastTickEvent].BPMChange) + BPM.Events[lastTickEvent].Timestamp;
+        return ((ticktime - lastTickEvent) / (double)ChartMetadata.ChartResolution * SECONDS_PER_MINUTE / Events[lastTickEvent].BPMChange) + Events[lastTickEvent].Timestamp;
     }
 
-    /// <summary>
-    /// Find the last tempo event before a specified tick. Can return the passed in tick if an event exists at that position.
-    /// </summary>
-    /// <param name="currentTick"></param>
-    /// <returns>The tick-time timestamp of the previous tempo event.</returns>
-    public static int FindLastTempoEventTickInclusive(int currentTick)
-    {
-        var tickTimeKeys = Events.Keys.ToList();
+    #endregion
 
-        var index = tickTimeKeys.BinarySearch(currentTick);
-        if (index < 0) // bitwise complement is negative
-        {
-            // modify index if the found timestamp is at the end of the array (last tempo event)
-            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
-            // else just get the index proper 
-            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
-            return tickTimeKeys[index];
-        }
-        else
-        {
-            return tickTimeKeys[index];
-        }
-    }
+    #region Modifiers
 
     /// <summary>
-    /// Find the last tempo event before a specified tick. WILL NOT return the passed in tick if an event exists at that position, and will instead return the true last event.
+    /// Change the data associated with a beatline event based on a click + drag from the user.
     /// </summary>
-    /// <param name="currentTick"></param>
-    /// <returns></returns>
-    public static int FindLastTempoEventTickExclusive(int currentTick)
+    /// <param name="mouseDelta">The difference between the mouse on this frame versus the last frame.</param>
+    private void ChangeBPMPositionFromDrag(float mouseDelta)
     {
-        var tickTimeKeys = Events.Keys.ToList();
+        WaveformManager.GetCurrentDisplayedWaveformInfo(out var _, out var _, out var timeShown, out var _, out var _);
 
-        var index = tickTimeKeys.BinarySearch(currentTick);
-        if (index <= 0) // bitwise complement is negative
-        {
-            // modify index if the found timestamp is at the end of the array (last tempo event)
-            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
-            // else just get the index proper 
-            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
-            try
-            {
-                return tickTimeKeys[index];
-            }
-            catch
-            {
-                return tickTimeKeys[0]; // if ~index - 1 is -1, then the index should be itself
-            }
-        }
-        else
-        {
-            return tickTimeKeys[index - 1];
-        }
+        var percentOfScreenMoved = mouseDelta / Screen.height; // CHECK THIS
+        var timeChange = percentOfScreenMoved * timeShown;
+
+        // Use exclusive function because this needs to find the tempo event before this beatline's tempo event.
+        // Inclusive would always return the same event, which causes 0/0 and thus NaN.
+        var lastBPMTick = GetLastTempoEventTickExclusive(Tick);
+
+        var newTime = Events[Tick].Timestamp + (float)timeChange;
+
+        // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
+        // Calculate the new BPM based on the time change
+        float newBPS = ((Tick - lastBPMTick) / (float)ChartMetadata.ChartResolution) / (newTime - Events[lastBPMTick].Timestamp);
+        float newBPM = (float)Math.Round((newBPS * 60), 3);
+
+        if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
+
+        // Write new data: time changes for this beatline's tick, BPM changes for the last tick event.
+        Events[Tick] = new BPMData(Events[Tick].BPMChange, newTime);
+        Events[lastBPMTick] = new BPMData(newBPM, Events[lastBPMTick].Timestamp);
+
+        // Update rest of dictionary to account for the time change.
+        RecalculateTempoEventDictionary(Tick, (float)timeChange);
+
+        // Display the changes
+        TempoManager.UpdateBeatlines();
     }
 
     /// <summary>
@@ -377,84 +355,64 @@ public class BPM : Label<BPMData>
         Events = outputTempoEventsDict;
     }
 
+    #endregion
+
+    #region Getters
+
     /// <summary>
-    /// Take a number of seconds (in S.ms form - ex. 61.1 seconds) and convert it to MM:SS.mmm format (where 61.1 returns 01:01.100)
+    /// Find the last tempo event before a specified tick. Can return the passed in tick if an event exists at that position.
     /// </summary>
-    /// <param name="position">The unformatted second count.</param>
-    /// <returns>The formatted MM:SS:mmm timestamp of the second position</returns>
-    public static string ConvertSecondsToTimestamp(double position)
+    /// <param name="currentTick"></param>
+    /// <returns>The tick-time timestamp of the previous tempo event.</returns>
+    public static int GetLastTempoEventTickInclusive(int currentTick)
     {
-        var minutes = Math.Floor(position / 60);
-        var secondsWithMS = position - minutes * 60;
-        var seconds = (int)Math.Floor(secondsWithMS);
-        var milliseconds = Math.Round(secondsWithMS - seconds, 3) * 1000;
+        var tickTimeKeys = Events.Keys.ToList();
 
-        string minutesString = minutes.ToString();
-        if (minutes < 10)
+        var index = tickTimeKeys.BinarySearch(currentTick);
+        if (index < 0) // bitwise complement is negative
         {
-            minutesString = minutesString.PadLeft(minutesString.Length + 1, '0');
+            // modify index if the found timestamp is at the end of the array (last tempo event)
+            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
+            // else just get the index proper 
+            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+            return tickTimeKeys[index];
         }
-
-        string secondsString = seconds.ToString();
-        if (seconds < 10)
+        else
         {
-            secondsString = secondsString.PadLeft(2, '0');
-        }
-
-        string millisecondsString = milliseconds.ToString();
-        if (millisecondsString.Length < 3)
-        {
-            millisecondsString = millisecondsString.PadRight(3, '0');
-        }
-
-        return minutesString + ":" + secondsString + "." + millisecondsString;
-    }
-}
-
-public struct BPMData : IEquatable<BPMData>
-{
-    public float BPMChange;
-    public float Timestamp;
-
-    public BPMData(float bpm, float timestamp)
-    {
-        BPMChange = bpm;
-        Timestamp = timestamp;
-    }
-
-    public static bool operator !=(BPMData one, BPMData two)
-    {
-        return !one.Equals(two);
-    }
-
-    public static bool operator ==(BPMData one, BPMData two)
-    {
-        return one.Equals(two);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return obj is BPMData other && Equals(other);
-    }
-
-    public bool Equals(BPMData other)
-    {
-        return BPMChange == other.BPMChange && Timestamp == other.Timestamp;
-    }
-
-    public override string ToString()
-    {
-        return $"{BPMChange}, {Timestamp}";
-    }
-
-    public override int GetHashCode() // literally just doing this because VSCode is yelling at me
-    {
-        unchecked
-        {
-            int hash = 17;
-            hash *= 23 + BPMChange.GetHashCode();
-            hash *= 23 + Timestamp.GetHashCode();
-            return hash;
+            return tickTimeKeys[index];
         }
     }
+
+    /// <summary>
+    /// Find the last tempo event before a specified tick. WILL NOT return the passed in tick if an event exists at that position, and will instead return the true last event.
+    /// </summary>
+    /// <param name="currentTick"></param>
+    /// <returns></returns>
+    public static int GetLastTempoEventTickExclusive(int currentTick)
+    {
+        var tickTimeKeys = Events.Keys.ToList();
+
+        var index = tickTimeKeys.BinarySearch(currentTick);
+        if (index <= 0) // bitwise complement is negative
+        {
+            // modify index if the found timestamp is at the end of the array (last tempo event)
+            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
+            // else just get the index proper 
+            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+            try
+            {
+                return tickTimeKeys[index];
+            }
+            catch
+            {
+                return tickTimeKeys[0]; // if ~index - 1 is -1, then the index should be itself
+            }
+        }
+        else
+        {
+            return tickTimeKeys[index - 1];
+        }
+    }
+    
+    #endregion
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-public interface IEvent<DataType>
+public interface IEvent<T>
 {
     /// <summary>
     /// The tick-time timestamp that this event occurs at.
@@ -35,7 +35,7 @@ public interface IEvent<DataType>
     void HandlePointerUp(BaseEventData baseEventData);
     void HandleDragEvent(BaseEventData baseEventData);
 
-    SortedDictionary<int, DataType> GetEventClipboard();
+    SortedDictionary<int, T> GetEventClipboard();
     
     HashSet<int> GetSelectedEvents();
 
@@ -44,34 +44,34 @@ public interface IEvent<DataType>
     void DeleteSelection();
 
     // Get and set functions are required for common abstract functions (ex. copy/paste)
-    SortedDictionary<int, DataType> GetEvents();
-    void SetEvents(SortedDictionary<int, DataType> newEvents);
+    SortedDictionary<int, T> GetEvents();
+    void SetEvents(SortedDictionary<int, T> newEvents);
 
 }
 
 [RequireComponent(typeof(EventTrigger))]
-public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
+public abstract class Event<T> : MonoBehaviour, IEvent<T>
 {
     protected InputMap inputMap;
     public int Tick { get; set; }
     public abstract HashSet<int> GetSelectedEvents();
-    public abstract SortedDictionary<int, DataType> GetEventClipboard();
-    public abstract SortedDictionary<int, DataType> GetEvents();
+    public abstract SortedDictionary<int, T> GetEventClipboard();
+    public abstract SortedDictionary<int, T> GetEvents();
     public abstract void HandleDragEvent(BaseEventData baseEventData);
-    public abstract void SetEvents(SortedDictionary<int, DataType> newEvents);
+    public abstract void SetEvents(SortedDictionary<int, T> newEvents);
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
     public bool DeletePrimed { get; set; } // future: make global across events 
 
     public void CopySelection()
     {
         GetEventClipboard().Clear();
-        var copyAction = new Copy<DataType>(GetEvents());
+        var copyAction = new Copy<T>(GetEvents());
         copyAction.Execute(GetEventClipboard(), GetSelectedEvents());
     }
 
     public virtual void PasteSelection()
     {
-        var pasteAction = new Paste<DataType>(GetEvents());
+        var pasteAction = new Paste<T>(GetEvents());
         pasteAction.Execute(BeatlinePreviewer.currentPreviewTick, GetEventClipboard());
         TempoManager.UpdateBeatlines();
 
@@ -81,20 +81,20 @@ public abstract class Event<DataType> : MonoBehaviour, IEvent<DataType>
 
     public virtual void CutSelection()
     {
-        var cutAction = new Cut<DataType>(GetEvents());
+        var cutAction = new Cut<T>(GetEvents());
         cutAction.Execute(GetEventClipboard(), GetSelectedEvents());
     }
 
     public virtual void DeleteSelection()
     {
-        var deleteAction = new Delete<DataType>(GetEvents());
+        var deleteAction = new Delete<T>(GetEvents());
         deleteAction.Execute(GetSelectedEvents());
         TempoManager.UpdateBeatlines();
     }
 
-    public virtual void CreateEvent(int newTick, DataType newData)
+    public virtual void CreateEvent(int newTick, T newData)
     {
-        var createAction = new Create<DataType>(GetEvents());
+        var createAction = new Create<T>(GetEvents());
         createAction.Execute(newTick, newData, GetSelectedEvents());
         TempoManager.UpdateBeatlines();
     }
