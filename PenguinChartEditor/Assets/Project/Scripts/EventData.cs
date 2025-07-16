@@ -81,3 +81,15 @@ public struct TSData : IEquatable<TSData>, IEventData
         }
     }
 }
+
+public struct SectionData : IEventData
+{
+    public string Name;
+    public bool Local;
+
+    public SectionData(string name, bool local)
+    {
+        Name = name;
+        Local = local;
+    }
+}

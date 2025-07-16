@@ -134,7 +134,7 @@ public class BPM : Label<BPMData>
 
         RecalculateTempoEventDictionary(Tick);
 
-        BeatlinePreviewer.editMode = true;
+
         ConcludeManualEdit();
     }
 
@@ -328,7 +328,7 @@ public class BPM : Label<BPMData>
             outputTempoEventsDict.Add(tickEvents[i], new BPMData(Events[tickEvents[i]].BPMChange, (float)currentSongTime));
         }
 
-        BPM.Events = outputTempoEventsDict;
+        Events = outputTempoEventsDict;
     }
 
     public static void RecalculateTempoEventDictionary(int modifiedTick, float timeChange)

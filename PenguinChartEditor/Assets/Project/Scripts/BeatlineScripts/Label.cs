@@ -83,6 +83,7 @@ public abstract class Label<T> : Event<T>, ILabel
 
     public void ConcludeManualEdit()
     {
+        BeatlinePreviewer.editMode = true;
         DeactivateManualInput();
         TempoManager.UpdateBeatlines();
     }

@@ -71,7 +71,6 @@ public class TimeSignature : Label<TSData>
     {
         Events[Tick] = ProcessUnsafeTSString(newVal);
 
-        BeatlinePreviewer.editMode = true;
         ConcludeManualEdit();
     }
 

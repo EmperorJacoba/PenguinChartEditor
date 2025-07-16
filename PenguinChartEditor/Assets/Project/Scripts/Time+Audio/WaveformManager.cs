@@ -269,6 +269,7 @@ public class WaveformManager : MonoBehaviour
         return (startPoint, endPoint);
     }
 
+    // Note: This function is considerably faster than splitting this up into properties
     public static void GetCurrentDisplayedWaveformInfo(out int startTick, out int endTick, out double timeShown, out double startTime, out double endTime)
     {
         (startTime, endTime) = GetDisplayedAudio();
