@@ -134,7 +134,6 @@ public class BPM : Label<BPMData>
 
         RecalculateTempoEventDictionary(Tick);
 
-
         ConcludeManualEdit();
     }
 
@@ -369,18 +368,14 @@ public class BPM : Label<BPMData>
         var tickTimeKeys = Events.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
-        if (index < 0) // bitwise complement is negative
-        {
-            // modify index if the found timestamp is at the end of the array (last tempo event)
-            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
-            // else just get the index proper 
-            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+
+        if (index >= 0) return tickTimeKeys[index]; // bitwise complement is negative
+        
+        // modify index if the found timestamp is at the end of the array (last tempo event)
+        if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
+        // else just get the index proper 
+        else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
             return tickTimeKeys[index];
-        }
-        else
-        {
-            return tickTimeKeys[index];
-        }
     }
 
     /// <summary>
@@ -393,24 +388,21 @@ public class BPM : Label<BPMData>
         var tickTimeKeys = Events.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
-        if (index <= 0) // bitwise complement is negative
+
+        // bitwise complement is negative
+        if (index > 0) return tickTimeKeys[index - 1];
+
+        // modify index if the found timestamp is at the end of the array (last tempo event)
+        if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
+        // else just get the index proper 
+        else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+        try
         {
-            // modify index if the found timestamp is at the end of the array (last tempo event)
-            if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
-            // else just get the index proper 
-            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
-            try
-            {
-                return tickTimeKeys[index];
-            }
-            catch
-            {
-                return tickTimeKeys[0]; // if ~index - 1 is -1, then the index should be itself
-            }
+            return tickTimeKeys[index];
         }
-        else
+        catch
         {
-            return tickTimeKeys[index - 1];
+            return tickTimeKeys[0]; // if ~index - 1 is -1, then the index should be itself
         }
     }
     

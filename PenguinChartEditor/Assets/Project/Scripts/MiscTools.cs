@@ -4,7 +4,4 @@ public static class MiscTools
     {
         return char.ToUpper(name[0]) + name.Substring(1); 
     }
-
-
-
 }

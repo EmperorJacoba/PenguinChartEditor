@@ -109,7 +109,7 @@ public class TimeSignature : Label<TSData>
     public static float CalculateDivision(int tick)
     {
         int tsTick = GetLastTSEventTick(tick);
-        return (float)TimeSignature.Events[tsTick].Denominator / 4;
+        return (float)Events[tsTick].Denominator / 4;
     }
 
     public static int IncreaseByHalfDivision(int tick)

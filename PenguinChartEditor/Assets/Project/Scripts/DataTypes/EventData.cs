@@ -82,14 +82,12 @@ public struct TSData : IEquatable<TSData>, IEventData
     }
 }
 
-public struct SectionData : IEventData
+public struct BookmarkData : IEventData
 {
     public string Name;
-    public bool Local;
 
-    public SectionData(string name, bool local)
+    public BookmarkData(string name)
     {
         Name = name;
-        Local = local;
     }
 }
