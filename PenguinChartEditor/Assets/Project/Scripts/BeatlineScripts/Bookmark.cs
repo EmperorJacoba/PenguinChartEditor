@@ -41,7 +41,7 @@ public class Bookmark : Label<BookmarkData>
         ConcludeManualEdit();
     }
 
-    public override void HandleDragEvent(BaseEventData baseEventData)
+    public override void OnDrag(PointerEventData baseEventData)
     {
         
     }

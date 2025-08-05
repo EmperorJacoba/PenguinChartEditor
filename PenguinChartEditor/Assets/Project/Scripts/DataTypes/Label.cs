@@ -14,7 +14,6 @@ public interface ILabel
     public void HandleManualEndEdit(string newVal);
     public void DeactivateManualInput();
     public void ActivateManualInput();
-    public void HandleLabelClick(BaseEventData data);
     public void ConcludeManualEdit();
     public void HandleEntryBoxDeselect();
     public string ConvertDataToPreviewString();
@@ -64,23 +63,6 @@ public abstract class Label<T> : Event<T>, ILabel
         SongTimelineManager.EnableChartingInputMap();
     }
 
-    public void HandleLabelClick(BaseEventData data)
-    {
-        var clickdata = (PointerEventData)data;
-
-        CalculateSelectionStatus(clickdata.button);
-
-        // Double click functionality for manual entry of beatline number
-        if (!Input.GetKey(KeyCode.LeftControl) && clickdata.button == PointerEventData.InputButton.Left && clickdata.clickCount == 2)
-        {
-            ActivateManualInput();
-        }
-
-        if (DeletePrimed && clickdata.button == PointerEventData.InputButton.Left) DeleteSelection();
-
-        TempoManager.UpdateBeatlines();
-    }
-
     public void ConcludeManualEdit()
     {
         BeatlinePreviewer.editMode = true;
@@ -91,5 +73,17 @@ public abstract class Label<T> : Event<T>, ILabel
     public void HandleEntryBoxDeselect()
     {
         ConcludeManualEdit();
+    }
+
+    public override void OnPointerClick(PointerEventData data)
+    {
+        base.OnPointerClick(data);
+
+        // Double click functionality for manual entry of beatline number
+        if (!Input.GetKey(KeyCode.LeftControl) && data.button == PointerEventData.InputButton.Left && data.clickCount == 2)
+        {
+            ActivateManualInput();
+            TempoManager.UpdateBeatlines();
+        }
     }
 }

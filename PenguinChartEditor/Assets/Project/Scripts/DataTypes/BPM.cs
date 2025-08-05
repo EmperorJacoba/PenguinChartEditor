@@ -112,11 +112,6 @@ public class BPM : Label<BPMData>
     void ExecuteWithRecalculate(Action action)
     {
         action();
-        FinishEventAction();
-    }
-
-    void FinishEventAction()
-    {
         RecalculateTempoEventDictionary();
         TempoManager.UpdateBeatlines();
     }
@@ -137,14 +132,15 @@ public class BPM : Label<BPMData>
         ConcludeManualEdit();
     }
 
-    public override void HandleDragEvent(BaseEventData data)
+    public override void OnDrag(PointerEventData data)
     {
         var clickdata = (PointerEventData)data;
 
         if (Tick == 0) return;
-        if (!Input.GetKey(KeyCode.LeftControl)) return;
-
-        ChangeBPMPositionFromDrag(clickdata.delta.y);
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            ChangeBPMPositionFromDrag(clickdata.delta.y);
+        }
     }
 
     #endregion

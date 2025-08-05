@@ -62,7 +62,7 @@ public class TimeSignature : Label<TSData>
 
     #region Event Handlers
 
-    public override void HandleDragEvent(BaseEventData baseEventData)
+    public override void OnDrag(PointerEventData baseEventData)
     {
 
     }
