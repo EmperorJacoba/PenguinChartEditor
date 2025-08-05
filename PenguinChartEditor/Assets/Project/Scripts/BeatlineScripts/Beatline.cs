@@ -37,6 +37,8 @@ public class Beatline : MonoBehaviour
 
     [SerializeField] protected BPM bpmLabel;
     [SerializeField] protected TimeSignature tsLabel;
+    [SerializeField] protected Warning tsWarningAlert; // make own warning script in future, maybe have CreateNewWarning() for tooltips??
+    [SerializeField] protected RectTransform tsWarningAlertRectTransform;
 
     /// <summary>
     /// The line renderer attached to the beatline game object.
@@ -122,9 +124,13 @@ public class Beatline : MonoBehaviour
         {
             tsLabel.Visible = true;
             tsLabel.LabelText = tsLabel.ConvertDataToPreviewString();
+            
+            if (!TimeSignature.IsEventValid(Tick)) tsWarningAlert.InitializeWarning(Warning.WarningType.invalidTimeSignature);
+            else tsWarningAlert.DeactivateWarning();
         }
         else
         {
+            tsWarningAlert.Active = false;
             tsLabel.Visible = false;
         }
 
@@ -140,6 +146,7 @@ public class Beatline : MonoBehaviour
     {
         bpmLabel.transform.localPosition = new Vector3(bpmLabel.transform.localPosition.x, line.GetPosition(1).y - (bpmLabel.LabelRectTransform.rect.height / 2));
         tsLabel.transform.localPosition = new Vector3(tsLabel.transform.localPosition.x, line.GetPosition(0).y - (tsLabel.LabelRectTransform.rect.height / 2));
+        tsWarningAlert.transform.localPosition = new Vector3(tsWarningAlert.transform.localPosition.x, line.GetPosition(0).y - (tsWarningAlertRectTransform.rect.height / 2));
     }
 
     private void UpdateThickness(BeatlineType type)

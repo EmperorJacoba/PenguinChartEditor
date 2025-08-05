@@ -130,10 +130,22 @@ public class TimeSignature : Label<TSData>
     /// Calculate the type of barline a specified tick-time position should be.
     /// </summary>
     /// <param name="beatlineTickTimePos"></param>
+    /// <param name="inclusive">Use only if you want to calculate a predicted TS beatline, like when checking if the position of a TS event is on a barline based on its prior TS event.</param>
     /// <returns>The type of beatline at this tick.</returns>
-    public static Beatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos)
+    public static Beatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos, bool inclusive = true)
     {
-        var lastTSTickTimePos = GetLastTSEventTick(beatlineTickTimePos);
+        if (beatlineTickTimePos == 0) return Beatline.BeatlineType.barline;
+
+        int lastTSTickTimePos;
+        if (inclusive)
+        {
+            lastTSTickTimePos = GetLastTSEventTick(beatlineTickTimePos);
+        }
+        else
+        {
+            lastTSTickTimePos = GetLastTSEventTick(beatlineTickTimePos - 1);
+        }
+
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
 
         // if the difference is divisible by the # of first-division notes in a bar, it's a barline
@@ -240,6 +252,17 @@ public class TimeSignature : Label<TSData>
         int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
 
         return (int)(ts + numIntervals * tickInterval);
+    }
+
+    // Call in CheckForEvents
+    public static bool IsEventValid(int tick)
+    {
+        if (CalculateBeatlineType(tick, false) != Beatline.BeatlineType.barline)
+        {
+            return false;
+        }
+        else return true;
+        // Every time event is placed run this check for all future events and put alert on scrubber
     }
     
     #endregion
