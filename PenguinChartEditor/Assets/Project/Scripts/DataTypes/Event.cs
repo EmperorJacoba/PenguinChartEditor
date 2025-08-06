@@ -88,12 +88,16 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
 
     public virtual void OnBeginDrag(PointerEventData pointerEventData)
     {
-        // Pop selection data from dictionary
+        Debug.Log($"Beging");
+
+       // GetEventData().currentMoveAction = new(GetEventData().Events);
+        //GetEventData().currentMoveAction.BeginMove(GetEventData().MovingGhostSet, GetEventData().Selection);
     }
 
     public virtual void OnEndDrag(PointerEventData pointerEventData)
     {
-        // Create new move action
+        Debug.Log($"Ending");
+        // GetEventData().currentMoveAction.Execute(0, GetEventData().MovingGhostSet);
     }
 
     public virtual void OnDrag(PointerEventData pointerEventData)
@@ -101,13 +105,15 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
         // Have ghost of selection showing where the selection will go
     }
 
-    public virtual void OnPointerClick(PointerEventData data)
+    public virtual void OnPointerClick(PointerEventData pointerEventData)
     {
-        CalculateSelectionStatus(data.button);
+        Debug.Log($"Check running");
+        CalculateSelectionStatus(pointerEventData.button);
 
-        if (DeletePrimed && data.button == PointerEventData.InputButton.Left) DeleteSelection();
+        if (DeletePrimed && pointerEventData.button == PointerEventData.InputButton.Left) DeleteSelection();
 
         TempoManager.UpdateBeatlines();
+        Debug.Log($"{GetEventData().Selection.Count}");
     }
 
     public bool Selected
@@ -139,6 +145,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
     /// <param name="targetEventSet">The keys of a sorted dictionary that holds event data (beatlines, TS, etc)</param>
     public void CalculateSelectionStatus(PointerEventData.InputButton clickButton)
     {
+        Debug.Log($"clicked");
         var selection = GetEventData().Selection;
         List<int> targetEventSet = GetEventData().Events.Keys.ToList();
 
@@ -148,6 +155,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
         // Shift-click functionality
         if (Input.GetKey(KeyCode.LeftShift))
         {
+            Debug.Log($"lshift");
             selection.Clear();
 
             var minNum = Math.Min(lastTickSelection, Tick);
@@ -158,20 +166,24 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
         // Left control if item is already selected
         else if (Input.GetKey(KeyCode.LeftControl) && selection.Contains(Tick))
         {
+            Debug.Log($"lcontrol");
             selection.Remove(Tick);
             return; // prevent lastTickSelection from being stored as an unselected number
         }
         // Left control if item is not currently selected
         else if (Input.GetKey(KeyCode.LeftControl))
         {
+            Debug.Log($"lcontrol no delete");
             selection.Add(Tick);
         }
         // Regular click, no extra significant keybinds
         else
         {
+            Debug.Log($"reg");
             selection.Clear();
             selection.Add(Tick);
         }
+        Debug.Log($"exit");
         // Record the last selection data for shift-click selection
         lastTickSelection = Tick;
     }

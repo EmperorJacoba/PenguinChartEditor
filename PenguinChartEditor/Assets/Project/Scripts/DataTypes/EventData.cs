@@ -6,4 +6,6 @@ public class EventData<T>
     public SortedDictionary<int, T> Events { get; set; } = new();
     public HashSet<int> Selection { get; set; } = new();
     public SortedDictionary<int, T> Clipboard = new();
+    public SortedDictionary<int, T> MovingGhostSet = new();
+    public Move<T> currentMoveAction;
 }
