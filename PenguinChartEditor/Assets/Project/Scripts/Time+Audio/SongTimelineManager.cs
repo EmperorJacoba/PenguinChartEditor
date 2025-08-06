@@ -74,15 +74,15 @@ public class SongTimelineManager : MonoBehaviour
         inputMap.Charting.MiddleMouseClick.started += x => ChangeMiddleClick(true);
         inputMap.Charting.MiddleMouseClick.canceled += x => ChangeMiddleClick(false);
 
-        (BPM.Events, TimeSignature.Events) = ChartParser.GetSyncTrackEventDicts(ChartMetadata.ChartPath);
+        (BPM.EventData.Events, TimeSignature.EventData.Events) = ChartParser.GetSyncTrackEventDicts(ChartMetadata.ChartPath);
 
-        if (BPM.Events.Count == 0) // if there is no data to load in 
+        if (BPM.EventData.Events.Count == 0) // if there is no data to load in 
         {
-            BPM.Events.Add(0, new BPMData(120.0f, 0)); // add placeholder bpm
+            BPM.EventData.Events.Add(0, new BPMData(120.0f, 0)); // add placeholder bpm
         }
-        if (TimeSignature.Events.Count == 0)
+        if (TimeSignature.EventData.Events.Count == 0)
         {
-            TimeSignature.Events.Add(0, new TSData(4, 4));
+            TimeSignature.EventData.Events.Add(0, new TSData(4, 4));
         }
     }
 

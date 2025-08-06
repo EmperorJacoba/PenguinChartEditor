@@ -110,7 +110,7 @@ public class Beatline : MonoBehaviour
 
     public void CheckForEvents()
     {
-        if (BPM.Events.ContainsKey(Tick))
+        if (BPM.EventData.Events.ContainsKey(Tick))
         {
             bpmLabel.Visible = true;
             bpmLabel.LabelText = bpmLabel.ConvertDataToPreviewString();
@@ -120,11 +120,11 @@ public class Beatline : MonoBehaviour
             bpmLabel.Visible = false;
         }
 
-        if (TimeSignature.Events.ContainsKey(Tick))
+        if (TimeSignature.EventData.Events.ContainsKey(Tick))
         {
             tsLabel.Visible = true;
             tsLabel.LabelText = tsLabel.ConvertDataToPreviewString();
-            
+
             if (!TimeSignature.IsEventValid(Tick)) tsWarningAlert.InitializeWarning(Warning.WarningType.invalidTimeSignature);
             else tsWarningAlert.DeactivateWarning();
         }

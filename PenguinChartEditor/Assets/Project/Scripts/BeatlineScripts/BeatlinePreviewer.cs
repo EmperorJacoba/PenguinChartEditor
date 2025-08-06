@@ -115,8 +115,8 @@ public class BeatlinePreviewer : Beatline
             bpmLabel.Visible = false;
             tsLabel.Visible = true;
 
-            var num = TimeSignature.Events[TimeSignature.GetLastTSEventTick(Tick)].Numerator;
-            var denom = TimeSignature.Events[TimeSignature.GetLastTSEventTick(Tick)].Denominator;
+            var num = TimeSignature.EventData.Events[TimeSignature.GetLastTSEventTick(Tick)].Numerator;
+            var denom = TimeSignature.EventData.Events[TimeSignature.GetLastTSEventTick(Tick)].Denominator;
             tsLabel.LabelText = $"{num} / {denom}";
             displayedTS = new(num, denom);
         }
@@ -124,7 +124,7 @@ public class BeatlinePreviewer : Beatline
         {
             bpmLabel.Visible = true;
             tsLabel.Visible = false;
-            bpmLabel.LabelText = BPM.Events[BPM.GetLastTempoEventTickInclusive(Tick)].BPMChange.ToString();
+            bpmLabel.LabelText = BPM.EventData.Events[BPM.GetLastTempoEventTickInclusive(Tick)].BPMChange.ToString();
         }
     }
 

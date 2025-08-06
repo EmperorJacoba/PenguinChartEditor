@@ -4,39 +4,22 @@ using UnityEngine.EventSystems;
 
 public class Bookmark : Label<BookmarkData>
 {
-    // Move events to larger local section class
-    public static SortedDictionary<int, BookmarkData> Events { get; set; } = new();
-
-    public override SortedDictionary<int, BookmarkData> GetEvents()
-    {
-        return Events;
-    }
+    public static EventData<BookmarkData> EventData = new();
+    public override EventData<BookmarkData> GetEventData() => EventData;
 
     public override void SetEvents(SortedDictionary<int, BookmarkData> newEvents)
     {
-        Events = newEvents;
-    }
-
-    public static HashSet<int> SelectedBookmarkEvents { get; set; } = new();
-    public override HashSet<int> GetSelectedEvents()
-    {
-        return SelectedBookmarkEvents;
-    }
-
-    SortedDictionary<int, BookmarkData> BookmarkClipboard = new();
-    public override SortedDictionary<int, BookmarkData> GetEventClipboard()
-    {
-        return BookmarkClipboard;
+        EventData.Events = newEvents;
     }
 
     public override string ConvertDataToPreviewString()
     {
-        return Events[Tick].Name;
+        return EventData.Events[Tick].Name;
     }
 
     public override void HandleManualEndEdit(string newVal)
     {
-        Events[Tick] = new BookmarkData(newVal);
+        EventData.Events[Tick] = new BookmarkData(newVal);
 
         ConcludeManualEdit();
     }

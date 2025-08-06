@@ -31,16 +31,11 @@ public interface IEvent<T> : IBeginDragHandler, IEndDragHandler, IDragHandler, I
     /// </summary>
     public bool DeletePrimed { get; set; }
 
-    SortedDictionary<int, T> GetEventClipboard();
-    
-    HashSet<int> GetSelectedEvents();
-
     void CopySelection();
     void PasteSelection();
     void DeleteSelection();
 
-    // Get and set functions are required for common abstract functions (ex. copy/paste)
-    SortedDictionary<int, T> GetEvents();
+    EventData<T> GetEventData();
     void SetEvents(SortedDictionary<int, T> newEvents);
 
 }
@@ -49,24 +44,22 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
 {
     protected InputMap inputMap;
     public int Tick { get; set; }
-    public abstract HashSet<int> GetSelectedEvents();
-    public abstract SortedDictionary<int, T> GetEventClipboard();
-    public abstract SortedDictionary<int, T> GetEvents();
+    public abstract EventData<T> GetEventData();
     public abstract void SetEvents(SortedDictionary<int, T> newEvents);
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
     public bool DeletePrimed { get; set; } // future: make global across events 
 
     public void CopySelection()
     {
-        GetEventClipboard().Clear();
-        var copyAction = new Copy<T>(GetEvents());
-        copyAction.Execute(GetEventClipboard(), GetSelectedEvents());
+        GetEventData().Clipboard.Clear();
+        var copyAction = new Copy<T>(GetEventData().Events);
+        copyAction.Execute(GetEventData().Clipboard, GetEventData().Selection);
     }
 
     public virtual void PasteSelection()
     {
-        var pasteAction = new Paste<T>(GetEvents());
-        pasteAction.Execute(BeatlinePreviewer.currentPreviewTick, GetEventClipboard());
+        var pasteAction = new Paste<T>(GetEventData().Events);
+        pasteAction.Execute(BeatlinePreviewer.currentPreviewTick, GetEventData().Clipboard);
         TempoManager.UpdateBeatlines();
 
         // paste currently crashes when paste zone exceeds the screen - fix
@@ -75,21 +68,21 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
 
     public virtual void CutSelection()
     {
-        var cutAction = new Cut<T>(GetEvents());
-        cutAction.Execute(GetEventClipboard(), GetSelectedEvents());
+        var cutAction = new Cut<T>(GetEventData().Events);
+        cutAction.Execute(GetEventData().Clipboard, GetEventData().Selection);
     }
 
     public virtual void DeleteSelection()
     {
-        var deleteAction = new Delete<T>(GetEvents());
-        deleteAction.Execute(GetSelectedEvents());
+        var deleteAction = new Delete<T>(GetEventData().Events);
+        deleteAction.Execute(GetEventData().Selection);
         TempoManager.UpdateBeatlines();
     }
 
     public virtual void CreateEvent(int newTick, T newData)
     {
-        var createAction = new Create<T>(GetEvents());
-        createAction.Execute(newTick, newData, GetSelectedEvents());
+        var createAction = new Create<T>(GetEventData().Events);
+        createAction.Execute(newTick, newData, GetEventData().Selection);
         TempoManager.UpdateBeatlines();
     }
 
@@ -133,7 +126,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
 
     public bool CheckForSelection()
     {
-        if (GetSelectedEvents().Contains(Tick)) return true;
+        if (GetEventData().Selection.Contains(Tick)) return true;
         else return false;
     }
 
@@ -146,8 +139,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
     /// <param name="targetEventSet">The keys of a sorted dictionary that holds event data (beatlines, TS, etc)</param>
     public void CalculateSelectionStatus(PointerEventData.InputButton clickButton)
     {
-        var selection = GetSelectedEvents();
-        List<int> targetEventSet = GetEvents().Keys.ToList();
+        var selection = GetEventData().Selection;
+        List<int> targetEventSet = GetEventData().Events.Keys.ToList();
 
         // Goal is to follow standard selection functionality of most productivity programs
         if (clickButton != PointerEventData.InputButton.Left) return;

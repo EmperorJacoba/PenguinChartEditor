@@ -9,30 +9,22 @@ public class BPM : Label<BPMData>
     const int SECONDS_PER_MINUTE = 60;
 
     #region Event Sets
-    /// <summary>
-    /// Dictionary that contains tempo changes and corresponding tick time positions. 
-    /// <para> Key = Tick-time position. Value = See BPMData struct</para>
-    /// <remarks>When writing to file, multiply BPMChange value by 100 to get proper .chart format (where example would show as 192 = B 102201)</remarks>
-    /// </summary>
-    public static SortedDictionary<int, BPMData> Events { get; set; } = new();
 
-    public override SortedDictionary<int, BPMData> GetEvents()
-    {
-        return Events;
-    }
+    public static EventData<BPMData> EventData = new();
+    public override EventData<BPMData> GetEventData() => EventData;
 
     public override void SetEvents(SortedDictionary<int, BPMData> newEvents)
     {
         var breakKey = GetFirstVariableEvent(newEvents);
-        Events = newEvents;
+        EventData.Events = newEvents;
 
         // Safety check before recalculating dictionary
         // When pasting into dictionary, tick 0 might inherit data
         // from a pasted event that has a timestamp which is not 0.
         // Tick 0's timestamp is always 0
-        if (Events[0].Timestamp != 0)
+        if (EventData.Events[0].Timestamp != 0)
         {
-            Events[0] = new BPMData(Events[0].BPMChange, 0);
+            EventData.Events[0] = new BPMData(EventData.Events[0].BPMChange, 0);
         }
 
         if (breakKey != -1)
@@ -43,7 +35,7 @@ public class BPM : Label<BPMData>
 
     public int GetFirstVariableEvent(SortedDictionary<int, BPMData> newData)
     {
-        var currentKeys = Events.Keys.ToHashSet();
+        var currentKeys = EventData.Events.Keys.ToHashSet();
         currentKeys.UnionWith(newData.Keys.ToHashSet());
         currentKeys.OrderBy(x => x);
 
@@ -51,7 +43,7 @@ public class BPM : Label<BPMData>
         {
             try
             {
-                if (newData[key] != Events[key]) // Data has been edited at this point
+                if (newData[key] != EventData.Events[key]) // Data has been edited at this point
                 {
                     return key;
                 }
@@ -62,18 +54,6 @@ public class BPM : Label<BPMData>
             }
         }
         return -1; // No discrepency
-    }
-
-    public static HashSet<int> SelectedBPMEvents { get; set; } = new();
-    public override HashSet<int> GetSelectedEvents()
-    {
-        return SelectedBPMEvents;
-    }
-
-    SortedDictionary<int, BPMData> bpmClipboard = new();
-    public override SortedDictionary<int, BPMData> GetEventClipboard()
-    {
-        return bpmClipboard;
     }
 
     #endregion
@@ -120,7 +100,7 @@ public class BPM : Label<BPMData>
     {
         try
         {
-            Events[Tick] = new BPMData(ProcessUnsafeBPMString(newVal), Events[Tick].Timestamp);
+            EventData.Events[Tick] = new BPMData(ProcessUnsafeBPMString(newVal), EventData.Events[Tick].Timestamp);
         }
         catch
         {
@@ -157,7 +137,7 @@ public class BPM : Label<BPMData>
         var bpmAsFloat = float.Parse(newBPM);
         if (bpmAsFloat == 0 || bpmAsFloat > 1000.0f)
         {
-            return Events[Tick].BPMChange;
+            return EventData.Events[Tick].BPMChange;
         }
         bpmAsFloat = (float)Math.Round(bpmAsFloat, 3);
         return bpmAsFloat;
@@ -165,7 +145,7 @@ public class BPM : Label<BPMData>
 
     public override string ConvertDataToPreviewString()
     {
-        return $"{Events[Tick].BPMChange}";
+        return $"{EventData.Events[Tick].BPMChange}";
     }
 
     /// <summary>
@@ -210,8 +190,8 @@ public class BPM : Label<BPMData>
             return SongTimelineManager.SongLengthTicks;
 
         // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
-        var tempoTickTimeEvents = Events.Keys.ToList();
-        var tempoTimeSecondEvents = Events.Values.Select(x => x.Timestamp).ToList();
+        var tempoTickTimeEvents = EventData.Events.Keys.ToList();
+        var tempoTimeSecondEvents = EventData.Events.Values.Select(x => x.Timestamp).ToList();
 
         // Attempt a binary search for the current timestamp, 
         // which will return a bitwise complement of the index of the next highest timesecond value 
@@ -240,14 +220,14 @@ public class BPM : Label<BPMData>
         }
 
         // Rearranging of .chart format specification distance between two ticks - thanks, algebra class!
-        return Mathf.RoundToInt((ChartMetadata.ChartResolution * Events[lastTickEvent].BPMChange * (float)(timestamp - Events[lastTickEvent].Timestamp) / SECONDS_PER_MINUTE) + lastTickEvent);
+        return Mathf.RoundToInt((ChartMetadata.ChartResolution * EventData.Events[lastTickEvent].BPMChange * (float)(timestamp - EventData.Events[lastTickEvent].Timestamp) / SECONDS_PER_MINUTE) + lastTickEvent);
     }
 
     public static double ConvertTickTimeToSeconds(int ticktime)
     {
         var lastTickEvent = GetLastTempoEventTickInclusive(ticktime);
         // Formula from .chart format specifications
-        return ((ticktime - lastTickEvent) / (double)ChartMetadata.ChartResolution * SECONDS_PER_MINUTE / Events[lastTickEvent].BPMChange) + Events[lastTickEvent].Timestamp;
+        return ((ticktime - lastTickEvent) / (double)ChartMetadata.ChartResolution * SECONDS_PER_MINUTE / EventData.Events[lastTickEvent].BPMChange) + EventData.Events[lastTickEvent].Timestamp;
     }
 
     #endregion
@@ -269,18 +249,18 @@ public class BPM : Label<BPMData>
         // Inclusive would always return the same event, which causes 0/0 and thus NaN.
         var lastBPMTick = GetLastTempoEventTickExclusive(Tick);
 
-        var newTime = Events[Tick].Timestamp + (float)timeChange;
+        var newTime = EventData.Events[Tick].Timestamp + (float)timeChange;
 
         // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
         // Calculate the new BPM based on the time change
-        float newBPS = ((Tick - lastBPMTick) / (float)ChartMetadata.ChartResolution) / (newTime - Events[lastBPMTick].Timestamp);
+        float newBPS = ((Tick - lastBPMTick) / (float)ChartMetadata.ChartResolution) / (newTime - EventData.Events[lastBPMTick].Timestamp);
         float newBPM = (float)Math.Round((newBPS * 60), 3);
 
         if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
 
         // Write new data: time changes for this beatline's tick, BPM changes for the last tick event.
-        Events[Tick] = new BPMData(Events[Tick].BPMChange, newTime);
-        Events[lastBPMTick] = new BPMData(newBPM, Events[lastBPMTick].Timestamp);
+        EventData.Events[Tick] = new BPMData(EventData.Events[Tick].BPMChange, newTime);
+        EventData.Events[lastBPMTick] = new BPMData(newBPM, EventData.Events[lastBPMTick].Timestamp);
 
         // Update rest of dictionary to account for the time change.
         RecalculateTempoEventDictionary(Tick, (float)timeChange);
@@ -297,14 +277,14 @@ public class BPM : Label<BPMData>
     {
         SortedDictionary<int, BPMData> outputTempoEventsDict = new();
 
-        var tickEvents = Events.Keys.ToList();
+        var tickEvents = EventData.Events.Keys.ToList();
         var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick);
         if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
 
         // Keep all events before change when creating new dictionary
         for (int i = 0; i <= positionOfTick; i++)
         {
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Events[tickEvents[i]].BPMChange, Events[tickEvents[i]].Timestamp));
+            outputTempoEventsDict.Add(tickEvents[i], new BPMData(EventData.Events[tickEvents[i]].BPMChange, EventData.Events[tickEvents[i]].Timestamp));
         }
         // Start new data with the song timestamp of the change
         double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Timestamp;
@@ -316,38 +296,38 @@ public class BPM : Label<BPMData>
             {
                 // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
                 calculatedTimeSecondDifference =
-                (tickEvents[i] - tickEvents[i - 1]) / (double)ChartMetadata.ChartResolution * 60 / BPM.Events[tickEvents[i - 1]].BPMChange;
+                (tickEvents[i] - tickEvents[i - 1]) / (double)ChartMetadata.ChartResolution * 60 / EventData.Events[tickEvents[i - 1]].BPMChange;
             }
 
             currentSongTime += calculatedTimeSecondDifference;
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Events[tickEvents[i]].BPMChange, (float)currentSongTime));
+            outputTempoEventsDict.Add(tickEvents[i], new BPMData(EventData.Events[tickEvents[i]].BPMChange, (float)currentSongTime));
         }
 
-        Events = outputTempoEventsDict;
+        EventData.Events = outputTempoEventsDict;
     }
 
     public static void RecalculateTempoEventDictionary(int modifiedTick, float timeChange)
     {
         SortedDictionary<int, BPMData> outputTempoEventsDict = new();
 
-        var tickEvents = BPM.Events.Keys.ToList();
+        var tickEvents = EventData.Events.Keys.ToList();
         var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick);
         if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
 
         // Keep all events before change when creating new dictionary
         for (int i = 0; i <= positionOfTick; i++)
         {
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Events[tickEvents[i]].BPMChange, Events[tickEvents[i]].Timestamp));
+            outputTempoEventsDict.Add(tickEvents[i], new BPMData(EventData.Events[tickEvents[i]].BPMChange, EventData.Events[tickEvents[i]].Timestamp));
         }
 
         // Start new data with the song timestamp of the change
         double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Timestamp;
         for (int i = positionOfTick + 1; i < tickEvents.Count; i++)
         {
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Events[tickEvents[i]].BPMChange, Events[tickEvents[i]].Timestamp + timeChange));
+            outputTempoEventsDict.Add(tickEvents[i], new BPMData(EventData.Events[tickEvents[i]].BPMChange, EventData.Events[tickEvents[i]].Timestamp + timeChange));
         }
 
-        Events = outputTempoEventsDict;
+        EventData.Events = outputTempoEventsDict;
     }
 
     #endregion
@@ -361,7 +341,7 @@ public class BPM : Label<BPMData>
     /// <returns>The tick-time timestamp of the previous tempo event.</returns>
     public static int GetLastTempoEventTickInclusive(int currentTick)
     {
-        var tickTimeKeys = Events.Keys.ToList();
+        var tickTimeKeys = EventData.Events.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
 
@@ -381,7 +361,7 @@ public class BPM : Label<BPMData>
     /// <returns></returns>
     public static int GetLastTempoEventTickExclusive(int currentTick)
     {
-        var tickTimeKeys = Events.Keys.ToList();
+        var tickTimeKeys = EventData.Events.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
 

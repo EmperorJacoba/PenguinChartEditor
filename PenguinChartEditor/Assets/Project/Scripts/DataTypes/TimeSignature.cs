@@ -8,35 +8,9 @@ public class TimeSignature : Label<TSData>
 {
     #region Event Sets
 
-    /// <summary>
-    /// Dictionary that contains time signature changes and corresponding tick time positions.
-    /// <para>Key = Tick-time position. Value = Numerator (num of beats per bar), Denominator (type of beat)</para>
-    /// <para>Example: 192 = 4, 4</para>
-    /// <remarks>When writing to file, take the base 2 logarithm of the denominator to get proper .chart format. (where example would show as 192 = TS 4 2)</remarks>
-    /// </summary>
-    public static SortedDictionary<int, TSData> Events { get; set; } = new();
-
-    public override SortedDictionary<int, TSData> GetEvents()
-    {
-        return Events;
-    }
-
-    public override void SetEvents(SortedDictionary<int, TSData> newEvents)
-    {
-        Events = newEvents;
-    }
-
-    public static HashSet<int> SelectedTSEvents { get; set; } = new();
-    public override HashSet<int> GetSelectedEvents()
-    {
-        return SelectedTSEvents;
-    }
-
-    SortedDictionary<int, TSData> tsClipboard = new();
-    public override SortedDictionary<int, TSData> GetEventClipboard()
-    {
-        return tsClipboard;
-    }
+    public static EventData<TSData> EventData = new();
+    public override EventData<TSData> GetEventData() => EventData;
+    public override void SetEvents(SortedDictionary<int, TSData> newEvents) => EventData.Events = newEvents;
 
     #endregion
 
@@ -69,7 +43,7 @@ public class TimeSignature : Label<TSData>
 
     public override void HandleManualEndEdit(string newVal)
     {
-        Events[Tick] = ProcessUnsafeTSString(newVal);
+        EventData.Events[Tick] = ProcessUnsafeTSString(newVal);
 
         ConcludeManualEdit();
     }
@@ -85,7 +59,7 @@ public class TimeSignature : Label<TSData>
     /// <returns></returns>
     TSData ProcessUnsafeTSString(string newTS)
     {
-        var currentTS = Events[Tick];
+        var currentTS = EventData.Events[Tick];
         var seperatedTS = newTS.Split("/");
         if (seperatedTS.Length == 1) return currentTS;
 
@@ -109,7 +83,7 @@ public class TimeSignature : Label<TSData>
     public static float CalculateDivision(int tick)
     {
         int tsTick = GetLastTSEventTick(tick);
-        return (float)Events[tsTick].Denominator / 4;
+        return (float)EventData.Events[tsTick].Denominator / 4;
     }
 
     public static int IncreaseByHalfDivision(int tick)
@@ -119,7 +93,7 @@ public class TimeSignature : Label<TSData>
 
     public override string ConvertDataToPreviewString()
     {
-        return $"{Events[Tick].Numerator} / {Events[Tick].Denominator}";
+        return $"{EventData.Events[Tick].Numerator} / {EventData.Events[Tick].Denominator}";
     }
 
     #endregion
@@ -149,16 +123,16 @@ public class TimeSignature : Label<TSData>
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
 
         // if the difference is divisible by the # of first-division notes in a bar, it's a barline
-        if (tsDiff % (ChartMetadata.ChartResolution * (float)Events[lastTSTickTimePos].Numerator / (float)(Events[lastTSTickTimePos].Denominator / 4.0f)) == 0)
+        if (tsDiff % (ChartMetadata.ChartResolution * (float)EventData.Events[lastTSTickTimePos].Numerator / (float)(EventData.Events[lastTSTickTimePos].Denominator / 4.0f)) == 0)
         {
             return Beatline.BeatlineType.barline;
         }
         // if it's divisible by the first-division, it's a division line
-        else if (tsDiff % (ChartMetadata.ChartResolution / (float)Events[lastTSTickTimePos].Denominator * 4) == 0)
+        else if (tsDiff % (ChartMetadata.ChartResolution / (float)EventData.Events[lastTSTickTimePos].Denominator * 4) == 0)
         {
             return Beatline.BeatlineType.divisionLine;
         }
-        else if (tsDiff % (ChartMetadata.ChartResolution / ((float)Events[lastTSTickTimePos].Denominator * 2)) == 0)
+        else if (tsDiff % (ChartMetadata.ChartResolution / ((float)EventData.Events[lastTSTickTimePos].Denominator * 2)) == 0)
         {
             return Beatline.BeatlineType.halfDivisionLine;
         }
@@ -172,7 +146,7 @@ public class TimeSignature : Label<TSData>
     /// <returns>The tick-time timestamp of the last time signature event.</returns>
     public static int GetLastTSEventTick(int currentTick)
     {
-        var tsEvents = Events.Keys.ToList();
+        var tsEvents = EventData.Events.Keys.ToList();
 
         var index = tsEvents.BinarySearch(currentTick);
 
@@ -208,7 +182,7 @@ public class TimeSignature : Label<TSData>
     {
         var ts = GetLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
-        var tickInterval = (ChartMetadata.ChartResolution * (float)Events[ts].Numerator) / ((float)Events[ts].Denominator / 4);
+        var tickInterval = (ChartMetadata.ChartResolution * (float)EventData.Events[ts].Numerator) / ((float)EventData.Events[ts].Denominator / 4);
         int numIntervals = (int)Math.Floor(tickDiff / tickInterval); // floor is to snap it back to the minimum interval (get LAST barline, not closest)
 
         return (int)(ts + numIntervals * tickInterval);
@@ -223,7 +197,7 @@ public class TimeSignature : Label<TSData>
     {
         var ts = GetLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
-        var tickInterval = (ChartMetadata.ChartResolution * (float)Events[ts].Numerator) / ((float)Events[ts].Denominator / 4);
+        var tickInterval = (ChartMetadata.ChartResolution * (float)EventData.Events[ts].Numerator) / ((float)EventData.Events[ts].Denominator / 4);
         int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
 
         return (int)(ts + numIntervals * tickInterval);
@@ -238,7 +212,7 @@ public class TimeSignature : Label<TSData>
     {
         var ts = GetLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
-        var tickInterval = ChartMetadata.ChartResolution / ((float)Events[ts].Denominator / 2);
+        var tickInterval = ChartMetadata.ChartResolution / ((float)EventData.Events[ts].Denominator / 2);
         int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
 
         return (int)(ts + numIntervals * tickInterval);
@@ -248,7 +222,7 @@ public class TimeSignature : Label<TSData>
     {
         var ts = GetLastTSEventTick(currentTick);
         var tickDiff = currentTick - ts;
-        var tickInterval = ChartMetadata.ChartResolution / ((float)Events[ts].Denominator / 4);
+        var tickInterval = ChartMetadata.ChartResolution / ((float)EventData.Events[ts].Denominator / 4);
         int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
 
         return (int)(ts + numIntervals * tickInterval);

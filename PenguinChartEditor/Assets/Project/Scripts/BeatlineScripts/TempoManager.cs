@@ -42,8 +42,8 @@ public class TempoManager : MonoBehaviour
         }
 
         // Get list of tempo events that *should* be displayed during the visible window  
-        var ignoredKeys = BPM.Events.Keys.Where(key => key >= startTick && key <= endTick && key % TimeSignature.IncreaseByHalfDivision(key) != 0).ToHashSet();
-        var ignoredTSKeys = TimeSignature.Events.Keys.Where(key => key >= startTick && key <= endTick && key % TimeSignature.IncreaseByHalfDivision(key) != 0).ToHashSet();
+        var ignoredKeys = BPM.EventData.Events.Keys.Where(key => key >= startTick && key <= endTick && key % TimeSignature.IncreaseByHalfDivision(key) != 0).ToHashSet();
+        var ignoredTSKeys = TimeSignature.EventData.Events.Keys.Where(key => key >= startTick && key <= endTick && key % TimeSignature.IncreaseByHalfDivision(key) != 0).ToHashSet();
 
         ignoredKeys.UnionWith(ignoredTSKeys);
 
