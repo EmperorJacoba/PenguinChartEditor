@@ -2012,8 +2012,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6623864532696733896}
         m_TargetAssemblyTypeName: TimeSignature, Assembly-CSharp
-        m_MethodName: HandleEndEdit
-        m_Mode: 0
+        m_MethodName: HandleManualEndEdit
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2744,8 +2744,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 4318642463002473110}
         m_TargetAssemblyTypeName: BPM, Assembly-CSharp
-        m_MethodName: HandleEndEdit
-        m_Mode: 0
+        m_MethodName: HandleManualEndEdit
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

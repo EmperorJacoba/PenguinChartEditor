@@ -123,10 +123,12 @@ public class Delete<T> : IEditAction<T>
 
         foreach (var tick in selectedEvents)
         {
+            Debug.Log($"{tick}, {eventSetReference.ContainsKey(tick)}");
             if (tick != 0 && eventSetReference.ContainsKey(tick))
             {
                 T data;
                 eventSetReference.Remove(tick, out data);
+                Debug.Log($"{tick}, {data}");
                 SaveData.Add(tick, data);
             }
         }
@@ -213,42 +215,31 @@ public class Move<T> : IEditAction<T>
 {
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     SortedDictionary<int, T> eventSetReference;
-    Create<T> createAction;
-    Delete<T> deleteAction;
+
+    Paste<T> endPasteAction;
+    Cut<T> cutAction;
 
     public Move(SortedDictionary<int, T> targetEventSet)
     {
         eventSetReference = targetEventSet;
-        createAction = new(targetEventSet);
-        deleteAction = new(targetEventSet);
+        cutAction = new(eventSetReference);
+        endPasteAction = new(eventSetReference);
     }
 
-    public bool Execute(int targetTick, int destinationTick, HashSet<int> selectedEvents)
+    public void BeginMove(SortedDictionary<int, T> moveSet, HashSet<int> selection)
     {
-        var copiedData = eventSetReference[targetTick];
-        if (eventSetReference.ContainsKey(destinationTick))
-            SaveData.Add(destinationTick, eventSetReference[destinationTick]);
+        Debug.Log(cutAction.Execute(moveSet, selection));
+    }
+    public bool Execute(int destinationTick, SortedDictionary<int, T> moveSet)
+    {
+        endPasteAction.Execute(destinationTick, moveSet);
 
-        HashSet<int> ticksToWipe = new()
-        {
-            targetTick,
-            destinationTick
-        };
-
-        deleteAction.Execute(ticksToWipe);
-        createAction.Execute(destinationTick, copiedData, selectedEvents);
-
-        // No return false because move should only happen on events that exist already
-        return true; 
+        return true;
     }
 
     public void Undo()
     {
-        createAction.Undo();
-        foreach (var tick in SaveData) // undo overwrite in case overwrite occurs
-        {
-            eventSetReference.Add(tick.Key, tick.Value);
-        }
-        deleteAction.Undo();
+        endPasteAction.Undo();
+        cutAction.Undo();
     }
 }
