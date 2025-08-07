@@ -48,6 +48,12 @@ public class BeatlinePreviewer : Beatline
         bpmLabel.Visible = false;
     }
 
+    public static bool justCreated = false;
+    void Update()
+    {
+        if (justCreated) justCreated = false;
+    }
+
     /// <summary>
     /// Shortcut to allow void events call the main UpdatePreviewPosition function.
     /// </summary>
@@ -136,10 +142,17 @@ public class BeatlinePreviewer : Beatline
         // No creating events while user is messing with other UI parts (volume, etc.)
         if (IsOverlayRaycasterHit()) return;
 
-        if (bpmLabel.Visible) bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp));
-        else if (tsLabel.Visible) tsLabel.CreateEvent(Tick, displayedTS);
+        if (bpmLabel.Visible && !bpmLabel.GetEventData().Events.ContainsKey(Tick))
+        {
+            bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp));
+        }
+        else if (tsLabel.Visible && !tsLabel.GetEventData().Events.ContainsKey(Tick))
+        {
+            tsLabel.CreateEvent(Tick, displayedTS);
+        }
         else return;
 
+        justCreated = true;
         // Show changes to user
         TempoManager.UpdateBeatlines();
     }

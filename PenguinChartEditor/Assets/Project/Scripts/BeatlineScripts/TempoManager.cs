@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TempoManager : MonoBehaviour
 {
@@ -32,7 +33,7 @@ public class TempoManager : MonoBehaviour
 
             workedBeatline.CheckForEvents();
 
-            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(currentTick) - startTime)/timeShown, boundaryReference.rect.height); 
+            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(currentTick) - startTime) / timeShown, boundaryReference.rect.height);
 
             // Needed to generate correct thickness
             workedBeatline.Type = TimeSignature.CalculateBeatlineType(currentTick);
@@ -54,7 +55,7 @@ public class TempoManager : MonoBehaviour
 
             workedBeatline.CheckForEvents();
 
-            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(tick) - startTime)/timeShown, boundaryReference.rect.height); 
+            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(tick) - startTime) / timeShown, boundaryReference.rect.height);
 
             workedBeatline.Type = Beatline.BeatlineType.none;
 

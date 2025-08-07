@@ -114,6 +114,7 @@ public class Beatline : MonoBehaviour
         {
             bpmLabel.Visible = true;
             bpmLabel.LabelText = bpmLabel.ConvertDataToPreviewString();
+            bpmLabel.Selected = bpmLabel.CheckForSelection();
         }
         else
         {
@@ -124,6 +125,7 @@ public class Beatline : MonoBehaviour
         {
             tsLabel.Visible = true;
             tsLabel.LabelText = tsLabel.ConvertDataToPreviewString();
+            tsLabel.Selected = tsLabel.CheckForSelection();
 
             if (!TimeSignature.IsEventValid(Tick)) tsWarningAlert.InitializeWarning(Warning.WarningType.invalidTimeSignature);
             else tsWarningAlert.DeactivateWarning();
@@ -134,8 +136,6 @@ public class Beatline : MonoBehaviour
             tsLabel.Visible = false;
         }
 
-        bpmLabel.Selected = bpmLabel.CheckForSelection();
-        tsLabel.Selected = tsLabel.CheckForSelection();
     }
 
     #endregion

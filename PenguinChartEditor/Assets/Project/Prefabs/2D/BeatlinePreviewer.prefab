@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1652302852841833917}
   - component: {fileID: 5404963701463387894}
   - component: {fileID: 7986884203289727447}
+  - component: {fileID: 7867460106514228522}
   m_Layer: 0
   m_Name: TSWarningLabel
   m_TagString: Untagged
@@ -76,6 +77,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7867460106514228522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 707055709421163978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c848fc98a8d0d141ac24c468fa4884c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &931654965468042520
 GameObject:
   m_ObjectHideFlags: 0
@@ -1048,7 +1061,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bpmLabel: {fileID: 8870578129598013075}
   tsLabel: {fileID: 4307625940550189028}
-  tsWarningAlert: {fileID: 707055709421163978}
+  tsWarningAlert: {fileID: 7867460106514228522}
   tsWarningAlertRectTransform: {fileID: 1652302852841833917}
   line: {fileID: 3447600175084081201}
   overlayUIRaycaster: {fileID: 0}
