@@ -58,36 +58,13 @@ public class BPM : Label<BPMData>
 
     #endregion
 
-    #region Unity Functions
-
-    // This is currently a temporary solution
-    // to avoid multiple objects doing edit actions
-    // in response to the same trigger
-    // Move to dedicated script in future!
-    static bool selectionActionsEnabled = false;
-    void Awake()
-    {
-        inputMap = new();
-        inputMap.Enable();
-
-        if (!selectionActionsEnabled)
-        {
-            inputMap.Charting.Delete.performed += x => DeleteSelection();
-            inputMap.Charting.Copy.performed += x => CopySelection();
-            inputMap.Charting.Paste.performed += x => PasteSelection();
-            inputMap.Charting.Cut.performed += x => CutSelection();
-            selectionActionsEnabled = true;
-        }
-    }
-
-    #endregion
-
     #region Event Handlers
 
     public override void PasteSelection() => ExecuteWithRecalculate(base.PasteSelection);
     public override void DeleteSelection() => ExecuteWithRecalculate(base.DeleteSelection);
     public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
     public override void CutSelection() => ExecuteWithRecalculate(base.CutSelection);
+
 
     void ExecuteWithRecalculate(Action action)
     {
@@ -112,14 +89,16 @@ public class BPM : Label<BPMData>
         ConcludeManualEdit();
     }
 
+    // This runs alongside MoveSelection() on each label locally if restrictions apply
+    // ChangeBPMPositionFromDrag() works a lot simpler with this approach versus overriding the function
     public override void OnDrag(PointerEventData data)
     {
-        var clickdata = (PointerEventData)data;
+        base.OnDrag(data);
 
         if (Tick == 0) return;
         if (Input.GetKey(KeyCode.LeftControl))
         {
-            ChangeBPMPositionFromDrag(clickdata.delta.y);
+            ChangeBPMPositionFromDrag(data.delta.y);
         }
     }
 

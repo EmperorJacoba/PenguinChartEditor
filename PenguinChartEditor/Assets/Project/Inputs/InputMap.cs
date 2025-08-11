@@ -180,6 +180,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Drag"",
+                    ""type"": ""Value"",
+                    ""id"": ""3c15a169-6bba-427d-8b7e-fcb67995686e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -367,6 +376,39 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Cut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""511fd9c7-0488-4eda-80fe-ab6fa8fbe9ac"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Drag"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""25ae126b-3f48-48a6-bf17-0bdcad82d85b"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Drag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""2a40403c-57e1-4f22-8339-f273a6155f9e"",
+                    ""path"": ""<Mouse>/delta/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Drag"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 }
@@ -1438,6 +1480,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_Copy = m_Charting.FindAction("Copy", throwIfNotFound: true);
         m_Charting_Paste = m_Charting.FindAction("Paste", throwIfNotFound: true);
         m_Charting_Cut = m_Charting.FindAction("Cut", throwIfNotFound: true);
+        m_Charting_Drag = m_Charting.FindAction("Drag", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1553,6 +1596,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_Copy;
     private readonly InputAction m_Charting_Paste;
     private readonly InputAction m_Charting_Cut;
+    private readonly InputAction m_Charting_Drag;
     /// <summary>
     /// Provides access to input actions defined in input action map "Charting".
     /// </summary>
@@ -1604,6 +1648,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Charting/Cut".
         /// </summary>
         public InputAction @Cut => m_Wrapper.m_Charting_Cut;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/Drag".
+        /// </summary>
+        public InputAction @Drag => m_Wrapper.m_Charting_Drag;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1660,6 +1708,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Cut.started += instance.OnCut;
             @Cut.performed += instance.OnCut;
             @Cut.canceled += instance.OnCut;
+            @Drag.started += instance.OnDrag;
+            @Drag.performed += instance.OnDrag;
+            @Drag.canceled += instance.OnDrag;
         }
 
         /// <summary>
@@ -1701,6 +1752,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Cut.started -= instance.OnCut;
             @Cut.performed -= instance.OnCut;
             @Cut.canceled -= instance.OnCut;
+            @Drag.started -= instance.OnDrag;
+            @Drag.performed -= instance.OnDrag;
+            @Drag.canceled -= instance.OnDrag;
         }
 
         /// <summary>
@@ -2255,6 +2309,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCut(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Drag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDrag(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

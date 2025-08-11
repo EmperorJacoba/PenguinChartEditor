@@ -14,32 +14,7 @@ public class TimeSignature : Label<TSData>
 
     #endregion
 
-    #region Unity Functions
-
-    static bool selectionActionsEnabled = false;
-    void Awake()
-    {
-        inputMap = new();
-        inputMap.Enable();
-
-        if (!selectionActionsEnabled)
-        {
-            inputMap.Charting.Delete.performed += x => DeleteSelection();
-            inputMap.Charting.Copy.performed += x => CopySelection();
-            inputMap.Charting.Paste.performed += x => PasteSelection();
-            inputMap.Charting.Cut.performed += x => CutSelection();
-            selectionActionsEnabled = true;
-        }
-    }
-
-    #endregion
-
     #region Event Handlers
-
-    public override void OnDrag(PointerEventData baseEventData)
-    {
-
-    }
 
     public override void HandleManualEndEdit(string newVal)
     {
@@ -76,7 +51,7 @@ public class TimeSignature : Label<TSData>
     /// Calculate the amount of divisions are needed from the chart resolution for each first-division event.
     /// <para>Example: TS = 4/4 -> Returns 1, because chart resolution will need to be divided by 1 to reach the number of ticks between first-division (in this case quarter note) events.</para>
     /// <para>Example: TS = 3/8 -> Returns 2, because res will need to be div by 2 to reach eighth note events.</para>
-    /// <para>Example: TS = 2/2 -> Returns 0.5
+    /// <para>Example: TS = 2/2 -> Returns 0.5</para>
     /// </summary>
     /// <param name="tick"></param>
     /// <returns>The factor to multiply the chart resolution by to get the first-division tick-time.</returns>

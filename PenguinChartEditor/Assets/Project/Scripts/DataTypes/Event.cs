@@ -5,7 +5,7 @@ using System.Linq;
 using System;
 using UnityEngine.UIElements;
 
-public interface IEvent<T> : IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
+public interface IEvent<T> : IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler where T : IEventData
 {
     /// <summary>
     /// The tick-time timestamp that this event occurs at.
@@ -41,7 +41,7 @@ public interface IEvent<T> : IBeginDragHandler, IEndDragHandler, IDragHandler, I
 
 }
 
-public abstract class Event<T> : MonoBehaviour, IEvent<T>
+public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 {
     protected InputMap inputMap;
     public int Tick { get; set; }
@@ -49,6 +49,22 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
     public abstract void SetEvents(SortedDictionary<int, T> newEvents);
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
     public bool DeletePrimed { get; set; } // future: make global across events 
+
+    protected virtual void Awake()
+    {
+        if (!GetEventData().selectionActionsEnabled)
+        {
+            inputMap = new();
+            inputMap.Enable();
+
+            inputMap.Charting.Delete.performed += x => DeleteSelection();
+            inputMap.Charting.Copy.performed += x => CopySelection();
+            inputMap.Charting.Paste.performed += x => PasteSelection();
+            inputMap.Charting.Cut.performed += x => CutSelection();
+            inputMap.Charting.Drag.performed += x => MoveSelection();
+            GetEventData().selectionActionsEnabled = true;
+        }
+    }
 
     public void CopySelection()
     {
@@ -62,9 +78,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
         var pasteAction = new Paste<T>(GetEventData().Events);
         pasteAction.Execute(BeatlinePreviewer.currentPreviewTick, GetEventData().Clipboard);
         TempoManager.UpdateBeatlines();
-
-        // paste currently crashes when paste zone exceeds the screen - fix
-        // implement other event actions!!
     }
 
     public virtual void CutSelection()
@@ -87,24 +100,16 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
         TempoManager.UpdateBeatlines();
     }
 
-    public virtual void OnBeginDrag(PointerEventData pointerEventData)
+    public virtual void MoveSelection()
     {
-        Debug.Log($"Beging");
-
-       // GetEventData().currentMoveAction = new(GetEventData().Events);
-        //GetEventData().currentMoveAction.BeginMove(GetEventData().MovingGhostSet, GetEventData().Selection);
+        if (Input.GetKey(KeyCode.LeftControl)) return; // Let BPM labels do their thing undisturbed if applicable
     }
 
-    public virtual void OnEndDrag(PointerEventData pointerEventData)
-    {
-        Debug.Log($"Ending");
-        // GetEventData().currentMoveAction.Execute(0, GetEventData().MovingGhostSet);
-    }
+    public virtual void OnBeginDrag(PointerEventData pointerEventData) { }
 
-    public virtual void OnDrag(PointerEventData pointerEventData)
-    {
-        // Have ghost of selection showing where the selection will go
-    }
+    public virtual void OnEndDrag(PointerEventData pointerEventData) {}
+
+    public virtual void OnDrag(PointerEventData pointerEventData) {}
 
     public virtual void OnPointerClick(PointerEventData pointerEventData)
     {
@@ -167,13 +172,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
     /// <param name="clickButton">PointerEventData.button</param>
     public void CalculateSelectionStatus(PointerEventData.InputButton clickButton)
     {
-        
-        Debug.Log($"clicked");
         var selection = GetEventData().Selection;
-        foreach (var itemj in selection)
-        {
-            Debug.Log($"{itemj}");
-        }
         List<int> targetEventSet = GetEventData().Events.Keys.ToList();
 
         // Goal is to follow standard selection functionality of most productivity programs
@@ -192,15 +191,12 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T>
         // Left control if item is already selected
         else if (Input.GetKey(KeyCode.LeftControl))
         {
-            Debug.Log($"lcotr");
             if (selection.Contains(Tick))
             {
-                Debug.Log($"true, removed {Tick}");
                 selection.Remove(Tick);
             }
             else
             {
-                Debug.Log($"false, added {Tick}");
                 selection.Add(Tick);
             }
         }

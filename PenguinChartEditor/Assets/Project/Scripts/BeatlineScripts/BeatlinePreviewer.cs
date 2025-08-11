@@ -81,32 +81,9 @@ public class BeatlinePreviewer : Beatline
             return;
         }
 
+        Tick = SongTimelineManager.CalculateGridSnappedTick(percentOfScreenVertical);
+
         WaveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
-
-        var cursorTimestamp = (percentOfScreenVertical * timeShown) + startTime;
-        var cursorTickTime = BPM.ConvertSecondsToTickTime((float)cursorTimestamp); 
-
-        // Calculate the Tick grid to snap the event to
-        var TickInterval = ChartMetadata.ChartResolution / ((float)DivisionChanger.CurrentDivision / 4);
-
-        // Calculate the cursor's Tick position in the context of the origin of the grid (last barline) 
-        var divisionBasisTick = cursorTickTime - TimeSignature.GetLastBarline(cursorTickTime);
-
-        // Find how many Ticks off the cursor position is from the grid 
-        var remainder = divisionBasisTick % TickInterval;
-
-        // Remainder will show how many Ticks off from the last event we are
-        // Use remainder to determine which grid snap we are closest to and round to that
-        if (remainder > (TickInterval / 2)) // Closer to following snap
-        {
-            // Regress to last grid snap and then add a snap to get to next grid position
-            Tick = (int)Math.Floor(cursorTickTime - remainder + TickInterval);
-        }
-        else // Closer to previous grid snap or dead on a snap (subtract 0 = no change)
-        {
-            // Regress to last grid snap
-            Tick = (int)Math.Floor(cursorTickTime - remainder);
-        }
 
         // store what time the preview is at so that adding an event is merely inserting the preview's current position into the dictionary
         timestamp = BPM.ConvertTickTimeToSeconds(Tick);

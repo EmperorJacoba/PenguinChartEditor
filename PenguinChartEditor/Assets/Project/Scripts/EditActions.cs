@@ -123,12 +123,10 @@ public class Delete<T> : IEditAction<T>
 
         foreach (var tick in selectedEvents)
         {
-            Debug.Log($"{tick}, {eventSetReference.ContainsKey(tick)}");
             if (tick != 0 && eventSetReference.ContainsKey(tick))
             {
                 T data;
                 eventSetReference.Remove(tick, out data);
-                Debug.Log($"{tick}, {data}");
                 SaveData.Add(tick, data);
             }
         }

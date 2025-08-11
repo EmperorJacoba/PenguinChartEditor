@@ -38,7 +38,7 @@ public class SongTimelineManager : MonoBehaviour
             return BPM.ConvertSecondsToTickTime((float)_songPos);
         }
     }
-    private static double _songPos = 0; 
+    private static double _songPos = 0;
 
     public delegate void TimeChangedDelegate();
 
@@ -50,7 +50,7 @@ public class SongTimelineManager : MonoBehaviour
     /// <summary>
     /// The length of the song in tick time.
     /// </summary>
-    public static int SongLengthTicks 
+    public static int SongLengthTicks
     {
         get
         {
@@ -148,7 +148,7 @@ public class SongTimelineManager : MonoBehaviour
         else
         {
             inputMap.Charting.MiddleScrollMousePos.Disable();
-            initialMouseY = float.NaN; 
+            initialMouseY = float.NaN;
             // Kind of a relic from testing, but I'm keeping this here because I feel like this is somewhat helpful in case this is improperly used somewhere
         }
     }
@@ -175,6 +175,36 @@ public class SongTimelineManager : MonoBehaviour
         else if (SongPositionSeconds >= PluginBassManager.SongLength)
         {
             SongPositionSeconds = PluginBassManager.SongLength;
+        }
+    }
+    
+    public static int CalculateGridSnappedTick(float percentOfScreenVertical)
+    {
+        WaveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
+
+        var cursorTimestamp = (percentOfScreenVertical * timeShown) + startTime;
+        var cursorTickTime = BPM.ConvertSecondsToTickTime((float)cursorTimestamp); 
+
+        // Calculate the Tick grid to snap the event to
+        var TickInterval = ChartMetadata.ChartResolution / ((float)DivisionChanger.CurrentDivision / 4);
+
+        // Calculate the cursor's Tick position in the context of the origin of the grid (last barline) 
+        var divisionBasisTick = cursorTickTime - TimeSignature.GetLastBarline(cursorTickTime);
+
+        // Find how many Ticks off the cursor position is from the grid 
+        var remainder = divisionBasisTick % TickInterval;
+
+        // Remainder will show how many Ticks off from the last event we are
+        // Use remainder to determine which grid snap we are closest to and round to that
+        if (remainder > (TickInterval / 2)) // Closer to following snap
+        {
+            // Regress to last grid snap and then add a snap to get to next grid position
+            return (int)Math.Floor(cursorTickTime - remainder + TickInterval);
+        }
+        else // Closer to previous grid snap or dead on a snap (subtract 0 = no change)
+        {
+            // Regress to last grid snap
+            return (int)Math.Floor(cursorTickTime - remainder);
         }
     }
 
