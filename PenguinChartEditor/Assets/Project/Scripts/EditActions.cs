@@ -18,7 +18,7 @@ public class Copy<T> : IEditAction<T>
     {
         eventSetReference = targetEventSet;
     }
-    public bool Execute(SortedDictionary<int, T> clipboard, HashSet<int> selection)
+    public bool Execute(SortedDictionary<int, T> clipboard, SortedDictionary<int, T> selection)
     {
         // Note: to make up for separate selection sets and clipboards,
         // make a hashset<int> property that when referenced, combines
@@ -31,14 +31,14 @@ public class Copy<T> : IEditAction<T>
         // copy data is shifted to zero for relative pasting 
         // (ex. an event sequence 100, 200, 300 is converted to 0, 100, 200)
         int lowestTick = 0;
-        if (selection.Count > 0) lowestTick = selection.Min();
+        if (selection.Count > 0) lowestTick = selection.Keys.Min();
 
         // add relevant data for each tick into clipboard
         foreach (var selectedTick in selection)
         {
             try
             {
-                clipboard.Add(selectedTick - lowestTick, eventSetReference[selectedTick]);
+                clipboard.Add(selectedTick.Key - lowestTick, selection[selectedTick.Key]);
             }
             catch
             {
@@ -58,10 +58,12 @@ public class Paste<T> : IEditAction<T>
 {
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     SortedDictionary<int, T> eventSetReference;
+    public Delete<T> deleteAction;
 
     public Paste(SortedDictionary<int, T> targetEventSet)
     {
         eventSetReference = targetEventSet;
+        deleteAction = new(targetEventSet);
     }
 
     public bool Execute(int startPasteTick, SortedDictionary<int, T> clipboard)
@@ -74,14 +76,7 @@ public class Paste<T> : IEditAction<T>
         // (ex. clipboard with 0, 100, 400 has a zone of 400, paste starts at tick 700, all events tick 700-1100 are wiped)
         var endPasteTick = clipboard.Keys.Max() + startPasteTick;
 
-        // get overwritable dictionary events
-        // remove those events
-        // add new events
-        var overwritableEvents = GetOverwritableDictEvents(eventSetReference, startPasteTick, endPasteTick);
-        foreach (var tick in overwritableEvents)
-        {
-            eventSetReference.Remove(tick);
-        }
+        deleteAction.Execute(startPasteTick, endPasteTick);
 
         // Add clipboard data to dict, now cleaned of obstructing events
         foreach (var clippedTick in clipboard)
@@ -100,12 +95,6 @@ public class Paste<T> : IEditAction<T>
             eventSetReference.Add(tick.Key, tick.Value);
         }
     }
-
-    HashSet<int> GetOverwritableDictEvents(SortedDictionary<int, T> eventSet, int startPasteTick, int endPasteTick)
-    {
-        return eventSet.Keys.ToList().Where(x => x >= startPasteTick && x <= endPasteTick).ToHashSet();
-    }
-
 }
 
 public class Delete<T> : IEditAction<T>
@@ -117,17 +106,21 @@ public class Delete<T> : IEditAction<T>
         eventSetReference = targetEventSet;
     }
 
-    public bool Execute(HashSet<int> selectedEvents)
+    /// <summary>
+    /// Delete all events specified in a selection set.
+    /// </summary>
+    /// <param name="selectedEvents"></param>
+    /// <returns></returns>
+    public bool Execute(SortedDictionary<int, T> selectedEvents)
     {
-        if (eventSetReference.Count == 0) return false;
+        if (eventSetReference.Count == 0 || selectedEvents.Count == 0) return false;
 
         foreach (var tick in selectedEvents)
         {
-            if (tick != 0 && eventSetReference.ContainsKey(tick))
+            if (tick.Key != 0 && eventSetReference.ContainsKey(tick.Key))
             {
-                T data;
-                eventSetReference.Remove(tick, out data);
-                SaveData.Add(tick, data);
+                eventSetReference.Remove(tick.Key, out T data);
+                SaveData.Add(tick.Key, data);
             }
         }
 
@@ -135,12 +128,38 @@ public class Delete<T> : IEditAction<T>
         return true;
     }
 
+    /// <summary>
+    /// Delete all events within two points in the target set.
+    /// </summary>
+    /// <param name="startDeleteTick"></param>
+    /// <param name="endDeleteTick"></param>
+    /// <returns></returns>
+    public bool Execute(int startDeleteTick, int endDeleteTick)
+    {
+        if (eventSetReference.Count == 0) return false;
+
+        var overwritableEvents = GetOverwritableDictEvents(eventSetReference, startDeleteTick, endDeleteTick);
+        if (overwritableEvents.Count == 0) return false;
+        
+        foreach (var tick in overwritableEvents)
+        {
+            eventSetReference.Remove(tick);
+        }
+        return true;
+    }
+
+
     public void Undo()
     {
         foreach (var tick in SaveData)
         {
             eventSetReference.Add(tick.Key, tick.Value);
         }
+    }
+    
+    HashSet<int> GetOverwritableDictEvents(SortedDictionary<int, T> eventSet, int startPasteTick, int endPasteTick)
+    {
+        return eventSet.Keys.ToList().Where(x => x >= startPasteTick && x <= endPasteTick).ToHashSet();
     }
 }
 
@@ -155,7 +174,7 @@ public class Cut<T> : IEditAction<T>
         deleteAction = new(eventSetReference);
     }
 
-    public bool Execute(SortedDictionary<int, T> clipboard, HashSet<int> selection)
+    public bool Execute(SortedDictionary<int, T> clipboard, SortedDictionary<int, T> selection)
     {
         var copyAction = new Copy<T>(eventSetReference);
         copyAction.Execute(clipboard, selection);
@@ -181,7 +200,7 @@ public class Create<T> : IEditAction<T>
         eventSetReference = targetEventSet;
     }
 
-    public bool Execute(int newTick, T newData, HashSet<int> selectedEvents)
+    public bool Execute(int newTick, T newData, SortedDictionary<int, T> selectedEvents)
     {
         // All editing of events does not come from adding an event that already exists
         // Do not create event if one already exists at that point in the set
@@ -214,30 +233,14 @@ public class Move<T> : IEditAction<T>
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     SortedDictionary<int, T> eventSetReference;
 
-    Paste<T> endPasteAction;
-    Cut<T> cutAction;
-
     public Move(SortedDictionary<int, T> targetEventSet)
     {
         eventSetReference = targetEventSet;
-        cutAction = new(eventSetReference);
-        endPasteAction = new(eventSetReference);
-    }
-
-    public void BeginMove(SortedDictionary<int, T> moveSet, HashSet<int> selection)
-    {
-        Debug.Log(cutAction.Execute(moveSet, selection));
-    }
-    public bool Execute(int destinationTick, SortedDictionary<int, T> moveSet)
-    {
-        endPasteAction.Execute(destinationTick, moveSet);
-
-        return true;
+        SaveData = new(eventSetReference);
     }
 
     public void Undo()
     {
-        endPasteAction.Undo();
-        cutAction.Undo();
+
     }
 }

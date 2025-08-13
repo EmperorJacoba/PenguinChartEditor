@@ -7,6 +7,9 @@ public class Bookmark : Label<BookmarkData>
     public static EventData<BookmarkData> EventData = new();
     public override EventData<BookmarkData> GetEventData() => EventData;
 
+    static MoveData<BookmarkData> moveData = new();
+    public override MoveData<BookmarkData> GetMoveData() => moveData;
+
     public override void SetEvents(SortedDictionary<int, BookmarkData> newEvents)
     {
         EventData.Events = newEvents;

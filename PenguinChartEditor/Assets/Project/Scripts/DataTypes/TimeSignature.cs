@@ -10,6 +10,10 @@ public class TimeSignature : Label<TSData>
 
     public static EventData<TSData> EventData = new();
     public override EventData<TSData> GetEventData() => EventData;
+
+    static MoveData<TSData> moveData = new();
+    public override MoveData<TSData> GetMoveData() => moveData;
+
     public override void SetEvents(SortedDictionary<int, TSData> newEvents) => EventData.Events = newEvents;
 
     #endregion

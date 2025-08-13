@@ -29,6 +29,8 @@ public class BeatlinePreviewer : Beatline
     /// </summary>
     TSData displayedTS = new(4, 4);
 
+    public static BeatlinePreviewer instance;
+
     void Awake()
     {
         inputMap = new();
@@ -39,6 +41,8 @@ public class BeatlinePreviewer : Beatline
 
         // Preview also needs to update when waveform moves
         WaveformManager.DisplayChanged += UpdatePreviewPosition;
+
+        instance = this;
     }
 
     void Start()

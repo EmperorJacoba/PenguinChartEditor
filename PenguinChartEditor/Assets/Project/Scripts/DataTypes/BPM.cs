@@ -13,6 +13,9 @@ public class BPM : Label<BPMData>
     public static EventData<BPMData> EventData = new();
     public override EventData<BPMData> GetEventData() => EventData;
 
+    static MoveData<BPMData> moveData = new();
+    public override MoveData<BPMData> GetMoveData() => moveData;
+
     public override void SetEvents(SortedDictionary<int, BPMData> newEvents)
     {
         var breakKey = GetFirstVariableEvent(newEvents);
@@ -64,6 +67,7 @@ public class BPM : Label<BPMData>
     public override void DeleteSelection() => ExecuteWithRecalculate(base.DeleteSelection);
     public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
     public override void CutSelection() => ExecuteWithRecalculate(base.CutSelection);
+    public override void MoveSelection() => ExecuteWithRecalculate(() => base.MoveSelection());
 
 
     void ExecuteWithRecalculate(Action action)
@@ -330,7 +334,8 @@ public class BPM : Label<BPMData>
         if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
         // else just get the index proper 
         else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
-            return tickTimeKeys[index];
+           
+        return tickTimeKeys[index];
     }
 
     /// <summary>
