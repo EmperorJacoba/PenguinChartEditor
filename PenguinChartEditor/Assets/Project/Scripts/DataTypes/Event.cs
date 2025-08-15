@@ -106,6 +106,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public virtual void MoveSelection()
     {
+        if (BeatlinePreviewer.instance.IsOverlayRaycasterHit()) return;
         var moveData = GetMoveData();
 
         if (Input.GetKey(KeyCode.LeftControl)) return; // Let BPM labels do their thing undisturbed if applicable
@@ -117,12 +118,9 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             return;
         }
 
-        if (!moveData.moveInProgress )
+        if (!moveData.moveInProgress)
         {
-            Debug.Log($"Begin move");
-
             moveData.firstMouseTick = currentMouseTick;
-            moveData.currentMoveAction = new(GetEventData().Events);
             moveData.MovingGhostSet.Clear();
 
             int lowestTick = 0;
@@ -134,10 +132,15 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             {
                 moveData.MovingGhostSet.Add(selectedTick.Key - lowestTick, selectedTick.Value);
             }
+            if (moveData.MovingGhostSet.Count == 0) return;
             moveData.moveInProgress = true;
 
+            moveData.currentMoveAction = new(GetEventData().Events, moveData.MovingGhostSet, lowestTick);
+
+
             moveData.lastMouseTick = currentMouseTick;
-            moveData.lastMoveGhostPaste = moveData.selectionOriginTick;
+            moveData.lastTempGhostPasteStartTick = moveData.selectionOriginTick;
+            moveData.lastTempGhostPasteEndTick = moveData.selectionOriginTick + moveData.MovingGhostSet.Keys.Max();
 
             BeatlinePreviewer.instance.gameObject.SetActive(false);
 
@@ -149,22 +152,39 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         if (GetEventData().Selection.Count > 0) GetEventData().Selection.Clear();
 
         var deleteAction = new Delete<T>(GetEventData().Events);
-        deleteAction.Execute(moveData.lastMoveGhostPaste, moveData.MovingGhostSet.Keys.Max() + moveData.lastMoveGhostPaste);
+        deleteAction.Execute(moveData.lastTempGhostPasteStartTick, moveData.lastTempGhostPasteEndTick);
 
-        var pasteAction = new Paste<T>(GetEventData().Events);
-        pasteAction.Execute(currentMouseTick, moveData.MovingGhostSet);
+        var keysToReAdd = moveData.currentMoveAction.SaveData.Keys.Where(x => x >= moveData.lastTempGhostPasteStartTick && x <= moveData.lastTempGhostPasteEndTick).ToHashSet();
 
+        foreach (var overwrittenTick in keysToReAdd)
+        {
+            if (GetEventData().Events.ContainsKey(overwrittenTick))
+            {
+                GetEventData().Events.Remove(overwrittenTick);
+            }
+
+            GetEventData().Events.Add(overwrittenTick, moveData.currentMoveAction.SaveData[overwrittenTick]);
+        }
+
+        var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
+        var pasteDestination = moveData.selectionOriginTick + cursorMoveDifference;
+
+        foreach (var movingTick in moveData.MovingGhostSet)
+        {
+            var adjustedTick = movingTick.Key + moveData.selectionOriginTick + cursorMoveDifference;
+            if (GetEventData().Events.ContainsKey(adjustedTick))
+            {
+                GetEventData().Events.Remove(adjustedTick);
+            }
+            GetEventData().Events.Add(adjustedTick, movingTick.Value);
+        }
         moveData.lastMouseTick = currentMouseTick;
-        moveData.lastMoveGhostPaste = currentMouseTick;
-        // First frame: save state of modified event dictionary for EditAction <//>
-        // Also move selection into event set's moving ghost set <//>
+        moveData.lastTempGhostPasteStartTick = pasteDestination;
+        moveData.lastTempGhostPasteEndTick = moveData.MovingGhostSet.Keys.Max() + pasteDestination;
+        // moveData.lastDeleteAction = deleteAction;
 
-        // Every frame, calculate the tick position of the mouse                    (STLM @ CalculateGridSnappedTick)
-        // Old position of the moving ghost set is pulverized, if applicable        (Cut action @ old position)
-        // Ghost set is inserted into dictionary at new point                       (Paste action @ new position)
-        // Record current position of the pasted moving ghost set                   
-
-        
+        // Store original version of event set
+        // When original data is not eclipsed by the move data, use original data
     }
 
     public virtual void CompleteMove()
@@ -172,13 +192,13 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // On "cancel" (CompleteMove), record edit action and put in undo stack
 
         if (!GetMoveData().moveInProgress) return;
-        Debug.Log($"Finished!");
+
         GetMoveData().moveInProgress = false;
 
         GetEventData().Selection.Clear();
         foreach (var item in GetMoveData().MovingGhostSet)
         {
-            GetEventData().Selection.Add(item.Key + GetMoveData().lastMoveGhostPaste, item.Value);
+            GetEventData().Selection.Add(item.Key + GetMoveData().lastTempGhostPasteStartTick, item.Value);
         }
 
 
@@ -200,27 +220,19 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public void OnPointerDown(PointerEventData pointerEventData)
     {
-        if (BeatlinePreviewer.justCreated) return;
+        if (DeletePrimed && pointerEventData.button == PointerEventData.InputButton.Left)
+        {
+            var deleteAction = new Delete<T>(GetEventData().Events);
+            deleteAction.Execute(Tick);
+        }
+
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
             DeletePrimed = true;
         }
 
-        if (!DeletePrimed || pointerEventData.button != PointerEventData.InputButton.Left)
-        {
-            CalculateSelectionStatus(pointerEventData);
-        }
-
-        if (DeletePrimed && pointerEventData.button == PointerEventData.InputButton.Left)
-        {
-            DeleteSelection();
-        }
-
         TempoManager.UpdateBeatlines();
 
-        // Goal: Get move to work when dragging over a label object
-        // Currently, move will only work properly when dragging outside of the label
-        // When dragging on the label, the label is exclusively selected and then only that label moves.
         // Additionally: Temporary move overwrites are never undone 
         // Additionally: Move actions are never committed to an action and thus cannot be undone
 
@@ -228,10 +240,19 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public void OnPointerUp(PointerEventData pointerEventData)
     {
+        if (BeatlinePreviewer.justCreated) return;
+
+        if (!DeletePrimed || pointerEventData.button != PointerEventData.InputButton.Left)
+        {
+            CalculateSelectionStatus(pointerEventData);
+        }
+
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
             DeletePrimed = false;
         }
+
+        TempoManager.UpdateBeatlines();
     }
 
     public bool Selected
@@ -267,7 +288,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // Goal is to follow standard selection functionality of most productivity programs
         if (clickData.button != PointerEventData.InputButton.Left) return;
 
-        // Shift-click functionality
         if (Input.GetKey(KeyCode.LeftShift))
         {
             selection.Clear();
@@ -280,7 +300,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
                 selection.Add(tick, targetEventSet[tick]);
             }
         }
-        // Left control if item is already selected
         else if (Input.GetKey(KeyCode.LeftControl))
         {
             if (selection.Keys.Contains(Tick))

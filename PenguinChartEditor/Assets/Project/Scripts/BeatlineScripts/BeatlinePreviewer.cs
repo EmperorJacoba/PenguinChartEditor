@@ -138,7 +138,7 @@ public class BeatlinePreviewer : Beatline
         TempoManager.UpdateBeatlines();
     }
 
-    bool IsOverlayRaycasterHit()
+    public bool IsOverlayRaycasterHit()
     {
         PointerEventData pointerData = new PointerEventData(EventSystem.current);
         pointerData.position = Input.mousePosition;

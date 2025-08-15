@@ -105,6 +105,8 @@ public class Delete<T> : IEditAction<T>
     {
         eventSetReference = targetEventSet;
     }
+    int startTick;
+    int endTick;
 
     /// <summary>
     /// Delete all events specified in a selection set.
@@ -140,17 +142,41 @@ public class Delete<T> : IEditAction<T>
 
         var overwritableEvents = GetOverwritableDictEvents(eventSetReference, startDeleteTick, endDeleteTick);
         if (overwritableEvents.Count == 0) return false;
-        
+
         foreach (var tick in overwritableEvents)
         {
-            eventSetReference.Remove(tick);
+            eventSetReference.Remove(tick, out T data);
+            SaveData.Add(tick, data);
         }
+
+        startTick = startDeleteTick;
+        endTick = endDeleteTick;
         return true;
     }
 
+    public bool Execute(int tick)
+    {
+        if (eventSetReference.Count == 0) return false;
+
+        if (!eventSetReference.ContainsKey(tick)) return false;
+
+        eventSetReference.Remove(tick, out T data);
+        SaveData.Add(tick, data);
+
+        startTick = tick;
+        endTick = tick;
+        return true;
+    }
 
     public void Undo()
     {
+        var ticksToClear = GetOverwritableDictEvents(eventSetReference, startTick, endTick);
+
+        foreach (var tick in ticksToClear)
+        {
+            eventSetReference.Remove(tick);
+        }
+
         foreach (var tick in SaveData)
         {
             eventSetReference.Add(tick.Key, tick.Value);
@@ -233,10 +259,20 @@ public class Move<T> : IEditAction<T>
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     SortedDictionary<int, T> eventSetReference;
 
-    public Move(SortedDictionary<int, T> targetEventSet)
+    public Move(SortedDictionary<int, T> targetEventSet, SortedDictionary<int, T> movingGhostSet, int offset)
     {
         eventSetReference = targetEventSet;
         SaveData = new(eventSetReference);
+
+        RemoveMovingData(movingGhostSet, offset);
+    }
+
+    void RemoveMovingData(SortedDictionary<int, T> movingGhostSet, int offset)
+    {
+        foreach (var tick in movingGhostSet.Keys)
+        {
+            SaveData.Remove(tick + offset);
+        }
     }
 
     public void Undo()
