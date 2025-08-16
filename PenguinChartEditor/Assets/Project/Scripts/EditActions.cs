@@ -267,6 +267,8 @@ public class Move<T> : IEditAction<T>
         RemoveMovingData(movingGhostSet, offset);
     }
 
+    // Change this so that save data still preserves original state
+    // Or at least recombine this data with save data upon undo?
     void RemoveMovingData(SortedDictionary<int, T> movingGhostSet, int offset)
     {
         foreach (var tick in movingGhostSet.Keys)

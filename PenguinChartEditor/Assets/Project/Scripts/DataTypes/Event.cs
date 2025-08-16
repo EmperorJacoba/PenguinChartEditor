@@ -106,33 +106,41 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public virtual void MoveSelection()
     {
-        if (BeatlinePreviewer.instance.IsOverlayRaycasterHit()) return;
-        var moveData = GetMoveData();
-
         if (Input.GetKey(KeyCode.LeftControl)) return; // Let BPM labels do their thing undisturbed if applicable
 
+        var moveData = GetMoveData();
+        if (BeatlinePreviewer.instance.IsOverlayRaycasterHit() && !moveData.moveInProgress) return;
+
         var currentMouseTick = SongTimelineManager.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
+
+        // early return if no changes to mouse's grid snap
         if (currentMouseTick == moveData.lastMouseTick)
         {
             moveData.lastMouseTick = currentMouseTick;
             return;
         }
 
-        if (!moveData.moveInProgress)
+        if (!moveData.moveInProgress) // first loop only (init properties)
         {
             moveData.firstMouseTick = currentMouseTick;
+
             moveData.MovingGhostSet.Clear();
 
+            // first tick of move set should be 0 for correct pasting (localization)
+            // so get lowest tick to shift ticks down
             int lowestTick = 0;
-            if (GetEventData().Selection.Count > 0) lowestTick = GetEventData().Selection.Keys.Min();
+            if (GetEventData().Selection.Count > 0)
+                lowestTick = GetEventData().Selection.Keys.Min();
+
             moveData.selectionOriginTick = lowestTick;
 
-            // add relevant data for each tick into clipboard
             foreach (var selectedTick in GetEventData().Selection)
             {
                 moveData.MovingGhostSet.Add(selectedTick.Key - lowestTick, selectedTick.Value);
             }
             if (moveData.MovingGhostSet.Count == 0) return;
+
+            // happens after the moving set init in case no set is created (count = 0)
             moveData.moveInProgress = true;
 
             moveData.currentMoveAction = new(GetEventData().Events, moveData.MovingGhostSet, lowestTick);
@@ -148,43 +156,57 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         }
 
         if (moveData.MovingGhostSet.Count == 0) return;
-
         if (GetEventData().Selection.Count > 0) GetEventData().Selection.Clear();
 
-        var deleteAction = new Delete<T>(GetEventData().Events);
+        // Write everything to a temporary dictionary because otherwise tick 0 will not have
+        // a correct timestamp of 0 when writing to the main dictionary for BPM events
+        // SetEvents() in BPM cleans up data before actually applying the changes, which is required for BPM
+        // SetEvents() is already guaranteed by the interface so all event types will have it 
+        SortedDictionary<int, T> movingData = new(GetEventData().Events);
+
+        // delete last move preview's data
+        var deleteAction = new Delete<T>(movingData);
         deleteAction.Execute(moveData.lastTempGhostPasteStartTick, moveData.lastTempGhostPasteEndTick);
 
+        // re-add any data that was overwritten by last preview
         var keysToReAdd = moveData.currentMoveAction.SaveData.Keys.Where(x => x >= moveData.lastTempGhostPasteStartTick && x <= moveData.lastTempGhostPasteEndTick).ToHashSet();
-
         foreach (var overwrittenTick in keysToReAdd)
         {
-            if (GetEventData().Events.ContainsKey(overwrittenTick))
+            if (movingData.ContainsKey(overwrittenTick))
             {
-                GetEventData().Events.Remove(overwrittenTick);
+                movingData.Remove(overwrittenTick);
             }
-
-            GetEventData().Events.Add(overwrittenTick, moveData.currentMoveAction.SaveData[overwrittenTick]);
+            Debug.Log($"Adding (overwrite): {overwrittenTick}");
+            movingData.Add(overwrittenTick, moveData.currentMoveAction.SaveData[overwrittenTick]);
         }
 
+        // create new move preview
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
         var pasteDestination = moveData.selectionOriginTick + cursorMoveDifference;
+
 
         foreach (var movingTick in moveData.MovingGhostSet)
         {
             var adjustedTick = movingTick.Key + moveData.selectionOriginTick + cursorMoveDifference;
-            if (GetEventData().Events.ContainsKey(adjustedTick))
+            if (movingData.ContainsKey(adjustedTick))
             {
-                GetEventData().Events.Remove(adjustedTick);
+                movingData.Remove(adjustedTick);
             }
-            GetEventData().Events.Add(adjustedTick, movingTick.Value);
+            movingData.Add(adjustedTick, movingTick.Value);
+
+            // Debug.Log($"Adding (ghostset): {adjustedTick}, resulting from {movingTick.Key} plus {moveData.selectionOriginTick} plus {cursorMoveDifference}.");
         }
+
+        SetEvents(movingData);
+
+        // set up variables for next loop
         moveData.lastMouseTick = currentMouseTick;
         moveData.lastTempGhostPasteStartTick = pasteDestination;
         moveData.lastTempGhostPasteEndTick = moveData.MovingGhostSet.Keys.Max() + pasteDestination;
-        // moveData.lastDeleteAction = deleteAction;
 
-        // Store original version of event set
-        // When original data is not eclipsed by the move data, use original data
+        // optimize this code
+        // fix tick 0 move errors
+        // make delete primed universal
     }
 
     public virtual void CompleteMove()

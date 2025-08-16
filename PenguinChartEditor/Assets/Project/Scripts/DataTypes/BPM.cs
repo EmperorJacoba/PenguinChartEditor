@@ -324,6 +324,7 @@ public class BPM : Label<BPMData>
     /// <returns>The tick-time timestamp of the previous tempo event.</returns>
     public static int GetLastTempoEventTickInclusive(int currentTick)
     {
+        if (currentTick < 0) return 0;
         var tickTimeKeys = EventData.Events.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
