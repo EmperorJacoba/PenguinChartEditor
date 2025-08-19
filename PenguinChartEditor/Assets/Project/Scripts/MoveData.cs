@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class MoveData<T> where T : IEventData
 {
@@ -8,8 +9,13 @@ public class MoveData<T> where T : IEventData
     public int firstMouseTick;
     public int selectionOriginTick;
     public int lastTempGhostPasteStartTick;
-    public int lastTempGhostPasteEndTick;
+    public int lastTempGhostPasteEndTick
+    {
+        get
+        {
+            return lastTempGhostPasteStartTick + MovingGhostSet.Keys.Max();
+        }
+    }
     public Move<T> currentMoveAction;
-    public Delete<T> lastDeleteAction;
     public SortedDictionary<int, T> MovingGhostSet = new();
 }
