@@ -176,7 +176,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             {
                 movingData.Remove(overwrittenTick);
             }
-            Debug.Log($"Adding (overwrite): {overwrittenTick}");
             movingData.Add(overwrittenTick, moveData.currentMoveAction.SaveData[overwrittenTick]);
         }
 
@@ -193,8 +192,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
                 movingData.Remove(adjustedTick);
             }
             movingData.Add(adjustedTick, movingTick.Value);
-
-            // Debug.Log($"Adding (ghostset): {adjustedTick}, resulting from {movingTick.Key} plus {moveData.selectionOriginTick} plus {cursorMoveDifference}.");
         }
 
         SetEvents(movingData);

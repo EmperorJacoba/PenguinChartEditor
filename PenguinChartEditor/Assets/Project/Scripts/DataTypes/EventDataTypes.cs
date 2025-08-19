@@ -70,6 +70,12 @@ public struct TSData : IEquatable<TSData>, IEventData
         return Numerator == other.Numerator && Denominator == other.Denominator;
     }
 
+    public override string ToString()
+    {
+        return $"{Numerator} / {Denominator}";
+    }
+
+
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {
         unchecked

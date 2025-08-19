@@ -12,6 +12,10 @@ public class Bookmark : Label<BookmarkData>
 
     public override void SetEvents(SortedDictionary<int, BookmarkData> newEvents)
     {
+        if (!EventData.Events.ContainsKey(0))
+        {
+            EventData.Events.Add(0, new BookmarkData(moveData.currentMoveAction.poppedData[0].Name));
+        }
         EventData.Events = newEvents;
     }
 

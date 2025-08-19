@@ -158,7 +158,7 @@ public class Delete<T> : IEditAction<T>
     {
         if (eventSetReference.Count == 0) return false;
 
-        if (!eventSetReference.ContainsKey(tick)) return false;
+        if (!eventSetReference.ContainsKey(tick) || tick == 0) return false;
 
         eventSetReference.Remove(tick, out T data);
         SaveData.Add(tick, data);
@@ -257,6 +257,7 @@ public class Create<T> : IEditAction<T>
 public class Move<T> : IEditAction<T>
 {
     public SortedDictionary<int, T> SaveData { get; set; } = new();
+    public SortedDictionary<int, T> poppedData = new();
     SortedDictionary<int, T> eventSetReference;
 
     public Move(SortedDictionary<int, T> targetEventSet, SortedDictionary<int, T> movingGhostSet, int offset)
@@ -273,7 +274,8 @@ public class Move<T> : IEditAction<T>
     {
         foreach (var tick in movingGhostSet.Keys)
         {
-            SaveData.Remove(tick + offset);
+            SaveData.Remove(tick + offset, out T data);
+            poppedData.Add(tick + offset, data);
         }
     }
 

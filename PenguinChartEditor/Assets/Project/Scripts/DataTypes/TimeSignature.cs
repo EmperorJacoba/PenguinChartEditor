@@ -14,7 +14,14 @@ public class TimeSignature : Label<TSData>
     static MoveData<TSData> moveData = new();
     public override MoveData<TSData> GetMoveData() => moveData;
 
-    public override void SetEvents(SortedDictionary<int, TSData> newEvents) => EventData.Events = newEvents;
+    public override void SetEvents(SortedDictionary<int, TSData> newEvents)
+    {
+        if (!newEvents.ContainsKey(0))
+        {
+            newEvents.Add(0, new TSData(moveData.currentMoveAction.poppedData[0].Numerator, moveData.currentMoveAction.poppedData[0].Denominator));
+        }
+        EventData.Events = newEvents;
+    }
 
     #endregion
 
