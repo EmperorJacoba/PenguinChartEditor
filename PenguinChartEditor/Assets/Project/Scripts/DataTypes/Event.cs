@@ -66,6 +66,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             inputMap.Charting.Cut.performed += x => CutSelection();
             inputMap.Charting.Drag.performed += x => MoveSelection();
             inputMap.Charting.LMB.canceled += x => CompleteMove();
+            inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
             GetEventData().selectionActionsEnabled = true;
         }
     }
@@ -109,7 +110,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         if (Input.GetKey(KeyCode.LeftControl)) return; // Let BPM labels do their thing undisturbed if applicable
 
         var moveData = GetMoveData();
-        if (BeatlinePreviewer.instance.IsOverlayRaycasterHit() && !moveData.moveInProgress) return;
+        if (BeatlinePreviewer.instance.IsRaycasterHit(BeatlinePreviewer.instance.overlayUIRaycaster) && !moveData.moveInProgress) return;
 
         var currentMouseTick = SongTimelineManager.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
 
@@ -226,6 +227,15 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         TempoManager.UpdateBeatlines();
     }
 
+    public virtual void CheckForSelectionClear()
+    {
+        if (!BeatlinePreviewer.instance.IsRaycasterHit(BeatlinePreviewer.instance.beatlineCanvasRaycaster))
+        {
+            GetEventData().Selection.Clear();
+        }
+        TempoManager.UpdateBeatlines();
+    }
+
     public virtual void OnBeginDrag(PointerEventData pointerEventData) { }
 
     public virtual void OnEndDrag(PointerEventData pointerEventData) {}
@@ -334,7 +344,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         else
         {
             selection.Clear();
-            selection.Add(Tick, targetEventSet[Tick]);
+            if (targetEventSet.ContainsKey(Tick)) selection.Add(Tick, targetEventSet[Tick]);
         }
 
         // Record the last selection data for shift-click selection

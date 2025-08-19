@@ -9,7 +9,8 @@ using UnityEngine.UI;
 /// </summary>
 public class BeatlinePreviewer : Beatline
 {
-    [SerializeField] GraphicRaycaster overlayUIRaycaster;
+    public GraphicRaycaster overlayUIRaycaster;
+    public GraphicRaycaster beatlineCanvasRaycaster;
     [SerializeField] RectTransform boundaryReference;
 
     public static int currentPreviewTick;
@@ -78,7 +79,7 @@ public class BeatlinePreviewer : Beatline
 
         // Check to make sure user isn't doing something else atm (like adjusting volume, etc.)
         // In which case, disable visibility of the preview.
-        if (IsOverlayRaycasterHit())
+        if (IsRaycasterHit(overlayUIRaycaster))
         {
             tsLabel.Visible = false;
             bpmLabel.Visible = false;
@@ -121,7 +122,7 @@ public class BeatlinePreviewer : Beatline
     void CreateEvent()
     {
         // No creating events while user is messing with other UI parts (volume, etc.)
-        if (IsOverlayRaycasterHit()) return;
+        if (IsRaycasterHit(overlayUIRaycaster)) return;
 
         if (bpmLabel.Visible && !bpmLabel.GetEventData().Events.ContainsKey(Tick))
         {
@@ -138,15 +139,26 @@ public class BeatlinePreviewer : Beatline
         TempoManager.UpdateBeatlines();
     }
 
-    public bool IsOverlayRaycasterHit()
+    public bool IsRaycasterHit(GraphicRaycaster targetRaycaster)
     {
         PointerEventData pointerData = new PointerEventData(EventSystem.current);
         pointerData.position = Input.mousePosition;
 
         List<RaycastResult> results = new List<RaycastResult>();
-        overlayUIRaycaster.Raycast(pointerData, results);
+        targetRaycaster.Raycast(pointerData, results);
+
+        if (targetRaycaster == beatlineCanvasRaycaster)
+        {
+            string put = "";
+
+            foreach (var item in results)
+            {
+                put += $"\n{item}";
+            }
+            Debug.Log($"Items {results.Count}: \n{put}");
+        }
 
         // If a component from the toolboxes is raycasted from the cursor, then the overlay is hit.
-        if (results.Count > 0) return true; else return false;
+            if (results.Count > 0) return true; else return false;
     }
 }
