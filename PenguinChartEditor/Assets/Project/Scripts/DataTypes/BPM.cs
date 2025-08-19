@@ -4,7 +4,7 @@ using System;
 using UnityEngine.EventSystems;
 using System.Linq;
 
-public class BPM : Label<BPMData>
+public class BPM : Label<BPMData>, IDragHandler
 {
     const int SECONDS_PER_MINUTE = 60;
 
@@ -100,10 +100,8 @@ public class BPM : Label<BPMData>
 
     // This runs alongside MoveSelection() on each label locally if restrictions apply
     // ChangeBPMPositionFromDrag() works a lot simpler with this approach versus overriding the function
-    public override void OnDrag(PointerEventData data)
+    public void OnDrag(PointerEventData data)
     {
-        base.OnDrag(data);
-
         if (Tick == 0) return;
         if (Input.GetKey(KeyCode.LeftControl))
         {

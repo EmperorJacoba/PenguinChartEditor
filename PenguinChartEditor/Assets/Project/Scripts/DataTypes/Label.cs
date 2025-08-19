@@ -75,10 +75,8 @@ public abstract class Label<T> : Event<T>, ILabel  where T : IEventData
         ConcludeManualEdit();
     }
 
-    public override void OnPointerClick(PointerEventData data)
+    public void OnPointerClick(PointerEventData data)
     {
-        base.OnPointerClick(data);
-
         // Double click functionality for manual entry of beatline number
         if (!Input.GetKey(KeyCode.LeftControl) && data.button == PointerEventData.InputButton.Left && data.clickCount == 2)
         {

@@ -11,4 +11,5 @@ public class EventData<T> where T : IEventData
     public SortedDictionary<int, T> Selection { get; set; } = new();
     public SortedDictionary<int, T> Clipboard = new();
     public bool selectionActionsEnabled = false;
+    public bool RMBHeld = false;
 }

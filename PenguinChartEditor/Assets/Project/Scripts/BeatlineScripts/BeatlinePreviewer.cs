@@ -147,17 +147,6 @@ public class BeatlinePreviewer : Beatline
         List<RaycastResult> results = new List<RaycastResult>();
         targetRaycaster.Raycast(pointerData, results);
 
-        if (targetRaycaster == beatlineCanvasRaycaster)
-        {
-            string put = "";
-
-            foreach (var item in results)
-            {
-                put += $"\n{item}";
-            }
-            Debug.Log($"Items {results.Count}: \n{put}");
-        }
-
         // If a component from the toolboxes is raycasted from the cursor, then the overlay is hit.
             if (results.Count > 0) return true; else return false;
     }

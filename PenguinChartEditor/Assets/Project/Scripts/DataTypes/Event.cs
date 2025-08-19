@@ -6,7 +6,7 @@ using System;
 using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
 
-public interface IEvent<T> : IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler where T : IEventData
+public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IEventData
 {
     /// <summary>
     /// The tick-time timestamp that this event occurs at.
@@ -28,11 +28,6 @@ public interface IEvent<T> : IBeginDragHandler, IEndDragHandler, IDragHandler, I
     /// </summary>
     public bool Visible { get; set; }
 
-    /// <summary>
-    /// Is the right-click button currently being held down over this event? (for rclick + lclick functionality)
-    /// </summary>
-    public bool DeletePrimed { get; set; }
-
     void CopySelection();
     void PasteSelection();
     void DeleteSelection();
@@ -51,7 +46,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public abstract MoveData<T> GetMoveData();
     public abstract void SetEvents(SortedDictionary<int, T> newEvents);
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
-    public bool DeletePrimed { get; set; } // future: make global across events 
 
     protected virtual void Awake()
     {
@@ -67,6 +61,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             inputMap.Charting.Drag.performed += x => MoveSelection();
             inputMap.Charting.LMB.canceled += x => CompleteMove();
             inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
+            inputMap.Charting.RMB.performed += x => GetEventData().RMBHeld = true;
+            inputMap.Charting.RMB.canceled += x => GetEventData().RMBHeld = false;
             GetEventData().selectionActionsEnabled = true;
         }
     }
@@ -236,49 +232,24 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         TempoManager.UpdateBeatlines();
     }
 
-    public virtual void OnBeginDrag(PointerEventData pointerEventData) { }
-
-    public virtual void OnEndDrag(PointerEventData pointerEventData) {}
-
-    public virtual void OnDrag(PointerEventData pointerEventData) {}
-
-    public virtual void OnPointerClick(PointerEventData pointerEventData)
-    {
-        
-    }
-
     public void OnPointerDown(PointerEventData pointerEventData)
     {
-        if (DeletePrimed && pointerEventData.button == PointerEventData.InputButton.Left)
+        if (GetEventData().RMBHeld && pointerEventData.button == PointerEventData.InputButton.Left)
         {
             var deleteAction = new Delete<T>(GetEventData().Events);
             deleteAction.Execute(Tick);
         }
 
-        if (pointerEventData.button == PointerEventData.InputButton.Right)
-        {
-            DeletePrimed = true;
-        }
-
         TempoManager.UpdateBeatlines();
-
-        // Additionally: Temporary move overwrites are never undone 
-        // Additionally: Move actions are never committed to an action and thus cannot be undone
-
     }
 
     public void OnPointerUp(PointerEventData pointerEventData)
     {
         if (BeatlinePreviewer.justCreated) return;
 
-        if (!DeletePrimed || pointerEventData.button != PointerEventData.InputButton.Left)
+        if (!GetEventData().RMBHeld || pointerEventData.button != PointerEventData.InputButton.Left)
         {
             CalculateSelectionStatus(pointerEventData);
-        }
-
-        if (pointerEventData.button == PointerEventData.InputButton.Right)
-        {
-            DeletePrimed = false;
         }
 
         TempoManager.UpdateBeatlines();
