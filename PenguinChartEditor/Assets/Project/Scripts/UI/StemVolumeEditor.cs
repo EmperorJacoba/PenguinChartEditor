@@ -26,12 +26,22 @@ public class StemVolumeEditor : MonoBehaviour
     [SerializeField] Slider slider;
     [SerializeField] TextMeshProUGUI label;
     [SerializeField] TMP_InputField entryBox;
+    [SerializeField] Button muteButton;
+    [SerializeField] Button soloButton;
+
+    enum ButtonStates
+    {
+        normal,
+        muted,
+        soloed
+    }
 
     void Start()
     {
         slider.onValueChanged.AddListener(x => SliderChange(x));
         entryBox.onEndEdit.AddListener(x => EntryBoxChange(x));
     }
+
     /// <summary>
     /// Changes entry box and variable values upon slider value change.
     /// </summary>
@@ -43,7 +53,7 @@ public class StemVolumeEditor : MonoBehaviour
 
         entryBox.text = newValue.ToString();
 
-        PluginBassManager.ChangeStemVolume(StemType, newValue);
+        PluginBassManager.SetStemVolume(StemType, newValue);
     }
 
     /// <summary>
@@ -52,8 +62,16 @@ public class StemVolumeEditor : MonoBehaviour
     /// <param name="newValue"></param>
     void EntryBoxChange(string newValue)
     {
+        var valueAsFloat = ValidateEntryBoxText(newValue);
+        slider.value = valueAsFloat;
+
+        PluginBassManager.SetStemVolume(StemType, valueAsFloat);
+    }
+
+    float ValidateEntryBoxText(string text)
+    {
         // Entry boxes should be decimal numerical only
-        var valueAsFloat = float.Parse(newValue);
+        var valueAsFloat = float.Parse(text);
 
         // Clamp values to prevent illegal volumes
         if (valueAsFloat < 0)
@@ -64,9 +82,42 @@ public class StemVolumeEditor : MonoBehaviour
         {
             valueAsFloat = 1;
         }
+        return valueAsFloat;
+    }
 
-        slider.value = valueAsFloat;
+    public void OnMuteButtonPress()
+    {
+        if (PluginBassManager.StemVolumes[StemType] == PluginBassManager.MUTED)
+        {
+            // unmute stream, change volume to new value
+            PluginBassManager.SetStemVolume(StemType, ValidateEntryBoxText(entryBox.text), true);
+            UpdateButtonState(muteButton, ButtonStates.normal);
+        }
+        else
+        {
+            PluginBassManager.SetStemVolume(StemType, PluginBassManager.MUTED);
+            UpdateButtonState(muteButton, ButtonStates.muted);
+        }
+    }
 
-        PluginBassManager.ChangeStemVolume(StemType, valueAsFloat);
+    void UpdateButtonState(Button targetButton, ButtonStates newState)
+    {
+        switch (newState)
+        {
+            case ButtonStates.normal:
+                targetButton.image.color = Color.white;
+                break;
+            case ButtonStates.muted:
+                targetButton.image.color = Color.yellow;
+                break;
+            case ButtonStates.soloed:
+                targetButton.image.color = Color.red;
+                break;
+        }
+    }
+
+    public void OnSoloButtonPress()
+    {
+
     }
 }

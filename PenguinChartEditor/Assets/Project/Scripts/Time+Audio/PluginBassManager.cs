@@ -8,6 +8,8 @@ public class PluginBassManager : MonoBehaviour
     #region Properties
 
     const int SAMPLE_RATE = 44100;
+    public const float MAX_VOLUME = 1;
+    public const float MUTED = -1;
 
     /// <summary>
     /// Holds a value in seconds for how often to take a sample from all samples (1 millisecond)
@@ -23,11 +25,13 @@ public class PluginBassManager : MonoBehaviour
     /// Holds BASS stream data for playing audio. Stem is audio stem identifier, int is BASS stream data.
     /// </summary>
     public static Dictionary<ChartMetadata.StemType, int> StemStreams { get; private set; } = new();
+
+    public static Dictionary<ChartMetadata.StemType, float> StemVolumes { get; private set; } = new();
     
     /// <summary>
     /// Is the audio currently playing?
     /// </summary>
-    public static bool AudioPlaying 
+    public static bool AudioPlaying
     {
         get
         {
@@ -181,6 +185,8 @@ public class PluginBassManager : MonoBehaviour
     /// </summary>
     void UpdateStemStreams()
     {
+        StemStreams.Clear();
+        StemVolumes.Clear();
         foreach (var stem in ChartMetadata.Stems)
         {
             try
@@ -208,6 +214,11 @@ public class PluginBassManager : MonoBehaviour
         {
             Bass.BASS_StreamFree(StemStreams[stemType]); // I think I have to do this to prevent memory leaks? Just doing this to be cautious
             StemStreams.Remove(stemType); // Flush current value just in case
+        }
+
+        if (!StemVolumes.ContainsKey(stemType))
+        {
+            StemVolumes.Add(stemType, MAX_VOLUME);
         }
 
         StemStreams.Add(stemType, Bass.BASS_StreamCreateFile(songPath, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_STREAM_PRESCAN));
@@ -265,10 +276,12 @@ public class PluginBassManager : MonoBehaviour
         }
     }
 
-
-    public static void ChangeStemVolume(ChartMetadata.StemType stem, float newVolume)
+    public static void SetStemVolume(ChartMetadata.StemType stem, float newVolume, bool unmute = false)
     {
-        Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, newVolume);
+        if (!unmute && StemVolumes[stem] == MUTED) return;
+        StemVolumes[stem] = newVolume;
+        if (newVolume == MUTED) newVolume = 0;
+        Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, newVolume);   
     }
 
     /// <summary>
