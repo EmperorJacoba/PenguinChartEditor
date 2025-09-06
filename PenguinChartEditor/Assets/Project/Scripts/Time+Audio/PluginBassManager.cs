@@ -26,8 +26,9 @@ public class PluginBassManager : MonoBehaviour
     /// </summary>
     public static Dictionary<ChartMetadata.StemType, int> StemStreams { get; private set; } = new();
 
-    public static Dictionary<ChartMetadata.StemType, float> StemVolumes { get; private set; } = new();
-    
+    public static Dictionary<ChartMetadata.StemType, StemVolumeData> StemVolumes { get; private set; } = new();
+    public static HashSet<ChartMetadata.StemType> soloedStems = new();
+
     /// <summary>
     /// Is the audio currently playing?
     /// </summary>
@@ -58,17 +59,17 @@ public class PluginBassManager : MonoBehaviour
     /// The stem with the longest stream length in StemStreams. All other stem streams are linked to this stem for playback purposes.
     /// <para>This stream is guaranteed to exist in StemStreams at all times EXCEPT when there is no audio loaded.</para> 
     /// </summary>
-    private static ChartMetadata.StemType StreamLink {get; set;}
+    private static ChartMetadata.StemType StreamLink { get; set; }
 
     /// <summary>
     /// The length of the stream attached to the longest stem.
     /// </summary>
-    public static float SongLength {get; set;}
+    public static float SongLength { get; set; }
 
     #endregion
 
     #region Unity Functions
-    private void Awake() 
+    private void Awake()
     {
         ChartMetadata.TempSetUpStemDict();
 
@@ -78,13 +79,13 @@ public class PluginBassManager : MonoBehaviour
 
         // streams are only updated in Song Setup so this data will remain the same throughout entire scene usage
         UpdateStemStreams();
-        StreamLink = GetLongestStream(); 
+        StreamLink = GetLongestStream();
         LinkStreams();
     }
 
     void OnApplicationQuit()
     {
-        Bass.BASS_Free();     
+        Bass.BASS_Free();
     }
 
     #endregion
@@ -117,10 +118,10 @@ public class PluginBassManager : MonoBehaviour
 
         // GetAudioSamples() uses a different one-time stream from stemStreams{} because it needs BASS_STREAM_DECODE flag to get data
         var currentTrackStream = Bass.BASS_StreamCreateFile(
-            songPath, 
-            0, 0, 
+            songPath,
+            0, 0,
             BASSFlag.BASS_SAMPLE_FLOAT |
-            BASSFlag.BASS_STREAM_DECODE | 
+            BASSFlag.BASS_STREAM_DECODE |
             BASSFlag.BASS_STREAM_PRESCAN
         ); // Loads in file stream to get waveform data from
 
@@ -132,7 +133,7 @@ public class PluginBassManager : MonoBehaviour
 
         // Step 2: Calculate how long the song is and how many samples it will provide
         var songLengthBytes = Bass.BASS_ChannelGetLength(currentTrackStream); // Get # of bytes in song
-        var floatArrayLength = songLengthBytes/4; // # of vals in float[] array will be 1/4 of this bc 4 bytes per 32 bit float
+        var floatArrayLength = songLengthBytes / 4; // # of vals in float[] array will be 1/4 of this bc 4 bytes per 32 bit float
 
         // Step 3: Get an array of the samples from the BASS stream
         float[] allSamples = new float[floatArrayLength];
@@ -158,7 +159,7 @@ public class PluginBassManager : MonoBehaviour
         }
 
         // Step 7: Free up the stream to prevent memory leaks because BASS uses unmanaged code
-        Bass.BASS_StreamFree(currentTrackStream); 
+        Bass.BASS_StreamFree(currentTrackStream);
         // Data is no longer needed now that it has been processed in waveformData
 
         return waveformData;
@@ -169,13 +170,13 @@ public class PluginBassManager : MonoBehaviour
     /// </summary>
     /// <param name="stereoSamples"></param>
     /// <returns></returns>
-    private float[] ConvertStereoSamplestoMono(float[] stereoSamples) 
+    private float[] ConvertStereoSamplestoMono(float[] stereoSamples)
     {
         var monoSamples = new float[stereoSamples.Length / 2]; // stereo samples have two data points for every sample (L+R track)
-                                                         // so mono will have half the number of samples
+                                                               // so mono will have half the number of samples
         for (var i = 0; i < monoSamples.Length; i++)
         {
-            monoSamples[i] = (stereoSamples[i*2] + stereoSamples[i*2 + 1]) / 2; // average both stereo samples
+            monoSamples[i] = (stereoSamples[i * 2] + stereoSamples[i * 2 + 1]) / 2; // average both stereo samples
         }
         return monoSamples;
     }
@@ -218,7 +219,7 @@ public class PluginBassManager : MonoBehaviour
 
         if (!StemVolumes.ContainsKey(stemType))
         {
-            StemVolumes.Add(stemType, MAX_VOLUME);
+            StemVolumes.Add(stemType, new(MAX_VOLUME, false));
         }
 
         StemStreams.Add(stemType, Bass.BASS_StreamCreateFile(songPath, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_STREAM_PRESCAN));
@@ -251,7 +252,7 @@ public class PluginBassManager : MonoBehaviour
         // Basic max value finder algorithm: get length of each stem, overwrite current longest stem if new longest is found
         long streamLength = 0;
         ChartMetadata.StemType longestStream = 0; // if this function returns 0 then it shows nothing has been loaded
-        foreach(var stream in StemStreams)
+        foreach (var stream in StemStreams)
         {
             var currentStreamLength = Bass.BASS_ChannelGetLength(stream.Value);
             if (currentStreamLength > streamLength)
@@ -276,12 +277,28 @@ public class PluginBassManager : MonoBehaviour
         }
     }
 
-    public static void SetStemVolume(ChartMetadata.StemType stem, float newVolume, bool unmute = false)
+    public static void MuteStem(ChartMetadata.StemType stem)
     {
-        if (!unmute && StemVolumes[stem] == MUTED) return;
-        StemVolumes[stem] = newVolume;
-        if (newVolume == MUTED) newVolume = 0;
-        Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, newVolume);   
+        StemVolumes[stem] = new(StemVolumes[stem].Volume, true);
+        Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, 0);
+        Debug.Log($"{StemStreams[stem]} volume: {StemVolumes[stem].Volume}");
+    }
+
+    public static void UnmuteStem(ChartMetadata.StemType stem)
+    {
+        StemVolumes[stem] = new(StemVolumes[stem].Volume, false);
+        Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, StemVolumes[stem].Volume);
+        Debug.Log($"{StemStreams[stem]} volume: {StemVolumes[stem].Volume}");
+    }
+
+    public static void SetStemVolume(ChartMetadata.StemType stem, float newVolume)
+    {
+        StemVolumes[stem] = new(newVolume, StemVolumes[stem].Muted);
+
+        if (StemVolumes[stem].Muted) return;
+        Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, newVolume);
+
+        Debug.Log($"{StemStreams[stem]} volume: {StemVolumes[stem].Volume}");
     }
 
     /// <summary>
@@ -363,7 +380,7 @@ public class PluginBassManager : MonoBehaviour
             }
         }
     }
-    
+
     /// <summary>
     /// Get the current audio position of the main audio playback stem.
     /// </summary>
@@ -375,4 +392,15 @@ public class PluginBassManager : MonoBehaviour
 
     #endregion
     // need to free streams when switching to different tabs too
+}
+
+public struct StemVolumeData
+{
+    public float Volume;
+    public bool Muted;
+    public StemVolumeData(float volume, bool muted)
+    {
+        Volume = volume;
+        Muted = muted;
+    }
 }

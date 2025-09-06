@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using Unity.VisualScripting;
 
 /// <summary>
 /// The script attached to the prefab that contains volume controls for stems.
@@ -87,15 +88,20 @@ public class StemVolumeEditor : MonoBehaviour
 
     public void OnMuteButtonPress()
     {
-        if (PluginBassManager.StemVolumes[StemType] == PluginBassManager.MUTED)
+        if (PluginBassManager.soloedStems.Count > 0 && !PluginBassManager.soloedStems.Contains(StemType))
+        {
+            return;
+        }
+        
+        if (PluginBassManager.StemVolumes[StemType].Muted)
         {
             // unmute stream, change volume to new value
-            PluginBassManager.SetStemVolume(StemType, ValidateEntryBoxText(entryBox.text), true);
+            PluginBassManager.UnmuteStem(StemType);
             UpdateButtonState(muteButton, ButtonStates.normal);
         }
         else
         {
-            PluginBassManager.SetStemVolume(StemType, PluginBassManager.MUTED);
+            PluginBassManager.MuteStem(StemType);
             UpdateButtonState(muteButton, ButtonStates.muted);
         }
     }
@@ -118,6 +124,20 @@ public class StemVolumeEditor : MonoBehaviour
 
     public void OnSoloButtonPress()
     {
+        // mute all other stems except this one
+        // if this stem is muted, unmute it
+        // when unsoloing, check to make sure there is <2 stems unmuted
+        // if >=2 stems unmuted, just mute single stem
+
+        if (PluginBassManager.soloedStems.Contains(StemType))
+        {
+            // unmute 
+        }
+        else
+        {
+
+        }
+
 
     }
 }
