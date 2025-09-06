@@ -9,7 +9,6 @@ public class PluginBassManager : MonoBehaviour
 
     const int SAMPLE_RATE = 44100;
     public const float MAX_VOLUME = 1;
-    public const float MUTED = -1;
 
     /// <summary>
     /// Holds a value in seconds for how often to take a sample from all samples (1 millisecond)
@@ -281,14 +280,12 @@ public class PluginBassManager : MonoBehaviour
     {
         StemVolumes[stem] = new(StemVolumes[stem].Volume, true);
         Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, 0);
-        Debug.Log($"{StemStreams[stem]} volume: {StemVolumes[stem].Volume}");
     }
 
     public static void UnmuteStem(ChartMetadata.StemType stem)
     {
         StemVolumes[stem] = new(StemVolumes[stem].Volume, false);
         Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, StemVolumes[stem].Volume);
-        Debug.Log($"{StemStreams[stem]} volume: {StemVolumes[stem].Volume}");
     }
 
     public static void SetStemVolume(ChartMetadata.StemType stem, float newVolume)
@@ -297,8 +294,6 @@ public class PluginBassManager : MonoBehaviour
 
         if (StemVolumes[stem].Muted) return;
         Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, newVolume);
-
-        Debug.Log($"{StemStreams[stem]} volume: {StemVolumes[stem].Volume}");
     }
 
     /// <summary>

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using Unity.VisualScripting;
+using System.Linq;
 
 /// <summary>
 /// The script attached to the prefab that contains volume controls for stems.
@@ -88,7 +89,7 @@ public class StemVolumeEditor : MonoBehaviour
 
     public void OnMuteButtonPress()
     {
-        if (PluginBassManager.soloedStems.Count > 0 && !PluginBassManager.soloedStems.Contains(StemType))
+        if (PluginBassManager.soloedStems.Count > 0)
         {
             return;
         }
@@ -131,13 +132,37 @@ public class StemVolumeEditor : MonoBehaviour
 
         if (PluginBassManager.soloedStems.Contains(StemType))
         {
-            // unmute 
+            PluginBassManager.soloedStems.Remove(StemType);
+            if (PluginBassManager.soloedStems.Count > 0)
+            {
+                PluginBassManager.MuteStem(StemType);
+            }
+            else
+            {
+                foreach (var stem in PluginBassManager.StemVolumes.Keys.ToList())
+                {
+                    PluginBassManager.UnmuteStem(stem);
+                }
+            }
+
+            // unmute all other stems, unless soloed list is >1, when you should instead mute the current stem
+            UpdateButtonState(soloButton, ButtonStates.normal);
         }
         else
         {
+            if (PluginBassManager.soloedStems.Count == 0)
+            {
+                foreach (var stem in PluginBassManager.StemVolumes.Keys.ToList())
+                {
+                    PluginBassManager.MuteStem(stem);
+                }
+            }
 
+            PluginBassManager.UnmuteStem(StemType);
+            PluginBassManager.soloedStems.Add(StemType);
+            // mute all other stems, except those in the soloed list
+            UpdateButtonState(soloButton, ButtonStates.soloed);
+            UpdateButtonState(muteButton, ButtonStates.normal);
         }
-
-
     }
 }
