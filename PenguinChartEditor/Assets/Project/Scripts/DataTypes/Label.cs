@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -19,7 +20,7 @@ public interface ILabel
     public string ConvertDataToPreviewString();
 }
 
-public abstract class Label<T> : Event<T>, ILabel  where T : IEventData
+public abstract class Label<T> : Event<T>, ILabel where T : IEventData
 {
     [field: SerializeField] public GameObject LabelObject { get; set; }
     [field: SerializeField] public RectTransform LabelRectTransform { get; set; }
@@ -77,11 +78,31 @@ public abstract class Label<T> : Event<T>, ILabel  where T : IEventData
 
     public void OnPointerClick(PointerEventData data)
     {
+
+    }
+
+    int clickCount = 0;
+    public override void OnPointerDown(PointerEventData pointerEventData)
+    {
+        base.OnPointerDown(pointerEventData);
+
+        clickCount++;
         // Double click functionality for manual entry of beatline number
-        if (!Input.GetKey(KeyCode.LeftControl) && data.button == PointerEventData.InputButton.Left && data.clickCount == 2)
+        // eventData.clickCount does not work here - pointerDown and pointerUp do not trigger click count for some reason
+        // so manual coroutine solution is here to circumvent that issue
+        if (!Input.GetKey(KeyCode.LeftControl) && pointerEventData.button == PointerEventData.InputButton.Left && clickCount == 2)
         {
             ActivateManualInput();
             TempoManager.UpdateBeatlines();
         }
+
+        if (clickCount == 1) StartCoroutine(TriggerDoubleClick());
+    }
+
+    private static WaitForSeconds clickCooldown = new(0.5f);
+    IEnumerator TriggerDoubleClick()
+    {
+        yield return clickCooldown;
+        clickCount = 0;
     }
 }

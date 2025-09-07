@@ -269,7 +269,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         TempoManager.UpdateBeatlines();
     }
 
-    public void OnPointerDown(PointerEventData pointerEventData)
+    public virtual void OnPointerDown(PointerEventData pointerEventData)
     {
         if (GetEventData().RMBHeld && pointerEventData.button == PointerEventData.InputButton.Left)
         {
@@ -280,7 +280,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         TempoManager.UpdateBeatlines();
     }
 
-    public void OnPointerUp(PointerEventData pointerEventData)
+    public virtual void OnPointerUp(PointerEventData pointerEventData)
     {
         if (BeatlinePreviewer.justCreated) return;
 

@@ -96,7 +96,6 @@ public class StemVolumeEditor : MonoBehaviour
         
         if (PluginBassManager.StemVolumes[StemType].Muted)
         {
-            // unmute stream, change volume to new value
             PluginBassManager.UnmuteStem(StemType);
             UpdateButtonState(muteButton, ButtonStates.normal);
         }
@@ -125,11 +124,6 @@ public class StemVolumeEditor : MonoBehaviour
 
     public void OnSoloButtonPress()
     {
-        // mute all other stems except this one
-        // if this stem is muted, unmute it
-        // when unsoloing, check to make sure there is <2 stems unmuted
-        // if >=2 stems unmuted, just mute single stem
-
         if (PluginBassManager.soloedStems.Contains(StemType))
         {
             PluginBassManager.soloedStems.Remove(StemType);
@@ -139,13 +133,15 @@ public class StemVolumeEditor : MonoBehaviour
             }
             else
             {
+                // weird workaround is needed for this for loop with the list
+                // b/c C# doesn't like it when you edit a <K, <struct>> dictionary
+                // while you're enumerating through it
                 foreach (var stem in PluginBassManager.StemVolumes.Keys.ToList())
                 {
                     PluginBassManager.UnmuteStem(stem);
                 }
             }
 
-            // unmute all other stems, unless soloed list is >1, when you should instead mute the current stem
             UpdateButtonState(soloButton, ButtonStates.normal);
         }
         else
@@ -160,7 +156,7 @@ public class StemVolumeEditor : MonoBehaviour
 
             PluginBassManager.UnmuteStem(StemType);
             PluginBassManager.soloedStems.Add(StemType);
-            // mute all other stems, except those in the soloed list
+
             UpdateButtonState(soloButton, ButtonStates.soloed);
             UpdateButtonState(muteButton, ButtonStates.normal);
         }
