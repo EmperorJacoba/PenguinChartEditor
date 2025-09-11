@@ -250,8 +250,17 @@ public class BPM : Label<BPMData>, IDragHandler
 
         var thisBPM = EventData.Events[Tick].BPMChange;
         var nextBPMTick = GetNextTempoEventExclusive(Tick);
+
+        // This anchoring logic may present some accuracy errors in the dictionary
+        // *should* only be microseconds at most but logic may need to be rethought if possible
+        // maybe re-validate dictionary when exporting?
+        // Effects currently unknown, but round off should fix it if anything
+        // Please remove and re-think if any errors arise from exporting to different software/YARG/Clone Hero
         if (anchorNextEvent && nextBPMTick != Tick)
         {
+            // IF you want this to be modified to have anchors furthur than one beat:
+            // Apply this logic to the last event before the next anchor event while shifting everything else normally
+            // Recalculate range x to y function will probably be needed for that
             float anchoredBPS = ((nextBPMTick - Tick) / (float)ChartMetadata.ChartResolution) / (EventData.Events[nextBPMTick].Timestamp - newTime);
             float anchoredBPM = (float)Math.Round((anchoredBPS * 60), 3);
             thisBPM = anchoredBPM;
@@ -267,8 +276,6 @@ public class BPM : Label<BPMData>, IDragHandler
         // Display the changes
         TempoManager.UpdateBeatlines();
     }
-
-    
 
     /// <summary>
     /// Recalculate all tempo events from the tick-time timestamp modified onward.
