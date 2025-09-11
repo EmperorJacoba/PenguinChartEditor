@@ -76,11 +76,6 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         ConcludeManualEdit();
     }
 
-    public void OnPointerClick(PointerEventData data)
-    {
-
-    }
-
     int clickCount = 0;
     public override void OnPointerDown(PointerEventData pointerEventData)
     {

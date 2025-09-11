@@ -103,9 +103,13 @@ public class BPM : Label<BPMData>, IDragHandler
     public void OnDrag(PointerEventData data)
     {
         if (Tick == 0) return;
-        if (Input.GetKey(KeyCode.LeftControl))
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftAlt))
         {
-            ChangeBPMPositionFromDrag(data.delta.y);
+            ChangeBPMPositionFromDrag(data.delta.y, true);
+        }
+        else if (Input.GetKey(KeyCode.LeftControl))
+        {
+            ChangeBPMPositionFromDrag(data.delta.y, false);
         }
     }
 
@@ -224,11 +228,11 @@ public class BPM : Label<BPMData>, IDragHandler
     /// Change the data associated with a beatline event based on a click + drag from the user.
     /// </summary>
     /// <param name="mouseDelta">The difference between the mouse on this frame versus the last frame.</param>
-    private void ChangeBPMPositionFromDrag(float mouseDelta)
+    private void ChangeBPMPositionFromDrag(float mouseDelta, bool anchorNextEvent)
     {
         WaveformManager.GetCurrentDisplayedWaveformInfo(out var _, out var _, out var timeShown, out var _, out var _);
 
-        var percentOfScreenMoved = mouseDelta / Screen.height; // CHECK THIS
+        var percentOfScreenMoved = mouseDelta / Screen.height;
         var timeChange = percentOfScreenMoved * timeShown;
 
         // Use exclusive function because this needs to find the tempo event before this beatline's tempo event.
@@ -244,16 +248,27 @@ public class BPM : Label<BPMData>, IDragHandler
 
         if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
 
+        var thisBPM = EventData.Events[Tick].BPMChange;
+        var nextBPMTick = GetNextTempoEventExclusive(Tick);
+        if (anchorNextEvent && nextBPMTick != Tick)
+        {
+            float anchoredBPS = ((nextBPMTick - Tick) / (float)ChartMetadata.ChartResolution) / (EventData.Events[nextBPMTick].Timestamp - newTime);
+            float anchoredBPM = (float)Math.Round((anchoredBPS * 60), 3);
+            thisBPM = anchoredBPM;
+        }
+
         // Write new data: time changes for this beatline's tick, BPM changes for the last tick event.
-        EventData.Events[Tick] = new BPMData(EventData.Events[Tick].BPMChange, newTime);
+        EventData.Events[Tick] = new BPMData(thisBPM, newTime);
         EventData.Events[lastBPMTick] = new BPMData(newBPM, EventData.Events[lastBPMTick].Timestamp);
 
         // Update rest of dictionary to account for the time change.
-        RecalculateTempoEventDictionary(Tick, (float)timeChange);
+        if (!anchorNextEvent) RecalculateTempoEventDictionary(Tick, (float)timeChange);
 
         // Display the changes
         TempoManager.UpdateBeatlines();
     }
+
+    
 
     /// <summary>
     /// Recalculate all tempo events from the tick-time timestamp modified onward.
