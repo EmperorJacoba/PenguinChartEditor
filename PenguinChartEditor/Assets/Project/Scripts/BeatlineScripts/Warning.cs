@@ -14,11 +14,6 @@ public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         gameObject.SetActive(true);
     }
 
-    public void DeactivateWarning()
-    {
-        gameObject.SetActive(false);
-    }
-
     public bool Active
     {
         get

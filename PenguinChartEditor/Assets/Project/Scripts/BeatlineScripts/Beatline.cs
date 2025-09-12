@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// The script attached to the beatline prefab. 
@@ -110,34 +111,21 @@ public class Beatline : MonoBehaviour
 
     public void CheckForEvents()
     {
-        if (BPM.EventData.Events.ContainsKey(Tick))
-        {
-            bpmLabel.Visible = true;
-            bpmLabel.LabelText = bpmLabel.ConvertDataToPreviewString();
-            bpmLabel.Selected = bpmLabel.CheckForSelection();
-        }
-        else
-        {
-            bpmLabel.Visible = false;
-            bpmLabel.DeactivateManualInput();
-        }
+        if (BPM.EventData.Events.ContainsKey(Tick)) bpmLabel.SetLabelActive();
+        else bpmLabel.SetLabelInactive();
 
         if (TimeSignature.EventData.Events.ContainsKey(Tick))
         {
-            tsLabel.Visible = true;
-            tsLabel.LabelText = tsLabel.ConvertDataToPreviewString();
-            tsLabel.Selected = tsLabel.CheckForSelection();
+            tsLabel.SetLabelActive();
 
             if (!TimeSignature.IsEventValid(Tick)) tsWarningAlert.InitializeWarning(Warning.WarningType.invalidTimeSignature);
-            else tsWarningAlert.DeactivateWarning();
+            else tsWarningAlert.Active = false;
         }
         else
         {
             tsWarningAlert.Active = false;
-            tsLabel.Visible = false;
-            tsLabel.DeactivateManualInput();
+            tsLabel.SetLabelInactive();
         }
-
     }
 
     #endregion

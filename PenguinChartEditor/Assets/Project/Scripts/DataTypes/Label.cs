@@ -5,19 +5,12 @@ using UnityEngine.EventSystems;
 
 public interface ILabel
 {
-    /// <summary>
-    /// Reference to the game object label itself.
-    /// </summary>
-    GameObject LabelObject { get; set; }
-    RectTransform LabelRectTransform { get; set; }
-    TMP_InputField LabelEntryBox { get; set; }
+    bool Visible { get; set; }
     string LabelText { get; set; }
-    public void HandleManualEndEdit(string newVal);
-    public void DeactivateManualInput();
-    public void ActivateManualInput();
-    public void ConcludeManualEdit();
-    public void HandleEntryBoxDeselect();
-    public string ConvertDataToPreviewString();
+    bool Selected { get; set; }
+    string ConvertDataToPreviewString();
+    bool CheckForSelection();
+    void DeactivateManualInput();
 }
 
 public abstract class Label<T> : Event<T>, ILabel where T : IEventData
@@ -79,11 +72,23 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         ConcludeManualEdit();
     }
 
+    public void SetLabelActive()
+    {
+        Visible = true;
+        LabelText = ConvertDataToPreviewString();
+        Selected = CheckForSelection();
+    }
+
+    public void SetLabelInactive()
+    {
+        Visible = false;
+        DeactivateManualInput();
+    }
+
     int clickCount = 0;
     public override void OnPointerDown(PointerEventData pointerEventData)
     {
         base.OnPointerDown(pointerEventData);
-        //if (Visible != true) return;
 
         clickCount++;
         // Double click functionality for manual entry of beatline number
