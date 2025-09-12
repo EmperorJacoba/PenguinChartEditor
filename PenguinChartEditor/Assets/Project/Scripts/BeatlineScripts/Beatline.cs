@@ -119,6 +119,7 @@ public class Beatline : MonoBehaviour
         else
         {
             bpmLabel.Visible = false;
+            bpmLabel.DeactivateManualInput();
         }
 
         if (TimeSignature.EventData.Events.ContainsKey(Tick))
@@ -134,6 +135,7 @@ public class Beatline : MonoBehaviour
         {
             tsWarningAlert.Active = false;
             tsLabel.Visible = false;
+            tsLabel.DeactivateManualInput();
         }
 
     }

@@ -49,6 +49,8 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     public abstract void HandleManualEndEdit(string newVal);
     public void ActivateManualInput()
     {
+        if (LabelObject.activeInHierarchy != true || !GetEventData().Events.ContainsKey(Tick)) return;
+
         LabelEntryBox.gameObject.SetActive(true);
         LabelEntryBox.ActivateInputField();
 
@@ -56,6 +58,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         BeatlinePreviewer.editMode = false;
 
         SongTimelineManager.DisableChartingInputMap();
+        
     }
 
     public void DeactivateManualInput()
@@ -80,6 +83,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     public override void OnPointerDown(PointerEventData pointerEventData)
     {
         base.OnPointerDown(pointerEventData);
+        //if (Visible != true) return;
 
         clickCount++;
         // Double click functionality for manual entry of beatline number
