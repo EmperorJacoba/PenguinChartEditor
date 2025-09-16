@@ -17,11 +17,11 @@ public class StemVolumeScrollView : MonoBehaviour
 
         // Create volume slider for each stem AND fit a scroll view perfectly around them!
         // Set the height of the content rect transform so that it can fit all the volume sliders
-        scrollViewContentRt.sizeDelta = new Vector2(0, volumeEditorHeight * ChartMetadata.Stems.Count);
+        scrollViewContentRt.sizeDelta = new Vector2(0, volumeEditorHeight * Metadata.Stems.Count);
 
         int numEntries = 0;
         // Create a slider package for each stem the user has
-        foreach (var entry in ChartMetadata.Stems)
+        foreach (var entry in Metadata.Stems)
         {
             var currentEditor = Instantiate(volumeEditor, scrollViewContentRt.transform);
             // Update the text on the given slider package for the current stem

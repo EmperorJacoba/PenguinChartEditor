@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class WaveformManager : MonoBehaviour
 {
-    [SerializeField] PluginBassManager pluginBassManager;
+    [SerializeField] AudioManager pluginBassManager;
     static Strikeline strikeline;
 
     #region Properties
@@ -106,14 +106,14 @@ public class WaveformManager : MonoBehaviour
     /// <summary>
     /// The currently displayed waveform.
     /// </summary>
-    private static ChartMetadata.StemType CurrentWaveform {get; set;}
+    private static Metadata.StemType CurrentWaveform {get; set;}
 
     /// <summary>
     /// Dictionary that contains waveform point data for each song stem.
     /// <para>ChartMetadata.StemType is the audio stem the data belongs to</para>
     /// <para>The tuple in the value holds the data (float[]) and the number of bytes per sample (long)</para>
     /// </summary>
-    public static Dictionary<ChartMetadata.StemType, (float[], long)> WaveformData { get; private set; } = new();
+    public static Dictionary<Metadata.StemType, (float[], long)> WaveformData { get; private set; } = new();
     // The number of bytes per sample is needed in order to accurately play and seek through the track in PluginBassManager
     // The number of bytes can vary based on the type of audio file the user inputs, like if they use .opus, .mp3 together, etc.
     // long is just what Bass returns and I don't want to do a million casts just to make this a regular int
@@ -140,7 +140,7 @@ public class WaveformManager : MonoBehaviour
         rt.pivot = boundsRectTransform.pivot;
         rtHeight = rt.rect.height;
 
-        CurrentWaveform = ChartMetadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default
+        CurrentWaveform = Metadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default
         // This is just so that the waveform has something to generate from (avoid bricking program from error)
 
         InitializeWaveformData();
@@ -153,7 +153,7 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     void InitializeWaveformData()
     {
-        foreach (var pair in ChartMetadata.Stems)
+        foreach (var pair in Metadata.Stems)
         {
             UpdateWaveformData(pair.Key);
         }
@@ -163,7 +163,7 @@ public class WaveformManager : MonoBehaviour
     /// Update waveform data to a new audio file.
     /// </summary>
     /// <param name="stem">The BASS stream to get audio samples of.</param>
-    public void UpdateWaveformData(ChartMetadata.StemType stem) // pass in file path here later
+    public void UpdateWaveformData(Metadata.StemType stem) // pass in file path here later
     {
         float[] stemWaveformData = pluginBassManager.GetAudioSamples(stem, out long bytesPerSample); 
 
@@ -236,7 +236,7 @@ public class WaveformManager : MonoBehaviour
     public void ChangeWaveformSegment()
     {
         // This can use an implicit cast because song position is always rounded to 3 decimal places
-        CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPositionSeconds * PluginBassManager.SAMPLES_PER_SECOND);
+        CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPositionSeconds * AudioManager.SAMPLES_PER_SECOND);
 
         GenerateWaveformPoints();
     }
@@ -245,7 +245,7 @@ public class WaveformManager : MonoBehaviour
     /// Update the visible and calculated-upon waveform.
     /// </summary>
     /// <param name="stem">The stem to set to the active waveform.</param>
-    public void ChangeDisplayedWaveform(ChartMetadata.StemType stem)
+    public void ChangeDisplayedWaveform(Metadata.StemType stem)
     {
         SetWaveformVisibility(true);
         CurrentWaveform = stem;
@@ -262,9 +262,9 @@ public class WaveformManager : MonoBehaviour
         GetWaveformProperties(out var _, out var samplesPerScreen, out var strikeSamplePoint);
 
         // get to bottom of screen, calculate what that waveform position is in seconds
-        var startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * PluginBassManager.ARRAY_RESOLUTION; 
+        var startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * AudioManager.ARRAY_RESOLUTION; 
         // get to bottom of screen, jump to top of screen with samplesPerScreen, calculate what that waveform position is in seconds
-        var endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * PluginBassManager.ARRAY_RESOLUTION;
+        var endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * AudioManager.ARRAY_RESOLUTION;
 
         return (startPoint, endPoint);
     }

@@ -14,11 +14,11 @@ public class SongScrubber : MonoBehaviour
     
     void UpdateSongScrubber()
     {
-        scrubber.value = (float)SongTimelineManager.SongPositionSeconds / PluginBassManager.SongLength;
+        scrubber.value = (float)SongTimelineManager.SongPositionSeconds / AudioManager.SongLength;
     }
 
     void UpdateSongTimeFromScrubber(float newPos)
     {
-        SongTimelineManager.SongPositionSeconds = PluginBassManager.SongLength * scrubber.value;
+        SongTimelineManager.SongPositionSeconds = AudioManager.SongLength * scrubber.value;
     }
 }

@@ -176,7 +176,7 @@ public class BPM : Label<BPMData>, IDragHandler
         if (timestamp <= 0)
             return 0;
 
-        else if (timestamp > PluginBassManager.SongLength)
+        else if (timestamp > AudioManager.SongLength)
             return SongTimelineManager.SongLengthTicks;
 
         // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
@@ -210,14 +210,14 @@ public class BPM : Label<BPMData>, IDragHandler
         }
 
         // Rearranging of .chart format specification distance between two ticks - thanks, algebra class!
-        return Mathf.RoundToInt((ChartMetadata.ChartResolution * EventData.Events[lastTickEvent].BPMChange * (float)(timestamp - EventData.Events[lastTickEvent].Timestamp) / SECONDS_PER_MINUTE) + lastTickEvent);
+        return Mathf.RoundToInt((Chart.Resolution * EventData.Events[lastTickEvent].BPMChange * (float)(timestamp - EventData.Events[lastTickEvent].Timestamp) / SECONDS_PER_MINUTE) + lastTickEvent);
     }
 
     public static double ConvertTickTimeToSeconds(int ticktime)
     {
         var lastTickEvent = GetLastTempoEventTickInclusive(ticktime);
         // Formula from .chart format specifications
-        return ((ticktime - lastTickEvent) / (double)ChartMetadata.ChartResolution * SECONDS_PER_MINUTE / EventData.Events[lastTickEvent].BPMChange) + EventData.Events[lastTickEvent].Timestamp;
+        return ((ticktime - lastTickEvent) / (double)Chart.Resolution * SECONDS_PER_MINUTE / EventData.Events[lastTickEvent].BPMChange) + EventData.Events[lastTickEvent].Timestamp;
     }
 
     #endregion
@@ -243,7 +243,7 @@ public class BPM : Label<BPMData>, IDragHandler
 
         // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
         // Calculate the new BPM based on the time change
-        float newBPS = ((Tick - lastBPMTick) / (float)ChartMetadata.ChartResolution) / (newTime - EventData.Events[lastBPMTick].Timestamp);
+        float newBPS = ((Tick - lastBPMTick) / (float)Chart.Resolution) / (newTime - EventData.Events[lastBPMTick].Timestamp);
         float newBPM = (float)Math.Round((newBPS * 60), 3);
 
         if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
@@ -261,7 +261,7 @@ public class BPM : Label<BPMData>, IDragHandler
             // IF you want this to be modified to have anchors furthur than one beat:
             // Apply this logic to the last event before the next anchor event while shifting everything else normally
             // Recalculate range x to y function will probably be needed for that
-            float anchoredBPS = ((nextBPMTick - Tick) / (float)ChartMetadata.ChartResolution) / (EventData.Events[nextBPMTick].Timestamp - newTime);
+            float anchoredBPS = ((nextBPMTick - Tick) / (float)Chart.Resolution) / (EventData.Events[nextBPMTick].Timestamp - newTime);
             float anchoredBPM = (float)Math.Round((anchoredBPS * 60), 3);
             thisBPM = anchoredBPM;
         }
@@ -304,7 +304,7 @@ public class BPM : Label<BPMData>, IDragHandler
             {
                 // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
                 calculatedTimeSecondDifference =
-                (tickEvents[i] - tickEvents[i - 1]) / (double)ChartMetadata.ChartResolution * 60 / EventData.Events[tickEvents[i - 1]].BPMChange;
+                (tickEvents[i] - tickEvents[i - 1]) / (double)Chart.Resolution * 60 / EventData.Events[tickEvents[i - 1]].BPMChange;
             }
 
             currentSongTime += calculatedTimeSecondDifference;

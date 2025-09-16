@@ -13,7 +13,7 @@ public class AudioNavigationButtons : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        PluginBassManager.PlaybackStateChanged += state => ManagePlaybackButtonStates(state);
+        AudioManager.PlaybackStateChanged += state => ManagePlaybackButtonStates(state);
         ManagePlaybackButtonStates(false);
     }
 

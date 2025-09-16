@@ -22,7 +22,7 @@ public class SongTimelineManager : MonoBehaviour
         }
         set
         {
-            if (value > PluginBassManager.SongLength) return;
+            if (value > AudioManager.SongLength) return;
             value = Math.Round(value, 3); // So that CurrentWFDataPosition comes out clean
             if (_songPos == value) return;
             _songPos = value;
@@ -54,7 +54,7 @@ public class SongTimelineManager : MonoBehaviour
     {
         get
         {
-            return BPM.ConvertSecondsToTickTime(PluginBassManager.SongLength);
+            return BPM.ConvertSecondsToTickTime(AudioManager.SongLength);
         }
     }
 
@@ -74,7 +74,7 @@ public class SongTimelineManager : MonoBehaviour
         inputMap.Charting.MiddleMouseClick.started += x => ChangeMiddleClick(true);
         inputMap.Charting.MiddleMouseClick.canceled += x => ChangeMiddleClick(false);
 
-        (BPM.EventData.Events, TimeSignature.EventData.Events) = ChartParser.GetSyncTrackEventDicts(ChartMetadata.ChartPath);
+        (BPM.EventData.Events, TimeSignature.EventData.Events) = ChartParser.GetSyncTrackEventDicts(Chart.ChartPath);
 
         if (BPM.EventData.Events.Count == 0) // if there is no data to load in 
         {
@@ -102,9 +102,9 @@ public class SongTimelineManager : MonoBehaviour
 
         // No funky calculations needed, just update the song position every frame
         // Add calibration here later on
-        if (PluginBassManager.AudioPlaying)
+        if (AudioManager.AudioPlaying)
         {
-            SongPositionSeconds = PluginBassManager.GetCurrentAudioPosition();
+            SongPositionSeconds = AudioManager.GetCurrentAudioPosition();
         }
     }
 
@@ -172,9 +172,9 @@ public class SongTimelineManager : MonoBehaviour
         {
             SongPositionSeconds = 0;
         }
-        else if (SongPositionSeconds >= PluginBassManager.SongLength)
+        else if (SongPositionSeconds >= AudioManager.SongLength)
         {
-            SongPositionSeconds = PluginBassManager.SongLength;
+            SongPositionSeconds = AudioManager.SongLength;
         }
     }
     
@@ -188,7 +188,7 @@ public class SongTimelineManager : MonoBehaviour
         if (cursorTickTime < 0) return 0;
 
         // Calculate the Tick grid to snap the event to
-        var tickInterval = ChartMetadata.ChartResolution / ((float)DivisionChanger.CurrentDivision / 4);
+        var tickInterval = Chart.Resolution / ((float)DivisionChanger.CurrentDivision / 4);
 
         // Calculate the cursor's Tick position in the context of the origin of the grid (last barline) 
         var divisionBasisTick = cursorTickTime - TimeSignature.GetLastBarline(cursorTickTime);

@@ -10,7 +10,7 @@ using System.Linq;
 /// </summary>
 public class StemVolumeEditor : MonoBehaviour
 {
-    public ChartMetadata.StemType StemType
+    public Metadata.StemType StemType
     {
         get
         {
@@ -23,7 +23,7 @@ public class StemVolumeEditor : MonoBehaviour
             _type = value;
         }
     }
-    private ChartMetadata.StemType _type;
+    private Metadata.StemType _type;
 
     [SerializeField] Slider slider;
     [SerializeField] TextMeshProUGUI label;
@@ -55,7 +55,7 @@ public class StemVolumeEditor : MonoBehaviour
 
         entryBox.text = newValue.ToString();
 
-        PluginBassManager.SetStemVolume(StemType, newValue);
+        AudioManager.SetStemVolume(StemType, newValue);
     }
 
     /// <summary>
@@ -67,7 +67,7 @@ public class StemVolumeEditor : MonoBehaviour
         var valueAsFloat = ValidateEntryBoxText(newValue);
         slider.value = valueAsFloat;
 
-        PluginBassManager.SetStemVolume(StemType, valueAsFloat);
+        AudioManager.SetStemVolume(StemType, valueAsFloat);
     }
 
     float ValidateEntryBoxText(string text)
@@ -89,19 +89,19 @@ public class StemVolumeEditor : MonoBehaviour
 
     public void OnMuteButtonPress()
     {
-        if (PluginBassManager.soloedStems.Count > 0)
+        if (AudioManager.soloedStems.Count > 0)
         {
             return;
         }
         
-        if (PluginBassManager.StemVolumes[StemType].Muted)
+        if (AudioManager.StemVolumes[StemType].Muted)
         {
-            PluginBassManager.UnmuteStem(StemType);
+            AudioManager.UnmuteStem(StemType);
             UpdateButtonState(muteButton, ButtonStates.normal);
         }
         else
         {
-            PluginBassManager.MuteStem(StemType);
+            AudioManager.MuteStem(StemType);
             UpdateButtonState(muteButton, ButtonStates.muted);
         }
     }
@@ -124,21 +124,21 @@ public class StemVolumeEditor : MonoBehaviour
 
     public void OnSoloButtonPress()
     {
-        if (PluginBassManager.soloedStems.Contains(StemType))
+        if (AudioManager.soloedStems.Contains(StemType))
         {
-            PluginBassManager.soloedStems.Remove(StemType);
-            if (PluginBassManager.soloedStems.Count > 0)
+            AudioManager.soloedStems.Remove(StemType);
+            if (AudioManager.soloedStems.Count > 0)
             {
-                PluginBassManager.MuteStem(StemType);
+                AudioManager.MuteStem(StemType);
             }
             else
             {
                 // weird workaround is needed for this for loop with the list
                 // b/c C# doesn't like it when you edit a <K, <struct>> dictionary
                 // while you're enumerating through it
-                foreach (var stem in PluginBassManager.StemVolumes.Keys.ToList())
+                foreach (var stem in AudioManager.StemVolumes.Keys.ToList())
                 {
-                    PluginBassManager.UnmuteStem(stem);
+                    AudioManager.UnmuteStem(stem);
                 }
             }
 
@@ -146,16 +146,16 @@ public class StemVolumeEditor : MonoBehaviour
         }
         else
         {
-            if (PluginBassManager.soloedStems.Count == 0)
+            if (AudioManager.soloedStems.Count == 0)
             {
-                foreach (var stem in PluginBassManager.StemVolumes.Keys.ToList())
+                foreach (var stem in AudioManager.StemVolumes.Keys.ToList())
                 {
-                    PluginBassManager.MuteStem(stem);
+                    AudioManager.MuteStem(stem);
                 }
             }
 
-            PluginBassManager.UnmuteStem(StemType);
-            PluginBassManager.soloedStems.Add(StemType);
+            AudioManager.UnmuteStem(StemType);
+            AudioManager.soloedStems.Add(StemType);
 
             UpdateButtonState(soloButton, ButtonStates.soloed);
             UpdateButtonState(muteButton, ButtonStates.normal);

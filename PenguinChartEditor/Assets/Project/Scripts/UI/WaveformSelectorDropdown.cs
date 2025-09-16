@@ -22,7 +22,7 @@ public class WaveformSelectorDropdown : MonoBehaviour
     /// Contains the stems and their stored option order in the waveform selector dropdown.
     /// <para>Index 0 has a value of 0 for a "null" or invisible value, which signals that the waveform has been turned off. First option is always "none."</para>
     /// </summary>
-    private List<ChartMetadata.StemType> dropdownIndexes = new();
+    private List<Metadata.StemType> dropdownIndexes = new();
 
     /// <summary>
     /// 
@@ -33,10 +33,10 @@ public class WaveformSelectorDropdown : MonoBehaviour
         dropdownIndexes.Add(0); // 0 is not valid StemType, but list will still accept it => used to show that waveform is inactive
 
         // Organize stems before adding to dropdown so the stem selection dropdown isn't a mess
-        ChartMetadata.Stems = ChartMetadata.Stems.OrderBy(pair => pair.Key).ToDictionary(pair => pair.Key, pair => pair.Value);
+        Metadata.Stems = Metadata.Stems.OrderBy(pair => pair.Key).ToDictionary(pair => pair.Key, pair => pair.Value);
 
         // Add options to dropdown from StemType
-        foreach (var entry in ChartMetadata.Stems)
+        foreach (var entry in Metadata.Stems)
         {
             var capitalizedEntry = MiscTools.Capitalize(entry.Key.ToString()); // for more polished look
             dropdown.options.Add(new TMP_Dropdown.OptionData(capitalizedEntry));
@@ -52,7 +52,7 @@ public class WaveformSelectorDropdown : MonoBehaviour
     /// <param name="index"></param>
     private void OnValueChanged(int index)
     {
-        if (Enum.IsDefined(typeof(ChartMetadata.StemType), index)) // value can be zero, but zero is not in StemType
+        if (Enum.IsDefined(typeof(Metadata.StemType), index)) // value can be zero, but zero is not in StemType
         {
             waveformManager.ChangeDisplayedWaveform(dropdownIndexes[index]);
             // ^^ dropdownIndexes is used instead of just the index because the dropdown only contains stems the user has defined

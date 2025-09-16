@@ -19,7 +19,7 @@ public class Metronome : MonoBehaviour
     void CheckForMetronomeHit()
     {
         // might change in case metronome for ffw/rw buttons is a wanted feature
-        if (!PluginBassManager.AudioPlaying || !metronomeActive)
+        if (!AudioManager.AudioPlaying || !metronomeActive)
         {
             firstLoop = true;
             return;
@@ -36,7 +36,7 @@ public class Metronome : MonoBehaviour
             // BASS is more reliable, consistant, and all-around better
             // for any audio applications. Near-instant response from this
             // while audio component will delay by ~100ms or so
-            PluginBassManager.PlayMetronomeSound();
+            AudioManager.PlayMetronomeSound();
 
             // Add a tick buffer (+1) so that the metronome will
             // not tick twice for the same tick 

@@ -10,7 +10,6 @@ public class ChartWriter : MonoBehaviour
 
     public static void WriteDotIniFile()
     {
-        StreamWriter iniWriter = new(ChartMetadata.IniPath);
-        iniWriter.WriteLine("[Song]");
+
     }
 }
