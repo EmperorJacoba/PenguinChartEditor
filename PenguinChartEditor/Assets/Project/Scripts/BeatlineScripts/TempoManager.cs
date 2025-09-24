@@ -10,6 +10,7 @@ public class TempoManager : MonoBehaviour
         // set up events so that beatlines can update whenever anything changes
         WaveformManager.DisplayChanged += UpdateBeatlines;
         boundaryReference = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
+        Chart.currentTab = Chart.TabType.TempoMap;
     }
     
     /// <summary>
@@ -17,6 +18,9 @@ public class TempoManager : MonoBehaviour
     /// </summary>
     public static void UpdateBeatlines()
     {
+        if (Chart.currentTab != Chart.TabType.TempoMap)
+            throw new System.Exception($"TempoManager.UpdateBeatlines is for use only in the TempoMap scene. Please call the correct scene refresh for {Chart.currentTab}.");
+            
         WaveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
         int currentBeatline = 0;
         // Generate the division and half-division beatlines

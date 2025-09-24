@@ -1,10 +1,18 @@
 using System;
+using UnityEditor.SearchService;
 using UnityEngine;
 
 public class Chart : MonoBehaviour
 {
     static Metadata Metadata { get; set; } = new();
     static Chart instance;
+
+    public enum TabType
+    {
+        SongSetup,
+        TempoMap
+    }
+    public static TabType currentTab;
 
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
@@ -52,5 +60,18 @@ public class Chart : MonoBehaviour
         DontDestroyOnLoad(instance);
 
         Metadata.TempSetUpStemDict();
+    }
+
+    public static void Refresh()
+    {
+        switch (currentTab)
+        {
+            case TabType.SongSetup:
+                Debug.LogWarning("Song setup tab does not have an update function.");
+                break;
+            case TabType.TempoMap:
+                TempoManager.UpdateBeatlines();
+                break;
+        }
     }
 }

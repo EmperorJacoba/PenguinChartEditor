@@ -136,7 +136,7 @@ public class BeatlinePreviewer : Beatline
 
         justCreated = true;
         // Show changes to user
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     public bool IsRaycasterHit(GraphicRaycaster targetRaycaster)

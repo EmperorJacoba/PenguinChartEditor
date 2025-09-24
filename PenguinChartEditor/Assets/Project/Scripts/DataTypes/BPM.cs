@@ -79,7 +79,7 @@ public class BPM : Label<BPMData>, IDragHandler
     {
         action();
         RecalculateTempoEventDictionary();
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     public override void HandleManualEndEdit(string newVal)
@@ -249,7 +249,16 @@ public class BPM : Label<BPMData>, IDragHandler
         if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
 
         var thisBPM = EventData.Events[Tick].BPMChange;
-        var nextBPMTick = GetNextTempoEventExclusive(Tick);
+
+        int nextBPMTick;
+        try
+        {
+            nextBPMTick = GetNextTempoEventExclusive(Tick);
+        }
+        catch
+        {
+            nextBPMTick = Tick;
+        }
 
         // This anchoring logic may present some accuracy errors in the dictionary
         // *should* only be microseconds at most but logic may need to be rethought if possible
@@ -274,7 +283,7 @@ public class BPM : Label<BPMData>, IDragHandler
         if (!anchorNextEvent) RecalculateTempoEventDictionary(Tick, (float)timeChange);
 
         // Display the changes
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     /// <summary>
@@ -398,11 +407,12 @@ public class BPM : Label<BPMData>, IDragHandler
 
         var index = tickTimeKeys.BinarySearch(currentTick);
 
+        // modify index if the found timestamp is at the end of the array (last tempo event)
+        if (~index == tickTimeKeys.Count) return tickTimeKeys.Count - 1;
+
         // bitwise complement is negative
         if (index > 0) return tickTimeKeys[index + 1];
 
-        // modify index if the found timestamp is at the end of the array (last tempo event)
-        if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
         // else just get the index proper 
         else index = ~index + 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
         try

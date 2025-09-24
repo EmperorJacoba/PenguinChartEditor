@@ -104,7 +104,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     {
         var pasteAction = new Paste<T>(GetEventData().Events);
         pasteAction.Execute(BeatlinePreviewer.currentPreviewTick, GetEventData().Clipboard);
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     public virtual void CutSelection()
@@ -117,14 +117,14 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     {
         var deleteAction = new Delete<T>(GetEventData().Events);
         deleteAction.Execute(GetEventData().Selection);
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     public virtual void CreateEvent(int newTick, T newData)
     {
         var createAction = new Create<T>(GetEventData().Events);
         createAction.Execute(newTick, newData, GetEventData().Selection);
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     /// <summary>
@@ -258,7 +258,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         BeatlinePreviewer.instance.gameObject.SetActive(true);
 
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     public virtual void CheckForSelectionClear()
@@ -267,16 +267,17 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         {
             GetEventData().Selection.Clear();
         }
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     void SelectAllEvents()
     {
+        GetEventData().Selection.Clear();
         foreach (var item in GetEventData().Events)
         {
             GetEventData().Selection.Add(item.Key, item.Value);
         }
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     public virtual void OnPointerDown(PointerEventData pointerEventData)
@@ -287,7 +288,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             deleteAction.Execute(Tick);
         }
 
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     public virtual void OnPointerUp(PointerEventData pointerEventData)
@@ -299,7 +300,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             CalculateSelectionStatus(pointerEventData);
         }
 
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     #endregion

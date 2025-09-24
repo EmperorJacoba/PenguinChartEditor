@@ -42,7 +42,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     public abstract void HandleManualEndEdit(string newVal);
     public void ActivateManualInput()
     {
-        if (LabelObject.activeInHierarchy != true || !GetEventData().Events.ContainsKey(Tick)) return;
+        if (!LabelObject.activeInHierarchy || !GetEventData().Events.ContainsKey(Tick)) return;
 
         LabelEntryBox.gameObject.SetActive(true);
         LabelEntryBox.ActivateInputField();
@@ -64,7 +64,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     {
         BeatlinePreviewer.editMode = true;
         DeactivateManualInput();
-        TempoManager.UpdateBeatlines();
+        Chart.Refresh();
     }
 
     public void HandleEntryBoxDeselect()
@@ -97,7 +97,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         if (!Input.GetKey(KeyCode.LeftControl) && pointerEventData.button == PointerEventData.InputButton.Left && clickCount == 2)
         {
             ActivateManualInput();
-            TempoManager.UpdateBeatlines();
+            Chart.Refresh();
         }
 
         if (clickCount == 1) StartCoroutine(TriggerDoubleClick());
