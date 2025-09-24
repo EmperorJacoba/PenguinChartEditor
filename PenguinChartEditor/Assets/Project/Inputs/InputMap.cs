@@ -182,6 +182,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""SelectAll"",
+                    ""type"": ""Button"",
+                    ""id"": ""76bf97b5-fea5-48c9-9a88-138ff3a3e841"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Drag"",
                     ""type"": ""Value"",
                     ""id"": ""3c15a169-6bba-427d-8b7e-fcb67995686e"",
@@ -449,6 +458,127 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""RMB"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""a143b1fb-4ceb-4ecb-ba45-eda9838738d3"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectAll"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""1ee880d0-331a-48cf-a18d-02b50d93edfb"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectAll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""e617510d-8b02-4530-ae84-904707517094"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectAll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
+        },
+        {
+            ""name"": ""ExternalCharting"",
+            ""id"": ""f25c031b-b541-4ec1-b78a-b5a06aced40c"",
+            ""actions"": [
+                {
+                    ""name"": ""IncreaseStep"",
+                    ""type"": ""Button"",
+                    ""id"": ""a074e63d-5ef5-4144-b2a7-131445c16043"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DecreaseStep"",
+                    ""type"": ""Button"",
+                    ""id"": ""0d6cad2f-8993-4ac0-b023-b3bada9c71cc"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PlayPause"",
+                    ""type"": ""Button"",
+                    ""id"": ""816115bb-21f3-4da1-b39c-94f8289bdcf8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Metronome"",
+                    ""type"": ""Button"",
+                    ""id"": ""7e577d58-2c09-4202-8dac-4b26ce43f966"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""7fac1a1c-01a8-46a6-a808-ae0ad2e07c05"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""IncreaseStep"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8290332c-828e-40c3-b0c7-394cabe559f2"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DecreaseStep"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7e29d100-6846-4927-ad3e-3221a9c9f6b9"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PlayPause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0bab2c27-fb65-4d6f-9247-548ac86af80f"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Metronome"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1520,9 +1650,16 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_Copy = m_Charting.FindAction("Copy", throwIfNotFound: true);
         m_Charting_Paste = m_Charting.FindAction("Paste", throwIfNotFound: true);
         m_Charting_Cut = m_Charting.FindAction("Cut", throwIfNotFound: true);
+        m_Charting_SelectAll = m_Charting.FindAction("SelectAll", throwIfNotFound: true);
         m_Charting_Drag = m_Charting.FindAction("Drag", throwIfNotFound: true);
         m_Charting_LMB = m_Charting.FindAction("LMB", throwIfNotFound: true);
         m_Charting_RMB = m_Charting.FindAction("RMB", throwIfNotFound: true);
+        // ExternalCharting
+        m_ExternalCharting = asset.FindActionMap("ExternalCharting", throwIfNotFound: true);
+        m_ExternalCharting_IncreaseStep = m_ExternalCharting.FindAction("IncreaseStep", throwIfNotFound: true);
+        m_ExternalCharting_DecreaseStep = m_ExternalCharting.FindAction("DecreaseStep", throwIfNotFound: true);
+        m_ExternalCharting_PlayPause = m_ExternalCharting.FindAction("PlayPause", throwIfNotFound: true);
+        m_ExternalCharting_Metronome = m_ExternalCharting.FindAction("Metronome", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1551,6 +1688,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     ~@InputMap()
     {
         UnityEngine.Debug.Assert(!m_Charting.enabled, "This will cause a leak and performance issues, InputMap.Charting.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_ExternalCharting.enabled, "This will cause a leak and performance issues, InputMap.ExternalCharting.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputMap.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, InputMap.Player.Disable() has not been called.");
     }
@@ -1638,6 +1776,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_Copy;
     private readonly InputAction m_Charting_Paste;
     private readonly InputAction m_Charting_Cut;
+    private readonly InputAction m_Charting_SelectAll;
     private readonly InputAction m_Charting_Drag;
     private readonly InputAction m_Charting_LMB;
     private readonly InputAction m_Charting_RMB;
@@ -1692,6 +1831,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Charting/Cut".
         /// </summary>
         public InputAction @Cut => m_Wrapper.m_Charting_Cut;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SelectAll".
+        /// </summary>
+        public InputAction @SelectAll => m_Wrapper.m_Charting_SelectAll;
         /// <summary>
         /// Provides access to the underlying input action "Charting/Drag".
         /// </summary>
@@ -1760,6 +1903,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Cut.started += instance.OnCut;
             @Cut.performed += instance.OnCut;
             @Cut.canceled += instance.OnCut;
+            @SelectAll.started += instance.OnSelectAll;
+            @SelectAll.performed += instance.OnSelectAll;
+            @SelectAll.canceled += instance.OnSelectAll;
             @Drag.started += instance.OnDrag;
             @Drag.performed += instance.OnDrag;
             @Drag.canceled += instance.OnDrag;
@@ -1810,6 +1956,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Cut.started -= instance.OnCut;
             @Cut.performed -= instance.OnCut;
             @Cut.canceled -= instance.OnCut;
+            @SelectAll.started -= instance.OnSelectAll;
+            @SelectAll.performed -= instance.OnSelectAll;
+            @SelectAll.canceled -= instance.OnSelectAll;
             @Drag.started -= instance.OnDrag;
             @Drag.performed -= instance.OnDrag;
             @Drag.canceled -= instance.OnDrag;
@@ -1852,6 +2001,135 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="ChartingActions" /> instance referencing this action map.
     /// </summary>
     public ChartingActions @Charting => new ChartingActions(this);
+
+    // ExternalCharting
+    private readonly InputActionMap m_ExternalCharting;
+    private List<IExternalChartingActions> m_ExternalChartingActionsCallbackInterfaces = new List<IExternalChartingActions>();
+    private readonly InputAction m_ExternalCharting_IncreaseStep;
+    private readonly InputAction m_ExternalCharting_DecreaseStep;
+    private readonly InputAction m_ExternalCharting_PlayPause;
+    private readonly InputAction m_ExternalCharting_Metronome;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "ExternalCharting".
+    /// </summary>
+    public struct ExternalChartingActions
+    {
+        private @InputMap m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public ExternalChartingActions(@InputMap wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/IncreaseStep".
+        /// </summary>
+        public InputAction @IncreaseStep => m_Wrapper.m_ExternalCharting_IncreaseStep;
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/DecreaseStep".
+        /// </summary>
+        public InputAction @DecreaseStep => m_Wrapper.m_ExternalCharting_DecreaseStep;
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/PlayPause".
+        /// </summary>
+        public InputAction @PlayPause => m_Wrapper.m_ExternalCharting_PlayPause;
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/Metronome".
+        /// </summary>
+        public InputAction @Metronome => m_Wrapper.m_ExternalCharting_Metronome;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_ExternalCharting; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="ExternalChartingActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(ExternalChartingActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="ExternalChartingActions" />
+        public void AddCallbacks(IExternalChartingActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ExternalChartingActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ExternalChartingActionsCallbackInterfaces.Add(instance);
+            @IncreaseStep.started += instance.OnIncreaseStep;
+            @IncreaseStep.performed += instance.OnIncreaseStep;
+            @IncreaseStep.canceled += instance.OnIncreaseStep;
+            @DecreaseStep.started += instance.OnDecreaseStep;
+            @DecreaseStep.performed += instance.OnDecreaseStep;
+            @DecreaseStep.canceled += instance.OnDecreaseStep;
+            @PlayPause.started += instance.OnPlayPause;
+            @PlayPause.performed += instance.OnPlayPause;
+            @PlayPause.canceled += instance.OnPlayPause;
+            @Metronome.started += instance.OnMetronome;
+            @Metronome.performed += instance.OnMetronome;
+            @Metronome.canceled += instance.OnMetronome;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="ExternalChartingActions" />
+        private void UnregisterCallbacks(IExternalChartingActions instance)
+        {
+            @IncreaseStep.started -= instance.OnIncreaseStep;
+            @IncreaseStep.performed -= instance.OnIncreaseStep;
+            @IncreaseStep.canceled -= instance.OnIncreaseStep;
+            @DecreaseStep.started -= instance.OnDecreaseStep;
+            @DecreaseStep.performed -= instance.OnDecreaseStep;
+            @DecreaseStep.canceled -= instance.OnDecreaseStep;
+            @PlayPause.started -= instance.OnPlayPause;
+            @PlayPause.performed -= instance.OnPlayPause;
+            @PlayPause.canceled -= instance.OnPlayPause;
+            @Metronome.started -= instance.OnMetronome;
+            @Metronome.performed -= instance.OnMetronome;
+            @Metronome.canceled -= instance.OnMetronome;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ExternalChartingActions.UnregisterCallbacks(IExternalChartingActions)" />.
+        /// </summary>
+        /// <seealso cref="ExternalChartingActions.UnregisterCallbacks(IExternalChartingActions)" />
+        public void RemoveCallbacks(IExternalChartingActions instance)
+        {
+            if (m_Wrapper.m_ExternalChartingActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="ExternalChartingActions.AddCallbacks(IExternalChartingActions)" />
+        /// <seealso cref="ExternalChartingActions.RemoveCallbacks(IExternalChartingActions)" />
+        /// <seealso cref="ExternalChartingActions.UnregisterCallbacks(IExternalChartingActions)" />
+        public void SetCallbacks(IExternalChartingActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ExternalChartingActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ExternalChartingActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="ExternalChartingActions" /> instance referencing this action map.
+    /// </summary>
+    public ExternalChartingActions @ExternalCharting => new ExternalChartingActions(this);
 
     // UI
     private readonly InputActionMap m_UI;
@@ -2374,6 +2652,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCut(InputAction.CallbackContext context);
         /// <summary>
+        /// Method invoked when associated input action "SelectAll" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectAll(InputAction.CallbackContext context);
+        /// <summary>
         /// Method invoked when associated input action "Drag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -2394,6 +2679,42 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRMB(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ExternalCharting" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="ExternalChartingActions.AddCallbacks(IExternalChartingActions)" />
+    /// <seealso cref="ExternalChartingActions.RemoveCallbacks(IExternalChartingActions)" />
+    public interface IExternalChartingActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "IncreaseStep" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnIncreaseStep(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DecreaseStep" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDecreaseStep(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "PlayPause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPlayPause(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Metronome" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMetronome(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

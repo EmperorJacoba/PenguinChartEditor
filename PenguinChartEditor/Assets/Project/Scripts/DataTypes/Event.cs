@@ -88,6 +88,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
             inputMap.Charting.RMB.performed += x => GetEventData().RMBHeld = true;
             inputMap.Charting.RMB.canceled += x => GetEventData().RMBHeld = false;
+            inputMap.Charting.SelectAll.performed += x => SelectAllEvents();
             GetEventData().selectionActionsEnabled = true;
         }
     }
@@ -265,6 +266,15 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         if (!BeatlinePreviewer.instance.IsRaycasterHit(BeatlinePreviewer.instance.beatlineCanvasRaycaster))
         {
             GetEventData().Selection.Clear();
+        }
+        TempoManager.UpdateBeatlines();
+    }
+
+    void SelectAllEvents()
+    {
+        foreach (var item in GetEventData().Events)
+        {
+            GetEventData().Selection.Add(item.Key, item.Value);
         }
         TempoManager.UpdateBeatlines();
     }

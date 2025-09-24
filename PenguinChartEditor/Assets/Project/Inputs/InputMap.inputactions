@@ -96,6 +96,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "SelectAll",
+                    "type": "Button",
+                    "id": "76bf97b5-fea5-48c9-9a88-138ff3a3e841",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Drag",
                     "type": "Value",
                     "id": "3c15a169-6bba-427d-8b7e-fcb67995686e",
@@ -363,6 +372,127 @@
                     "processors": "",
                     "groups": "",
                     "action": "RMB",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "a143b1fb-4ceb-4ecb-ba45-eda9838738d3",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectAll",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "1ee880d0-331a-48cf-a18d-02b50d93edfb",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectAll",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "e617510d-8b02-4530-ae84-904707517094",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectAll",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "ExternalCharting",
+            "id": "f25c031b-b541-4ec1-b78a-b5a06aced40c",
+            "actions": [
+                {
+                    "name": "IncreaseStep",
+                    "type": "Button",
+                    "id": "a074e63d-5ef5-4144-b2a7-131445c16043",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DecreaseStep",
+                    "type": "Button",
+                    "id": "0d6cad2f-8993-4ac0-b023-b3bada9c71cc",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PlayPause",
+                    "type": "Button",
+                    "id": "816115bb-21f3-4da1-b39c-94f8289bdcf8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Metronome",
+                    "type": "Button",
+                    "id": "7e577d58-2c09-4202-8dac-4b26ce43f966",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7fac1a1c-01a8-46a6-a808-ae0ad2e07c05",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "IncreaseStep",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8290332c-828e-40c3-b0c7-394cabe559f2",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DecreaseStep",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7e29d100-6846-4927-ad3e-3221a9c9f6b9",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PlayPause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0bab2c27-fb65-4d6f-9247-548ac86af80f",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Metronome",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
