@@ -1,11 +1,11 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using UnityEngine;
-using System.Dynamic;
 using System.Linq;
+using NUnit.Framework.Internal;
+using System.Diagnostics;
 
-public class ChartParser : MonoBehaviour
+public class ChartParser
 {
     // Note: When creating new chart file, make sure [SyncTrack] starts with a BPM and TS declaration!
     const int DEFAULT_TS_DENOMINATOR = 4;
@@ -16,6 +16,7 @@ public class ChartParser : MonoBehaviour
     const float BPM_FORMAT_CONVERSION = 1000.0f;
     const int TS_POWER_CONVERSION_NUMBER = 2;
     const float SECONDS_PER_MINUTE = 60;
+    
 
     string[] chartAsLines;
     public ChartParser(string filePath)
@@ -28,6 +29,8 @@ public class ChartParser : MonoBehaviour
     // Possibly in another object or collection where you access dictionaries based on type requested?
     public SortedDictionary<int, BPMData> bpmEvents;
     public SortedDictionary<int, TSData> tsEvents;
+    public int resolution;
+    public Metadata metadata;
 
     void ParseChartData()
     {
@@ -38,7 +41,7 @@ public class ChartParser : MonoBehaviour
             switch (eventGroup.EventGroupIdentifier)
             {
                 case ChartEventGroup.HeaderType.Song: // required (needs exception handling)
-                    // metadata parse
+                    (metadata, resolution) = ParseSongMetadata(eventGroup);
                     break;
                 case ChartEventGroup.HeaderType.SyncTrack: // required (needs exception handling)
                     (bpmEvents, tsEvents) = ParseSyncTrack(eventGroup);
@@ -51,13 +54,56 @@ public class ChartParser : MonoBehaviour
                     break;
             }
         }
+
+        // also need to parse chart stems
     }
 
-    public static int loadedChartResolution = UserSettings.DefaultResolution;
+    (Metadata, int) ParseSongMetadata(ChartEventGroup songEventGroup)
+    {
+        Metadata metadata = new();
+        if (File.Exists($"{Chart.FolderPath}/song.ini"))
+        {
+            var iniEventGroup = InitializeEventGroup($"{Chart.FolderPath}/song.ini");
+
+            foreach (var kvp in iniEventGroup.data)
+            {
+                if (Enum.TryParse(typeof(Metadata.MetadataType), kvp.Key, true, out var formattedKey))
+                {
+                    metadata.SongInfo.Add((Metadata.MetadataType)formattedKey, kvp.Value);
+                }
+                else if (Enum.TryParse(typeof(Metadata.InstrumentDifficultyType), kvp.Key, true, out var formattedInstrumentDiff))
+                {
+                    if (!int.TryParse(kvp.Value, out int instrumentDifficulty))
+                    {
+                        // log warning about unrecognized key
+                        metadata.Difficulties.Add((Metadata.InstrumentDifficultyType)formattedKey, instrumentDifficulty);
+                    }
+                }
+            }
+        }
+        else
+        {
+            // log warning about ini being more efficient
+            foreach (var kvp in songEventGroup.data)
+            {
+                if (Enum.TryParse(typeof(Metadata.MetadataType), kvp.Key.Trim(), true, out var iniFormattedKey))
+                {
+                    var formattedValue = kvp.Value.Replace("\"", "").Replace(", ", "");
+                    metadata.SongInfo.Add((Metadata.MetadataType)iniFormattedKey, formattedValue);
+                }
+            }
+        }
+        var resolutionData = songEventGroup.data.Where(list => list.Key.Trim() == "Resolution").ToList();
+
+        if (!int.TryParse(resolutionData[0].Value, out int resolutionValue))
+            throw new ArgumentException($"Resolution data is not valid. {HELPFUL_REMINDER}");
+
+        return (metadata, resolutionValue);
+    }
 
     (SortedDictionary<int, BPMData>, SortedDictionary<int, TSData>) ParseSyncTrack(ChartEventGroup syncTrackEventGroup)
     {
-        loadedChartResolution = GetResolution(chartAsLines);
+        resolution = GetResolution(chartAsLines);
 
         var events = syncTrackEventGroup.data;
 
@@ -68,7 +114,7 @@ public class ChartParser : MonoBehaviour
         foreach (var entry in events)
         {
             if (!entry.Value.Contains(TEMPO_EVENT_INDICATOR) && !entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
-                throw new ArgumentException($"{SYNC_TRACK_ERROR} [SyncTrack] has invalid tempo event: [{entry.Key} = {entry.Value}]. Error type: Invalid event identifier. {HELPFUL_REMINDER}");
+                throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid event identifier. {HELPFUL_REMINDER}");
 
             if (!int.TryParse(entry.Key, out int tickValue))
                 throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid Key. {HELPFUL_REMINDER}");
@@ -99,9 +145,9 @@ public class ChartParser : MonoBehaviour
                 int denominator = DEFAULT_TS_DENOMINATOR;
                 if (tsParts.Length == 2) // There is no space in the event value (only one number)
                 {
-                    if (int.TryParse(tsParts[1], out int denominatorBase2))
+                    if (int.TryParse(tsParts[1], out int denominatorLog2))
                         throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature denominator. {HELPFUL_REMINDER}");
-                    denominator = (int)Math.Pow(TS_POWER_CONVERSION_NUMBER, denominatorBase2);
+                    denominator = (int)Math.Pow(TS_POWER_CONVERSION_NUMBER, denominatorLog2);
                 }
 
                 tsEvents.Add(tickValue, new TSData(numerator, denominator));
@@ -123,7 +169,7 @@ public class ChartParser : MonoBehaviour
             if (i > 0)
             {
                 var tickDelta = ticks[i] - ticks[i - 1];
-                double timeDelta = tickDelta / (double)loadedChartResolution * SECONDS_PER_MINUTE / bpms[i - 1];
+                double timeDelta = tickDelta / (double)resolution * SECONDS_PER_MINUTE / bpms[i - 1];
                 currentSongTime += timeDelta;
             }
 
@@ -149,7 +195,7 @@ public class ChartParser : MonoBehaviour
         var cleanIdentifier = identifierLine.Replace("[", "").Replace("]", "");
 
         ChartEventGroup identifiedSection = new(
-            (ChartEventGroup.HeaderType)Enum.Parse(typeof(ChartEventGroup.HeaderType), cleanIdentifier)
+            (ChartEventGroup.HeaderType)Enum.Parse(typeof(ChartEventGroup.HeaderType), cleanIdentifier, true)
             );
 
         if (chartAsLines[lineIndex + 1] != "{") // line with { to mark beginning of section
@@ -176,6 +222,23 @@ public class ChartParser : MonoBehaviour
 
         identifiedSection.data = kvpConversion;
         return identifiedSection;
+    }
+
+    ChartEventGroup InitializeEventGroup(string iniPath)
+    {
+        var iniData = File.ReadAllLines(iniPath);
+        ChartEventGroup iniGroup = new(ChartEventGroup.HeaderType.Song);
+
+        List<KeyValuePair<string, string>> eventData = new();
+
+        for (int lineIndex = 1; lineIndex < iniData.Length; lineIndex++)
+        {
+            var lineParts = iniData[lineIndex].Split(" = ");
+            eventData.Add(new KeyValuePair<string, string>(lineParts[0].Trim(), lineParts[1].Trim()));
+        }
+
+        iniGroup.data = eventData;
+        return iniGroup;
     }
 
     static int GetResolution(string[] file)
@@ -244,6 +307,7 @@ class ChartEventGroup
         HardVox,
         ExpertVox
     }
+
     public HeaderType EventGroupIdentifier;
     public List<KeyValuePair<string, string>> data;
 

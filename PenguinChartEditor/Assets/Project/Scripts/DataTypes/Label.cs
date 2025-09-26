@@ -100,7 +100,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
             Chart.Refresh();
         }
 
-        if (clickCount == 1) StartCoroutine(TriggerDoubleClick());
+        if (clickCount == 1 && gameObject.activeInHierarchy) StartCoroutine(TriggerDoubleClick());
     }
 
     private static WaitForSeconds clickCooldown = new(0.5f);

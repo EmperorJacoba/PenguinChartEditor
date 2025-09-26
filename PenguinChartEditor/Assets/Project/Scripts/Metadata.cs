@@ -48,7 +48,7 @@ public class Metadata
         video_start_time,
     }
 
-    public static Dictionary<MetadataType, string> SongInfo = new();
+    public Dictionary<MetadataType, string> SongInfo = new();
 
     // All of these values store difficulties in a value from 0-6, although values higher than 6 are allowed for some niche CH uses.
     // Set up these values in the CHART tab - no sense setting them up when you don't have the tracks charted yet!
@@ -73,7 +73,7 @@ public class Metadata
         diff_vocals_harm
     }
 
-    public static Dictionary<InstrumentDifficultyType, int> Difficulties = new();
+    public Dictionary<InstrumentDifficultyType, int> Difficulties = new();
 
     /// <summary>
     /// Stores valid types of audio stems.

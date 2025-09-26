@@ -21,10 +21,6 @@ public class Chart : MonoBehaviour
     {
         get
         {
-            if (_chartResolution == 0)
-            {
-                _chartResolution = ChartParser.loadedChartResolution; // this will not work when reloading files, fix later
-            }
             return _chartResolution;
         }
         set
@@ -62,6 +58,10 @@ public class Chart : MonoBehaviour
         Metadata.TempSetUpStemDict();
 
         ChartParser chartParser = new(ChartPath);
+
+        Resolution = chartParser.resolution;
+        Metadata = chartParser.metadata;
+
         BPM.EventData.Events = chartParser.bpmEvents;
         TimeSignature.EventData.Events = chartParser.tsEvents;
 
