@@ -60,6 +60,19 @@ public class Chart : MonoBehaviour
         DontDestroyOnLoad(instance);
 
         Metadata.TempSetUpStemDict();
+
+        ChartParser chartParser = new(ChartPath);
+        BPM.EventData.Events = chartParser.bpmEvents;
+        TimeSignature.EventData.Events = chartParser.tsEvents;
+
+        if (BPM.EventData.Events.Count == 0) // if there is no data to load in 
+        {
+            BPM.EventData.Events.Add(0, new BPMData(120.0f, 0)); // add placeholder bpm
+        }
+        if (TimeSignature.EventData.Events.Count == 0)
+        {
+            TimeSignature.EventData.Events.Add(0, new TSData(4, 4));
+        }
     }
 
     public static void Refresh()

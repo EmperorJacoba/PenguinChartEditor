@@ -2,98 +2,179 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Dynamic;
+using System.Linq;
 
-public class ChartParser : MonoBehaviour
+public class ChartParser
 {
     // Note: When creating new chart file, make sure [SyncTrack] starts with a BPM and TS declaration!
     const int DEFAULT_TS_DENOMINATOR = 4;
+    const string TEMPO_EVENT_INDICATOR = "B";
+    const string TIME_SIGNATURE_EVENT_INDICATOR = "TS";
+    const string HELPFUL_REMINDER = "Please check the file and try again.";
+    const string SYNC_TRACK_ERROR = "[SyncTrack] has invalid tempo event:";
+    const float BPM_FORMAT_CONVERSION = 1000.0f;
+    const int TS_POWER_CONVERSION_NUMBER = 2;
+    const float SECONDS_PER_MINUTE = 60;
+
+    string[] chartAsLines;
+    public ChartParser(string filePath)
+    {
+        chartAsLines = File.ReadAllLines(filePath);
+        ParseChartData();
+    }
+
+    // Make accessing this more efficient
+    // Possibly in another object or collection where you access dictionaries based on type requested?
+    public SortedDictionary<int, BPMData> bpmEvents;
+    public SortedDictionary<int, TSData> tsEvents;
+
+    void ParseChartData()
+    {
+        var eventGroups = FormatEventSections();
+
+        foreach (var eventGroup in eventGroups)
+        {
+            switch (eventGroup.EventGroupIdentifier)
+            {
+                case ChartEventGroup.HeaderType.Song: // required (needs exception handling)
+                    // metadata parse
+                    break;
+                case ChartEventGroup.HeaderType.SyncTrack: // required (needs exception handling)
+                    (bpmEvents, tsEvents) = ParseSyncTrack(eventGroup);
+                    break;
+                case ChartEventGroup.HeaderType.Events:
+                    // events parse
+                    break;
+                default:
+                    // generic instrument parse
+                    break;
+            }
+        }
+    }
 
     public static int loadedChartResolution = UserSettings.DefaultResolution;
 
-    static (List<int>, List<float>, SortedDictionary<int, TSData>) GetSyncTrackEvents(string filePath)
+    (SortedDictionary<int, BPMData>, SortedDictionary<int, TSData>) ParseSyncTrack(ChartEventGroup syncTrackEventGroup)
     {
-        string[] chart = File.ReadAllLines(filePath);
-        int syncTrackPos = Array.IndexOf(chart, "[SyncTrack]");
+        loadedChartResolution = GetResolution(chartAsLines);
 
-        loadedChartResolution = FindResolution(chart);
-
-        if (syncTrackPos == -1)
-        {
-            throw new ArgumentException("No [SyncTrack] section found in file. Chart files require a [SyncTrack] section to be processed. Please check the file and try again.");
-        }
+        var events = syncTrackEventGroup.data;
 
         List<int> tempoTickTimeKeys = new();
         List<float> bpmVals = new();
         SortedDictionary<int, TSData> tsEvents = new();
 
-        var lineIndex = syncTrackPos + 2; // + 2 because first line is {
-        var currentLine = chart[lineIndex];
-        while (lineIndex < chart.Length && !currentLine.Contains("}"))
+        foreach (var entry in events)
         {
-            if (!CheckTempoEventLegality(currentLine)) throw new ArgumentException("[SyncTrack] has invalid tempo event. Please check file and try again.");
+            if (!entry.Value.Contains(TEMPO_EVENT_INDICATOR) || !entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
+                throw new ArgumentException($"{SYNC_TRACK_ERROR} [SyncTrack] has invalid tempo event: [{entry.Key} = {entry.Value}]. Error type: Invalid event identifier. {HELPFUL_REMINDER}");
 
-            var dividerIndex = currentLine.IndexOf(" = ");
-            var tickTimeKey = currentLine[..dividerIndex].Trim();
-            var eventValue = currentLine[(dividerIndex + 2)..].Trim().Split(" ");
+            if (!int.TryParse(entry.Key, out int tickValue))
+                throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid Key. {HELPFUL_REMINDER}");
 
-            // Next step based on if the event is a beat or time signature change (identifier in index 0 of the value)
-            if (eventValue[0] == "B")
+            if (entry.Value.Contains(TEMPO_EVENT_INDICATOR))
             {
-                tempoTickTimeKeys.Add(int.Parse(tickTimeKey));
-                bpmVals.Add(float.Parse(eventValue[1]) / 1000); // div by 1000 because .chart formats three-decimal BPM with no decimal point
-            }
-            else if(eventValue[0] == "TS")
-            {
-                string[] tsParts = eventValue[1].Split(" ");
-                if (tsParts.Length == 1) // There is no space in the event value (only one number)
-                {
-                    tsEvents.Add(int.Parse(tickTimeKey), new TSData(int.Parse(eventValue[1]), DEFAULT_TS_DENOMINATOR)); // Add default TS denom
-                }
-                else
-                {
-                    // If there is a TS event with two parts, undo the log in the second term (refer to format specs)
-                    tsEvents.Add(int.Parse(tickTimeKey), new TSData(int.Parse(tsParts[0]), (int)Math.Pow(2, int.Parse(tsParts[1]))));
-                }
-            }
+                tempoTickTimeKeys.Add(tickValue);
 
-            lineIndex++;
-            currentLine = chart[lineIndex];
+                var eventData = entry.Value;
+                eventData.Replace($"{TEMPO_EVENT_INDICATOR} ", ""); // SPACE IS VERY IMPORTANT HERE
+
+                if (!int.TryParse(eventData, out int bpmNoDecimal))
+                    throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid tempo entry. {HELPFUL_REMINDER}");
+
+                double bpmWithDecimal = bpmNoDecimal / BPM_FORMAT_CONVERSION;
+                bpmVals.Add((float)Math.Round(bpmWithDecimal, 3));
+            }
+            else if (entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
+            {
+                var eventData = entry.Value;
+                eventData.Replace($"{TIME_SIGNATURE_EVENT_INDICATOR} ", "");
+
+                string[] tsParts = eventData.Split(" ");
+
+                if (!int.TryParse(tsParts[0], out int numerator))
+                    throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature numerator. {HELPFUL_REMINDER}");
+
+                int denominator = DEFAULT_TS_DENOMINATOR;
+                if (tsParts.Length == 2) // There is no space in the event value (only one number)
+                {
+                    if (int.TryParse(tsParts[1], out int denominatorBase2))
+                        throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature denominator. {HELPFUL_REMINDER}");
+                    denominator = (int)Math.Pow(TS_POWER_CONVERSION_NUMBER, denominatorBase2);
+                }
+
+                tsEvents.Add(tickValue, new TSData(numerator, denominator));
+            }
         }
 
-        return (tempoTickTimeKeys, bpmVals, tsEvents);
+        var bpmEvents = FormatBPMDictionary(tempoTickTimeKeys, bpmVals);
+
+        return (bpmEvents, tsEvents);
     }
 
-    /// <summary>
-    /// Get a TempoEvent dictionary from a .chart file.
-    /// </summary>
-    /// <param name="filePath">The path of the .chart file.</param>
-    /// <returns>The sorted dictionary of TempoEvent values.</returns>
-    public static (SortedDictionary<int, BPMData>, SortedDictionary<int, TSData>) GetSyncTrackEventDicts(string filePath)
+    SortedDictionary<int, BPMData> FormatBPMDictionary(List<int> ticks, List<float> bpms)
     {
-        SortedDictionary<int, BPMData> outputTempoEventsDict = new();
-
-        (var tickTimeKeys, var bpmVals, var tsEvents) = GetSyncTrackEvents(filePath);
+        SortedDictionary<int, BPMData> outputDict = new();
 
         double currentSongTime = 0;
-        for (int i = 0; i < tickTimeKeys.Count; i++) // Calculate time-second positions of tempo changes for beatline rendering
+        for (int i = 0; i < ticks.Count; i++)
         {
-            double calculatedTimeSecondDifference = 0;
-
             if (i > 0)
             {
-                // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
-                calculatedTimeSecondDifference = 
-                (tickTimeKeys[i] - tickTimeKeys[i - 1]) / (double)loadedChartResolution * 60 / bpmVals[i - 1]; // 320 is sub-in for chart res right now b/c that's what i use personally
+                var tickDelta = ticks[i] - ticks[i - 1];
+                double timeDelta = tickDelta / (double)loadedChartResolution * SECONDS_PER_MINUTE / bpms[i - 1];
+                currentSongTime += timeDelta;
             }
 
-            currentSongTime += calculatedTimeSecondDifference;
-            outputTempoEventsDict.Add(tickTimeKeys[i], new BPMData(bpmVals[i], (float)currentSongTime));
+            outputDict.Add(ticks[i], new BPMData(bpms[i], (float)currentSongTime));
         }
-
-        return (outputTempoEventsDict, tsEvents);
+        return outputDict;
     }
 
-    static int FindResolution(string[] file)
+    List<ChartEventGroup> FormatEventSections()
+    {
+        List<ChartEventGroup> identifiedSections = new();
+        for (int lineNumber = 0; lineNumber < chartAsLines.Length - 1; lineNumber++)
+        {
+            if (chartAsLines[lineNumber].Contains("["))
+            identifiedSections.Add(InitializeEventGroup(lineNumber));
+        }
+        return identifiedSections;
+    }
+
+    ChartEventGroup InitializeEventGroup(int lineIndex)
+    {
+        var identifierLine = chartAsLines[lineIndex];
+        var cleanIdentifier = identifierLine.Replace("[", "").Replace("]", "");
+
+        ChartEventGroup identifiedSection = new(
+            (ChartEventGroup.HeaderType)Enum.Parse(typeof(ChartEventGroup.HeaderType), cleanIdentifier)
+            );
+
+        if (chartAsLines[lineIndex + 1] != "{") // line with { to mark beginning of section
+            throw new ArgumentException($"{identifiedSection.EventGroupIdentifier} is not enclosed properly. {HELPFUL_REMINDER}");
+
+        lineIndex += 2; // line with first bit of data
+        List<string> eventData = new();
+        string workingLine = chartAsLines[lineIndex];
+
+        // this needs more exception handling (not properly enclosed sections, etc.)
+        while (workingLine != "}" && lineIndex < chartAsLines.Length - 1)
+        {
+            eventData.Add(workingLine);
+
+            lineIndex++;
+            workingLine = chartAsLines[lineIndex];
+        }
+
+        var dictionaryConversion = eventData.Select(line => line.Split(" = ", 2)).ToDictionary(parts => parts[0].Trim(), parts => parts[1].Trim());
+
+        identifiedSection.data = dictionaryConversion;
+        return identifiedSection;
+    }
+
+    static int GetResolution(string[] file)
     {
         for (int i = 0; i < file.Length; i++)
         {
@@ -105,16 +186,65 @@ public class ChartParser : MonoBehaviour
         }
         throw new ArgumentException("Chart does not contain a resolution. Please add the correct resolution to the file and try again.");
     }
-
-    static bool CheckTempoEventLegality(string line)
-    {
-        if (line.Contains("B") || line.Contains("TS"))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
 }
+
+class ChartEventGroup
+{
+    public enum HeaderType
+    {
+        Song,
+        SyncTrack,
+        Events,
+        EasySingle,
+        MediumSingle,
+        HardSingle,
+        ExpertSingle,
+        EasyDoubleGuitar,
+        MediumDoubleGuitar,
+        HardDoubleGuitar,
+        ExpertDoubleGuitar,
+        EasyDoubleBass,
+        MediumDoubleBass,
+        HardDoubleBass,
+        ExpertDoubleBass,
+        EasyDoubleRhythm,
+        MediumDoubleRhythm,
+        HardDoubleRhythm,
+        ExpertDoubleRhythm,
+        EasyDrums,
+        MediumDrums,
+        HardDrums,
+        ExpertDrums,
+        EasyKeyboard,
+        MediumKeyboard,
+        HardKeyboard,
+        ExpertKeyboard,
+        EasyGHLGuitar,
+        MediumGHLGuitar,
+        HardGHLGuitar,
+        ExpertGHLGuitar,
+        EasyGHLBass,
+        MediumGHLBass,
+        HardGHLBass,
+        ExpertGHLBass,
+        EasyGHLCoop,
+        MediumGHLCoop,
+        HardGHLCoop,
+        ExpertGHLCoop,
+        EasyGHLRhythm,
+        MediumGHLRhythm,
+        HardGHLRhythm,
+        ExpertGHLRhythm,
+        EasyVox,
+        MediumVox,
+        HardVox,
+        ExpertVox
+    }
+    public HeaderType EventGroupIdentifier;
+    public Dictionary<string, string> data;
+
+    public ChartEventGroup(HeaderType identifier)
+    {
+        EventGroupIdentifier = identifier;
+    }
+} 
