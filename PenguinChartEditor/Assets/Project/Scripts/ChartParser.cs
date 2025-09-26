@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Dynamic;
 using System.Linq;
 
-public class ChartParser
+public class ChartParser : MonoBehaviour
 {
     // Note: When creating new chart file, make sure [SyncTrack] starts with a BPM and TS declaration!
     const int DEFAULT_TS_DENOMINATOR = 4;
@@ -67,7 +67,7 @@ public class ChartParser
 
         foreach (var entry in events)
         {
-            if (!entry.Value.Contains(TEMPO_EVENT_INDICATOR) || !entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
+            if (!entry.Value.Contains(TEMPO_EVENT_INDICATOR) && !entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
                 throw new ArgumentException($"{SYNC_TRACK_ERROR} [SyncTrack] has invalid tempo event: [{entry.Key} = {entry.Value}]. Error type: Invalid event identifier. {HELPFUL_REMINDER}");
 
             if (!int.TryParse(entry.Key, out int tickValue))
@@ -78,7 +78,7 @@ public class ChartParser
                 tempoTickTimeKeys.Add(tickValue);
 
                 var eventData = entry.Value;
-                eventData.Replace($"{TEMPO_EVENT_INDICATOR} ", ""); // SPACE IS VERY IMPORTANT HERE
+                eventData = eventData.Replace($"{TEMPO_EVENT_INDICATOR} ", ""); // SPACE IS VERY IMPORTANT HERE
 
                 if (!int.TryParse(eventData, out int bpmNoDecimal))
                     throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid tempo entry. {HELPFUL_REMINDER}");
@@ -89,7 +89,7 @@ public class ChartParser
             else if (entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
             {
                 var eventData = entry.Value;
-                eventData.Replace($"{TIME_SIGNATURE_EVENT_INDICATOR} ", "");
+                eventData = eventData.Replace($"{TIME_SIGNATURE_EVENT_INDICATOR} ", "");
 
                 string[] tsParts = eventData.Split(" ");
 
@@ -168,9 +168,13 @@ public class ChartParser
             workingLine = chartAsLines[lineIndex];
         }
 
-        var dictionaryConversion = eventData.Select(line => line.Split(" = ", 2)).ToDictionary(parts => parts[0].Trim(), parts => parts[1].Trim());
+        var kvpConversion = eventData.Select(line => {
+            var parts = line.Split(" = ", 2);
+            return new KeyValuePair<string, string>(parts[0].Trim(), parts[1].Trim());
+        }).ToList();
 
-        identifiedSection.data = dictionaryConversion;
+
+        identifiedSection.data = kvpConversion;
         return identifiedSection;
     }
 
@@ -241,7 +245,7 @@ class ChartEventGroup
         ExpertVox
     }
     public HeaderType EventGroupIdentifier;
-    public Dictionary<string, string> data;
+    public List<KeyValuePair<string, string>> data;
 
     public ChartEventGroup(HeaderType identifier)
     {
