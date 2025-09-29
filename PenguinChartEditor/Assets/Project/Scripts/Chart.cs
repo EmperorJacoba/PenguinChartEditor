@@ -33,7 +33,6 @@ public class Chart : MonoBehaviour
 
     public static string FolderPath { get; private set; } = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change";
     public static string ChartPath { get; private set; } = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Perpetual Change.chart";
-    public static string IniPath { get; private set; } = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/song.ini";
 
     public void SaveFile()
     {
