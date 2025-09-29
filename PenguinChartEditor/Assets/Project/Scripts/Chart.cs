@@ -5,6 +5,7 @@ public class Chart : MonoBehaviour
 {
     public static Metadata Metadata { get; set; } = new();
     static Chart instance;
+    public static void Log(string x) => Debug.Log(x);
 
     public enum TabType
     {
@@ -30,7 +31,7 @@ public class Chart : MonoBehaviour
     }
     private static int _chartResolution = 0;
 
-    public static string FolderPath { get; private set; } = "";
+    public static string FolderPath { get; private set; } = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change";
     public static string ChartPath { get; private set; } = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Perpetual Change.chart";
     public static string IniPath { get; private set; } = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/song.ini";
 
@@ -54,12 +55,11 @@ public class Chart : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(instance);
 
-        Metadata.TempSetUpStemDict();
-
         ChartParser chartParser = new(ChartPath);
 
         Resolution = chartParser.resolution;
         Metadata = chartParser.metadata;
+        Metadata.TempSetUpStemDict();
 
         BPM.EventData.Events = chartParser.bpmEvents;
         TimeSignature.EventData.Events = chartParser.tsEvents;

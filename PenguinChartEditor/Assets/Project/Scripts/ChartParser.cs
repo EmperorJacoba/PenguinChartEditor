@@ -54,12 +54,14 @@ public class ChartParser
         }
 
         // also need to parse chart stems
+        // find properly named files - add to stems
+        // find other audio files - ask to assign
     }
 
     (Metadata, int) ParseSongMetadata(ChartEventGroup songEventGroup)
     {
         Metadata metadata = new();
-        if (File.Exists($"{Chart.FolderPath}/song.ini"))
+        if (File.Exists($"{Chart.FolderPath}/song.ini")) // read from ini if exists (most reliable scenario)
         {
             var iniEventGroup = InitializeEventGroup($"{Chart.FolderPath}/song.ini");
 
@@ -71,15 +73,15 @@ public class ChartParser
                 }
                 else if (Enum.TryParse(typeof(Metadata.InstrumentDifficultyType), kvp.Key, true, out var formattedInstrumentDiff))
                 {
-                    if (!int.TryParse(kvp.Value, out int instrumentDifficulty))
+                    if (int.TryParse(kvp.Value, out int instrumentDifficulty))
                     {
-                        // log warning about unrecognized key
-                        metadata.Difficulties.Add((Metadata.InstrumentDifficultyType)formattedKey, instrumentDifficulty);
+                        metadata.Difficulties.Add((Metadata.InstrumentDifficultyType)formattedInstrumentDiff, instrumentDifficulty);
                     }
+                    // log warning about unrecognized key
                 }
             }
         }
-        else
+        else // read what we can from embedded .chart data
         {
             // log warning about ini being more efficient
             foreach (var kvp in songEventGroup.data)
@@ -230,7 +232,8 @@ public class ChartParser
         for (int lineIndex = 1; lineIndex < iniData.Length; lineIndex++)
         {
             var lineParts = iniData[lineIndex].Split(" = ");
-            eventData.Add(new KeyValuePair<string, string>(lineParts[0].Trim(), lineParts[1].Trim()));
+            if (lineParts.Length > 1)
+                eventData.Add(new KeyValuePair<string, string>(lineParts[0].Trim(), lineParts[1].Trim()));
         }
 
         iniGroup.data = eventData;
