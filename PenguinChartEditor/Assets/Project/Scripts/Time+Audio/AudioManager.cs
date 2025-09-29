@@ -18,7 +18,7 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// The amount of audio samples in the compressed array that exist for every second in the audio.
     /// </summary>
-    public const int SAMPLES_PER_SECOND = 1000; // I don't want to mess with floating point 1/x garbo so this is here
+    public const int SAMPLES_PER_SECOND = 1000; // I don't want to mess with floating point 1/x garbage so this is here
 
     /// <summary>
     /// Holds BASS stream data for playing audio. Stem is audio stem identifier, int is BASS stream data.
@@ -383,7 +383,6 @@ public class AudioManager : MonoBehaviour
     }
 
     #endregion
-    // need to free streams when switching to different tabs too
 }
 
 public struct StemVolumeData
