@@ -14,7 +14,7 @@ public class ChartParser
     const float BPM_FORMAT_CONVERSION = 1000.0f;
     const int TS_POWER_CONVERSION_NUMBER = 2;
     const float SECONDS_PER_MINUTE = 60;
-    
+
 
     string[] chartAsLines;
     public ChartParser(string filePath)
@@ -182,7 +182,7 @@ public class ChartParser
         for (int lineNumber = 0; lineNumber < chartAsLines.Length - 1; lineNumber++)
         {
             if (chartAsLines[lineNumber].Contains("["))
-            identifiedSections.Add(InitializeEventGroup(lineNumber));
+                identifiedSections.Add(InitializeEventGroup(lineNumber));
         }
         return identifiedSections;
     }
@@ -212,7 +212,8 @@ public class ChartParser
             workingLine = chartAsLines[lineIndex];
         }
 
-        var kvpConversion = eventData.Select(line => {
+        var kvpConversion = eventData.Select(line =>
+        {
             var parts = line.Split(" = ", 2);
             return new KeyValuePair<string, string>(parts[0].Trim(), parts[1].Trim());
         }).ToList();
@@ -239,19 +240,9 @@ public class ChartParser
         iniGroup.data = eventData;
         return iniGroup;
     }
+    
+    
 
-    static int GetResolution(string[] file)
-    {
-        for (int i = 0; i < file.Length; i++)
-        {
-            if (file[i].Contains("Resolution"))
-            {
-                var parts = file[i].Split(" = ");
-                return int.Parse(parts[1].Trim());
-            }
-        }
-        throw new ArgumentException("Chart does not contain a resolution. Please add the correct resolution to the file and try again.");
-    }
 }
 
 class ChartEventGroup

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 
 public interface IEventData {}
-public interface INoteData { }
 
 public struct BPMData : IEquatable<BPMData>, IEventData
 {
@@ -100,71 +99,29 @@ public struct BookmarkData : IEventData
     }
 }
 
-// class because note data should be modifiable 
-public class InstrumentData<T> : IEventData where T : INoteData
-{
-    // int is direct counterpart to each NoteData's enum values 
-    SortedDictionary<int, T> noteData;
-}
-
 // Note datas: LaneType is an enum with lane corresponding to their ID number in .chart files.
 // FlagType is an enum with flag corresponding to ID number in .chart files 
 
-public struct FiveFretNoteData : INoteData
+public struct FiveFretNoteData : IEventData
 {
-    public enum LaneType
-    {
-        green = 0,
-        red = 1,
-        yellow = 2,
-        blue = 3,
-        orange = 4,
-        open = 7
-    }
-
     public enum FlagType
     {
         forced = 5,
         tap = 6
     }
 
-    public LaneType Lane;
     public int Sustain;
     public List<FlagType> Flags;
 
-    public FiveFretNoteData(LaneType lane, int sustain, List<FlagType> flags)
+    public FiveFretNoteData(int sustain, List<FlagType> flags)
     {
-        Lane = lane;
         Sustain = sustain;
         Flags = flags;
     }
-    public FiveFretNoteData(LaneType lane, int sustain)
-    {
-        Lane = lane;
-        Sustain = sustain;
-        Flags = new();
-    }
-
-    public FiveFretNoteData(LaneType lane)
-    {
-        Lane = lane;
-        Sustain = 0;
-        Flags = new();
-    }
 }
 
-public struct FourLaneDrumNoteData : INoteData
+public struct FourLaneDrumNoteData : IEventData
 {
-    public enum LaneType
-    {
-        red = 1,
-        yellow = 2,
-        blue = 3,
-        green = 4,
-        kick = 0,
-        doubleKick = 32
-    }
-
     public enum FlagType
     {
         accentRed = 34,
@@ -179,59 +136,31 @@ public struct FourLaneDrumNoteData : INoteData
         cymbalBlue = 67,
         cymbalGreen = 68
     }
-
-    public LaneType Lane;
     public List<FlagType> Flags;
 
-    public FourLaneDrumNoteData(LaneType lane, List<FlagType> flags)
+    public FourLaneDrumNoteData(List<FlagType> flags)
     {
-        Lane = lane;
         Flags = flags;
-    }
-
-    public FourLaneDrumNoteData(LaneType lane)
-    {
-        Lane = lane;
-        Flags = new();
     }
 }
 
-public struct GHLNoteData : INoteData
+public struct GHLNoteData : IEventData
 {
-    public enum LaneType
-    {
-        white1 = 0,
-        white2 = 1,
-        white3 = 2,
-        black1 = 3,
-        black2 = 4,
-        black3 = 8,
-        open = 7
-    }
-
     public enum FlagType
     {
         forced = 5,
         tap = 6
     }
 
-    public LaneType Lane;
     public List<FlagType> Flags;
 
-    public GHLNoteData(LaneType lane, List<FlagType> flags)
+    public GHLNoteData(List<FlagType> flags)
     {
-        Lane = lane;
         Flags = flags;
-    }
-
-    public GHLNoteData(LaneType lane)
-    {
-        Lane = lane;
-        Flags = new();
     }
 }
 
-public struct TrueDrumNoteData : INoteData
+public struct TrueDrumNoteData : IEventData
 {
     // implement when the time comes
 }
