@@ -651,8 +651,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -663,8 +663,8 @@ MonoBehaviour:
           m_StringArgument: album
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -1501,7 +1501,7 @@ MonoBehaviour:
   m_ContentType: 2
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 4
+  m_KeyboardType: 2
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
@@ -1512,8 +1512,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -1524,8 +1524,8 @@ MonoBehaviour:
           m_StringArgument: preview_start_time
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -2024,7 +2024,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &128694144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2170,8 +2170,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: UserSetAlbumCover
         m_Mode: 1
         m_Arguments:
@@ -2725,9 +2725,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: ClearAudioStem
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
+        m_MethodName: ClearSongInfo
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3132,7 +3132,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1310893719}
   m_Direction: 0
   m_Value: 0.5
-  m_Size: 0.99983746
+  m_Size: 0.28163293
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3258,8 +3258,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: ClearAudioStem
         m_Mode: 5
         m_Arguments:
@@ -3398,7 +3398,7 @@ MonoBehaviour:
   m_ContentType: 2
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 4
+  m_KeyboardType: 2
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
@@ -3409,8 +3409,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -3421,8 +3421,8 @@ MonoBehaviour:
           m_StringArgument: album_track
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -3593,8 +3593,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: ClearAudioStem
         m_Mode: 5
         m_Arguments:
@@ -3978,8 +3978,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 600235136}
   m_HandleRect: {fileID: 600235135}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.5214101
+  m_Value: 1.0000001
+  m_Size: 0.33831835
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4105,8 +4105,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -4510,8 +4510,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -4643,8 +4643,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -5824,8 +5824,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -6336,8 +6336,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: ClearAudioStem
         m_Mode: 5
         m_Arguments:
@@ -7057,8 +7057,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: ClearAudioStem
         m_Mode: 5
         m_Arguments:
@@ -8319,8 +8319,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -8331,8 +8331,8 @@ MonoBehaviour:
           m_StringArgument: artist
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -9454,7 +9454,7 @@ MonoBehaviour:
   m_ContentType: 2
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 4
+  m_KeyboardType: 2
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
@@ -9465,8 +9465,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -9477,8 +9477,8 @@ MonoBehaviour:
           m_StringArgument: video_start_time
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -9844,7 +9844,7 @@ MonoBehaviour:
   m_ContentType: 2
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 4
+  m_KeyboardType: 2
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
@@ -9855,8 +9855,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -9867,8 +9867,8 @@ MonoBehaviour:
           m_StringArgument: year
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -10290,6 +10290,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 703497285}
   m_CullTransparentMesh: 1
+--- !u!1 &713305237
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 713305239}
+  - component: {fileID: 713305238}
+  m_Layer: 0
+  m_Name: Chart
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &713305238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 713305237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faf514a7f1a7a5e47a4c6ca2ec02a304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &713305239
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 713305237}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &714705686
 GameObject:
   m_ObjectHideFlags: 0
@@ -10558,7 +10602,7 @@ MonoBehaviour:
   m_ContentType: 2
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 4
+  m_KeyboardType: 2
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
@@ -10569,8 +10613,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -10581,8 +10625,8 @@ MonoBehaviour:
           m_StringArgument: playlist_track
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -10844,8 +10888,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -11091,9 +11135,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: ClearAudioStem
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
+        m_MethodName: ClearSongInfo
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12006,8 +12050,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -12840,8 +12884,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -12973,8 +13017,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -13860,8 +13904,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -13872,8 +13916,8 @@ MonoBehaviour:
           m_StringArgument: loading_phrase
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -15153,8 +15197,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -15822,6 +15866,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1180992025}
   m_CullTransparentMesh: 1
+--- !u!1 &1189766647
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1189766649}
+  - component: {fileID: 1189766648}
+  m_Layer: 0
+  m_Name: MetadataHelper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1189766648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189766647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65914712b6fb9b84c9b148dd9bc2601c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resolutionTextBox: {fileID: 1909217274}
+  imageSelector: {fileID: 130799909}
+--- !u!4 &1189766649
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189766647}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.8632299, y: -0.2806587, z: -14.613346}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1220487868
 GameObject:
   m_ObjectHideFlags: 0
@@ -16336,8 +16426,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: ClearAudioStem
         m_Mode: 5
         m_Arguments:
@@ -18748,8 +18838,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -19155,8 +19245,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -19358,8 +19448,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -19370,8 +19460,8 @@ MonoBehaviour:
           m_StringArgument: charter
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -19678,8 +19768,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: ClearAudioStem
         m_Mode: 5
         m_Arguments:
@@ -20779,7 +20869,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1687859350
 Transform:
   m_ObjectHideFlags: 0
@@ -20846,7 +20936,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000057532325}
+  m_AnchoredPosition: {x: 0, y: -0.00016131997}
   m_SizeDelta: {x: 1223.999, y: 1907.6528}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1705826620
@@ -21433,8 +21523,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: ClearAudioStem
         m_Mode: 5
         m_Arguments:
@@ -21670,8 +21760,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: ClearAudioStem
         m_Mode: 5
         m_Arguments:
@@ -21803,8 +21893,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: ClearAudioStem
         m_Mode: 5
         m_Arguments:
@@ -23140,52 +23230,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
---- !u!1 &1850527087
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1850527089}
-  - component: {fileID: 1850527088}
-  m_Layer: 0
-  m_Name: ChartMetadata
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1850527088
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1850527087}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ccb22b2431ecdad4baec61ccff30ce3d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  resolutionTextBox: {fileID: 1909217274}
-  imageSelector: {fileID: 130799909}
---- !u!4 &1850527089
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1850527087}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 995.30145, y: 823.6827, z: -2.8773923}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1852728681
 GameObject:
   m_ObjectHideFlags: 0
@@ -24260,7 +24304,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.3327917, y: 0.03437037}
   m_AnchorMax: {x: 0.9806042, y: 0.9618148}
-  m_AnchoredPosition: {x: -0.5, y: 1.9942627}
+  m_AnchoredPosition: {x: -0.5, y: 1.9943848}
   m_SizeDelta: {x: -3, y: 10.0295}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1892122770
@@ -24571,9 +24615,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: SetAudioStem
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
+        m_MethodName: SetSongInfo
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -24711,7 +24755,7 @@ MonoBehaviour:
   m_ContentType: 2
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 4
+  m_KeyboardType: 2
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
@@ -24722,9 +24766,9 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: set_ChartResolution
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
+        m_MethodName: SetResolution
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -25296,8 +25340,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetAudioStem
         m_Mode: 5
         m_Arguments:
@@ -25721,8 +25765,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -25733,8 +25777,8 @@ MonoBehaviour:
           m_StringArgument: icon
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -25905,8 +25949,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: ClearAudioStem
         m_Mode: 5
         m_Arguments:
@@ -26487,8 +26531,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -26499,8 +26543,8 @@ MonoBehaviour:
           m_StringArgument: name
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -27098,8 +27142,8 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: set_CurrentInputField
         m_Mode: 5
         m_Arguments:
@@ -27110,8 +27154,8 @@ MonoBehaviour:
           m_StringArgument: genre
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
         m_MethodName: SetSongInfo
         m_Mode: 0
         m_Arguments:
@@ -27282,9 +27326,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1850527088}
-        m_TargetAssemblyTypeName: ChartMetadata, Assembly-CSharp
-        m_MethodName: ClearAudioStem
+      - m_Target: {fileID: 1189766648}
+        m_TargetAssemblyTypeName: MetadataHelper, Assembly-CSharp
+        m_MethodName: ClearSongInfo
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -27495,6 +27539,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 49341119}
   - {fileID: 1536712474}
-  - {fileID: 1850527089}
   - {fileID: 1687859350}
   - {fileID: 128694146}
+  - {fileID: 713305239}
+  - {fileID: 1189766649}

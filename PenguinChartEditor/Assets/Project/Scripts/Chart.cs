@@ -1,10 +1,9 @@
 using System;
-using UnityEditor.SearchService;
 using UnityEngine;
 
 public class Chart : MonoBehaviour
 {
-    static Metadata Metadata { get; set; } = new();
+    public static Metadata Metadata { get; set; } = new();
     static Chart instance;
 
     public enum TabType

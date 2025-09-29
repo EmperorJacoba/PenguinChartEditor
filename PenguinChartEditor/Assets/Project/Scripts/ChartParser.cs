@@ -2,8 +2,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework.Internal;
-using System.Diagnostics;
 
 public class ChartParser
 {
@@ -103,8 +101,6 @@ public class ChartParser
 
     (SortedDictionary<int, BPMData>, SortedDictionary<int, TSData>) ParseSyncTrack(ChartEventGroup syncTrackEventGroup)
     {
-        resolution = GetResolution(chartAsLines);
-
         var events = syncTrackEventGroup.data;
 
         List<int> tempoTickTimeKeys = new();

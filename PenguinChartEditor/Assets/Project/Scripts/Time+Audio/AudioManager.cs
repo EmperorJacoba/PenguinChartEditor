@@ -110,7 +110,7 @@ public class AudioManager : MonoBehaviour
     public float[] GetAudioSamples(Metadata.StemType stem, out long bytesPerSample)
     {
         // Step 1: Make BASS stream of song path
-        var songPath = Metadata.Stems[stem];
+        var songPath = Chart.Metadata.Stems[stem];
 
         // GetAudioSamples() uses a different one-time stream from stemStreams{} because it needs BASS_STREAM_DECODE flag to get data
         var currentTrackStream = Bass.BASS_StreamCreateFile(
@@ -184,7 +184,7 @@ public class AudioManager : MonoBehaviour
     {
         StemStreams.Clear();
         StemVolumes.Clear();
-        foreach (var stem in Metadata.Stems)
+        foreach (var stem in Chart.Metadata.Stems)
         {
             try
             {
