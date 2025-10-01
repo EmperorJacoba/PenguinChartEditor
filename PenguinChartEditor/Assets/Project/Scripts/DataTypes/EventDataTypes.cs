@@ -106,17 +106,18 @@ public struct FiveFretNoteData : IEventData
 {
     public enum FlagType
     {
-        forced = 5,
+        strum = 4,
+        hopo = 5,
         tap = 6
     }
 
     public int Sustain;
-    public List<FlagType> Flags;
+    public FlagType Flag;
 
-    public FiveFretNoteData(int sustain, List<FlagType> flags)
+    public FiveFretNoteData(int sustain, FlagType flag)
     {
         Sustain = sustain;
-        Flags = flags;
+        Flag = flag;
     }
 }
 
@@ -148,15 +149,16 @@ public struct GHLNoteData : IEventData
 {
     public enum FlagType
     {
-        forced = 5,
+        strum = 4,
+        hopo = 5,
         tap = 6
     }
 
-    public List<FlagType> Flags;
+    public FlagType Flag;
 
-    public GHLNoteData(List<FlagType> flags)
+    public GHLNoteData(int sustain, FlagType flag)
     {
-        Flags = flags;
+        Flag = flag;
     }
 }
 

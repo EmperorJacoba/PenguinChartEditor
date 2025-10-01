@@ -1,4 +1,4 @@
-// Yes, this is jank. Oops
+// Yes, I know this is jank. Oops
 
 public interface IFiveFretLane { }
 

@@ -14,7 +14,13 @@ public class ChartParser
     const float BPM_FORMAT_CONVERSION = 1000.0f;
     const int TS_POWER_CONVERSION_NUMBER = 2;
     const float SECONDS_PER_MINUTE = 60;
-
+    int hopoCutoff
+    {
+        get
+        {
+            return (int)Math.Floor(((float)65 / 192) * (float)resolution);
+        }
+    }
 
     string[] chartAsLines;
     public ChartParser(string filePath)
@@ -176,6 +182,38 @@ public class ChartParser
         return outputDict;
     }
 
+    void ParseInstrumentGroup(ChartEventGroup chartEventGroup)
+    {
+        switch (chartEventGroup.GetInstrumentGroup())
+        {
+            case ChartEventGroup.InstrumentGroup.FiveFret:
+                // parse 5fret
+                break;
+            case ChartEventGroup.InstrumentGroup.Drums:
+                // parse drums
+                break;
+            case ChartEventGroup.InstrumentGroup.GHL:
+                // parse GHL
+                break;
+            case ChartEventGroup.InstrumentGroup.Vox:
+                // parse vox
+                break;
+        }
+        // Define number of dictionaries needed based on # of lanes/instrument type
+
+        // Two possible event flags - N and S
+
+        // N -> Identify lane number, then calculate hopo/strum/tap based on flags and preceding notes, then add sustain
+
+        // S -> Identify starpower with 2, add sustain - ignore 0 and 1
+        // S -> Identify drum-specific events (64, 65, 66)...maybe have a variant of this function for drums?
+
+    }
+    // need separate parsers for Drums, 6Fret, 5Fret
+    // separate header type into difficulties and instruments for ease of use
+
+
+
     List<ChartEventGroup> FormatEventSections()
     {
         List<ChartEventGroup> identifiedSections = new();
@@ -247,55 +285,114 @@ public class ChartParser
 
 class ChartEventGroup
 {
+    /// <summary>
+    /// Contains possible section headers enclosed as [Name] in a .chart file.
+    /// Identifiers follow a pattern based on instrument parsing needs. Metadata/tempo has values 10^1, Five-fret is 10^2, GHL is 10^3, Vox is 10^4.
+    /// Difficulties: E = 0, M = 1, H = 2, X = 3
+    /// <para> Example: Song = 0, EasySingle (Easy Guitar) = 10, MediumDrums = 101 </para>
+    /// </summary>
     public enum HeaderType
     {
-        Song,
-        SyncTrack,
-        Events,
-        EasySingle,
-        MediumSingle,
-        HardSingle,
-        ExpertSingle,
-        EasyDoubleGuitar,
-        MediumDoubleGuitar,
-        HardDoubleGuitar,
-        ExpertDoubleGuitar,
-        EasyDoubleBass,
-        MediumDoubleBass,
-        HardDoubleBass,
-        ExpertDoubleBass,
-        EasyDoubleRhythm,
-        MediumDoubleRhythm,
-        HardDoubleRhythm,
-        ExpertDoubleRhythm,
-        EasyDrums,
-        MediumDrums,
-        HardDrums,
-        ExpertDrums,
-        EasyKeyboard,
-        MediumKeyboard,
-        HardKeyboard,
-        ExpertKeyboard,
-        EasyGHLGuitar,
-        MediumGHLGuitar,
-        HardGHLGuitar,
-        ExpertGHLGuitar,
-        EasyGHLBass,
-        MediumGHLBass,
-        HardGHLBass,
-        ExpertGHLBass,
-        EasyGHLCoop,
-        MediumGHLCoop,
-        HardGHLCoop,
-        ExpertGHLCoop,
-        EasyGHLRhythm,
-        MediumGHLRhythm,
-        HardGHLRhythm,
-        ExpertGHLRhythm,
-        EasyVox,
-        MediumVox,
-        HardVox,
-        ExpertVox
+        Song = 0,
+        SyncTrack = 1,
+        Events = 2,
+
+        EasySingle = 10,
+        MediumSingle = 11,
+        HardSingle = 12,
+        ExpertSingle = 13,
+
+        EasyDoubleGuitar = 20,
+        MediumDoubleGuitar = 21,
+        HardDoubleGuitar = 22,
+        ExpertDoubleGuitar = 23,
+
+        EasyDoubleBass = 30,
+        MediumDoubleBass = 31,
+        HardDoubleBass = 32,
+        ExpertDoubleBass = 33,
+
+        EasyDoubleRhythm = 40,
+        MediumDoubleRhythm = 41,
+        HardDoubleRhythm = 42,
+        ExpertDoubleRhythm = 43,
+
+        EasyKeyboard = 50,
+        MediumKeyboard = 51,
+        HardKeyboard = 52,
+        ExpertKeyboard = 53,
+
+        EasyDrums = 100,
+        MediumDrums = 101,
+        HardDrums = 102,
+        ExpertDrums = 103,
+
+        EasyGHLGuitar = 1000,
+        MediumGHLGuitar = 1001,
+        HardGHLGuitar = 1002,
+        ExpertGHLGuitar = 1003,
+
+        EasyGHLBass = 1010,
+        MediumGHLBass = 1011,
+        HardGHLBass = 1012,
+        ExpertGHLBass = 1013,
+
+        EasyGHLCoop = 1020,
+        MediumGHLCoop = 1021,
+        HardGHLCoop = 1022,
+        ExpertGHLCoop = 1023,
+
+        EasyGHLRhythm = 1030,
+        MediumGHLRhythm = 1031,
+        HardGHLRhythm = 1032,
+        ExpertGHLRhythm = 1033,
+
+        EasyVox = 10000,
+        MediumVox = 10001,
+        HardVox = 10002,
+        ExpertVox = 10003
+    }
+
+    public enum InstrumentGroup
+    {
+        None,
+        FiveFret,
+        Drums,
+        GHL,
+        Vox,
+    }
+
+    public enum Difficulty
+    {
+        Easy = 0,
+        Medium = 1,
+        Hard = 2,
+        Expert = 3
+    }
+
+    public InstrumentGroup GetInstrumentGroup()
+    {
+        return (int)EventGroupIdentifier switch
+        {
+            < 10 => InstrumentGroup.None,
+            < 100 => InstrumentGroup.FiveFret,
+            < 1000 => InstrumentGroup.Drums,
+            < 10000 => InstrumentGroup.GHL,
+            < 100000 => InstrumentGroup.Vox,
+            _ => throw new ArgumentException("Tried to get invalid instrument group.")
+        };
+    }
+
+    public Difficulty GetDifficulty()
+    {
+        return ((int)EventGroupIdentifier % 10) switch
+        {
+            0 => Difficulty.Easy,
+            1 => Difficulty.Medium,
+            2 => Difficulty.Hard,
+            3 => Difficulty.Expert,
+            _ => throw new ArgumentException("Tried to get invalid instrument difficulty.")
+        };
     }
 
     public HeaderType EventGroupIdentifier;
@@ -305,4 +402,5 @@ class ChartEventGroup
     {
         EventGroupIdentifier = identifier;
     }
+    
 } 
