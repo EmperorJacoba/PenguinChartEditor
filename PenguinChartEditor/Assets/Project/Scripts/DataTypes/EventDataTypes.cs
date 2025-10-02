@@ -167,7 +167,43 @@ public struct TrueDrumNoteData : IEventData
     // implement when the time comes
 }
 
-public struct StarpowerData
+public struct VoxData : IEventData
 {
 
+}
+
+public struct SpecialData
+{
+    public enum EventType
+    {
+        starpower = 2,
+        drumFill = 64,
+        drumRoll = 65,
+        drumRollDouble = 66
+    }
+
+    public EventType eventType;
+    public int Sustain;
+
+    public SpecialData(int sustain, EventType eventType)
+    {
+        this.eventType = eventType;
+        Sustain = sustain;
+    }
+}
+
+public struct LocalEventData
+{
+    public enum EventType
+    {
+        solo,
+        soloend
+    }
+
+    public EventType eventType;
+
+    public LocalEventData(EventType eventType)
+    {
+        this.eventType = eventType;
+    }
 }

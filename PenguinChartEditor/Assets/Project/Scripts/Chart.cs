@@ -46,6 +46,7 @@ public class Chart : MonoBehaviour
 
     void Awake()
     {
+        // Only ever one chart game object active
         if (instance)
         {
             Destroy(gameObject);
