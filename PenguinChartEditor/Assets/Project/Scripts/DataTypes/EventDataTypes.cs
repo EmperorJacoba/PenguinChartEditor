@@ -1,7 +1,8 @@
 using System;
-using UnityEngine;
+using System.Collections.Generic;
 
 public interface IEventData {}
+
 public struct BPMData : IEquatable<BPMData>, IEventData
 {
     public float BPMChange;
@@ -95,5 +96,114 @@ public struct BookmarkData : IEventData
     public BookmarkData(string name)
     {
         Name = name;
+    }
+}
+
+// Note datas: LaneType is an enum with lane corresponding to their ID number in .chart files.
+// FlagType is an enum with flag corresponding to ID number in .chart files 
+
+public struct FiveFretNoteData : IEventData
+{
+    public enum FlagType
+    {
+        strum = 4,
+        hopo = 5,
+        tap = 6
+    }
+
+    public int Sustain;
+    public FlagType Flag;
+
+    public FiveFretNoteData(int sustain, FlagType flag)
+    {
+        Sustain = sustain;
+        Flag = flag;
+    }
+}
+
+public struct FourLaneDrumNoteData : IEventData
+{
+    public enum FlagType
+    {
+        accentRed = 34,
+        accentYellow = 35,
+        accentBlue = 36,
+        accentGreen = 37,
+        ghostRed = 40,
+        ghostYellow = 41,
+        ghostBlue = 42,
+        ghostGreen = 43,
+        cymbalYellow = 66,
+        cymbalBlue = 67,
+        cymbalGreen = 68
+    }
+    public List<FlagType> Flags;
+
+    public FourLaneDrumNoteData(List<FlagType> flags)
+    {
+        Flags = flags;
+    }
+}
+
+public struct GHLNoteData : IEventData
+{
+    public enum FlagType
+    {
+        strum = 4,
+        hopo = 5,
+        tap = 6
+    }
+
+    public FlagType Flag;
+
+    public GHLNoteData(int sustain, FlagType flag)
+    {
+        Flag = flag;
+    }
+}
+
+public struct TrueDrumNoteData : IEventData
+{
+    // implement when the time comes
+}
+
+public struct VoxData : IEventData
+{
+
+}
+
+public struct SpecialData
+{
+    public enum EventType
+    {
+        starpower = 2,
+        drumFill = 64,
+        drumRoll = 65,
+        drumRollDouble = 66
+    }
+
+    public EventType eventType;
+    public int Sustain;
+
+    public SpecialData(int sustain, EventType eventType)
+    {
+        this.eventType = eventType;
+        Sustain = sustain;
+    }
+}
+
+public struct LocalEventData
+{
+    public enum EventType
+    {
+        solo,
+        soloend
+    }
+
+    public EventType eventType;
+
+    public LocalEventData(EventType eventType)
+    {
+        this.eventType = eventType;
     }
 }

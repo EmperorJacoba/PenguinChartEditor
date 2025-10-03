@@ -1,11 +1,14 @@
 using System;
-using UnityEditor.SearchService;
+using System.Collections.Generic;
+using System.Windows.Forms;
 using UnityEngine;
 
 public class Chart : MonoBehaviour
 {
-    static Metadata Metadata { get; set; } = new();
+    public static Metadata Metadata { get; set; } = new();
+    public static List<IInstrument> Instruments { get; set; }
     static Chart instance;
+    public static void Log(string x) => Debug.Log(x);
 
     public enum TabType
     {
@@ -14,6 +17,20 @@ public class Chart : MonoBehaviour
     }
     public static TabType currentTab;
 
+    public enum InstrumentType
+    {
+        guitar,
+        coopGuitar,
+        rhythm,
+        bass,
+        keys,
+        drums,
+        ghlGuitar,
+        ghlBass,
+        ghlRhythm,
+        vox
+    }
+
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
     /// </summary>
@@ -21,10 +38,6 @@ public class Chart : MonoBehaviour
     {
         get
         {
-            if (_chartResolution == 0)
-            {
-                _chartResolution = ChartParser.loadedChartResolution; // this will not work when reloading files, fix later
-            }
             return _chartResolution;
         }
         set
@@ -35,9 +48,8 @@ public class Chart : MonoBehaviour
     }
     private static int _chartResolution = 0;
 
-    public static string FolderPath { get; private set; } = "";
+    public static string FolderPath { get; private set; } = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change";
     public static string ChartPath { get; private set; } = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Perpetual Change.chart";
-    public static string IniPath { get; private set; } = "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/song.ini";
 
     public void SaveFile()
     {
@@ -51,6 +63,7 @@ public class Chart : MonoBehaviour
 
     void Awake()
     {
+        // Only ever one chart game object active
         if (instance)
         {
             Destroy(gameObject);
@@ -59,7 +72,35 @@ public class Chart : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(instance);
 
+        ChartParser chartParser = new(ChartPath);
+
+        Resolution = chartParser.resolution;
+        Metadata = chartParser.metadata;
         Metadata.TempSetUpStemDict();
+
+        BPM.EventData.Events = chartParser.bpmEvents;
+        TimeSignature.EventData.Events = chartParser.tsEvents;
+
+        Instruments = chartParser.instruments;
+
+        if (BPM.EventData.Events.Count == 0) // if there is no data to load in 
+        {
+            BPM.EventData.Events.Add(0, new BPMData(120.0f, 0)); // add placeholder bpm
+        }
+        if (TimeSignature.EventData.Events.Count == 0)
+        {
+            TimeSignature.EventData.Events.Add(0, new TSData(4, 4));
+        }
+
+        Debug.Log($"{Instruments[0].Instrument} data:");
+        string noteData = "";
+        var compatable = (FiveFretInstrument)Instruments[0];
+        foreach (var thing in compatable.ExportAllNotes())
+        {
+            noteData += $"\n{thing}";
+        }
+        Debug.Log($"{noteData}");
+        // next steps: make exportable note function that works between IInstrument things
     }
 
     public static void Refresh()

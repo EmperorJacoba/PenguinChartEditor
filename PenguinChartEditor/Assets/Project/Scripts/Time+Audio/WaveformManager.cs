@@ -140,7 +140,7 @@ public class WaveformManager : MonoBehaviour
         rt.pivot = boundsRectTransform.pivot;
         rtHeight = rt.rect.height;
 
-        CurrentWaveform = Metadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default
+        CurrentWaveform = Chart.Metadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default
         // This is just so that the waveform has something to generate from (avoid bricking program from error)
 
         InitializeWaveformData();
@@ -153,7 +153,7 @@ public class WaveformManager : MonoBehaviour
     /// </summary>
     void InitializeWaveformData()
     {
-        foreach (var pair in Metadata.Stems)
+        foreach (var pair in Chart.Metadata.Stems)
         {
             UpdateWaveformData(pair.Key);
         }

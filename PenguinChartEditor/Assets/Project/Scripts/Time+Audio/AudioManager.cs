@@ -18,7 +18,7 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// The amount of audio samples in the compressed array that exist for every second in the audio.
     /// </summary>
-    public const int SAMPLES_PER_SECOND = 1000; // I don't want to mess with floating point 1/x garbo so this is here
+    public const int SAMPLES_PER_SECOND = 1000; // I don't want to mess with floating point 1/x garbage so this is here
 
     /// <summary>
     /// Holds BASS stream data for playing audio. Stem is audio stem identifier, int is BASS stream data.
@@ -110,7 +110,7 @@ public class AudioManager : MonoBehaviour
     public float[] GetAudioSamples(Metadata.StemType stem, out long bytesPerSample)
     {
         // Step 1: Make BASS stream of song path
-        var songPath = Metadata.Stems[stem];
+        var songPath = Chart.Metadata.Stems[stem];
 
         // GetAudioSamples() uses a different one-time stream from stemStreams{} because it needs BASS_STREAM_DECODE flag to get data
         var currentTrackStream = Bass.BASS_StreamCreateFile(
@@ -184,7 +184,7 @@ public class AudioManager : MonoBehaviour
     {
         StemStreams.Clear();
         StemVolumes.Clear();
-        foreach (var stem in Metadata.Stems)
+        foreach (var stem in Chart.Metadata.Stems)
         {
             try
             {
@@ -383,7 +383,6 @@ public class AudioManager : MonoBehaviour
     }
 
     #endregion
-    // need to free streams when switching to different tabs too
 }
 
 public struct StemVolumeData
