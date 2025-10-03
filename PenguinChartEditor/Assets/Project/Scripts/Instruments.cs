@@ -16,6 +16,9 @@ public class FiveFretInstrument : IInstrument
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     public Chart.InstrumentType Instrument { get; set; }
 
+    /// <summary>
+    /// Corresponds to this lane's position in Lanes[].
+    /// </summary>
     public enum LaneOrientation
     {
         green = 0,
