@@ -1,10 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public interface IInstrument
 {
     SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
+    Chart.InstrumentType Instrument { get; set; }
 }
 
 public class FiveFretInstrument : IInstrument
@@ -12,6 +14,7 @@ public class FiveFretInstrument : IInstrument
     public SortedDictionary<int, FiveFretNoteData>[] Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
+    public Chart.InstrumentType Instrument { get; set; }
 
     public enum LaneOrientation
     {
@@ -26,11 +29,31 @@ public class FiveFretInstrument : IInstrument
     public FiveFretInstrument(
         SortedDictionary<int, FiveFretNoteData>[] lanes,
         SortedDictionary<int, SpecialData> starpower,
-        SortedDictionary<int, LocalEventData> localEvents)
+        SortedDictionary<int, LocalEventData> localEvents,
+        Chart.InstrumentType instrument
+        )
     {
         Lanes = lanes;
         SpecialEvents = starpower;
-        LocalEvents = localEvents;  
+        LocalEvents = localEvents;
+        Instrument = instrument;
+    }
+
+    public List<string> ExportAllNotes()
+    {
+        List<string> notes = new();
+        for (int i = 0; i < Lanes.Length; i++)
+        {
+            int laneIdentifier = i != 5 ? i : 7;
+
+            foreach (var note in Lanes[i])
+            {
+                string value = $"{note.Key} = N {laneIdentifier} {note.Value.Sustain}: {note.Value.Flag}";
+                notes.Add(value);
+            }
+        }
+        var orderedStrings = notes.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
+        return orderedStrings;
     }
 }
 
@@ -39,6 +62,7 @@ public class FourLaneDrumInstrument : IInstrument
     public SortedDictionary<int, FourLaneDrumNoteData>[] Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
+    public Chart.InstrumentType Instrument { get; set; }
 
     public enum LaneOrientation
     {
@@ -55,6 +79,7 @@ public class GHLInstrument : IInstrument
     public SortedDictionary<int, GHLNoteData>[] Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
+    public Chart.InstrumentType Instrument { get; set; }
 
     public enum LaneOrientation
     {

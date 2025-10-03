@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 using UnityEngine;
 
 public class Chart : MonoBehaviour
 {
     public static Metadata Metadata { get; set; } = new();
+    public static List<IInstrument> Instruments { get; set; }
     static Chart instance;
     public static void Log(string x) => Debug.Log(x);
 
@@ -13,6 +16,20 @@ public class Chart : MonoBehaviour
         TempoMap
     }
     public static TabType currentTab;
+
+    public enum InstrumentType
+    {
+        guitar,
+        coopGuitar,
+        rhythm,
+        bass,
+        keys,
+        drums,
+        ghlGuitar,
+        ghlBass,
+        ghlRhythm,
+        vox
+    }
 
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
@@ -64,6 +81,8 @@ public class Chart : MonoBehaviour
         BPM.EventData.Events = chartParser.bpmEvents;
         TimeSignature.EventData.Events = chartParser.tsEvents;
 
+        Instruments = chartParser.instruments;
+
         if (BPM.EventData.Events.Count == 0) // if there is no data to load in 
         {
             BPM.EventData.Events.Add(0, new BPMData(120.0f, 0)); // add placeholder bpm
@@ -72,6 +91,16 @@ public class Chart : MonoBehaviour
         {
             TimeSignature.EventData.Events.Add(0, new TSData(4, 4));
         }
+
+        Debug.Log($"{Instruments[0].Instrument} data:");
+        string noteData = "";
+        var compatable = (FiveFretInstrument)Instruments[0];
+        foreach (var thing in compatable.ExportAllNotes())
+        {
+            noteData += $"\n{thing}";
+        }
+        Debug.Log($"{noteData}");
+        // next steps: make exportable note function that works between IInstrument things
     }
 
     public static void Refresh()

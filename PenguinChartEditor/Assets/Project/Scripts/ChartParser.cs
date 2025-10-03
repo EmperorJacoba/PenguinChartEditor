@@ -221,7 +221,9 @@ public class ChartParser
                 // parse vox
                 break;
         }
-        throw new ArgumentException("Tried to parse an unsupported instrument group.");
+        Chart.Log("Skipped instrument group");
+        return null;
+        // throw new ArgumentException("Tried to parse an unsupported instrument group.");
     }
 
     FiveFretInstrument ParseFiveFret(ChartEventGroup chartEventGroup)
@@ -229,6 +231,16 @@ public class ChartParser
         SortedDictionary<int, FiveFretNoteData>[] lanes = new SortedDictionary<int, FiveFretNoteData>[6] { new(), new(), new(), new(), new(), new() };
         SortedDictionary<int, SpecialData> starpower = new();
         SortedDictionary<int, LocalEventData> localEvents = new();
+
+        Chart.InstrumentType instrument = (int)chartEventGroup.EventGroupIdentifier switch
+        {
+            <= 13 => Chart.InstrumentType.guitar,
+            <= 23 => Chart.InstrumentType.coopGuitar,
+            <= 33 => Chart.InstrumentType.bass,
+            <= 43 => Chart.InstrumentType.rhythm,
+            <= 53 => Chart.InstrumentType.keys,
+            _ => throw new ArgumentException("Tried to identify an invalid instrument.")
+        };
 
         for (int i = 0; i < chartEventGroup.data.Count; i++)
         {
@@ -242,7 +254,7 @@ public class ChartParser
             // for events 0 will be E and 1 will be data
             var values = entry.Value.Split(' ');
 
-            int noteIdentifier; 
+            int noteIdentifier;
             int sustain;
             switch (values[IDENTIFIER_INDEX])
             {
@@ -280,11 +292,12 @@ public class ChartParser
                     else
                     {
                         bool hopoEligible = false;
-                        for (var j = 0; j < lanes.Length; j++)
+                        for (var j = 0; j < lanes.Length - 1; j++)
                         {
                             if ((FiveFretInstrument.LaneOrientation)j == lane) continue;
 
-                            var closeEvents = lanes[i].Where(kvp => tickValue - kvp.Key < hopoCutoff);
+                            var closeEvents = lanes[j].Where(kvp => tickValue - kvp.Key < hopoCutoff && kvp.Key != tickValue).ToList();
+
                             if (closeEvents.Count() > 0)
                             {
                                 hopoEligible = true;
@@ -327,7 +340,7 @@ public class ChartParser
             }
         }
 
-        return new FiveFretInstrument(lanes, starpower, localEvents);
+        return new FiveFretInstrument(lanes, starpower, localEvents, instrument);
     }
 
 
