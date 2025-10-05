@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using UnityEngine;
 
 public class Chart : MonoBehaviour
@@ -92,15 +91,6 @@ public class Chart : MonoBehaviour
             TimeSignature.EventData.Events.Add(0, new TSData(4, 4));
         }
 
-        Debug.Log($"{Instruments[0].Instrument} data:");
-        string noteData = "";
-        var compatable = (FiveFretInstrument)Instruments[0];
-        foreach (var thing in compatable.ExportAllNotes())
-        {
-            noteData += $"\n{thing}";
-        }
-        Debug.Log($"{noteData}");
-        // next steps: make exportable note function that works between IInstrument things
     }
 
     public static void Refresh()
