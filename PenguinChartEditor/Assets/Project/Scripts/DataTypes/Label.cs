@@ -44,7 +44,8 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     {
         if (!LabelObject.activeInHierarchy || !GetEventData().Events.ContainsKey(Tick)) return;
 
-        LabelEntryBox.gameObject.SetActive(true);
+        try { LabelEntryBox.gameObject.SetActive(true); } catch { return; } // omg unity shut up about this (genuinely this should not be possible)
+
         LabelEntryBox.ActivateInputField();
 
         LabelEntryBox.text = ConvertDataToPreviewString();

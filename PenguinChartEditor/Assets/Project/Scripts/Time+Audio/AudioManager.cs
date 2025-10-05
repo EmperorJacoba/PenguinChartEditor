@@ -315,7 +315,7 @@ public class AudioManager : MonoBehaviour
             SetStreamPositions();
             Bass.BASS_ChannelPlay(StemStreams[StreamLink], false);
             AudioPlaying = true;
-            SongTimelineManager.ToggleChartingInputMap();
+            SongTimelineManager.DisableChartingInputMap();
         }
     }
 
@@ -325,7 +325,7 @@ public class AudioManager : MonoBehaviour
         {
             Bass.BASS_ChannelPause(StemStreams[StreamLink]);
             AudioPlaying = false;
-            SongTimelineManager.ToggleChartingInputMap();
+            SongTimelineManager.EnableChartingInputMap();
         }
     }
 

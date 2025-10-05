@@ -1,9 +1,8 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 /// <summary>
 /// The script attached to the beatline prefab. 
-/// <para>The beatline prefab is a UI element with a line renderer with two points set to the width of the track.</para>
+/// <para>The beatline prefab is a UI element with a line renderer with two points set to the width of the track, and has malleable BPM and TS labels.</para>
 /// <remarks>Beatline game object control should happen through this class.</remarks>
 /// </summary>
 public class Beatline : MonoBehaviour
@@ -28,9 +27,13 @@ public class Beatline : MonoBehaviour
         }
         set
         {
+            if (!value) { destructionCoroutine = BeatlinePooler.instance.StartCoroutine(BeatlinePooler.instance.DestructionTimer(this)); }
+            else StopCoroutine(destructionCoroutine);
             gameObject.SetActive(value);
         }
     }
+
+    Coroutine destructionCoroutine;
 
     private int _tick = 0;
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class BeatlinePooler : MonoBehaviour
 {
@@ -15,21 +16,11 @@ public class BeatlinePooler : MonoBehaviour
     public static BeatlinePooler instance;
 
     private List<Beatline> beatlines;
-    
-    public int poolAmount = 10;
 
     void Awake()
     {
         instance = this;
         beatlines = new();
-    }
-
-    void Start()
-    {
-        for (int i = 0; i < poolAmount; i++)
-        {
-            CreateNewBeatline();
-        }
     }
 
     // All the beatlines are based on UI so they shouldn't (?) need to be scaled or anything weird like that
@@ -38,7 +29,7 @@ public class BeatlinePooler : MonoBehaviour
         GameObject tmp;
         tmp = Instantiate(beatlinePrefab, canvas.transform); // MUST BE A CHILD OF THE CANVAS
         beatlines.Add(tmp.GetComponent<Beatline>());
-    
+
         beatlines[^1].Visible = false;
     }
 
@@ -49,6 +40,7 @@ public class BeatlinePooler : MonoBehaviour
     /// <returns>The requested beatline.</returns>
     public Beatline GetBeatline(int index)
     {
+        Debug.Log($"Tried to get index {index}");
         while (beatlines.Count <= index)
         {
             CreateNewBeatline();
@@ -69,9 +61,9 @@ public class BeatlinePooler : MonoBehaviour
         // beatlines from the last beatline accessed until hitting an already inactive beatline.
         while (true)
         {
-            try 
+            try
             {
-                if (beatlines[lastIndex].Visible) 
+                if (beatlines[lastIndex].Visible)
                 {
                     beatlines[lastIndex].Visible = false;
                 }
@@ -83,5 +75,21 @@ public class BeatlinePooler : MonoBehaviour
             }
             lastIndex++;
         }
+    }
+
+    /// <summary>
+    /// Waits for five seconds, and then destroys the beatline object. 
+    /// <para> Used to avoid letting idle beatlines take up resources 
+    /// in the background after a large hyperspeed change. </para>
+    /// </summary>
+    /// <param name="beatline">The target beatline to destroy after five seconds.</param>
+    /// <returns></returns>
+    public IEnumerator DestructionTimer(Beatline beatline)
+    {
+        yield return new WaitForSeconds(5.0f);
+
+        instance.beatlines.Remove(beatline);
+
+        Destroy(beatline.gameObject);
     }
 }
