@@ -40,7 +40,6 @@ public class BeatlinePooler : MonoBehaviour
     /// <returns>The requested beatline.</returns>
     public Beatline GetBeatline(int index)
     {
-        Debug.Log($"Tried to get index {index}");
         while (beatlines.Count <= index)
         {
             CreateNewBeatline();

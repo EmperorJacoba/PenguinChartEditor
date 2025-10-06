@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 33159347}
   - component: {fileID: 33159348}
   m_Layer: 0
-  m_Name: WaveformManager
+  m_Name: Waveform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -370,7 +370,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1022341178}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -930,7 +930,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   beatlinePrefab: {fileID: 6239090009231363197, guid: 6d12eaf9ec73a61478085a805dfbf106, type: 3}
   canvas: {fileID: 1814809335}
-  poolAmount: 10
 --- !u!1 &129040214
 GameObject:
   m_ObjectHideFlags: 0

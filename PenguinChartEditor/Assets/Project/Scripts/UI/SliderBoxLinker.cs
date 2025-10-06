@@ -116,10 +116,10 @@ public class SliderBoxLinker : MonoBehaviour
         switch(dataType)
         {
             case WaveformProperties.shrinkFactor:
-                WaveformManager.ShrinkFactor = newValue;
+                Waveform.ShrinkFactor = newValue;
                 break;
             case WaveformProperties.amplitude:
-                WaveformManager.Amplitude = newValue;
+                Waveform.Amplitude = newValue;
                 break;
             case WaveformProperties.playSpeed:
                 AudioManager.ChangeAudioSpeed(newValue);

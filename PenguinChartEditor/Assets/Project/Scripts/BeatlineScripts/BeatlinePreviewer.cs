@@ -25,9 +25,6 @@ public class BeatlinePreviewer : Beatline
     /// </summary>
     double timestamp = 0;
 
-    /// <summary>
-    /// Holds
-    /// </summary>
     TSData displayedTS = new(4, 4);
 
     public static BeatlinePreviewer instance;
@@ -41,7 +38,7 @@ public class BeatlinePreviewer : Beatline
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
 
         // Preview also needs to update when waveform moves
-        WaveformManager.DisplayChanged += UpdatePreviewPosition;
+        Waveform.DisplayChanged += UpdatePreviewPosition;
 
         instance = this;
     }
@@ -88,7 +85,7 @@ public class BeatlinePreviewer : Beatline
 
         Tick = SongTimelineManager.CalculateGridSnappedTick(percentOfScreenVertical);
 
-        WaveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
+        Waveform.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
 
         // store what time the preview is at so that adding an event is merely inserting the preview's current position into the dictionary
         timestamp = BPM.ConvertTickTimeToSeconds(Tick);
@@ -141,10 +138,12 @@ public class BeatlinePreviewer : Beatline
 
     public bool IsRaycasterHit(GraphicRaycaster targetRaycaster)
     {
-        PointerEventData pointerData = new PointerEventData(EventSystem.current);
-        pointerData.position = Input.mousePosition;
+        PointerEventData pointerData = new(EventSystem.current)
+        {
+            position = Input.mousePosition
+        };
 
-        List<RaycastResult> results = new List<RaycastResult>();
+        List<RaycastResult> results = new();
         targetRaycaster.Raycast(pointerData, results);
 
         // If a component from the toolboxes is raycasted from the cursor, then the overlay is hit.

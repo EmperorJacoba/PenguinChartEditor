@@ -28,7 +28,7 @@ public class Beatline : MonoBehaviour
         set
         {
             if (!value) { destructionCoroutine = BeatlinePooler.instance.StartCoroutine(BeatlinePooler.instance.DestructionTimer(this)); }
-            else StopCoroutine(destructionCoroutine);
+            else BeatlinePooler.instance.StopCoroutine(destructionCoroutine);
             gameObject.SetActive(value);
         }
     }

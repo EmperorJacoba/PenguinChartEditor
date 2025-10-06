@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
-public class WaveformManager : MonoBehaviour
+public class Waveform : MonoBehaviour
 {
     [SerializeField] AudioManager pluginBassManager;
     static Strikeline strikeline;

@@ -169,7 +169,7 @@ public class SongTimelineManager : MonoBehaviour
     
     public static int CalculateGridSnappedTick(float percentOfScreenVertical)
     {
-        WaveformManager.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
+        Waveform.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
 
         var cursorTimestamp = (percentOfScreenVertical * timeShown) + startTime;
         var cursorTickTime = BPM.ConvertSecondsToTickTime((float)cursorTimestamp);
