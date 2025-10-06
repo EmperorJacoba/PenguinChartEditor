@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
 public class Waveform : MonoBehaviour
 {
-    [SerializeField] AudioManager pluginBassManager;
-    static Strikeline strikeline;
     static Waveform instance;
+    [SerializeField] AudioManager pluginBassManager;
+    [SerializeField] Strikeline strikeline;
+
 
     #region Properties
     /// <summary>
@@ -34,19 +34,12 @@ public class Waveform : MonoBehaviour
     /// <summary>
     /// Height of the RectTransform component attached to the waveform's container GameObject.
     /// </summary>
-    private static float rtHeight;
+    private float rtHeight => rt.rect.height;
 
     /// <summary>
     /// Panel that is always the size of the bounds of the waveform. Used to set waveform object at right distance from camera/background.
     /// </summary>
-    static GameObject boundaryReference; // in tempo map, screen 
-
-    public delegate void WaveformDisplayDelegate();
-
-    /// <summary>
-    /// Event that fires whenever the waveform's look changes (shrink factor changes, amplitude changes)
-    /// </summary>
-    public static event WaveformDisplayDelegate DisplayChanged;
+    [SerializeField] GameObject boundaryReference; // in tempo map, screen 
 
     /// <summary>
     /// The y distance between each waveform point on the line renderer. Default is 0.0001.
@@ -126,28 +119,24 @@ public class Waveform : MonoBehaviour
     void Awake()
     {
         instance = this;
-        strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
-        boundaryReference = GameObject.Find("ScreenReference");
+
+        // Initial waveform state is made possible by STLM's intial fire
+        SongTimelineManager.TimeChanged += ChangeWaveformSegment;
     }
 
     void Start()
     {
+        InitializeWaveformData();
+
         SetWaveformVisibility(false);
         // Invisible by default so that a bunch of dropdown defaulting logic isn't needed
         // Just have user select it
 
-        SongTimelineManager.TimeChanged += ChangeWaveformSegment; // when the time is changed, update the points displayed
-
-        var boundsRectTransform = boundaryReference.GetComponent<RectTransform>();
-        rt.pivot = boundsRectTransform.pivot;
-        rtHeight = rt.rect.height;
-
         CurrentWaveform = Chart.Metadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default
         // This is just so that the waveform has something to generate from (avoid bricking program from error)
 
-        InitializeWaveformData();
-
-        GenerateWaveformPoints();
+        var boundsRectTransform = boundaryReference.GetComponent<RectTransform>();
+        rt.pivot = boundsRectTransform.pivot;
     }
     #endregion
 
@@ -234,13 +223,13 @@ public class Waveform : MonoBehaviour
     public static void GetWaveformProperties(out float[] masterWaveformData, out int samplesPerScreen, out int strikeSamplePoint)
     {
         masterWaveformData = WaveformData[CurrentWaveform].Item1;
-        samplesPerScreen = (int)Mathf.Round(rtHeight / ShrinkFactor);
-        strikeSamplePoint = (int)Math.Ceiling(-samplesPerScreen * strikeline.GetStrikelineScreenProportion()); // note the negative sign
+        samplesPerScreen = (int)Mathf.Round(instance.rtHeight / ShrinkFactor);
+        strikeSamplePoint = (int)Math.Ceiling(-samplesPerScreen * instance.strikeline.GetStrikelineScreenProportion()); // note the negative sign
     }
 
     public void ChangeWaveformSegment()
     {
-        Debug.Log($"ChangeWaveformSegment");
+        Debug.Log($"{Time.frameCount}: ChangeWaveformSegment called");
         // This can use an implicit cast because song position is always rounded to 3 decimal places
         CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPositionSeconds * AudioManager.SAMPLES_PER_SECOND);
 
@@ -272,8 +261,6 @@ public class Waveform : MonoBehaviour
         // get to bottom of screen, jump to top of screen with samplesPerScreen, calculate what that waveform position is in seconds
         var endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * AudioManager.ARRAY_RESOLUTION;
 
-        //Debug.Log($"Current WF position: {CurrentWaveformDataPosition}, Strike sample point: {strikeSamplePoint}");
-
         return (startPoint, endPoint);
     }
 
@@ -284,7 +271,7 @@ public class Waveform : MonoBehaviour
         startTick = BPM.ConvertSecondsToTickTime((float)startTime);
         endTick = BPM.ConvertSecondsToTickTime((float)endTime);
         timeShown = endTime - startTime;
-       // Debug.Log($"{Time.frameCount}: {startTick}, {endTick}, {timeShown}, {startTime}, {endTime}");
+        Debug.Log($"{Time.frameCount}: {startTick}, {endTick}, {timeShown}, {startTime}, {endTime}");
     }
 
     public static int startTick;
@@ -295,9 +282,7 @@ public class Waveform : MonoBehaviour
 
     void UpdateWaveformData()
     {
-        Debug.Log($"Pre-update of data. Frame: {Time.frameCount}: Start tick: {startTick}, End tick: {endTick}, Time shown: {timeShown}, Start time: {startTime}, End time: {endTime}");
         GetCurrentDisplayedWaveformInfo(out startTick, out endTick, out timeShown, out startTime, out endTime);
-        Debug.Log($"Updating data. Frame: {Time.frameCount}: Start tick: {startTick}, End tick: {endTick}, Time shown: {timeShown}, Start time: {startTime}, End time: {endTime}");
 
         Chart.Refresh();
     }

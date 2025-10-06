@@ -37,9 +37,6 @@ public class BeatlinePreviewer : Beatline
         inputMap.Charting.PreviewMousePos.performed += position => UpdatePreviewPosition(position.ReadValue<Vector2>().y / Screen.height, position.ReadValue<Vector2>().x / Screen.width);
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
 
-        // Preview also needs to update when waveform moves
-        Waveform.DisplayChanged += UpdatePreviewPosition;
-
         instance = this;
     }
 

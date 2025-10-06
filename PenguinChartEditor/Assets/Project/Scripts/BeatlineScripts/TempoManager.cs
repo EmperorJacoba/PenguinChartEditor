@@ -7,8 +7,6 @@ public class TempoManager : MonoBehaviour
     static RectTransform boundaryReference;
     void Awake()
     {
-        // set up events so that beatlines can update whenever anything changes
-        Waveform.DisplayChanged += UpdateBeatlines;
         boundaryReference = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
         Chart.currentTab = Chart.TabType.TempoMap;
     }

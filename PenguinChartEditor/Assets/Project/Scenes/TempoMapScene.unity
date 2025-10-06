@@ -179,9 +179,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pluginBassManager: {fileID: 1722031495}
+  strikeline: {fileID: 1368999642}
   lineRendererMain: {fileID: 33159348}
   lineRendererMirror: {fileID: 1675851788}
   rt: {fileID: 33159344}
+  boundaryReference: {fileID: 1489170078}
+  endTime: 0
 --- !u!120 &33159348
 LineRenderer:
   serializedVersion: 2
@@ -370,7 +373,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1022341178}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
