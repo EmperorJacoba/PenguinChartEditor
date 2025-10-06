@@ -27,6 +27,10 @@ public class SongTimelineManager : MonoBehaviour
             if (_songPos == value) return;
             _songPos = value;
 
+            if (_songPos < 0) throw new ArgumentException();
+
+            Debug.Log($"Song position (STLM): {value}");
+
             TimeChanged?.Invoke();
         }
     }
@@ -151,27 +155,30 @@ public class SongTimelineManager : MonoBehaviour
     {
         if (float.IsNaN(scrollChange)) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
 
+        double newTimeCandidate;
+
         // If it's a middle click, the delta value is wayyy too large so this is a solution FOR NOW
         var scrollSuppressant = 1;
         if (middleClick) scrollSuppressant = 50;
-        SongPositionSeconds += scrollChange / (UserSettings.ScrollSensitivity * scrollSuppressant);
+        newTimeCandidate = SongPositionSeconds + scrollChange / (UserSettings.ScrollSensitivity * scrollSuppressant);
 
         // Clamp position to within the length of the song
-        if (SongPositionSeconds < 0)
+        if (newTimeCandidate < 0)
         {
-            SongPositionSeconds = 0;
+            newTimeCandidate = 0;
         }
-        else if (SongPositionSeconds >= AudioManager.SongLength)
+        else if (newTimeCandidate >= AudioManager.SongLength)
         {
-            SongPositionSeconds = AudioManager.SongLength;
+            newTimeCandidate = AudioManager.SongLength;
         }
+
+        SongPositionSeconds = newTimeCandidate;
     }
     
     public static int CalculateGridSnappedTick(float percentOfScreenVertical)
     {
-        Waveform.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
 
-        var cursorTimestamp = (percentOfScreenVertical * timeShown) + startTime;
+        var cursorTimestamp = (percentOfScreenVertical * Waveform.timeShown) + Waveform.startTime;
         var cursorTickTime = BPM.ConvertSecondsToTickTime((float)cursorTimestamp);
 
         if (cursorTickTime < 0) return 0;

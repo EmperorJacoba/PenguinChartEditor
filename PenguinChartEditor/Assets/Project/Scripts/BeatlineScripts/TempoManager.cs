@@ -7,8 +7,6 @@ public class TempoManager : MonoBehaviour
     static RectTransform boundaryReference;
     void Awake()
     {
-        // set up events so that beatlines can update whenever anything changes
-        Waveform.DisplayChanged += UpdateBeatlines;
         boundaryReference = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
         Chart.currentTab = Chart.TabType.TempoMap;
     }
@@ -18,26 +16,27 @@ public class TempoManager : MonoBehaviour
     /// </summary>
     public static void UpdateBeatlines()
     {
+        //Debug.Log($"Generating beatlines. {Time.frameCount}");
         if (Chart.currentTab != Chart.TabType.TempoMap)
             throw new System.Exception($"TempoManager.UpdateBeatlines is for use only in the TempoMap scene. Please call the correct scene refresh for {Chart.currentTab}.");
             
-        Waveform.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
         int currentBeatline = 0;
         // Generate the division and half-division beatlines
         for (
-                int currentTick = TimeSignature.GetNextBeatlineEvent(startTick); // Calculate the tick to start generating beatlines from
-                currentTick < endTick && // Don't generate beatlines outside of the shown time period
+                int currentTick = TimeSignature.GetNextBeatlineEvent(Waveform.startTick); // Calculate the tick to start generating beatlines from
+                currentTick < Waveform.endTick && // Don't generate beatlines outside of the shown time period
                 currentTick < SongTimelineManager.SongLengthTicks; // Don't generate beatlines that don't exist (falls ahead of the end of the audio file) 
                 currentBeatline++
             )
         {
+            Debug.Log($"{Time.frameCount} New beatline created. This tick: {currentTick}. Positioning: ({BPM.ConvertTickTimeToSeconds(currentTick)} - {Waveform.startTime}) => {(BPM.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime)} / {Waveform.timeShown}, {boundaryReference.rect.height}");
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
             workedBeatline.Tick = currentTick;
 
             workedBeatline.CheckForEvents();
 
-            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(currentTick) - startTime) / timeShown, boundaryReference.rect.height);
+            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
 
             // Needed to generate correct thickness
             workedBeatline.Type = TimeSignature.CalculateBeatlineType(currentTick);
@@ -47,8 +46,8 @@ public class TempoManager : MonoBehaviour
         }
 
         // Get list of tempo events that *should* be displayed during the visible window  
-        var ignoredKeys = BPM.EventData.Events.Keys.Where(key => key >= startTick && key <= endTick && key % TimeSignature.IncreaseByHalfDivision(key) != 0).ToHashSet();
-        var ignoredTSKeys = TimeSignature.EventData.Events.Keys.Where(key => key >= startTick && key <= endTick && key % TimeSignature.IncreaseByHalfDivision(key) != 0).ToHashSet();
+        var ignoredKeys = BPM.EventData.Events.Keys.Where(key => key >= Waveform.startTick && key <= Waveform.endTick && key % TimeSignature.IncreaseByHalfDivision(key) != 0).ToHashSet();
+        var ignoredTSKeys = TimeSignature.EventData.Events.Keys.Where(key => key >= Waveform.startTick && key <= Waveform.endTick && key % TimeSignature.IncreaseByHalfDivision(key) != 0).ToHashSet();
 
         ignoredKeys.UnionWith(ignoredTSKeys);
 
@@ -59,7 +58,7 @@ public class TempoManager : MonoBehaviour
 
             workedBeatline.CheckForEvents();
 
-            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(tick) - startTime) / timeShown, boundaryReference.rect.height);
+            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(tick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
 
             workedBeatline.Type = Beatline.BeatlineType.none;
 

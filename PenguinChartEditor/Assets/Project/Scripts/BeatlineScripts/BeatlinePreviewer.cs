@@ -37,9 +37,6 @@ public class BeatlinePreviewer : Beatline
         inputMap.Charting.PreviewMousePos.performed += position => UpdatePreviewPosition(position.ReadValue<Vector2>().y / Screen.height, position.ReadValue<Vector2>().x / Screen.width);
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
 
-        // Preview also needs to update when waveform moves
-        Waveform.DisplayChanged += UpdatePreviewPosition;
-
         instance = this;
     }
 
@@ -59,7 +56,7 @@ public class BeatlinePreviewer : Beatline
     /// <summary>
     /// Shortcut to allow void events call the main UpdatePreviewPosition function.
     /// </summary>
-    void UpdatePreviewPosition()
+    public void UpdatePreviewPosition()
     {
         UpdatePreviewPosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
     }
@@ -85,11 +82,9 @@ public class BeatlinePreviewer : Beatline
 
         Tick = SongTimelineManager.CalculateGridSnappedTick(percentOfScreenVertical);
 
-        Waveform.GetCurrentDisplayedWaveformInfo(out var startTick, out var endTick, out var timeShown, out var startTime, out var endTime);
-
         // store what time the preview is at so that adding an event is merely inserting the preview's current position into the dictionary
         timestamp = BPM.ConvertTickTimeToSeconds(Tick);
-        UpdateBeatlinePosition((timestamp - startTime) / timeShown, boundaryReference.rect.height);
+        UpdateBeatlinePosition((timestamp - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
 
         // store the current previewed Tick for copy/pasting selections from the preview onward
         currentPreviewTick = Tick;

@@ -107,7 +107,7 @@ public class AudioManager : MonoBehaviour
     /// <param name="bytesPerSample">Number of bytes in the original track that each sample represents. Can vary based on encoding.</param>
     /// <returns>Float array of an audio file's sample data.</returns>
     /// <exception cref="ArgumentException">Invalid song path</exception>
-    public float[] GetAudioSamples(Metadata.StemType stem, out long bytesPerSample)
+    public static float[] GetAudioSamples(Metadata.StemType stem, out long bytesPerSample)
     {
         // Step 1: Make BASS stream of song path
         var songPath = Chart.Metadata.Stems[stem];
@@ -166,7 +166,7 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     /// <param name="stereoSamples"></param>
     /// <returns></returns>
-    private float[] ConvertStereoSamplestoMono(float[] stereoSamples)
+    private static float[] ConvertStereoSamplestoMono(float[] stereoSamples)
     {
         var monoSamples = new float[stereoSamples.Length / 2]; // stereo samples have two data points for every sample (L+R track)
                                                                // so mono will have half the number of samples
