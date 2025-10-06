@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -8,6 +9,7 @@ public class Waveform : MonoBehaviour
 {
     [SerializeField] AudioManager pluginBassManager;
     static Strikeline strikeline;
+    static Waveform instance;
 
     #region Properties
     /// <summary>
@@ -20,10 +22,10 @@ public class Waveform : MonoBehaviour
     /// </summary>
     [SerializeField] LineRenderer lineRendererMirror;
 
-        // Note: Line renderer uses local positioning to more easily align with the screen
-        // both of these line renderers combine to make a symmetrical waveform
-        // and the center is hollow! so cool and unique
-    
+    // Note: Line renderer uses local positioning to more easily align with the screen
+    // both of these line renderers combine to make a symmetrical waveform
+    // and the center is hollow! so cool and unique
+
     /// <summary>
     /// RectTransform attached to the waveform container.
     /// </summary>
@@ -61,7 +63,7 @@ public class Waveform : MonoBehaviour
         {
             if (_shrinkFactor == value) return;
             _shrinkFactor = value;
-            DisplayChanged?.Invoke();
+            instance.GenerateWaveformPoints();
         }
     }
     private static float _shrinkFactor = 0.005f;
@@ -80,7 +82,7 @@ public class Waveform : MonoBehaviour
         {
             if (_wfPosition == value) return;
             _wfPosition = value;
-            DisplayChanged?.Invoke();
+            instance.GenerateWaveformPoints();
         }
     }
     private static int _wfPosition = 0;
@@ -98,7 +100,7 @@ public class Waveform : MonoBehaviour
         {
             if (_amplitude == value) return;
             _amplitude = value;
-            DisplayChanged?.Invoke();
+            instance.GenerateWaveformPoints();
         }
     }
     private static float _amplitude = 1;
@@ -106,7 +108,7 @@ public class Waveform : MonoBehaviour
     /// <summary>
     /// The currently displayed waveform.
     /// </summary>
-    private static Metadata.StemType CurrentWaveform {get; set;}
+    private static Metadata.StemType CurrentWaveform { get; set; }
 
     /// <summary>
     /// Dictionary that contains waveform point data for each song stem.
@@ -123,6 +125,7 @@ public class Waveform : MonoBehaviour
     #region Unity Functions
     void Awake()
     {
+        instance = this;
         strikeline = GameObject.Find("Strikeline").GetComponent<Strikeline>();
         boundaryReference = GameObject.Find("ScreenReference");
     }
@@ -134,7 +137,6 @@ public class Waveform : MonoBehaviour
         // Just have user select it
 
         SongTimelineManager.TimeChanged += ChangeWaveformSegment; // when the time is changed, update the points displayed
-        DisplayChanged += GenerateWaveformPoints; // when local properties are changed, update the display
 
         var boundsRectTransform = boundaryReference.GetComponent<RectTransform>();
         rt.pivot = boundsRectTransform.pivot;
@@ -144,7 +146,8 @@ public class Waveform : MonoBehaviour
         // This is just so that the waveform has something to generate from (avoid bricking program from error)
 
         InitializeWaveformData();
-        DisplayChanged?.Invoke();
+
+        GenerateWaveformPoints();
     }
     #endregion
 
@@ -165,7 +168,7 @@ public class Waveform : MonoBehaviour
     /// <param name="stem">The BASS stream to get audio samples of.</param>
     public void UpdateWaveformData(Metadata.StemType stem) // pass in file path here later
     {
-        float[] stemWaveformData = pluginBassManager.GetAudioSamples(stem, out long bytesPerSample); 
+        float[] stemWaveformData = pluginBassManager.GetAudioSamples(stem, out long bytesPerSample);
 
         if (WaveformData.ContainsKey(stem))
         {
@@ -174,14 +177,14 @@ public class Waveform : MonoBehaviour
 
         WaveformData.Add(stem, (stemWaveformData, bytesPerSample));
     }
-    
+
     public void SetWaveformVisibility(bool isVisible)
     {
         if (isVisible) transform.position = boundaryReference.transform.position + Vector3.back;
         // ^^ In order for the waveform to be visible the container game object has to be moved in front of the background panel & vice versa
-        else transform.position = boundaryReference.transform.position - 2*Vector3.back; // 2* b/c this looks weird in the scene view otherwise
+        else transform.position = boundaryReference.transform.position - 2 * Vector3.back; // 2* b/c this looks weird in the scene view otherwise
     }
-    
+
     /// <summary>
     /// Generate an array of line renderer positions based on waveform audio.
     /// </summary>
@@ -199,7 +202,7 @@ public class Waveform : MonoBehaviour
 
         for (int lineRendererIndex = 0; lineRendererIndex < lineRendererPositions.Length; lineRendererIndex++)
         {
-            yPos = lineRendererIndex*ShrinkFactor;
+            yPos = lineRendererIndex * ShrinkFactor;
             try
             {
                 lineRendererPositions[lineRendererIndex] = new Vector3(masterWaveformData[CurrentWaveformDataPosition + strikeSamplePoint] * Amplitude, yPos);
@@ -211,13 +214,15 @@ public class Waveform : MonoBehaviour
             }
             strikeSamplePoint++; // this allows working with the waveform data from the bottom up and for CurrentWFDataPosition to be at the strikeline
         }
-        
+
         lineRendererMain.SetPositions(lineRendererPositions);
 
         // mirror all x positions of every point
         lineRendererPositions = Array.ConvertAll(lineRendererPositions, pos => new Vector3(-pos.x, pos.y));
 
         lineRendererMirror.SetPositions(lineRendererPositions);
+
+        UpdateWaveformData();
     }
 
     /// <summary>
@@ -235,6 +240,7 @@ public class Waveform : MonoBehaviour
 
     public void ChangeWaveformSegment()
     {
+        Debug.Log($"ChangeWaveformSegment");
         // This can use an implicit cast because song position is always rounded to 3 decimal places
         CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPositionSeconds * AudioManager.SAMPLES_PER_SECOND);
 
@@ -262,9 +268,11 @@ public class Waveform : MonoBehaviour
         GetWaveformProperties(out var _, out var samplesPerScreen, out var strikeSamplePoint);
 
         // get to bottom of screen, calculate what that waveform position is in seconds
-        var startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * AudioManager.ARRAY_RESOLUTION; 
+        var startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * AudioManager.ARRAY_RESOLUTION;
         // get to bottom of screen, jump to top of screen with samplesPerScreen, calculate what that waveform position is in seconds
         var endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * AudioManager.ARRAY_RESOLUTION;
+
+        //Debug.Log($"Current WF position: {CurrentWaveformDataPosition}, Strike sample point: {strikeSamplePoint}");
 
         return (startPoint, endPoint);
     }
@@ -276,5 +284,21 @@ public class Waveform : MonoBehaviour
         startTick = BPM.ConvertSecondsToTickTime((float)startTime);
         endTick = BPM.ConvertSecondsToTickTime((float)endTime);
         timeShown = endTime - startTime;
+       // Debug.Log($"{Time.frameCount}: {startTick}, {endTick}, {timeShown}, {startTime}, {endTime}");
+    }
+
+    public static int startTick;
+    public static int endTick;
+    public static double timeShown;
+    public static double startTime;
+    public double endTime;
+
+    void UpdateWaveformData()
+    {
+        Debug.Log($"Pre-update of data. Frame: {Time.frameCount}: Start tick: {startTick}, End tick: {endTick}, Time shown: {timeShown}, Start time: {startTime}, End time: {endTime}");
+        GetCurrentDisplayedWaveformInfo(out startTick, out endTick, out timeShown, out startTime, out endTime);
+        Debug.Log($"Updating data. Frame: {Time.frameCount}: Start tick: {startTick}, End tick: {endTick}, Time shown: {timeShown}, Start time: {startTime}, End time: {endTime}");
+
+        Chart.Refresh();
     }
 } 

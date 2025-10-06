@@ -230,10 +230,9 @@ public class BPM : Label<BPMData>, IDragHandler
     /// <param name="mouseDelta">The difference between the mouse on this frame versus the last frame.</param>
     private void ChangeBPMPositionFromDrag(float mouseDelta, bool anchorNextEvent)
     {
-        Waveform.GetCurrentDisplayedWaveformInfo(out var _, out var _, out var timeShown, out var _, out var _);
 
         var percentOfScreenMoved = mouseDelta / Screen.height;
-        var timeChange = percentOfScreenMoved * timeShown;
+        var timeChange = percentOfScreenMoved * Waveform.timeShown;
 
         // Use exclusive function because this needs to find the tempo event before this beatline's tempo event.
         // Inclusive would always return the same event, which causes 0/0 and thus NaN.
