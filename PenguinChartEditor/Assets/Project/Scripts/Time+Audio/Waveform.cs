@@ -13,7 +13,7 @@ public class Waveform : MonoBehaviour
     /// <para>ChartMetadata.StemType is the audio stem the data belongs to</para>
     /// <para>The tuple in the value holds the data (float[]) and the number of bytes per sample (long)</para>
     /// </summary>
-    public static Dictionary<Metadata.StemType, (float[], long)> WaveformData { get; private set; } = new();
+    public static Dictionary<Metadata.StemType, StemWaveformData> WaveformData { get; private set; } = new();
     // The number of bytes per sample is needed in order to accurately play and seek through the track in PluginBassManager
     // The number of bytes can vary based on the type of audio file the user inputs, like if they use .opus, .mp3 together, etc.
     // long is just what Bass returns and I don't want to do a million casts just to make this a regular int
@@ -170,7 +170,7 @@ public class Waveform : MonoBehaviour
             WaveformData.Remove(stem);
         } // Flush current value to allow for new one
 
-        WaveformData.Add(stem, (stemWaveformData, bytesPerSample));
+        WaveformData.Add(stem, new(stemWaveformData, bytesPerSample));
     }
 
     #endregion
@@ -183,11 +183,14 @@ public class Waveform : MonoBehaviour
     /// <returns>Vector3 array of line renderer positions</returns>
     private void GenerateWaveformPoints()
     {
-        GetWaveformProperties(out var masterWaveformData, out var samplesPerScreen, out var strikeSamplePoint);
+        var masterWaveformData = WaveformData[CurrentWaveform].volumeData;
+        var currentSampleOffset = strikeSamplePoint;
+
+        var sampleCount = samplesPerScreen;
 
         // each line renderer point is a sample
-        lineRendererMain.positionCount = samplesPerScreen;
-        lineRendererMirror.positionCount = samplesPerScreen;
+        lineRendererMain.positionCount = sampleCount;
+        lineRendererMirror.positionCount = sampleCount;
 
         Vector3[] lineRendererPositions = new Vector3[lineRendererMain.positionCount];
         float yPos = 0;
@@ -197,14 +200,14 @@ public class Waveform : MonoBehaviour
             yPos = lineRendererIndex * ShrinkFactor;
             try
             {
-                lineRendererPositions[lineRendererIndex] = new Vector3(masterWaveformData[CurrentWaveformDataPosition + strikeSamplePoint] * Amplitude, yPos);
+                lineRendererPositions[lineRendererIndex] = new Vector3(masterWaveformData[CurrentWaveformDataPosition - currentSampleOffset] * Amplitude, yPos);
             }
             catch // this happens when there is no data to pull for the waveform
             {
                 lineRendererPositions[lineRendererIndex] = new Vector3(0, yPos);
                 // this way the beginning and end of the waveform will stop at the strikeline instead of screen boundaries
             }
-            strikeSamplePoint++; // this allows working with the waveform data from the bottom up and for CurrentWFDataPosition to be at the strikeline
+            currentSampleOffset++; // this allows working with the waveform data from the bottom up and for CurrentWFDataPosition to be at the strikeline
         }
 
         lineRendererMain.SetPositions(lineRendererPositions);
@@ -242,45 +245,33 @@ public class Waveform : MonoBehaviour
     #region Properties
 
     /// <summary>
-    /// Calculate necessary data to generate/access waveform points.
-    /// </summary>
-    /// <param name="masterWaveformData">Current array of waveform data to pull from.</param>
-    /// <param name="samplesPerScreen">The number of sample points that can be displayed on screen, based on the current shrinkFactor.</param>
-    /// <param name="strikeSamplePoint">The number of sample points displayed from the bottom of the screen to the strikeline. THIS VALUE IS NEGATIVE BY DEFAULT</param>
-    public static void GetWaveformProperties(out float[] masterWaveformData, out int samplesPerScreen, out int strikeSamplePoint)
-    {
-        masterWaveformData = WaveformData[CurrentWaveform].Item1;
-        samplesPerScreen = (int)Mathf.Round(instance.rtHeight / ShrinkFactor);
-        strikeSamplePoint = (int)Math.Ceiling(-samplesPerScreen * instance.strikeline.GetStrikelineScreenProportion()); // note the negative sign
-    }
-
-    /// <summary>
     /// Get the start and end second values of the visible waveform segment.
     /// </summary>
     /// <param name="startPoint">The first waveform point visible, in seconds.</param>
     /// <param name="endPoint">The last waveform point visible, in seconds</param>
     public static (double, double) GetDisplayedAudio()
     {
-        GetWaveformProperties(out var _, out var samplesPerScreen, out var strikeSamplePoint);
-
+        var offset = strikeSamplePoint;
         // get to bottom of screen, calculate what that waveform position is in seconds
-        var startPoint = (CurrentWaveformDataPosition + strikeSamplePoint) * AudioManager.ARRAY_RESOLUTION;
+        var startPoint = (CurrentWaveformDataPosition - offset) * AudioManager.ARRAY_RESOLUTION;
         // get to bottom of screen, jump to top of screen with samplesPerScreen, calculate what that waveform position is in seconds
-        var endPoint = (CurrentWaveformDataPosition + strikeSamplePoint + samplesPerScreen) * AudioManager.ARRAY_RESOLUTION;
+        var endPoint = (CurrentWaveformDataPosition - offset + samplesPerScreen) * AudioManager.ARRAY_RESOLUTION;
 
         return (startPoint, endPoint);
     }
 
-    // Note: This function is considerably faster than splitting this up into properties
     public static void GetCurrentDisplayedWaveformInfo(out int startTick, out int endTick, out double timeShown, out double startTime, out double endTime)
     {
         (startTime, endTime) = GetDisplayedAudio();
         startTick = BPM.ConvertSecondsToTickTime((float)startTime);
         endTick = BPM.ConvertSecondsToTickTime((float)endTime);
         timeShown = endTime - startTime;
-        Debug.Log($"{Time.frameCount}: {startTick}, {endTick}, {timeShown}, {startTime}, {endTime}");
+
+        //Debug.Log($"{Time.frameCount}: {startTick}, {endTick}, {timeShown}, {startTime}, {endTime}");
     }
 
+    static int samplesPerScreen => (int)Mathf.Round(instance.rtHeight / ShrinkFactor);
+    static int strikeSamplePoint => (int)Math.Ceiling(samplesPerScreen * instance.strikeline.GetStrikelineScreenProportion());
     public static int startTick;
     public static int endTick;
     public static double timeShown;
@@ -302,4 +293,16 @@ public class Waveform : MonoBehaviour
     }
 
     #endregion
-} 
+}
+
+public class StemWaveformData
+{
+    public float[] volumeData;
+    public long bytesPerSample; // yk i'm not actually sure if I need this anymore but this is here juuuuuust in case
+
+    public StemWaveformData(float[] volumeData, long bytesPerSample)
+    {
+        this.volumeData = volumeData;
+        this.bytesPerSample = bytesPerSample;
+    }
+}
