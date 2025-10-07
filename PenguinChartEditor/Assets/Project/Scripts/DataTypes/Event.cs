@@ -12,6 +12,7 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
     bool Visible { get; set; }
     EventData<T> GetEventData();
     MoveData<T> GetMoveData();
+    SortedDictionary<int, T> GetEventSet();
     void SetEvents(SortedDictionary<int, T> newEvents);
 }
 
@@ -63,6 +64,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     // Stops tick 0 being erased and/or having invalid data when changing the EventData.Events. 
     public abstract void SetEvents(SortedDictionary<int, T> newEvents);
 
+    public abstract SortedDictionary<int, T> GetEventSet();
     #endregion
 
     // Oops! All naming confusion!
@@ -96,33 +98,33 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public void CopySelection()
     {
         GetEventData().Clipboard.Clear();
-        var copyAction = new Copy<T>(GetEventData().Events);
+        var copyAction = new Copy<T>(GetEventSet());
         copyAction.Execute(GetEventData().Clipboard, GetEventData().Selection);
     }
 
     public virtual void PasteSelection()
     {
-        var pasteAction = new Paste<T>(GetEventData().Events);
+        var pasteAction = new Paste<T>(GetEventSet());
         //pasteAction.Execute(BeatlinePreviewer.currentPreviewTick, GetEventData().Clipboard);
         Chart.Refresh();
     }
 
     public virtual void CutSelection()
     {
-        var cutAction = new Cut<T>(GetEventData().Events);
+        var cutAction = new Cut<T>(GetEventSet());
         cutAction.Execute(GetEventData().Clipboard, GetEventData().Selection);
     }
 
     public virtual void DeleteSelection()
     {
-        var deleteAction = new Delete<T>(GetEventData().Events);
+        var deleteAction = new Delete<T>(GetEventSet());
         deleteAction.Execute(GetEventData().Selection);
         Chart.Refresh();
     }
 
     public virtual void CreateEvent(int newTick, T newData)
     {
-        var createAction = new Create<T>(GetEventData().Events);
+        var createAction = new Create<T>(GetEventSet());
         createAction.Execute(newTick, newData, GetEventData().Selection);
         Chart.Refresh();
     }
@@ -167,7 +169,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // tick 0 will not exist in the dictionary for TS & BPM events, which are needed
         // SetEvents() in BPM/TS cleans up data before actually applying the changes, which is required for BPM/TS
         // SetEvents() is already guaranteed by the interface so all event types will have it 
-        SortedDictionary<int, T> movingData = new(GetEventData().Events);
+        SortedDictionary<int, T> movingData = new(GetEventSet());
 
         // delete last move preview's data
         var deleteAction = new Delete<T>(movingData);
@@ -235,7 +237,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // happens after the moving set init in case no set is created (count = 0)
         moveData.moveInProgress = true;
 
-        moveData.currentMoveAction = new(GetEventData().Events, moveData.MovingGhostSet, lowestTick);
+        moveData.currentMoveAction = new(GetEventSet(), moveData.MovingGhostSet, lowestTick);
         moveData.lastTempGhostPasteStartTick = moveData.selectionOriginTick;
 
         //BeatlinePreviewer.instance.gameObject.SetActive(false);
@@ -273,7 +275,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     void SelectAllEvents()
     {
         GetEventData().Selection.Clear();
-        foreach (var item in GetEventData().Events)
+        foreach (var item in GetEventSet())
         {
             GetEventData().Selection.Add(item.Key, item.Value);
         }
@@ -284,7 +286,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     {
         if (GetEventData().RMBHeld && pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            var deleteAction = new Delete<T>(GetEventData().Events);
+            var deleteAction = new Delete<T>(GetEventSet());
             deleteAction.Execute(Tick);
         }
 
@@ -321,7 +323,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public void CalculateSelectionStatus(PointerEventData clickData)
     {
         var selection = GetEventData().Selection;
-        SortedDictionary<int, T> targetEventSet = GetEventData().Events;
+        SortedDictionary<int, T> targetEventSet = GetEventSet();
 
         // Goal is to follow standard selection functionality of most productivity programs
         if (clickData.button != PointerEventData.InputButton.Left) return;

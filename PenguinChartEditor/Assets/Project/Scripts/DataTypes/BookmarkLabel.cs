@@ -2,31 +2,32 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
-public class Bookmark : Label<BookmarkData>
+public class BookmarkLabel : Label<BookmarkData>
 {
     public static EventData<BookmarkData> EventData = new();
     public override EventData<BookmarkData> GetEventData() => EventData;
+    public override SortedDictionary<int, BookmarkData> GetEventSet() => Bookmark.Events;
 
     static MoveData<BookmarkData> moveData = new();
     public override MoveData<BookmarkData> GetMoveData() => moveData;
 
     public override void SetEvents(SortedDictionary<int, BookmarkData> newEvents)
     {
-        if (!EventData.Events.ContainsKey(0))
+        if (!Bookmark.Events.ContainsKey(0))
         {
-            EventData.Events.Add(0, new BookmarkData(moveData.currentMoveAction.poppedData[0].Name));
+            Bookmark.Events.Add(0, new BookmarkData(moveData.currentMoveAction.poppedData[0].Name));
         }
-        EventData.Events = newEvents;
+        Bookmark.Events = newEvents;
     }
 
     public override string ConvertDataToPreviewString()
     {
-        return EventData.Events[Tick].Name;
+        return Bookmark.Events[Tick].Name;
     }
 
     public override void HandleManualEndEdit(string newVal)
     {
-        EventData.Events[Tick] = new BookmarkData(newVal);
+        Bookmark.Events[Tick] = new BookmarkData(newVal);
 
         ConcludeManualEdit();
     }

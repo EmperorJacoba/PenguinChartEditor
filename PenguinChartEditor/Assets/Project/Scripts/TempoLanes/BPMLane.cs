@@ -11,7 +11,7 @@ public class BPMLane : MonoBehaviour
     }
     public void UpdateEvents()
     {
-        var eventsToDisplay = BPM.EventData.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
+        var eventsToDisplay = Tempo.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
 
         int i = 0;
         for (i = 0; i < eventsToDisplay.Count; i++)

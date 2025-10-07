@@ -23,7 +23,7 @@ public class TempoManager : MonoBehaviour
         int currentBeatline = 0;
         // Generate the division and half-division beatlines
         for (
-                int currentTick = TimeSignature.GetNextBeatlineEvent(Waveform.startTick); // Calculate the tick to start generating beatlines from
+                int currentTick = TSLabel.GetNextBeatlineEvent(Waveform.startTick); // Calculate the tick to start generating beatlines from
                 currentTick < Waveform.endTick && // Don't generate beatlines outside of the shown time period
                 currentTick < SongTimelineManager.SongLengthTicks; // Don't generate beatlines that don't exist (falls ahead of the end of the audio file) 
                 currentBeatline++
@@ -37,10 +37,10 @@ public class TempoManager : MonoBehaviour
             workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
 
             // Needed to generate correct thickness
-            workedBeatline.Type = TimeSignature.CalculateBeatlineType(currentTick);
+            workedBeatline.Type = TSLabel.CalculateBeatlineType(currentTick);
 
             // Set up tick for next beatline's calculations
-            currentTick += TimeSignature.IncreaseByHalfDivision(currentTick);
+            currentTick += TSLabel.IncreaseByHalfDivision(currentTick);
         }
 
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);

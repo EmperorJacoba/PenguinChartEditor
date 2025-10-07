@@ -12,6 +12,7 @@ public class BPM : Label<BPMData>, IDragHandler
 
     public static EventData<BPMData> EventData = new();
     public override EventData<BPMData> GetEventData() => EventData;
+    public override SortedDictionary<int, BPMData> GetEventSet() => Tempo.Events;
 
     static MoveData<BPMData> moveData = new();
     public override MoveData<BPMData> GetMoveData() => moveData;
@@ -19,20 +20,20 @@ public class BPM : Label<BPMData>, IDragHandler
     public override void SetEvents(SortedDictionary<int, BPMData> newEvents)
     {
         var breakKey = GetFirstVariableEvent(newEvents);
-        EventData.Events = newEvents;
+        Tempo.Events = newEvents;
 
-        if (!EventData.Events.ContainsKey(0))
+        if (!Tempo.Events.ContainsKey(0))
         {
-            EventData.Events.Add(0, new BPMData(moveData.currentMoveAction.poppedData[0].BPMChange, 0));
+            Tempo.Events.Add(0, new BPMData(moveData.currentMoveAction.poppedData[0].BPMChange, 0));
         }
 
         // Safety check before recalculating dictionary
         // When pasting into dictionary, tick 0 might inherit data
         // from a pasted event that has a timestamp which is not 0.
         // Tick 0's timestamp is always 0
-        if (EventData.Events[0].Timestamp != 0)
+        if (Tempo.Events[0].Timestamp != 0)
         {
-            EventData.Events[0] = new BPMData(EventData.Events[0].BPMChange, 0);
+            Tempo.Events[0] = new BPMData(Tempo.Events[0].BPMChange, 0);
         }
 
         if (breakKey != -1)
@@ -43,7 +44,7 @@ public class BPM : Label<BPMData>, IDragHandler
 
     public int GetFirstVariableEvent(SortedDictionary<int, BPMData> newData)
     {
-        var currentKeys = EventData.Events.Keys.ToHashSet();
+        var currentKeys = Tempo.Events.Keys.ToHashSet();
         currentKeys.UnionWith(newData.Keys.ToHashSet());
         currentKeys.OrderBy(x => x);
 
@@ -51,7 +52,7 @@ public class BPM : Label<BPMData>, IDragHandler
         {
             try
             {
-                if (newData[key] != EventData.Events[key]) // Data has been edited at this point
+                if (newData[key] != Tempo.Events[key]) // Data has been edited at this point
                 {
                     return key;
                 }
@@ -86,7 +87,7 @@ public class BPM : Label<BPMData>, IDragHandler
     {
         try
         {
-            EventData.Events[Tick] = new BPMData(ProcessUnsafeBPMString(newVal), EventData.Events[Tick].Timestamp);
+            Tempo.Events[Tick] = new BPMData(ProcessUnsafeBPMString(newVal), Tempo.Events[Tick].Timestamp);
         }
         catch
         {
@@ -127,7 +128,7 @@ public class BPM : Label<BPMData>, IDragHandler
         var bpmAsFloat = float.Parse(newBPM);
         if (bpmAsFloat == 0 || bpmAsFloat > 1000.0f)
         {
-            return EventData.Events[Tick].BPMChange;
+            return Tempo.Events[Tick].BPMChange;
         }
         bpmAsFloat = (float)Math.Round(bpmAsFloat, 3);
         return bpmAsFloat;
@@ -135,7 +136,7 @@ public class BPM : Label<BPMData>, IDragHandler
 
     public override string ConvertDataToPreviewString()
     {
-        return $"{EventData.Events[Tick].BPMChange}";
+        return $"{Tempo.Events[Tick].BPMChange}";
     }
 
     /// <summary>
@@ -180,8 +181,8 @@ public class BPM : Label<BPMData>, IDragHandler
             return SongTimelineManager.SongLengthTicks;
 
         // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
-        var tempoTickTimeEvents = EventData.Events.Keys.ToList();
-        var tempoTimeSecondEvents = EventData.Events.Values.Select(x => x.Timestamp).ToList();
+        var tempoTickTimeEvents = Tempo.Events.Keys.ToList();
+        var tempoTimeSecondEvents = Tempo.Events.Values.Select(x => x.Timestamp).ToList();
 
         // Attempt a binary search for the current timestamp, 
         // which will return a bitwise complement of the index of the next highest timesecond value 
@@ -210,14 +211,14 @@ public class BPM : Label<BPMData>, IDragHandler
         }
 
         // Rearranging of .chart format specification distance between two ticks - thanks, algebra class!
-        return Mathf.RoundToInt((Chart.Resolution * EventData.Events[lastTickEvent].BPMChange * (float)(timestamp - EventData.Events[lastTickEvent].Timestamp) / SECONDS_PER_MINUTE) + lastTickEvent);
+        return Mathf.RoundToInt((Chart.Resolution * Tempo.Events[lastTickEvent].BPMChange * (float)(timestamp - Tempo.Events[lastTickEvent].Timestamp) / SECONDS_PER_MINUTE) + lastTickEvent);
     }
 
     public static double ConvertTickTimeToSeconds(int ticktime)
     {
         var lastTickEvent = GetLastTempoEventTickInclusive(ticktime);
         // Formula from .chart format specifications
-        return ((ticktime - lastTickEvent) / (double)Chart.Resolution * SECONDS_PER_MINUTE / EventData.Events[lastTickEvent].BPMChange) + EventData.Events[lastTickEvent].Timestamp;
+        return ((ticktime - lastTickEvent) / (double)Chart.Resolution * SECONDS_PER_MINUTE / Tempo.Events[lastTickEvent].BPMChange) + Tempo.Events[lastTickEvent].Timestamp;
     }
 
     #endregion
@@ -238,16 +239,16 @@ public class BPM : Label<BPMData>, IDragHandler
         // Inclusive would always return the same event, which causes 0/0 and thus NaN.
         var lastBPMTick = GetLastTempoEventTickExclusive(Tick);
 
-        var newTime = EventData.Events[Tick].Timestamp + (float)timeChange;
+        var newTime = Tempo.Events[Tick].Timestamp + (float)timeChange;
 
         // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
         // Calculate the new BPM based on the time change
-        float newBPS = ((Tick - lastBPMTick) / (float)Chart.Resolution) / (newTime - EventData.Events[lastBPMTick].Timestamp);
+        float newBPS = ((Tick - lastBPMTick) / (float)Chart.Resolution) / (newTime - Tempo.Events[lastBPMTick].Timestamp);
         float newBPM = (float)Math.Round((newBPS * 60), 3);
 
         if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
 
-        var thisBPM = EventData.Events[Tick].BPMChange;
+        var thisBPM = Tempo.Events[Tick].BPMChange;
 
         int nextBPMTick;
         try
@@ -269,14 +270,14 @@ public class BPM : Label<BPMData>, IDragHandler
             // IF you want this to be modified to have anchors furthur than one beat:
             // Apply this logic to the last event before the next anchor event while shifting everything else normally
             // Recalculate range x to y function will probably be needed for that
-            float anchoredBPS = ((nextBPMTick - Tick) / (float)Chart.Resolution) / (EventData.Events[nextBPMTick].Timestamp - newTime);
+            float anchoredBPS = ((nextBPMTick - Tick) / (float)Chart.Resolution) / (Tempo.Events[nextBPMTick].Timestamp - newTime);
             float anchoredBPM = (float)Math.Round((anchoredBPS * 60), 3);
             thisBPM = anchoredBPM;
         }
 
         // Write new data: time changes for this beatline's tick, BPM changes for the last tick event.
-        EventData.Events[Tick] = new BPMData(thisBPM, newTime);
-        EventData.Events[lastBPMTick] = new BPMData(newBPM, EventData.Events[lastBPMTick].Timestamp);
+        Tempo.Events[Tick] = new BPMData(thisBPM, newTime);
+        Tempo.Events[lastBPMTick] = new BPMData(newBPM, Tempo.Events[lastBPMTick].Timestamp);
 
         // Update rest of dictionary to account for the time change.
         if (!anchorNextEvent) RecalculateTempoEventDictionary(Tick, (float)timeChange);
@@ -293,14 +294,14 @@ public class BPM : Label<BPMData>, IDragHandler
     {
         SortedDictionary<int, BPMData> outputTempoEventsDict = new();
 
-        var tickEvents = EventData.Events.Keys.ToList();
+        var tickEvents = Tempo.Events.Keys.ToList();
         var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick);
         if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
 
         // Keep all events before change when creating new dictionary
         for (int i = 0; i <= positionOfTick; i++)
         {
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(EventData.Events[tickEvents[i]].BPMChange, EventData.Events[tickEvents[i]].Timestamp));
+            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Tempo.Events[tickEvents[i]].BPMChange, Tempo.Events[tickEvents[i]].Timestamp));
         }
         // Start new data with the song timestamp of the change
         double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Timestamp;
@@ -312,38 +313,38 @@ public class BPM : Label<BPMData>, IDragHandler
             {
                 // Taken from Chart File Format Specifications -> Calculate time from one pos to the next at a constant bpm
                 calculatedTimeSecondDifference =
-                (tickEvents[i] - tickEvents[i - 1]) / (double)Chart.Resolution * 60 / EventData.Events[tickEvents[i - 1]].BPMChange;
+                (tickEvents[i] - tickEvents[i - 1]) / (double)Chart.Resolution * 60 / Tempo.Events[tickEvents[i - 1]].BPMChange;
             }
 
             currentSongTime += calculatedTimeSecondDifference;
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(EventData.Events[tickEvents[i]].BPMChange, (float)currentSongTime));
+            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Tempo.Events[tickEvents[i]].BPMChange, (float)currentSongTime));
         }
 
-        EventData.Events = outputTempoEventsDict;
+        Tempo.Events = outputTempoEventsDict;
     }
 
     public static void RecalculateTempoEventDictionary(int modifiedTick, float timeChange)
     {
         SortedDictionary<int, BPMData> outputTempoEventsDict = new();
 
-        var tickEvents = EventData.Events.Keys.ToList();
+        var tickEvents = Tempo.Events.Keys.ToList();
         var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick);
         if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
 
         // Keep all events before change when creating new dictionary
         for (int i = 0; i <= positionOfTick; i++)
         {
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(EventData.Events[tickEvents[i]].BPMChange, EventData.Events[tickEvents[i]].Timestamp));
+            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Tempo.Events[tickEvents[i]].BPMChange, Tempo.Events[tickEvents[i]].Timestamp));
         }
 
         // Start new data with the song timestamp of the change
         double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Timestamp;
         for (int i = positionOfTick + 1; i < tickEvents.Count; i++)
         {
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(EventData.Events[tickEvents[i]].BPMChange, EventData.Events[tickEvents[i]].Timestamp + timeChange));
+            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Tempo.Events[tickEvents[i]].BPMChange, Tempo.Events[tickEvents[i]].Timestamp + timeChange));
         }
 
-        EventData.Events = outputTempoEventsDict;
+        Tempo.Events = outputTempoEventsDict;
     }
 
     #endregion
@@ -358,7 +359,7 @@ public class BPM : Label<BPMData>, IDragHandler
     public static int GetLastTempoEventTickInclusive(int currentTick)
     {
         if (currentTick < 0) return 0;
-        var tickTimeKeys = EventData.Events.Keys.ToList();
+        var tickTimeKeys = Tempo.Events.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
 
@@ -379,7 +380,7 @@ public class BPM : Label<BPMData>, IDragHandler
     /// <returns></returns>
     public static int GetLastTempoEventTickExclusive(int currentTick)
     {
-        var tickTimeKeys = EventData.Events.Keys.ToList();
+        var tickTimeKeys = Tempo.Events.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
 
@@ -402,7 +403,7 @@ public class BPM : Label<BPMData>, IDragHandler
 
     public static int GetNextTempoEventExclusive(int currentTick)
     {
-        var tickTimeKeys = EventData.Events.Keys.ToList();
+        var tickTimeKeys = Tempo.Events.Keys.ToList();
 
         var index = tickTimeKeys.BinarySearch(currentTick);
 

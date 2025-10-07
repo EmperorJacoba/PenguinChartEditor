@@ -187,7 +187,7 @@ public class SongTimelineManager : MonoBehaviour
         var tickInterval = Chart.Resolution / ((float)DivisionChanger.CurrentDivision / 4);
 
         // Calculate the cursor's Tick position in the context of the origin of the grid (last barline) 
-        var divisionBasisTick = cursorTickTime - TimeSignature.GetLastBarline(cursorTickTime);
+        var divisionBasisTick = cursorTickTime - TSLabel.GetLastBarline(cursorTickTime);
 
         // Find how many Ticks off the cursor position is from the grid 
         var remainder = divisionBasisTick % tickInterval;

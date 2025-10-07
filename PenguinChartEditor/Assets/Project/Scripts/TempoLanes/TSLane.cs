@@ -12,7 +12,7 @@ public class TSLane : MonoBehaviour
     }
     public void UpdateEvents()
     {
-        var eventsToDisplay = TimeSignature.EventData.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
+        var eventsToDisplay = TimeSignature.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
 
         int warningCount = 0;
         int i = 0;
@@ -26,7 +26,7 @@ public class TSLane : MonoBehaviour
 
             tsLabel.UpdatePosition(percentOfScreen, boundaryReference.rect.height);
 
-            if (!TimeSignature.IsEventValid(eventsToDisplay[i]))
+            if (!TSLabel.IsEventValid(eventsToDisplay[i]))
             {
                 var tsWarningAlert = WarningPooler.instance.GetObject(warningCount);
                 tsWarningAlert.InitializeWarning(Warning.WarningType.invalidTimeSignature);

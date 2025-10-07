@@ -42,7 +42,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     public abstract void HandleManualEndEdit(string newVal);
     public void ActivateManualInput()
     {
-        if (!LabelObject.activeInHierarchy || !GetEventData().Events.ContainsKey(Tick)) return;
+        if (!LabelObject.activeInHierarchy || !GetEventSet().ContainsKey(Tick)) return;
 
         try { LabelEntryBox.gameObject.SetActive(true); } catch { return; } // omg unity shut up about this (genuinely this should not be possible)
 

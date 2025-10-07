@@ -77,18 +77,18 @@ public class Chart : MonoBehaviour
         Metadata = chartParser.metadata;
         Metadata.TempSetUpStemDict();
 
-        BPM.EventData.Events = chartParser.bpmEvents;
-        TimeSignature.EventData.Events = chartParser.tsEvents;
+        Tempo.Events = chartParser.bpmEvents;
+        TimeSignature.Events = chartParser.tsEvents;
 
         Instruments = chartParser.instruments;
 
-        if (BPM.EventData.Events.Count == 0) // if there is no data to load in 
+        if (Tempo.Events.Count == 0) // if there is no data to load in 
         {
-            BPM.EventData.Events.Add(0, new BPMData(120.0f, 0)); // add placeholder bpm
+            Tempo.Events.Add(0, new BPMData(120.0f, 0)); // add placeholder bpm
         }
-        if (TimeSignature.EventData.Events.Count == 0)
+        if (TimeSignature.Events.Count == 0)
         {
-            TimeSignature.EventData.Events.Add(0, new TSData(4, 4));
+            TimeSignature.Events.Add(0, new TSData(4, 4));
         }
 
     }
