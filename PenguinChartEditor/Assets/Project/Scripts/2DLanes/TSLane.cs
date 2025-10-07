@@ -26,7 +26,7 @@ public class TSLane : MonoBehaviour
 
             tsLabel.UpdatePosition(percentOfScreen, boundaryReference.rect.height);
 
-            if (!TSLabel.IsEventValid(eventsToDisplay[i]))
+            if (!TimeSignature.IsEventValid(eventsToDisplay[i]))
             {
                 var tsWarningAlert = WarningPooler.instance.GetObject(warningCount);
                 tsWarningAlert.InitializeWarning(Warning.WarningType.invalidTimeSignature);

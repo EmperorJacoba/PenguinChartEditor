@@ -233,7 +233,7 @@ public static class Tempo
 
         if (!Events.ContainsKey(0))
         {
-            Events.Add(0, new BPMData(BPM.moveData.currentMoveAction.poppedData[0].BPMChange, 0));
+            Events.Add(0, new BPMData(BPMLabel.moveData.currentMoveAction.poppedData[0].BPMChange, 0));
         }
 
         // Safety check before recalculating dictionary

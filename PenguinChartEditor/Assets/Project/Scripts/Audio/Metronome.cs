@@ -27,7 +27,7 @@ public class Metronome : MonoBehaviour
 
         if (firstLoop)
         {
-            nextPromisedMetronomeHit = TSLabel.GetNextDivisionEvent(SongTimelineManager.SongPositionTicks);
+            nextPromisedMetronomeHit = TimeSignature.GetNextDivisionEvent(SongTimelineManager.SongPositionTicks);
             firstLoop = false;
         }
 
@@ -40,7 +40,7 @@ public class Metronome : MonoBehaviour
 
             // Add a tick buffer (+1) so that the metronome will
             // not tick twice for the same tick 
-            nextPromisedMetronomeHit = TSLabel.GetNextDivisionEvent(SongTimelineManager.SongPositionTicks + TICK_BUFFER);
+            nextPromisedMetronomeHit = TimeSignature.GetNextDivisionEvent(SongTimelineManager.SongPositionTicks + TICK_BUFFER);
         }
     }
 
