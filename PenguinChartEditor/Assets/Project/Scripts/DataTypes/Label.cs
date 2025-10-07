@@ -73,14 +73,14 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         ConcludeManualEdit();
     }
 
-    public void SetLabelActive()
+    public virtual void SetLabelActive()
     {
         Visible = true;
         LabelText = ConvertDataToPreviewString();
         Selected = CheckForSelection();
     }
 
-    public void SetLabelInactive()
+    public virtual void SetLabelInactive()
     {
         Visible = false;
         DeactivateManualInput();
@@ -110,7 +110,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         yield return clickCooldown;
         clickCount = 0;
     }
-    
+
     public void UpdatePosition(double percentOfScreen, float screenHeight)
     {
         var yScreenProportion = (float)percentOfScreen * screenHeight;

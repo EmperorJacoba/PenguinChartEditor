@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    [SerializeField] RectTransform rectTransform;
     public void OnPointerEnter(PointerEventData eventData) => Tooltip.NewTooltip(warningDescriptions[type]);
     public void OnPointerExit(PointerEventData eventData) => Tooltip.Deactivate();
 
@@ -14,7 +15,7 @@ public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         gameObject.SetActive(true);
     }
 
-    public bool Active
+    public bool Visible
     {
         get
         {
@@ -39,4 +40,10 @@ public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             "This time signature change occurs at an invalid timestamp. Please place all time signature change events on the first beat of a bar."
         }
     };
+
+    public void UpdatePosition(double percentOfScreen, float screenHeight)
+    {
+        var yScreenProportion = (float)percentOfScreen * screenHeight;
+        transform.localPosition = new Vector3(transform.localPosition.x, yScreenProportion - (rectTransform.rect.height / 2));
+    }
 }
