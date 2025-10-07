@@ -263,8 +263,8 @@ public class Waveform : MonoBehaviour
     public static void GetCurrentDisplayedWaveformInfo(out int startTick, out int endTick, out double timeShown, out double startTime, out double endTime)
     {
         (startTime, endTime) = GetDisplayedAudio();
-        startTick = BPM.ConvertSecondsToTickTime((float)startTime);
-        endTick = BPM.ConvertSecondsToTickTime((float)endTime);
+        startTick = Tempo.ConvertSecondsToTickTime((float)startTime);
+        endTick = Tempo.ConvertSecondsToTickTime((float)endTime);
         timeShown = endTime - startTime;
 
         //Debug.Log($"{Time.frameCount}: {startTick}, {endTick}, {timeShown}, {startTime}, {endTime}");

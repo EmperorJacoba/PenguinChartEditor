@@ -22,7 +22,7 @@ public class TSLane : MonoBehaviour
             tsLabel.Tick = eventsToDisplay[i];
             tsLabel.SetLabelActive();
 
-            double percentOfScreen = (BPM.ConvertTickTimeToSeconds(eventsToDisplay[i]) - Waveform.startTime) / Waveform.timeShown;
+            double percentOfScreen = (Tempo.ConvertTickTimeToSeconds(eventsToDisplay[i]) - Waveform.startTime) / Waveform.timeShown;
 
             tsLabel.UpdatePosition(percentOfScreen, boundaryReference.rect.height);
 

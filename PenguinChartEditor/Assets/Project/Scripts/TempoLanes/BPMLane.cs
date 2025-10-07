@@ -20,7 +20,7 @@ public class BPMLane : MonoBehaviour
             bpmLabel.Tick = eventsToDisplay[i];
             bpmLabel.SetLabelActive();
 
-            bpmLabel.UpdatePosition((BPM.ConvertTickTimeToSeconds(eventsToDisplay[i]) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
+            bpmLabel.UpdatePosition((Tempo.ConvertTickTimeToSeconds(eventsToDisplay[i]) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
         }
 
         BPMPooler.instance.DeactivateUnused(i);

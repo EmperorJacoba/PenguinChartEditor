@@ -39,7 +39,7 @@ public class SongTimelineManager : MonoBehaviour
     {
         get
         {
-            return BPM.ConvertSecondsToTickTime((float)_songPos);
+            return Tempo.ConvertSecondsToTickTime((float)_songPos);
         }
     }
     private static double _songPos = 0;
@@ -58,7 +58,7 @@ public class SongTimelineManager : MonoBehaviour
     {
         get
         {
-            return BPM.ConvertSecondsToTickTime(AudioManager.SongLength);
+            return Tempo.ConvertSecondsToTickTime(AudioManager.SongLength);
         }
     }
 
@@ -177,9 +177,8 @@ public class SongTimelineManager : MonoBehaviour
     
     public static int CalculateGridSnappedTick(float percentOfScreenVertical)
     {
-
         var cursorTimestamp = (percentOfScreenVertical * Waveform.timeShown) + Waveform.startTime;
-        var cursorTickTime = BPM.ConvertSecondsToTickTime((float)cursorTimestamp);
+        var cursorTickTime = Tempo.ConvertSecondsToTickTime((float)cursorTimestamp);
 
         if (cursorTickTime < 0) return 0;
 

@@ -34,7 +34,7 @@ public class TempoManager : MonoBehaviour
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
             workedBeatline.Tick = currentTick;
 
-            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
+            workedBeatline.UpdateBeatlinePosition((Tempo.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
 
             // Needed to generate correct thickness
             workedBeatline.Type = TSLabel.CalculateBeatlineType(currentTick);

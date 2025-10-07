@@ -19,7 +19,7 @@ public class CurrentTimeDisplay : MonoBehaviour
 
     private void UpdateSongText()
     {
-        SongTimestampLabel.text = BPM.ConvertSecondsToTimestamp(SongTimelineManager.SongPositionSeconds);
+        SongTimestampLabel.text = Tempo.ConvertSecondsToTimestamp(SongTimelineManager.SongPositionSeconds);
     }
 
     /// <summary>

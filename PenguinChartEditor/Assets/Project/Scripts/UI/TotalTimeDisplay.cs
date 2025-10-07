@@ -13,6 +13,6 @@ public class TotalTimeDisplay : MonoBehaviour
 
     private void UpdateSongLengthText()
     {
-        SongLengthLabel.text = BPM.ConvertSecondsToTimestamp(AudioManager.SongLength);
+        SongLengthLabel.text = Tempo.ConvertSecondsToTimestamp(AudioManager.SongLength);
     }
 }
