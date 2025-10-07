@@ -29,12 +29,10 @@ public class TempoManager : MonoBehaviour
                 currentBeatline++
             )
         {
-            Debug.Log($"{Time.frameCount} New beatline created. This tick: {currentTick}. Positioning: ({BPM.ConvertTickTimeToSeconds(currentTick)} - {Waveform.startTime}) => {(BPM.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime)} / {Waveform.timeShown}, {boundaryReference.rect.height}");
+            //Debug.Log($"{Time.frameCount} New beatline created. This tick: {currentTick}. Positioning: ({BPM.ConvertTickTimeToSeconds(currentTick)} - {Waveform.startTime}) => {(BPM.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime)} / {Waveform.timeShown}, {boundaryReference.rect.height}");
             // Get a beatline to calculate data for
             var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
             workedBeatline.Tick = currentTick;
-
-            workedBeatline.CheckForEvents();
 
             workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
 
@@ -43,26 +41,6 @@ public class TempoManager : MonoBehaviour
 
             // Set up tick for next beatline's calculations
             currentTick += TimeSignature.IncreaseByHalfDivision(currentTick);
-        }
-
-        // Get list of tempo events that *should* be displayed during the visible window  
-        var ignoredKeys = BPM.EventData.Events.Keys.Where(key => key >= Waveform.startTick && key <= Waveform.endTick && key % TimeSignature.IncreaseByHalfDivision(key) != 0).ToHashSet();
-        var ignoredTSKeys = TimeSignature.EventData.Events.Keys.Where(key => key >= Waveform.startTick && key <= Waveform.endTick && key % TimeSignature.IncreaseByHalfDivision(key) != 0).ToHashSet();
-
-        ignoredKeys.UnionWith(ignoredTSKeys);
-
-        foreach (var tick in ignoredKeys)
-        {
-            var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
-            workedBeatline.Tick = tick;
-
-            workedBeatline.CheckForEvents();
-
-            workedBeatline.UpdateBeatlinePosition((BPM.ConvertTickTimeToSeconds(tick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
-
-            workedBeatline.Type = Beatline.BeatlineType.none;
-
-            currentBeatline++;
         }
 
         BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);

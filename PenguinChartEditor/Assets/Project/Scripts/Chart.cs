@@ -102,7 +102,7 @@ public class Chart : MonoBehaviour
                 break;
             case TabType.TempoMap:
                 TempoManager.UpdateBeatlines();
-                BeatlinePreviewer.instance.UpdatePreviewPosition();
+                //BeatlinePreviewer.instance.UpdatePreviewPosition();
                 break;
         }
     }

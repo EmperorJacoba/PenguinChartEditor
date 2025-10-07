@@ -103,7 +103,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public virtual void PasteSelection()
     {
         var pasteAction = new Paste<T>(GetEventData().Events);
-        pasteAction.Execute(BeatlinePreviewer.currentPreviewTick, GetEventData().Clipboard);
+        //pasteAction.Execute(BeatlinePreviewer.currentPreviewTick, GetEventData().Clipboard);
         Chart.Refresh();
     }
 
@@ -138,7 +138,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         // Early return if attempting to start a move while over an overlay element
         // Allows moves to start only if interacting with main content
-        if (BeatlinePreviewer.instance.IsRaycasterHit(BeatlinePreviewer.instance.overlayUIRaycaster) && !moveData.moveInProgress) return;
+       // if (BeatlinePreviewer.instance.IsRaycasterHit(BeatlinePreviewer.instance.overlayUIRaycaster) && !moveData.moveInProgress) return;
 
         var currentMouseTick = SongTimelineManager.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
 
@@ -238,7 +238,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         moveData.currentMoveAction = new(GetEventData().Events, moveData.MovingGhostSet, lowestTick);
         moveData.lastTempGhostPasteStartTick = moveData.selectionOriginTick;
 
-        BeatlinePreviewer.instance.gameObject.SetActive(false);
+        //BeatlinePreviewer.instance.gameObject.SetActive(false);
     }
 
     public virtual void CompleteMove()
@@ -256,14 +256,14 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         }
 
 
-        BeatlinePreviewer.instance.gameObject.SetActive(true);
+        //BeatlinePreviewer.instance.gameObject.SetActive(true);
 
         Chart.Refresh();
     }
 
     public virtual void CheckForSelectionClear()
     {
-        if (!BeatlinePreviewer.instance.IsRaycasterHit(BeatlinePreviewer.instance.beatlineCanvasRaycaster))
+        //if (!BeatlinePreviewer.instance.IsRaycasterHit(BeatlinePreviewer.instance.beatlineCanvasRaycaster))
         {
             GetEventData().Selection.Clear();
         }
@@ -293,7 +293,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public virtual void OnPointerUp(PointerEventData pointerEventData)
     {
-        if (BeatlinePreviewer.justCreated) return;
+        //if (BeatlinePreviewer.justCreated) return;
 
         if (!GetEventData().RMBHeld || pointerEventData.button != PointerEventData.InputButton.Left)
         {

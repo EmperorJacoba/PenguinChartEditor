@@ -13,8 +13,6 @@ public class Beatline : MonoBehaviour
         get { return _tick; }
         set
         {
-            bpmLabel.Tick = value;
-            tsLabel.Tick = value;
             _tick = value;
         }
     }
@@ -39,10 +37,10 @@ public class Beatline : MonoBehaviour
 
     #region Components
 
-    [SerializeField] protected BPM bpmLabel;
-    [SerializeField] protected TimeSignature tsLabel;
-    [SerializeField] protected Warning tsWarningAlert; // make own warning script in future, maybe have CreateNewWarning() for tooltips??
-    [SerializeField] protected RectTransform tsWarningAlertRectTransform;
+    //[SerializeField] protected BPM bpmLabel;
+    //[SerializeField] protected TimeSignature tsLabel;
+    //[SerializeField] protected Warning tsWarningAlert; // make own warning script in future, maybe have CreateNewWarning() for tooltips??
+    //[SerializeField] protected RectTransform tsWarningAlertRectTransform;
 
     /// <summary>
     /// The line renderer attached to the beatline game object.
@@ -106,41 +104,11 @@ public class Beatline : MonoBehaviour
         newPos[1] = new Vector2(line.GetPosition(1).x, (float)yScreenProportion);
         line.SetPositions(newPos);
 
-        bpmLabel.Tick = Tick;
-        tsLabel.Tick = Tick;
-
-        UpdateLabelPosition(); // to keep the labels locked to their beatlines
-    }
-
-    public void CheckForEvents()
-    {
-        if (BPM.EventData.Events.ContainsKey(Tick)) bpmLabel.SetLabelActive();
-        else bpmLabel.SetLabelInactive();
-
-        if (TimeSignature.EventData.Events.ContainsKey(Tick))
-        {
-            tsLabel.SetLabelActive();
-
-            if (!TimeSignature.IsEventValid(Tick)) tsWarningAlert.InitializeWarning(Warning.WarningType.invalidTimeSignature);
-            else tsWarningAlert.Active = false;
-        }
-        else
-        {
-            tsWarningAlert.Active = false;
-            tsLabel.SetLabelInactive();
-        }
     }
 
     #endregion
 
     #region Calculators
-
-    private void UpdateLabelPosition()
-    {
-        bpmLabel.transform.localPosition = new Vector3(bpmLabel.transform.localPosition.x, line.GetPosition(1).y - (bpmLabel.LabelRectTransform.rect.height / 2));
-        tsLabel.transform.localPosition = new Vector3(tsLabel.transform.localPosition.x, line.GetPosition(0).y - (tsLabel.LabelRectTransform.rect.height / 2));
-        tsWarningAlert.transform.localPosition = new Vector3(tsWarningAlert.transform.localPosition.x, line.GetPosition(0).y - (tsWarningAlertRectTransform.rect.height / 2));
-    }
 
     private void UpdateThickness(BeatlineType type)
     {

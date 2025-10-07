@@ -41,7 +41,7 @@ public class AudioManager : MonoBehaviour
         {
             if (value == _playing) return;
             _playing = value;
-            BeatlinePreviewer.editMode = !_playing;
+            //BeatlinePreviewer.editMode = !_playing;
             PlaybackStateChanged?.Invoke(_playing);
         }
     }

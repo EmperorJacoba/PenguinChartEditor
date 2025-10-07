@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/*
 /// <summary>
 /// Script attached to the object that "previews" a potential event change. This object is configured like a beatline.
 /// </summary>
@@ -142,6 +143,6 @@ public class BeatlinePreviewer : Beatline
         targetRaycaster.Raycast(pointerData, results);
 
         // If a component from the toolboxes is raycasted from the cursor, then the overlay is hit.
-            if (results.Count > 0) return true; else return false;
+        if (results.Count > 0) return true; else return false;
     }
-}
+} */

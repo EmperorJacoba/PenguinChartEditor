@@ -49,7 +49,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         LabelEntryBox.ActivateInputField();
 
         LabelEntryBox.text = ConvertDataToPreviewString();
-        BeatlinePreviewer.editMode = false;
+        //BeatlinePreviewer.editMode = false;
 
         SongTimelineManager.DisableChartingInputMap();
         
@@ -63,7 +63,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
 
     public void ConcludeManualEdit()
     {
-        BeatlinePreviewer.editMode = true;
+        //BeatlinePreviewer.editMode = true;
         DeactivateManualInput();
         Chart.Refresh();
     }
