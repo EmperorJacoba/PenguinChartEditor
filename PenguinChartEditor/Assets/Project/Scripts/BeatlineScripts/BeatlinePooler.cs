@@ -15,12 +15,11 @@ public class BeatlinePooler : MonoBehaviour
     /// </summary>
     public static BeatlinePooler instance;
 
-    private List<Beatline> beatlines;
+    private List<Beatline> beatlines = new();
 
     void Awake()
     {
         instance = this;
-        beatlines = new();
     }
 
     // All the beatlines are based on UI so they shouldn't (?) need to be scaled or anything weird like that
