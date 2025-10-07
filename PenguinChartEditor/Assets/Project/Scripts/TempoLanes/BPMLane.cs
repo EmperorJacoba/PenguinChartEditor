@@ -16,7 +16,7 @@ public class BPMLane : MonoBehaviour
         int i = 0;
         for (i = 0; i < eventsToDisplay.Count; i++)
         {
-            var bpmLabel = BPMPooler.instance.GetBPM(i);
+            var bpmLabel = BPMPooler.instance.GetObject(i);
             bpmLabel.Tick = eventsToDisplay[i];
             bpmLabel.SetLabelActive();
 

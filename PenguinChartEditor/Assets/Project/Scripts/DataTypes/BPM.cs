@@ -425,10 +425,4 @@ public class BPM : Label<BPMData>, IDragHandler
     }
 
     #endregion
-
-    public void UpdatePosition(double percentOfScreen, float screenHeight)
-    {
-        var yScreenProportion = (float)percentOfScreen * screenHeight;
-        transform.localPosition = new Vector3(transform.localPosition.x, yScreenProportion - (LabelRectTransform.rect.height / 2));
-    }
 }

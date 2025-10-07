@@ -3341,11 +3341,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 555489231}
   m_CullTransparentMesh: 1
+--- !u!1 &584328519 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6239090009231363197, guid: 6d12eaf9ec73a61478085a805dfbf106, type: 3}
+  m_PrefabInstance: {fileID: 720195763}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &584328520 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1821372546541865212, guid: 6d12eaf9ec73a61478085a805dfbf106, type: 3}
   m_PrefabInstance: {fileID: 720195763}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &584328522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 584328519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3eb81d2aaee7d964da5af12c2995737d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &588628609
 GameObject:
   m_ObjectHideFlags: 0
@@ -4864,7 +4881,10 @@ PrefabInstance:
     - {fileID: 2056373037687670694, guid: 6d12eaf9ec73a61478085a805dfbf106, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6239090009231363197, guid: 6d12eaf9ec73a61478085a805dfbf106, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 584328522}
   m_SourcePrefab: {fileID: 100100000, guid: 6d12eaf9ec73a61478085a805dfbf106, type: 3}
 --- !u!1 &741796287
 GameObject:
@@ -5765,7 +5785,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94fc308637a3e9d4eb8e28677a0bd9a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bpmPrefab: {fileID: 4282045479885994295, guid: 96a8ac1659ccb824f9aee5b49d8913a1, type: 3}
+  objectPrefab: {fileID: 4282045479885994295, guid: 96a8ac1659ccb824f9aee5b49d8913a1, type: 3}
   canvas: {fileID: 1503374290}
 --- !u!1 &942643195
 GameObject:
@@ -5938,6 +5958,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 948497441}
   m_CullTransparentMesh: 1
+--- !u!1 &950550347
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 950550348}
+  - component: {fileID: 950550349}
+  m_Layer: 5
+  m_Name: TSPooler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &950550348
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950550347}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1814809339}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &950550349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950550347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d836d29f3aa6df04bb40e9376e85a729, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 2684071022864669012, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
+  canvas: {fileID: 584328519}
 --- !u!1 &975170785
 GameObject:
   m_ObjectHideFlags: 0
@@ -9873,6 +9943,7 @@ RectTransform:
   - {fileID: 1503374291}
   - {fileID: 584328520}
   - {fileID: 853507100}
+  - {fileID: 950550348}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

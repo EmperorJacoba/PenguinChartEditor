@@ -52,7 +52,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         //BeatlinePreviewer.editMode = false;
 
         SongTimelineManager.DisableChartingInputMap();
-        
+
     }
 
     public void DeactivateManualInput()
@@ -109,5 +109,11 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     {
         yield return clickCooldown;
         clickCount = 0;
+    }
+    
+    public void UpdatePosition(double percentOfScreen, float screenHeight)
+    {
+        var yScreenProportion = (float)percentOfScreen * screenHeight;
+        transform.localPosition = new Vector3(transform.localPosition.x, yScreenProportion - (LabelRectTransform.rect.height / 2));
     }
 }
