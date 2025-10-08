@@ -54,13 +54,7 @@ public class SongTimelineManager : MonoBehaviour
     /// <summary>
     /// The length of the song in tick time.
     /// </summary>
-    public static int SongLengthTicks
-    {
-        get
-        {
-            return Tempo.ConvertSecondsToTickTime(AudioManager.SongLength);
-        }
-    }
+    public static int SongLengthTicks => Tempo.ConvertSecondsToTickTime(AudioManager.SongLength);
 
     #endregion
 

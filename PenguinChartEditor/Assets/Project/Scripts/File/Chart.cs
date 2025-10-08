@@ -9,6 +9,8 @@ public class Chart : MonoBehaviour
     static Chart instance;
     public static void Log(string x) => Debug.Log(x);
 
+    public static bool editMode = true;
+
     public enum TabType
     {
         SongSetup,

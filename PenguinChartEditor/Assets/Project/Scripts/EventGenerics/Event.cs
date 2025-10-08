@@ -1,8 +1,8 @@
-using UnityEngine;
-using UnityEngine.EventSystems;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 #region Interface
 
@@ -140,7 +140,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         // Early return if attempting to start a move while over an overlay element
         // Allows moves to start only if interacting with main content
-       // if (BeatlinePreviewer.instance.IsRaycasterHit(BeatlinePreviewer.instance.overlayUIRaycaster) && !moveData.moveInProgress) return;
+        // if (BeatlinePreviewer.instance.IsRaycasterHit(BeatlinePreviewer.instance.overlayUIRaycaster) && !moveData.moveInProgress) return;
 
         var currentMouseTick = SongTimelineManager.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
 
