@@ -22,7 +22,7 @@ public struct BPMData : IEquatable<BPMData>, IEventData
 
     public bool Equals(BPMData other) => BPMChange == other.BPMChange && Timestamp == other.Timestamp;
 
-    public override string ToString() => $"{BPMChange}, {Timestamp}";
+    public override string ToString() => $"({BPMChange}, {Timestamp})";
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {
@@ -50,7 +50,7 @@ public struct TSData : IEquatable<TSData>, IEventData
     public override bool Equals(object obj) => obj is TSData other && Equals(other);
     public bool Equals(TSData other) => Numerator == other.Numerator && Denominator == other.Denominator;
 
-    public override string ToString() => $"{Numerator} / {Denominator}";
+    public override string ToString() => $"({Numerator} / {Denominator})";
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {
@@ -86,7 +86,8 @@ public struct FiveFretNoteData : IEventData
         tap = 6
     }
 
-    public bool Default; // true = flip as needed, false = hold Flag no matter what
+    // true = flip as needed, false = hold Flag no matter what
+    public bool Default; 
     public int Sustain;
     public FlagType Flag;
 
@@ -96,6 +97,8 @@ public struct FiveFretNoteData : IEventData
         Flag = flag;
         Default = defaultOrientation;
     }
+
+    public override string ToString() => $"(FFN: {Flag}, hold = {Default}. {Sustain}T sustain)";
 }
 
 public struct FourLaneDrumNoteData : IEventData

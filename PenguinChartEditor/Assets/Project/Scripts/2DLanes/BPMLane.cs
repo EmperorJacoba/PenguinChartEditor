@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class BPMLane : MonoBehaviour
+public class BPMLane : Lane<BPMData>
 {
-    [SerializeField] RectTransform boundaryReference;
     public static BPMLane instance;
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         instance = this;
     }
 

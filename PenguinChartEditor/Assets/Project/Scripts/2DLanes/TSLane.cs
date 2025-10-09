@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TSLane : MonoBehaviour
+public class TSLane : Lane<TSData>
 {
-    [SerializeField] RectTransform boundaryReference;
     public static TSLane instance;
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         instance = this;
     }
 
@@ -17,7 +17,7 @@ public class TSLane : MonoBehaviour
         var eventsToDisplay = TimeSignature.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
 
         int warningCount = 0;
-        int i = 0;
+        int i;
         for (i = 0; i < eventsToDisplay.Count; i++)
         {
             var tsLabel = TSPooler.instance.GetObject(i);

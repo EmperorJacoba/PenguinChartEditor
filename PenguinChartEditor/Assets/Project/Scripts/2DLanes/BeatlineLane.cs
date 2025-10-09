@@ -1,7 +1,8 @@
-using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
+// This does not inherit from Lane<T> because it does not use event data
+// Beatlines are specially generated based on time signature and tempo data
+// Beatlines are not events themselves
 public class BeatlineLane : MonoBehaviour
 {
     [SerializeField] RectTransform boundaryReference;

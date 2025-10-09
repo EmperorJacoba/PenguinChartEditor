@@ -10,12 +10,25 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
 {
     int Tick { get; set; }
     bool Visible { get; set; }
+
     EventData<T> GetEventData();
     MoveData<T> GetMoveData();
     SortedDictionary<int, T> GetEventSet();
+
     void SetEvents(SortedDictionary<int, T> newEvents);
     void RefreshEvents();
+
     IPreviewer Previewer { get; }
+
+    // So that Lane<T> can access these easily
+    void DeleteSelection();
+    void CopySelection();
+    void PasteSelection();
+    void CutSelection();
+    void MoveSelection();
+    void CompleteMove();
+    void CheckForSelectionClear();
+    void SelectAllEvents();
 }
 
 #endregion
@@ -77,26 +90,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     protected InputMap inputMap;
     protected virtual void Awake()
     {
-        // kinda implements a partial singleton where input mapped actions
-        // will only occur on one event object of each type
-        // w/o boolean guard this will run for every event object and result in needless calculations
-        if (!GetEventData().selectionActionsEnabled)
-        {
-            inputMap = new();
-            inputMap.Enable();
 
-            inputMap.Charting.Delete.performed += x => DeleteSelection();
-            inputMap.Charting.Copy.performed += x => CopySelection();
-            inputMap.Charting.Paste.performed += x => PasteSelection();
-            inputMap.Charting.Cut.performed += x => CutSelection();
-            inputMap.Charting.Drag.performed += x => MoveSelection(); // runs every frame drag is active
-            inputMap.Charting.LMB.canceled += x => CompleteMove(); // runs ONLY when move action is completed; this wraps up the move action
-            inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
-            inputMap.Charting.RMB.performed += x => GetEventData().RMBHeld = true;
-            inputMap.Charting.RMB.canceled += x => GetEventData().RMBHeld = false;
-            inputMap.Charting.SelectAll.performed += x => SelectAllEvents();
-            GetEventData().selectionActionsEnabled = true;
-        }
     }
 
     public void CopySelection()
@@ -277,7 +271,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         RefreshEvents();
     }
 
-    void SelectAllEvents()
+    public void SelectAllEvents()
     {
         GetEventData().Selection.Clear();
         foreach (var item in GetEventSet())
