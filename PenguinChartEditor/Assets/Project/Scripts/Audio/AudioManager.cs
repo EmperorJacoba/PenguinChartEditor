@@ -288,7 +288,7 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// Called by user playing/pausing the audio from a button.
     /// </summary>
-    public void PlayPauseAudio()
+    public static void PlayPauseAudio()
     {
         if (!AudioPlaying)
         {
@@ -300,7 +300,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlayAudio()
+    public static void PlayAudio()
     {
         if (!AudioPlaying)
         {
@@ -311,7 +311,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PauseAudio()
+    public static void PauseAudio()
     {
         if (AudioPlaying)
         {
@@ -321,7 +321,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void StopAudio()
+    public static void StopAudio()
     {
         SongTime.SongPositionSeconds = 0;
         if (AudioPlaying)
@@ -346,7 +346,7 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// Set the stream position to the waveform's current position for every stream in StemStreams. 
     /// </summary>
-    private void SetStreamPositions()
+    private static void SetStreamPositions()
     {
         foreach (var streampair in StemStreams)
         {

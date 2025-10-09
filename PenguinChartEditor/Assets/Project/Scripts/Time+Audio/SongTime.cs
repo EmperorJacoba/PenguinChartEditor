@@ -22,7 +22,12 @@ public class SongTime : MonoBehaviour
         }
         set
         {
-            if (value > AudioManager.SongLength || value < 0) return;
+            if (value < 0) value = 0;
+            if (value >= AudioManager.SongLength)
+            {
+                value = AudioManager.SongLength;
+                AudioManager.PauseAudio();
+            }
 
             value = Math.Round(value, 3); // So that CurrentWFDataPosition comes out clean
 

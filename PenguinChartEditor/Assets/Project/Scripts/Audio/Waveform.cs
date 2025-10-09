@@ -199,7 +199,7 @@ public class Waveform : MonoBehaviour
             yPos = lineRendererIndex * ShrinkFactor;
             var waveformIndex = startSampleIndex + lineRendererIndex;
 
-            if (waveformIndex < 0 || waveformIndex > masterWaveformData.Length)
+            if (waveformIndex < 0 || waveformIndex >= masterWaveformData.Length)
             {
                 lineRendererPositions[lineRendererIndex] = new Vector3(0, yPos);
                 continue;
