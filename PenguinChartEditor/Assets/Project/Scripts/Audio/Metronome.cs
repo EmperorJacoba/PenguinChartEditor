@@ -8,7 +8,7 @@ public class Metronome : MonoBehaviour
 
     void Awake()
     {
-        SongTimelineManager.TimeChanged += CheckForMetronomeHit; // more concise solution for checking for metronome over Update()
+        SongTime.TimeChanged += CheckForMetronomeHit; // more concise solution for checking for metronome over Update()
     }
 
     static int nextPromisedMetronomeHit = 0;
@@ -27,11 +27,11 @@ public class Metronome : MonoBehaviour
 
         if (firstLoop)
         {
-            nextPromisedMetronomeHit = TimeSignature.GetNextDivisionEvent(SongTimelineManager.SongPositionTicks);
+            nextPromisedMetronomeHit = TimeSignature.GetNextDivisionEvent(SongTime.SongPositionTicks);
             firstLoop = false;
         }
 
-        if (SongTimelineManager.SongPositionTicks >= nextPromisedMetronomeHit)
+        if (SongTime.SongPositionTicks >= nextPromisedMetronomeHit)
         {
             // BASS is more reliable, consistant, and all-around better
             // for any audio applications. Near-instant response from this
@@ -40,7 +40,7 @@ public class Metronome : MonoBehaviour
 
             // Add a tick buffer (+1) so that the metronome will
             // not tick twice for the same tick 
-            nextPromisedMetronomeHit = TimeSignature.GetNextDivisionEvent(SongTimelineManager.SongPositionTicks + TICK_BUFFER);
+            nextPromisedMetronomeHit = TimeSignature.GetNextDivisionEvent(SongTime.SongPositionTicks + TICK_BUFFER);
         }
     }
 

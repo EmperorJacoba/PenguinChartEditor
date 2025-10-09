@@ -18,7 +18,7 @@ public class TSPreviewer : Previewer
     {
         if (!base.UpdatePosition(percentOfScreenVertical, percentOfScreenHorizontal)) return false;
 
-        Tick = SongTimelineManager.CalculateGridSnappedTick(percentOfScreenVertical);
+        Tick = SongTime.CalculateGridSnappedTick(percentOfScreenVertical);
         tsLabel.Tick = Tick;
         tsLabel.UpdatePosition((Tempo.ConvertTickTimeToSeconds(Tick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
 

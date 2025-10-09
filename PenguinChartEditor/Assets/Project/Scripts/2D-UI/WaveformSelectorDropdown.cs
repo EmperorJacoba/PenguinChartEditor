@@ -33,10 +33,10 @@ public class WaveformSelectorDropdown : MonoBehaviour
         dropdownIndexes.Add(0); // 0 is not valid StemType, but list will still accept it => used to show that waveform is inactive
 
         // Organize stems before adding to dropdown so the stem selection dropdown isn't a mess
-        Chart.Metadata.Stems = Chart.Metadata.Stems.OrderBy(pair => pair.Key).ToDictionary(pair => pair.Key, pair => pair.Value);
+        Chart.Metadata.StemPaths = Chart.Metadata.StemPaths.OrderBy(pair => pair.Key).ToDictionary(pair => pair.Key, pair => pair.Value);
 
         // Add options to dropdown from StemType
-        foreach (var entry in Chart.Metadata.Stems)
+        foreach (var entry in Chart.Metadata.StemPaths)
         {
             var capitalizedEntry = MiscTools.Capitalize(entry.Key.ToString()); // for more polished look
             dropdown.options.Add(new TMP_Dropdown.OptionData(capitalizedEntry));

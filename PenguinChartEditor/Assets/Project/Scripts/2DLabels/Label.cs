@@ -51,14 +51,14 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         LabelEntryBox.text = ConvertDataToPreviewString();
         //BeatlinePreviewer.editMode = false;
 
-        SongTimelineManager.DisableChartingInputMap();
+        SongTime.DisableChartingInputMap();
 
     }
 
     public void DeactivateManualInput()
     {
         LabelEntryBox.gameObject.SetActive(false);
-        SongTimelineManager.EnableChartingInputMap();
+        SongTime.EnableChartingInputMap();
     }
 
     public void ConcludeManualEdit()

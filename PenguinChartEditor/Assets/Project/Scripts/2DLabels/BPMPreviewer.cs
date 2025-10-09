@@ -21,7 +21,7 @@ public class BPMPreviewer : Previewer
     {
         if (!base.UpdatePosition(percentOfScreenVertical, percentOfScreenHorizontal)) return false;
 
-        bpmLabel.Tick = SongTimelineManager.CalculateGridSnappedTick(percentOfScreenVertical);
+        bpmLabel.Tick = SongTime.CalculateGridSnappedTick(percentOfScreenVertical);
         bpmLabel.UpdatePosition((Tempo.ConvertTickTimeToSeconds(bpmLabel.Tick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
 
         // only call this function when cursor is within certain range?

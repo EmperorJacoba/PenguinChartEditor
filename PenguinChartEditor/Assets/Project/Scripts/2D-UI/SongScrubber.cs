@@ -7,18 +7,18 @@ public class SongScrubber : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        SongTimelineManager.TimeChanged += UpdateSongScrubber;
+        SongTime.TimeChanged += UpdateSongScrubber;
 
         scrubber.onValueChanged.AddListener(x => UpdateSongTimeFromScrubber(x));
     }
     
     void UpdateSongScrubber()
     {
-        scrubber.value = (float)SongTimelineManager.SongPositionSeconds / AudioManager.SongLength;
+        scrubber.value = (float)SongTime.SongPositionSeconds / AudioManager.SongLength;
     }
 
     void UpdateSongTimeFromScrubber(float newPos)
     {
-        SongTimelineManager.SongPositionSeconds = AudioManager.SongLength * scrubber.value;
+        SongTime.SongPositionSeconds = AudioManager.SongLength * scrubber.value;
     }
 }

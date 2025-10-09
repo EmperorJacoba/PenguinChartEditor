@@ -13,13 +13,13 @@ public class CurrentTimeDisplay : MonoBehaviour
     void Start()
     {
         UpdateSongText();
-        SongTimelineManager.TimeChanged += UpdateSongText;
+        SongTime.TimeChanged += UpdateSongText;
         TimeInputField.onEndEdit.AddListener(x => PrepTimeEdit(x));
     }
 
     private void UpdateSongText()
     {
-        SongTimestampLabel.text = Tempo.ConvertSecondsToTimestamp(SongTimelineManager.SongPositionSeconds);
+        SongTimestampLabel.text = Tempo.ConvertSecondsToTimestamp(SongTime.SongPositionSeconds);
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ public class CurrentTimeDisplay : MonoBehaviour
 
         TimeInputField.ActivateInputField();
 
-        SongTimelineManager.ToggleChartingInputMap();
+        SongTime.ToggleChartingInputMap();
     }
 
     void PrepTimeEdit(string newTime)
@@ -44,7 +44,7 @@ public class CurrentTimeDisplay : MonoBehaviour
         }
         catch { } // this is here to avoid overflow errors
         TimeInputField.gameObject.SetActive(false);
-        SongTimelineManager.ToggleChartingInputMap();
+        SongTime.ToggleChartingInputMap();
     }
 
     void HandleEndTimeEdit(string newTime)
@@ -81,6 +81,6 @@ public class CurrentTimeDisplay : MonoBehaviour
         // Convert and add together isolated values
         float newSecondValue = minutes * MINUTES_TO_SECONDS_CONVERSION + seconds + milliseconds / MILLISECONDS_TO_SECONDS_CONVERSION;
 
-        SongTimelineManager.SongPositionSeconds = newSecondValue;
+        SongTime.SongPositionSeconds = newSecondValue;
     }
 }

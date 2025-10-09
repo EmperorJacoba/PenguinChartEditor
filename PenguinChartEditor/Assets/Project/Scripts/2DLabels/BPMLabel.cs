@@ -155,7 +155,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler
         if (!anchorNextEvent) Tempo.RecalculateTempoEventDictionary(Tick, (float)timeChange);
 
         // Update waveform to reflect changes (needed before full refresh)
-        SongTimelineManager.InvokeTimeChanged();
+        SongTime.InvokeTimeChanged();
 
         // Display the changes
         Chart.Refresh();

@@ -147,7 +147,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // Allows moves to start only if interacting with main content
         if (Previewer.IsOverlayUIHit() && !moveData.moveInProgress) return;
 
-        var currentMouseTick = SongTimelineManager.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
+        var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
 
         // early return if no changes to mouse's grid snap
         if (currentMouseTick == moveData.lastMouseTick)

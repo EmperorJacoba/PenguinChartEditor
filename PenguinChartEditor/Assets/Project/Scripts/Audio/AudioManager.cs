@@ -105,12 +105,11 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     /// <param name="songPath">File explorer path to the audio file.</param>
     /// <param name="bytesPerSample">Number of bytes in the original track that each sample represents. Can vary based on encoding.</param>
-    /// <returns>Float array of an audio file's sample data.</returns>
+    /// <returns>Compressed float array of an audio file's sample data.</returns>
     /// <exception cref="ArgumentException">Invalid song path</exception>
     public static float[] GetAudioSamples(Metadata.StemType stem, out long bytesPerSample)
     {
-        // Step 1: Make BASS stream of song path
-        var songPath = Chart.Metadata.Stems[stem];
+        var songPath = Chart.Metadata.StemPaths[stem];
 
         // GetAudioSamples() uses a different one-time stream from stemStreams{} because it needs BASS_STREAM_DECODE flag to get data
         var currentTrackStream = Bass.BASS_StreamCreateFile(
@@ -119,44 +118,37 @@ public class AudioManager : MonoBehaviour
             BASSFlag.BASS_SAMPLE_FLOAT |
             BASSFlag.BASS_STREAM_DECODE |
             BASSFlag.BASS_STREAM_PRESCAN
-        ); // Loads in file stream to get waveform data from
+        );
 
-        // Step 1a: Make sure the track is valid (improve notification system later pls)
         if (currentTrackStream == 0)
         {
             throw new ArgumentException("File could not be loaded");
         }
 
-        // Step 2: Calculate how long the song is and how many samples it will provide
-        var songLengthBytes = Bass.BASS_ChannelGetLength(currentTrackStream); // Get # of bytes in song
+        var songLengthBytes = Bass.BASS_ChannelGetLength(currentTrackStream);
         var floatArrayLength = songLengthBytes / 4; // # of vals in float[] array will be 1/4 of this bc 4 bytes per 32 bit float
 
-        // Step 3: Get an array of the samples from the BASS stream
         float[] allSamples = new float[floatArrayLength];
-        var x = Bass.BASS_ChannelGetData(currentTrackStream, allSamples, (int)songLengthBytes); // Get an array of every single sample
-        // This is faster than taking individual samples using setPosition and then ChannelGetData
+        Bass.BASS_ChannelGetData(currentTrackStream, allSamples, (int)songLengthBytes);
 
-        // Step 4: Convert the stereo track to mono so that the waveform is taking samples from an average of both channels
-        // Default BASS mono flag only works with MP3 files so a manual function is needed
-        allSamples = ConvertStereoSamplestoMono(allSamples);
+        // averages left and right channels for more accurate waveform representation
+        allSamples = ConvertStereoSamplestoMono(allSamples); // manual conversion b/c BASS flag only works for mp3 files
 
-        // Step 5: Calculate number of samples to take and how long each sample is in bytes
         long sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, ARRAY_RESOLUTION) / 8; // Number of bytes in x seconds of audio (/4) - div by extra 2 because converted to mono audio
         bytesPerSample = sampleIntervalBytes * 4; // multiply by 4 to undo /2 for floats and /2 for mono 
-        // ^ this is used to play/pause the audio which uses 16-bit (not 32-bit) & stereo
         // ^ this is *4 and not *8 because 16 bit is still 2 bytes
-        var compArraySize = (int)Math.Floor((double)songLengthBytes / sampleIntervalBytes) / 8; // Number of samples to compress down to for line rendering
 
-        // Step 6: Pick data from full array to put in compressed array
-        float[] waveformData = new float[compArraySize]; // Array of vals to hold compressed data
-        for (var i = 0; i < compArraySize; i++)
+        var compressedArraySize = (int)Math.Floor((double)songLengthBytes / sampleIntervalBytes) / 8;
+
+        float[] waveformData = new float[compressedArraySize]; // Array of vals to hold compressed data
+
+        for (var i = 0; i < compressedArraySize; i++)
         {
             waveformData[i] = Math.Abs(allSamples[i * sampleIntervalBytes]); // Select abs val of sample every 1 ms from all the samples and store it in the compressed array
         }
 
-        // Step 7: Free up the stream to prevent memory leaks because BASS uses unmanaged code
+        // BASS is unmanaged; memory must be manually freed
         Bass.BASS_StreamFree(currentTrackStream);
-        // Data is no longer needed now that it has been processed in waveformData
 
         return waveformData;
     }
@@ -184,7 +176,7 @@ public class AudioManager : MonoBehaviour
     {
         StemStreams.Clear();
         StemVolumes.Clear();
-        foreach (var stem in Chart.Metadata.Stems)
+        foreach (var stem in Chart.Metadata.StemPaths)
         {
             try
             {
@@ -315,7 +307,7 @@ public class AudioManager : MonoBehaviour
             SetStreamPositions();
             Bass.BASS_ChannelPlay(StemStreams[StreamLink], false);
             AudioPlaying = true;
-            SongTimelineManager.DisableChartingInputMap();
+            SongTime.DisableChartingInputMap();
         }
     }
 
@@ -325,19 +317,19 @@ public class AudioManager : MonoBehaviour
         {
             Bass.BASS_ChannelPause(StemStreams[StreamLink]);
             AudioPlaying = false;
-            SongTimelineManager.EnableChartingInputMap();
+            SongTime.EnableChartingInputMap();
         }
     }
 
     public void StopAudio()
     {
-        SongTimelineManager.SongPositionSeconds = 0;
+        SongTime.SongPositionSeconds = 0;
         if (AudioPlaying)
         {
             Bass.BASS_ChannelPause(StemStreams[StreamLink]);
             SetStreamPositions();
             AudioPlaying = false;
-            SongTimelineManager.ToggleChartingInputMap();
+            SongTime.ToggleChartingInputMap();
         }
     }
 
@@ -363,7 +355,7 @@ public class AudioManager : MonoBehaviour
                 Bass.BASS_ChannelSetPosition
                 (
                     StemStreams[streampair.Key],
-                    SongTimelineManager.SongPositionSeconds
+                    SongTime.SongPositionSeconds
                 );
             }
             catch

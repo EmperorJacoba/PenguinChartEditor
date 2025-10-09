@@ -125,7 +125,7 @@ public class Waveform : MonoBehaviour
         instance = this;
 
         // Initial waveform state is made possible by STLM's initial fire
-        SongTimelineManager.TimeChanged += ChangeWaveformSegment;
+        SongTime.TimeChanged += ChangeWaveformSegment;
     }
 
     void Start()
@@ -136,7 +136,7 @@ public class Waveform : MonoBehaviour
         // Just have user select it
         SetWaveformVisibility(false);
 
-        CurrentWaveform = Chart.Metadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default
+        CurrentWaveform = Chart.Metadata.StemPaths.Keys.First(); // This doesn't matter much b/c waveform is invis by default
         // This is just so that the waveform has something to generate from (avoid bricking program from error)
 
         var boundsRectTransform = boundaryReference.GetComponent<RectTransform>();
@@ -151,7 +151,7 @@ public class Waveform : MonoBehaviour
     /// </summary>
     void InitializeWaveformData()
     {
-        foreach (var pair in Chart.Metadata.Stems)
+        foreach (var pair in Chart.Metadata.StemPaths)
         {
             UpdateWaveformData(pair.Key);
         }
@@ -220,7 +220,7 @@ public class Waveform : MonoBehaviour
     public void ChangeWaveformSegment()
     {
         // This can use an implicit cast because song position is always rounded to 3 decimal places
-        CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPositionSeconds * AudioManager.SAMPLES_PER_SECOND);
+        CurrentWaveformDataPosition = (int)(SongTime.SongPositionSeconds * AudioManager.SAMPLES_PER_SECOND);
 
         GenerateWaveformPoints();
     }

@@ -183,7 +183,7 @@ public static class Tempo
             return 0;
 
         else if (timestamp > AudioManager.SongLength)
-            return SongTimelineManager.SongLengthTicks;
+            return SongTime.SongLengthTicks;
 
         // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
         var tempoTickTimeEvents = Events.Keys.ToList();

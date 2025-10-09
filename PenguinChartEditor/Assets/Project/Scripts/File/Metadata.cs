@@ -83,7 +83,7 @@ public class Metadata
         drums_4 = 13,
     }
 
-    public Dictionary<StemType, string> Stems = new();
+    public Dictionary<StemType, string> StemPaths = new();
 
     // test paths to make this easier
     static string[] stems = new string[6] {
@@ -98,10 +98,10 @@ public class Metadata
     public void TempSetUpStemDict()
     {
         //Stems[StemType.song] = stems[0];
-        Stems[StemType.guitar] = stems[1];
-        Stems[StemType.bass] = stems[2];
-        Stems[StemType.keys] = stems[3];
-        Stems[StemType.vocals] = stems[4];
-        Stems[StemType.drums] = stems[5];
+        StemPaths[StemType.guitar] = stems[1];
+        StemPaths[StemType.bass] = stems[2];
+        StemPaths[StemType.keys] = stems[3];
+        StemPaths[StemType.vocals] = stems[4];
+        StemPaths[StemType.drums] = stems[5];
     }
 }

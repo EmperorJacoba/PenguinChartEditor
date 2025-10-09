@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class SongTimelineManager : MonoBehaviour
+public class SongTime : MonoBehaviour
 {
     static InputMap inputMap;
 
@@ -22,25 +22,24 @@ public class SongTimelineManager : MonoBehaviour
         }
         set
         {
-            if (value > AudioManager.SongLength) return;
+            if (value > AudioManager.SongLength || value < 0) return;
+
             value = Math.Round(value, 3); // So that CurrentWFDataPosition comes out clean
+
             if (_songPos == value) return;
             _songPos = value;
-
-            if (_songPos < 0) throw new ArgumentException();
 
             TimeChanged?.Invoke();
         }
     }
-
-    public static int SongPositionTicks
-    {
-        get
-        {
-            return Tempo.ConvertSecondsToTickTime((float)_songPos);
-        }
-    }
     private static double _songPos = 0;
+
+    public static int SongPositionTicks => Tempo.ConvertSecondsToTickTime((float)_songPos);
+
+    /// <summary>
+    /// The length of the song in tick time.
+    /// </summary>
+    public static int SongLengthTicks => Tempo.ConvertSecondsToTickTime(AudioManager.SongLength);
 
     public delegate void TimeChangedDelegate();
 
@@ -48,11 +47,6 @@ public class SongTimelineManager : MonoBehaviour
     /// Event that fires whenever the song position changes.
     /// </summary>
     public static event TimeChangedDelegate TimeChanged;
-
-    /// <summary>
-    /// The length of the song in tick time.
-    /// </summary>
-    public static int SongLengthTicks => Tempo.ConvertSecondsToTickTime(AudioManager.SongLength);
 
     public static void InvokeTimeChanged() => TimeChanged?.Invoke();
 
