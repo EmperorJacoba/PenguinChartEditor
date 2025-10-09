@@ -40,7 +40,7 @@ public class TSLane : MonoBehaviour
         }
 
         TSPooler.instance.DeactivateUnused(i);
-        WarningPooler.instance.DeactivateUnused(i);
+        WarningPooler.instance.DeactivateUnused(warningCount);
 
         TSPreviewer.instance.UpdatePreviewPosition();
     }

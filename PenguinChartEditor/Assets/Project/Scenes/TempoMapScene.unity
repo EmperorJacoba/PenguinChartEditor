@@ -1772,11 +1772,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entryBox: {fileID: 1354881129}
---- !u!224 &398591572 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-  m_PrefabInstance: {fileID: 532786601}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &404017150
 GameObject:
   m_ObjectHideFlags: 0
@@ -2778,119 +2773,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 506818615}
   m_CullTransparentMesh: 1
---- !u!1001 &532786601
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1814809339}
-    m_Modifications:
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.000000055879354
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -1920
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -1080
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -10
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2695614294042374604, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4846121271480106457, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_Name
-      value: BeatlinePreviewer
-      objectReference: {fileID: 0}
-    - target: {fileID: 4846121271480106457, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: boundaryReference
-      value: 
-      objectReference: {fileID: 1489170079}
-    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: overlayUIRaycaster
-      value: 
-      objectReference: {fileID: 1606916091}
-    - target: {fileID: 6097872727427922386, guid: 9ae339497fba1d747be207a08701693b, type: 3}
-      propertyPath: beatlineCanvasRaycaster
-      value: 
-      objectReference: {fileID: 1814809336}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 9ae339497fba1d747be207a08701693b, type: 3}
 --- !u!1 &535705343
 GameObject:
   m_ObjectHideFlags: 0
@@ -10109,7 +9991,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 113968234}
-  - {fileID: 398591572}
   - {fileID: 1503374291}
   - {fileID: 584328520}
   - {fileID: 853507100}
@@ -11308,7 +11189,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overlayUIRaycaster: {fileID: 1606916091}
-  justCreated: 0
   tsLabel: {fileID: 1993092259}
   boundaryReference: {fileID: 1489170079}
 --- !u!1 &2006968511
@@ -11470,7 +11350,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overlayUIRaycaster: {fileID: 1606916091}
-  justCreated: 0
   bpmLabel: {fileID: 2011355158}
   boundaryReference: {fileID: 1489170079}
 --- !u!114 &2011355158 stripped

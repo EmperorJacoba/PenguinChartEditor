@@ -30,8 +30,4 @@ public class BPMLane : MonoBehaviour
 
         BPMPreviewer.instance.UpdatePreviewPosition();
     }
-    void Update()
-    {
-        UpdateEvents();
-    }
 }

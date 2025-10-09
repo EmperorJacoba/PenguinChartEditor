@@ -145,7 +145,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         // Early return if attempting to start a move while over an overlay element
         // Allows moves to start only if interacting with main content
-        // if (BeatlinePreviewer.instance.IsRaycasterHit(BeatlinePreviewer.instance.overlayUIRaycaster) && !moveData.moveInProgress) return;
+        if (Previewer.IsOverlayUIHit() && !moveData.moveInProgress) return;
 
         var currentMouseTick = SongTimelineManager.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
 
@@ -245,7 +245,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         moveData.currentMoveAction = new(GetEventSet(), moveData.MovingGhostSet, lowestTick);
         moveData.lastTempGhostPasteStartTick = moveData.selectionOriginTick;
 
-        //BeatlinePreviewer.instance.gameObject.SetActive(false);
+        Previewer.Hide();
     }
 
     public virtual void CompleteMove()
@@ -293,9 +293,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         {
             var deleteAction = new Delete<T>(GetEventSet());
             deleteAction.Execute(Tick);
+            Chart.Refresh();
         }
-
-        Chart.Refresh();
     }
 
     public virtual void OnPointerUp(PointerEventData pointerEventData)
