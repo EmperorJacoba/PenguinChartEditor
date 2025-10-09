@@ -14,14 +14,9 @@ public class TSPreviewer : Previewer
         instance = this;
     }
 
-    public override void UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    public override bool UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
-        if (!Chart.editMode || percentOfScreenVertical < 0 || percentOfScreenHorizontal < 0) return;
-
-        if (IsRaycasterHit(overlayUIRaycaster))
-        {
-            tsLabel.Visible = false;
-        }
+        if (!base.UpdatePreviewPosition(percentOfScreenVertical, percentOfScreenHorizontal)) return false;
 
         Tick = SongTimelineManager.CalculateGridSnappedTick(percentOfScreenVertical);
         tsLabel.Tick = Tick;
@@ -41,6 +36,8 @@ public class TSPreviewer : Previewer
         {
             tsLabel.Visible = false;
         }
+
+        return true;
     }
 
     public override void CreateEvent()
@@ -57,10 +54,10 @@ public class TSPreviewer : Previewer
     }
     public override void Hide()
     {
-        tsLabel.Visible = false;
+        if (tsLabel.Visible) tsLabel.Visible = false;
     }
     public override void Show()
     {
-        tsLabel.Visible = true;
+        if (!tsLabel.Visible) tsLabel.Visible = true;
     }
 }

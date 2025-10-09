@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public interface IPreviewer
 {
     void CreateEvent();
-    void UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
+    bool UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
     void Hide();
     void Show();
     int Tick { get; set; }
@@ -20,6 +20,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     [SerializeField] protected GraphicRaycaster overlayUIRaycaster;
     public bool justCreated { get; set; } = false;
     protected InputMap inputMap;
+    protected bool hidden = false;
 
     protected virtual void Awake()
     {
@@ -55,9 +56,23 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     }
 
     public abstract void CreateEvent();
-    public abstract void UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
+    public virtual bool UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    {
+        if (!Chart.editMode ||
+            percentOfScreenVertical < 0 ||
+            percentOfScreenHorizontal < 0 || 
+            percentOfScreenVertical > 1 || 
+            percentOfScreenHorizontal > 1 ||
+            IsOverlayUIHit())
+        {
+            Hide(); 
+            return false;
+        }
+        return true;
+    }
     public abstract void Hide();
     public abstract void Show();
+
     public int Tick { get; set; }
 
     /// <summary>

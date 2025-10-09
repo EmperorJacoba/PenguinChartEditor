@@ -15,7 +15,6 @@ public class TSLane : MonoBehaviour
     }
     public void UpdateEvents()
     {
-        Debug.Log("Updated events");
         var eventsToDisplay = TimeSignature.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
 
         int warningCount = 0;

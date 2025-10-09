@@ -93,6 +93,7 @@ public class Chart : MonoBehaviour
             TimeSignature.Events.Add(0, new TSData(4, 4));
         }
 
+        AudioManager.PlaybackStateChanged += x => { editMode = !AudioManager.AudioPlaying; };
     }
 
     public static void Refresh()
