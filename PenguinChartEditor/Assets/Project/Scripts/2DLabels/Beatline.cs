@@ -8,14 +8,7 @@ using UnityEngine;
 public class Beatline : MonoBehaviour
 {
     protected InputMap inputMap;
-    public int Tick
-    {
-        get { return _tick; }
-        set
-        {
-            _tick = value;
-        }
-    }
+    public int Tick { get; set; }
 
     public bool Visible
     {
@@ -33,14 +26,7 @@ public class Beatline : MonoBehaviour
 
     Coroutine destructionCoroutine;
 
-    private int _tick = 0;
-
     #region Components
-
-    //[SerializeField] protected BPM bpmLabel;
-    //[SerializeField] protected TimeSignature tsLabel;
-    //[SerializeField] protected Warning tsWarningAlert; // make own warning script in future, maybe have CreateNewWarning() for tooltips??
-    //[SerializeField] protected RectTransform tsWarningAlertRectTransform;
 
     /// <summary>
     /// The line renderer attached to the beatline game object.
@@ -68,6 +54,7 @@ public class Beatline : MonoBehaviour
     float[] thicknesses = { 0, 0.05f, 0.02f, 0.005f };
 
     #endregion
+
     #region Properties
 
     /// <summary>

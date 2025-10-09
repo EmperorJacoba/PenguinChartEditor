@@ -22,7 +22,7 @@ public static class Tempo
         if (index > 0) return tickTimeKeys[index + 1];
 
         // else just get the index proper 
-        else index = ~index + 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+        else index = ~index + 1;
         try
         {
             return tickTimeKeys[index];

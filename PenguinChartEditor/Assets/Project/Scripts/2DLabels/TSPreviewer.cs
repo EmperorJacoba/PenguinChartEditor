@@ -14,9 +14,9 @@ public class TSPreviewer : Previewer
         instance = this;
     }
 
-    public override bool UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    public override bool UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
-        if (!base.UpdatePreviewPosition(percentOfScreenVertical, percentOfScreenHorizontal)) return false;
+        if (!base.UpdatePosition(percentOfScreenVertical, percentOfScreenHorizontal)) return false;
 
         Tick = SongTimelineManager.CalculateGridSnappedTick(percentOfScreenVertical);
         tsLabel.Tick = Tick;

@@ -21,6 +21,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler
 
     #region Event Handlers
 
+    // Overriden to make sure faulty/inaccurate data is not in Tempo dict after any large modifications
     public override void PasteSelection() => ExecuteWithRecalculate(base.PasteSelection);
     public override void DeleteSelection() => ExecuteWithRecalculate(base.DeleteSelection);
     public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
@@ -103,7 +104,6 @@ public class BPMLabel : Label<BPMData>, IDragHandler
     /// <param name="mouseDelta">The difference between the mouse on this frame versus the last frame.</param>
     private void ChangeBPMPositionFromDrag(float mouseDelta, bool anchorNextEvent)
     {
-
         var percentOfScreenMoved = mouseDelta / Screen.height;
         var timeChange = percentOfScreenMoved * Waveform.timeShown;
 
@@ -154,7 +154,9 @@ public class BPMLabel : Label<BPMData>, IDragHandler
         // Update rest of dictionary to account for the time change.
         if (!anchorNextEvent) Tempo.RecalculateTempoEventDictionary(Tick, (float)timeChange);
 
+        // Update waveform to reflect changes (needed before full refresh)
         SongTimelineManager.InvokeTimeChanged();
+
         // Display the changes
         Chart.Refresh();
     }

@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class TSLane : MonoBehaviour
 {
-    static RectTransform boundaryReference;
+    [SerializeField] RectTransform boundaryReference;
     public static TSLane instance;
 
     void Awake()
     {
-        boundaryReference = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
-
         instance = this;
     }
+
     public void UpdateEvents()
     {
         var eventsToDisplay = TimeSignature.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();

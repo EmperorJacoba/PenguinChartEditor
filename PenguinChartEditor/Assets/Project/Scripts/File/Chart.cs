@@ -104,7 +104,7 @@ public class Chart : MonoBehaviour
                 Debug.LogWarning("Song setup tab does not have an update function.");
                 break;
             case TabType.TempoMap:
-                BeatlineLane.UpdateBeatlines();
+                BeatlineLane.instance.UpdateEvents();
                 BPMLane.instance.UpdateEvents();
                 TSLane.instance.UpdateEvents();
                 break;

@@ -7,11 +7,11 @@ using UnityEngine.UI;
 public interface IPreviewer
 {
     void CreateEvent();
-    bool UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
+    bool UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
     void Hide();
     void Show();
+    bool IsOverlayUIHit();
     int Tick { get; set; }
-    public bool IsOverlayUIHit();
     bool justCreated { get; set; }
 }
 
@@ -27,7 +27,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         inputMap = new();
         inputMap.Enable();
 
-        inputMap.Charting.PreviewMousePos.performed += position => UpdatePreviewPosition(position.ReadValue<Vector2>().y / Screen.height, position.ReadValue<Vector2>().x / Screen.width);
+        inputMap.Charting.PreviewMousePos.performed += position => UpdatePosition(position.ReadValue<Vector2>().y / Screen.height, position.ReadValue<Vector2>().x / Screen.width);
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
     }
 
@@ -56,7 +56,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     }
 
     public abstract void CreateEvent();
-    public virtual bool UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    public virtual bool UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!Chart.editMode ||
             percentOfScreenVertical < 0 ||
@@ -80,6 +80,6 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     /// </summary>
     public void UpdatePreviewPosition()
     {
-        UpdatePreviewPosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
+        UpdatePosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
     }
 }

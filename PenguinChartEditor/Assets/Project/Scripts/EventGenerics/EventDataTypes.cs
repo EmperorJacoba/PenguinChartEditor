@@ -14,30 +14,15 @@ public struct BPMData : IEquatable<BPMData>, IEventData
         Timestamp = timestamp;
     }
 
-    public static bool operator !=(BPMData one, BPMData two)
-    {
-        return !one.Equals(two);
-    }
+    public static bool operator !=(BPMData one, BPMData two) => !one.Equals(two);
 
-    public static bool operator ==(BPMData one, BPMData two)
-    {
-        return one.Equals(two);
-    }
+    public static bool operator ==(BPMData one, BPMData two) => one.Equals(two);
 
-    public override bool Equals(object obj)
-    {
-        return obj is BPMData other && Equals(other);
-    }
+    public override bool Equals(object obj) => obj is BPMData other && Equals(other);
 
-    public bool Equals(BPMData other)
-    {
-        return BPMChange == other.BPMChange && Timestamp == other.Timestamp;
-    }
+    public bool Equals(BPMData other) => BPMChange == other.BPMChange && Timestamp == other.Timestamp;
 
-    public override string ToString()
-    {
-        return $"{BPMChange}, {Timestamp}";
-    }
+    public override string ToString() => $"{BPMChange}, {Timestamp}";
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {
@@ -62,20 +47,10 @@ public struct TSData : IEquatable<TSData>, IEventData
         Denominator = denominator;
     }
 
-    public override bool Equals(object obj)
-    {
-        return obj is TSData other && Equals(other);
-    }
-    public bool Equals(TSData other)
-    {
-        return Numerator == other.Numerator && Denominator == other.Denominator;
-    }
+    public override bool Equals(object obj) => obj is TSData other && Equals(other);
+    public bool Equals(TSData other) => Numerator == other.Numerator && Denominator == other.Denominator;
 
-    public override string ToString()
-    {
-        return $"{Numerator} / {Denominator}";
-    }
-
+    public override string ToString() => $"{Numerator} / {Denominator}";
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {
@@ -111,13 +86,15 @@ public struct FiveFretNoteData : IEventData
         tap = 6
     }
 
+    public bool Default; // true = flip as needed, false = hold Flag no matter what
     public int Sustain;
     public FlagType Flag;
 
-    public FiveFretNoteData(int sustain, FlagType flag)
+    public FiveFretNoteData(int sustain, FlagType flag, bool defaultOrientation = true)
     {
         Sustain = sustain;
         Flag = flag;
+        Default = defaultOrientation;
     }
 }
 

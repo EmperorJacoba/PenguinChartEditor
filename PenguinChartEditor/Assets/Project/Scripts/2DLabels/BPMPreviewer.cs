@@ -17,9 +17,9 @@ public class BPMPreviewer : Previewer
         instance = this;
     }
 
-    public override bool UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    public override bool UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
-        if (!base.UpdatePreviewPosition(percentOfScreenVertical, percentOfScreenHorizontal)) return false;
+        if (!base.UpdatePosition(percentOfScreenVertical, percentOfScreenHorizontal)) return false;
 
         bpmLabel.Tick = SongTimelineManager.CalculateGridSnappedTick(percentOfScreenVertical);
         bpmLabel.UpdatePosition((Tempo.ConvertTickTimeToSeconds(bpmLabel.Tick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);

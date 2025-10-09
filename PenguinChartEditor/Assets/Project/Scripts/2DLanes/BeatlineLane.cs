@@ -4,21 +4,20 @@ using UnityEngine.EventSystems;
 
 public class BeatlineLane : MonoBehaviour
 {
-    static RectTransform boundaryReference;
+    [SerializeField] RectTransform boundaryReference;
+    public static BeatlineLane instance;
+
     void Awake()
     {
-        boundaryReference = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
+        instance = this;
         Chart.currentTab = Chart.TabType.TempoMap;
     }
     
     /// <summary>
     /// Fires every time the visible waveform changes. Used to update beatlines to new displayed waveform.
     /// </summary>
-    public static void UpdateBeatlines()
+    public void UpdateEvents()
     {
-        if (Chart.currentTab != Chart.TabType.TempoMap)
-            throw new System.Exception($"TempoManager.UpdateBeatlines is for use only in the TempoMap scene. Please call the correct scene refresh for {Chart.currentTab}.");
-            
         int currentBeatline = 0;
         // Generate the division and half-division beatlines
         for (

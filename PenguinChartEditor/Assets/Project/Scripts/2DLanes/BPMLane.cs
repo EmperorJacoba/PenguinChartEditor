@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class BPMLane : MonoBehaviour
 {
-    static RectTransform boundaryReference;
+    [SerializeField] RectTransform boundaryReference;
     public static BPMLane instance;
     void Awake()
     {
-        boundaryReference = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
-
         instance = this;
     }
+
     public void UpdateEvents()
     {
         var eventsToDisplay = Tempo.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
