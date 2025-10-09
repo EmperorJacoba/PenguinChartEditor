@@ -16,7 +16,6 @@ public class BeatlineLane : MonoBehaviour
     /// </summary>
     public static void UpdateBeatlines()
     {
-        Debug.Log($"Generating beatlines. {Time.frameCount}");
         if (Chart.currentTab != Chart.TabType.TempoMap)
             throw new System.Exception($"TempoManager.UpdateBeatlines is for use only in the TempoMap scene. Please call the correct scene refresh for {Chart.currentTab}.");
             
