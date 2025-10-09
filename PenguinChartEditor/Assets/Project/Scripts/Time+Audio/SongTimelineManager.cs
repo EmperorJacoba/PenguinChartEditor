@@ -29,8 +29,6 @@ public class SongTimelineManager : MonoBehaviour
 
             if (_songPos < 0) throw new ArgumentException();
 
-            Debug.Log($"Song position (STLM): {value}");
-
             TimeChanged?.Invoke();
         }
     }
@@ -39,7 +37,7 @@ public class SongTimelineManager : MonoBehaviour
     {
         get
         {
-            return BPM.ConvertSecondsToTickTime((float)_songPos);
+            return Tempo.ConvertSecondsToTickTime((float)_songPos);
         }
     }
     private static double _songPos = 0;
@@ -54,13 +52,9 @@ public class SongTimelineManager : MonoBehaviour
     /// <summary>
     /// The length of the song in tick time.
     /// </summary>
-    public static int SongLengthTicks
-    {
-        get
-        {
-            return BPM.ConvertSecondsToTickTime(AudioManager.SongLength);
-        }
-    }
+    public static int SongLengthTicks => Tempo.ConvertSecondsToTickTime(AudioManager.SongLength);
+
+    public static void InvokeTimeChanged() => TimeChanged?.Invoke();
 
     #endregion
 
@@ -177,9 +171,8 @@ public class SongTimelineManager : MonoBehaviour
     
     public static int CalculateGridSnappedTick(float percentOfScreenVertical)
     {
-
         var cursorTimestamp = (percentOfScreenVertical * Waveform.timeShown) + Waveform.startTime;
-        var cursorTickTime = BPM.ConvertSecondsToTickTime((float)cursorTimestamp);
+        var cursorTickTime = Tempo.ConvertSecondsToTickTime((float)cursorTimestamp);
 
         if (cursorTickTime < 0) return 0;
 
