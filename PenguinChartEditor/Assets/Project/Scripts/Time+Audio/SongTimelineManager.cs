@@ -29,8 +29,6 @@ public class SongTimelineManager : MonoBehaviour
 
             if (_songPos < 0) throw new ArgumentException();
 
-            Debug.Log($"Song position (STLM): {value}");
-
             TimeChanged?.Invoke();
         }
     }
@@ -55,6 +53,8 @@ public class SongTimelineManager : MonoBehaviour
     /// The length of the song in tick time.
     /// </summary>
     public static int SongLengthTicks => Tempo.ConvertSecondsToTickTime(AudioManager.SongLength);
+
+    public static void InvokeTimeChanged() => TimeChanged?.Invoke();
 
     #endregion
 

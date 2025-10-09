@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
+/*
 public class BookmarkLabel : Label<BookmarkData>
 {
     public static EventData<BookmarkData> EventData = new();
@@ -31,4 +32,4 @@ public class BookmarkLabel : Label<BookmarkData>
 
         ConcludeManualEdit();
     }
-}
+} */

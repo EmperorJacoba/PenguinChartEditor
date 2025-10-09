@@ -4,10 +4,21 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public abstract class Previewer : MonoBehaviour
+public interface IPreviewer
+{
+    void CreateEvent();
+    void UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
+    void Hide();
+    void Show();
+    int Tick { get; set; }
+    public bool IsOverlayUIHit();
+    bool justCreated { get; set; }
+}
+
+public abstract class Previewer : MonoBehaviour, IPreviewer
 {
     [SerializeField] protected GraphicRaycaster overlayUIRaycaster;
-    public bool justCreated = false; // remove this somehow
+    public bool justCreated { get; set; } = false;
     protected InputMap inputMap;
 
     protected virtual void Awake()
@@ -33,6 +44,11 @@ public abstract class Previewer : MonoBehaviour
         // If a component from the toolboxes is raycasted from the cursor, then the overlay is hit.
         if (results.Count > 0) return true; else return false;
     }
+
+    public bool IsOverlayUIHit()
+    {
+        return IsRaycasterHit(overlayUIRaycaster);
+    }
     private void Update()
     {
         if (justCreated) justCreated = false;
@@ -40,4 +56,15 @@ public abstract class Previewer : MonoBehaviour
 
     public abstract void CreateEvent();
     public abstract void UpdatePreviewPosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
+    public abstract void Hide();
+    public abstract void Show();
+    public int Tick { get; set; }
+
+    /// <summary>
+    /// Shortcut to allow void events call the main UpdatePreviewPosition function.
+    /// </summary>
+    public void UpdatePreviewPosition()
+    {
+        UpdatePreviewPosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
+    }
 }

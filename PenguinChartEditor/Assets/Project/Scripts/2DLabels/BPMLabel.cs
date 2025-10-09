@@ -26,6 +26,8 @@ public class BPMLabel : Label<BPMData>, IDragHandler
     public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
     public override void CutSelection() => ExecuteWithRecalculate(base.CutSelection);
     public override void MoveSelection() => ExecuteWithRecalculate(() => base.MoveSelection());
+    public override void RefreshEvents() => BPMLane.instance.UpdateEvents();
+    public override IPreviewer Previewer => BPMPreviewer.instance;
 
 
     void ExecuteWithRecalculate(Action action)
@@ -152,6 +154,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler
         // Update rest of dictionary to account for the time change.
         if (!anchorNextEvent) Tempo.RecalculateTempoEventDictionary(Tick, (float)timeChange);
 
+        SongTimelineManager.InvokeTimeChanged();
         // Display the changes
         Chart.Refresh();
     }

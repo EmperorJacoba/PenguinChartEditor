@@ -5,13 +5,17 @@ using UnityEngine;
 public class TSLane : MonoBehaviour
 {
     static RectTransform boundaryReference;
+    public static TSLane instance;
 
     void Awake()
     {
         boundaryReference = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
+
+        instance = this;
     }
     public void UpdateEvents()
     {
+        Debug.Log("Updated events");
         var eventsToDisplay = TimeSignature.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
 
         int warningCount = 0;
@@ -37,10 +41,7 @@ public class TSLane : MonoBehaviour
 
         TSPooler.instance.DeactivateUnused(i);
         WarningPooler.instance.DeactivateUnused(i);
-    }
 
-    void Update()
-    {
-        UpdateEvents();
+        TSPreviewer.instance.UpdatePreviewPosition();
     }
 }

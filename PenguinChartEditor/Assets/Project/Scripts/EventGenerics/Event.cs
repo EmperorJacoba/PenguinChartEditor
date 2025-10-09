@@ -14,6 +14,8 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
     MoveData<T> GetMoveData();
     SortedDictionary<int, T> GetEventSet();
     void SetEvents(SortedDictionary<int, T> newEvents);
+    void RefreshEvents();
+    IPreviewer Previewer { get; }
 }
 
 #endregion
@@ -65,6 +67,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public abstract void SetEvents(SortedDictionary<int, T> newEvents);
 
     public abstract SortedDictionary<int, T> GetEventSet();
+    public abstract void RefreshEvents();
+    public abstract IPreviewer Previewer { get; }
     #endregion
 
     // Oops! All naming confusion!
@@ -105,7 +109,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public virtual void PasteSelection()
     {
         var pasteAction = new Paste<T>(GetEventSet());
-        //pasteAction.Execute(BeatlinePreviewer.currentPreviewTick, GetEventData().Clipboard);
+        pasteAction.Execute(Previewer.Tick, GetEventData().Clipboard);
         Chart.Refresh();
     }
 
@@ -113,6 +117,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     {
         var cutAction = new Cut<T>(GetEventSet());
         cutAction.Execute(GetEventData().Clipboard, GetEventData().Selection);
+        Chart.Refresh();
     }
 
     public virtual void DeleteSelection()
@@ -258,18 +263,18 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         }
 
 
-        //BeatlinePreviewer.instance.gameObject.SetActive(true);
+        Previewer.Show();
 
         Chart.Refresh();
     }
 
     public virtual void CheckForSelectionClear()
     {
-        //if (!BeatlinePreviewer.instance.IsRaycasterHit(BeatlinePreviewer.instance.beatlineCanvasRaycaster))
+        if (!Previewer.IsOverlayUIHit())
         {
             GetEventData().Selection.Clear();
         }
-        Chart.Refresh();
+        RefreshEvents();
     }
 
     void SelectAllEvents()
@@ -279,7 +284,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         {
             GetEventData().Selection.Add(item.Key, item.Value);
         }
-        Chart.Refresh();
+        RefreshEvents();
     }
 
     public virtual void OnPointerDown(PointerEventData pointerEventData)
@@ -295,14 +300,14 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public virtual void OnPointerUp(PointerEventData pointerEventData)
     {
-        //if (BeatlinePreviewer.justCreated) return;
+        if (Previewer.justCreated) return;
 
         if (!GetEventData().RMBHeld || pointerEventData.button != PointerEventData.InputButton.Left)
         {
             CalculateSelectionStatus(pointerEventData);
         }
 
-        Chart.Refresh();
+        RefreshEvents();
     }
 
     #endregion

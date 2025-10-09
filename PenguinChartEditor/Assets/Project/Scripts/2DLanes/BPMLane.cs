@@ -5,9 +5,12 @@ using UnityEngine;
 public class BPMLane : MonoBehaviour
 {
     static RectTransform boundaryReference;
+    public static BPMLane instance;
     void Awake()
     {
         boundaryReference = GameObject.Find("ScreenReference").GetComponent<RectTransform>();
+
+        instance = this;
     }
     public void UpdateEvents()
     {
@@ -24,6 +27,8 @@ public class BPMLane : MonoBehaviour
         }
 
         BPMPooler.instance.DeactivateUnused(i);
+
+        BPMPreviewer.instance.UpdatePreviewPosition();
     }
     void Update()
     {

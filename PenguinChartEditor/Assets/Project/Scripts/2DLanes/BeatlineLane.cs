@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TempoManager : MonoBehaviour
+public class BeatlineLane : MonoBehaviour
 {
     static RectTransform boundaryReference;
     void Awake()
@@ -16,7 +16,7 @@ public class TempoManager : MonoBehaviour
     /// </summary>
     public static void UpdateBeatlines()
     {
-        //Debug.Log($"Generating beatlines. {Time.frameCount}");
+        Debug.Log($"Generating beatlines. {Time.frameCount}");
         if (Chart.currentTab != Chart.TabType.TempoMap)
             throw new System.Exception($"TempoManager.UpdateBeatlines is for use only in the TempoMap scene. Please call the correct scene refresh for {Chart.currentTab}.");
             

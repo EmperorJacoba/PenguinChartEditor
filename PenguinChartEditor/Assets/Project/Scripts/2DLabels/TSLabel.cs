@@ -15,6 +15,8 @@ public class TSLabel : Label<TSData>
 
     public static MoveData<TSData> moveData = new();
     public override MoveData<TSData> GetMoveData() => moveData;
+    public override void RefreshEvents() => TSLane.instance.UpdateEvents();
+    public override IPreviewer Previewer => TSPreviewer.instance;
 
     #endregion
 

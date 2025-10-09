@@ -341,7 +341,7 @@ public class ChartParser
                 // parse vox
                 break;
         }
-        Chart.Log("Skipped instrument group");
+        //Chart.Log("Skipped instrument group");
         return null;
         // throw new ArgumentException("Tried to parse an unsupported instrument group.");
     }

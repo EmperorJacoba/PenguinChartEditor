@@ -103,8 +103,9 @@ public class Chart : MonoBehaviour
                 Debug.LogWarning("Song setup tab does not have an update function.");
                 break;
             case TabType.TempoMap:
-                TempoManager.UpdateBeatlines();
-                //BeatlinePreviewer.instance.UpdatePreviewPosition();
+                BeatlineLane.UpdateBeatlines();
+                BPMLane.instance.UpdateEvents();
+                TSLane.instance.UpdateEvents();
                 break;
         }
     }

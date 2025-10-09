@@ -98,7 +98,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         if (!Input.GetKey(KeyCode.LeftControl) && pointerEventData.button == PointerEventData.InputButton.Left && clickCount == 2)
         {
             ActivateManualInput();
-            Chart.Refresh();
+            RefreshEvents();
         }
 
         if (clickCount == 1 && gameObject.activeInHierarchy) StartCoroutine(TriggerDoubleClick());

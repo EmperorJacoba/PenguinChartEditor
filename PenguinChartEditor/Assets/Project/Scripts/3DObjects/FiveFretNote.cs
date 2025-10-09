@@ -5,6 +5,8 @@ using UnityEngine;
 // Each lane has its own set of notes and selections (EventData)
 // Lanes are defined with type T.
 // Notes are defined/calculated upon on a per-lane basis.
+
+/*
 public class FiveFretNote<T> : Event<FiveFretNoteData> where T : IFiveFretLane
 {
     public static EventData<FiveFretNoteData> EventData = new();
@@ -20,4 +22,4 @@ public class FiveFretNote<T> : Event<FiveFretNoteData> where T : IFiveFretLane
     {
         throw new NotImplementedException();
     }
-}
+} */

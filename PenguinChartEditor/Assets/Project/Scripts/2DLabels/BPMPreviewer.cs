@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class BPMPreviewer : Previewer
 {
-    BPMPreviewer instance;
+    public static BPMPreviewer instance;
     [SerializeField] BPMLabel bpmLabel;
     [SerializeField] RectTransform boundaryReference;
     protected float timestamp;
@@ -50,5 +50,15 @@ public class BPMPreviewer : Previewer
 
         Chart.Refresh();
         justCreated = true;
+    }
+
+    public override void Hide()
+    {
+        bpmLabel.Visible = false;
+    }
+
+    public override void Show()
+    {
+        bpmLabel.Visible = true;
     }
 }

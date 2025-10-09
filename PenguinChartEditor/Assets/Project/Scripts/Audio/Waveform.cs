@@ -89,7 +89,6 @@ public class Waveform : MonoBehaviour
         {
             if (_wfPosition == value) return;
             _wfPosition = value;
-            instance.GenerateWaveformPoints();
         }
     }
     private static int _wfPosition = 0;
@@ -222,7 +221,6 @@ public class Waveform : MonoBehaviour
 
     public void ChangeWaveformSegment()
     {
-        Debug.Log($"{Time.frameCount}: ChangeWaveformSegment called");
         // This can use an implicit cast because song position is always rounded to 3 decimal places
         CurrentWaveformDataPosition = (int)(SongTimelineManager.SongPositionSeconds * AudioManager.SAMPLES_PER_SECOND);
 
@@ -278,7 +276,7 @@ public class Waveform : MonoBehaviour
     public static double startTime;
     public double endTime;
 
-    void UpdateWaveformData()
+    public void UpdateWaveformData()
     {
         GetCurrentDisplayedWaveformInfo(out startTick, out endTick, out timeShown, out startTime, out endTime);
 
