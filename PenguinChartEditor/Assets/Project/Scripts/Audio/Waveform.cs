@@ -89,6 +89,7 @@ public class Waveform : MonoBehaviour
         {
             if (_wfPosition == value) return;
             _wfPosition = value;
+            // GenerateWaveformPoints is already called elsewhere when this is changed
         }
     }
     private static int _wfPosition = 0;
@@ -123,7 +124,7 @@ public class Waveform : MonoBehaviour
     {
         instance = this;
 
-        // Initial waveform state is made possible by STLM's intial fire
+        // Initial waveform state is made possible by STLM's initial fire
         SongTimelineManager.TimeChanged += ChangeWaveformSegment;
     }
 
@@ -131,9 +132,9 @@ public class Waveform : MonoBehaviour
     {
         InitializeWaveformData();
 
-        SetWaveformVisibility(false);
         // Invisible by default so that a bunch of dropdown defaulting logic isn't needed
         // Just have user select it
+        SetWaveformVisibility(false);
 
         CurrentWaveform = Chart.Metadata.Stems.Keys.First(); // This doesn't matter much b/c waveform is invis by default
         // This is just so that the waveform has something to generate from (avoid bricking program from error)
@@ -183,9 +184,8 @@ public class Waveform : MonoBehaviour
     private void GenerateWaveformPoints()
     {
         var masterWaveformData = WaveformData[CurrentWaveform].volumeData;
-        var currentSampleOffset = strikeSamplePoint;
-
         var sampleCount = samplesPerScreen;
+        var startSampleIndex = CurrentWaveformDataPosition - strikeSamplePoint;
 
         // each line renderer point is a sample
         lineRendererMain.positionCount = sampleCount;
@@ -197,16 +197,14 @@ public class Waveform : MonoBehaviour
         for (int lineRendererIndex = 0; lineRendererIndex < lineRendererPositions.Length; lineRendererIndex++)
         {
             yPos = lineRendererIndex * ShrinkFactor;
-            try
-            {
-                lineRendererPositions[lineRendererIndex] = new Vector3(masterWaveformData[CurrentWaveformDataPosition - currentSampleOffset] * Amplitude, yPos);
-            }
-            catch // this happens when there is no data to pull for the waveform
+            var waveformIndex = startSampleIndex + lineRendererIndex;
+
+            if (waveformIndex < 0 || waveformIndex > masterWaveformData.Length)
             {
                 lineRendererPositions[lineRendererIndex] = new Vector3(0, yPos);
-                // this way the beginning and end of the waveform will stop at the strikeline instead of screen boundaries
+                continue;
             }
-            currentSampleOffset++; // this allows working with the waveform data from the bottom up and for CurrentWFDataPosition to be at the strikeline
+            lineRendererPositions[lineRendererIndex] = new(masterWaveformData[waveformIndex] * Amplitude, yPos);
         }
 
         lineRendererMain.SetPositions(lineRendererPositions);
