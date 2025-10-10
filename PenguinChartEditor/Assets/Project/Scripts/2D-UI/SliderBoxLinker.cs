@@ -48,8 +48,16 @@ public class SliderBoxLinker : MonoBehaviour
     /// <param name="newValue"></param>
     void SliderChange(float newValue)
     {
+        if ((float.Parse(entryBox.text) > slider.maxValue || 
+            float.Parse(entryBox.text) < slider.minValue) && 
+            (newValue >= slider.maxValue ||
+            newValue <= slider.minValue))
+        {
+            return;
+        }
+
         // Prevent values in entry boxes from looking wonky with 100000 decimal places
-        newValue = (float)Math.Round(newValue, 3);
+        newValue = (float)Math.Round(newValue, 2);
 
         float entryBoxDisplay = newValue; // value put into variable will differ from what is displayed for hyperspeed/shrinkFactor
         entryBox.text = entryBoxDisplay.ToString();
