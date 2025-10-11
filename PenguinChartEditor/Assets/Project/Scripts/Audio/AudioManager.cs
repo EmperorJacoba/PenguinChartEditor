@@ -68,6 +68,8 @@ public class AudioManager : MonoBehaviour
     #endregion
 
     #region Unity Functions
+
+    InputMap inputMap;
     private void Awake()
     {
         InitializeBassPlugin();
@@ -77,6 +79,10 @@ public class AudioManager : MonoBehaviour
 
         StreamLink = GetLongestStream();
         LinkStreams();
+
+        inputMap = new();
+        inputMap.Enable();
+        inputMap.ExternalCharting.PlayPause.performed += x => ToggleAudioPlayback();
     }
 
     void OnApplicationQuit()
@@ -190,7 +196,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Create BASS stream from a file path with a StemType identifier.
+    /// Create BASS stream from a file path with a StemType iwakedentifier.
     /// </summary>
     /// <param name="stemType">The stem that the BASS stream belongs to.</param>
     /// <param name="songPath">The file path to create a stream from.</param>
@@ -288,8 +294,9 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// Called by user playing/pausing the audio from a button.
     /// </summary>
-    public static void PlayPauseAudio()
+    public static void ToggleAudioPlayback()
     {
+        Debug.Log(AudioPlaying);
         if (!AudioPlaying)
         {
             PlayAudio();
@@ -313,6 +320,7 @@ public class AudioManager : MonoBehaviour
 
     public static void PauseAudio()
     {
+        Debug.Log("pause");
         if (AudioPlaying)
         {
             Bass.BASS_ChannelPause(StemStreams[StreamLink]);

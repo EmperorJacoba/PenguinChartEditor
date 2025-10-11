@@ -102,15 +102,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""PlayPauseSong"",
-                    ""type"": ""Button"",
-                    ""id"": ""c9b4e671-a4ca-4073-b643-14ddd55b6738"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""MiddleMouseClick"",
                     ""type"": ""Button"",
                     ""id"": ""d110bbc7-5c10-45c0-8824-b962faee2a49"",
@@ -228,17 +219,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""ScrollTrack"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""86e7ad09-bbfd-41dc-a685-b738ea73a2f1"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""PlayPauseSong"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -520,6 +500,24 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""IncreaseStepByOne"",
+                    ""type"": ""Button"",
+                    ""id"": ""5041fa30-05be-4699-b501-8ceb681d0034"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DecreaseStepByOne"",
+                    ""type"": ""Button"",
+                    ""id"": ""ff00a0f8-bd38-4e4f-8847-048f1941fe0b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""PlayPause"",
                     ""type"": ""Button"",
                     ""id"": ""816115bb-21f3-4da1-b39c-94f8289bdcf8"",
@@ -582,6 +580,72 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""action"": ""Metronome"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""20b8b998-5dd0-4bfb-aac8-6e637bea35c5"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""IncreaseStepByOne"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""8ebad72b-ddd7-4674-b450-157188a0880e"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""IncreaseStepByOne"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""d0fa4e83-4bb4-49a2-a032-f7e9bb90c4bb"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""IncreaseStepByOne"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""c0ef6767-e4a2-41e6-a648-9b642960f359"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DecreaseStepByOne"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""b902b989-4d89-467d-8ba0-019623e25470"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DecreaseStepByOne"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""a009f60d-5068-4c24-a727-2f21006dba2e"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DecreaseStepByOne"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -1642,7 +1706,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         // Charting
         m_Charting = asset.FindActionMap("Charting", throwIfNotFound: true);
         m_Charting_ScrollTrack = m_Charting.FindAction("ScrollTrack", throwIfNotFound: true);
-        m_Charting_PlayPauseSong = m_Charting.FindAction("PlayPauseSong", throwIfNotFound: true);
         m_Charting_MiddleMouseClick = m_Charting.FindAction("MiddleMouseClick", throwIfNotFound: true);
         m_Charting_MiddleScrollMousePos = m_Charting.FindAction("MiddleScrollMousePos", throwIfNotFound: true);
         m_Charting_PreviewMousePos = m_Charting.FindAction("PreviewMousePos", throwIfNotFound: true);
@@ -1659,6 +1722,8 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_ExternalCharting = asset.FindActionMap("ExternalCharting", throwIfNotFound: true);
         m_ExternalCharting_IncreaseStep = m_ExternalCharting.FindAction("IncreaseStep", throwIfNotFound: true);
         m_ExternalCharting_DecreaseStep = m_ExternalCharting.FindAction("DecreaseStep", throwIfNotFound: true);
+        m_ExternalCharting_IncreaseStepByOne = m_ExternalCharting.FindAction("IncreaseStepByOne", throwIfNotFound: true);
+        m_ExternalCharting_DecreaseStepByOne = m_ExternalCharting.FindAction("DecreaseStepByOne", throwIfNotFound: true);
         m_ExternalCharting_PlayPause = m_ExternalCharting.FindAction("PlayPause", throwIfNotFound: true);
         m_ExternalCharting_Metronome = m_ExternalCharting.FindAction("Metronome", throwIfNotFound: true);
         // UI
@@ -1768,7 +1833,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Charting;
     private List<IChartingActions> m_ChartingActionsCallbackInterfaces = new List<IChartingActions>();
     private readonly InputAction m_Charting_ScrollTrack;
-    private readonly InputAction m_Charting_PlayPauseSong;
     private readonly InputAction m_Charting_MiddleMouseClick;
     private readonly InputAction m_Charting_MiddleScrollMousePos;
     private readonly InputAction m_Charting_PreviewMousePos;
@@ -1796,10 +1860,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Charting/ScrollTrack".
         /// </summary>
         public InputAction @ScrollTrack => m_Wrapper.m_Charting_ScrollTrack;
-        /// <summary>
-        /// Provides access to the underlying input action "Charting/PlayPauseSong".
-        /// </summary>
-        public InputAction @PlayPauseSong => m_Wrapper.m_Charting_PlayPauseSong;
         /// <summary>
         /// Provides access to the underlying input action "Charting/MiddleMouseClick".
         /// </summary>
@@ -1877,9 +1937,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @ScrollTrack.started += instance.OnScrollTrack;
             @ScrollTrack.performed += instance.OnScrollTrack;
             @ScrollTrack.canceled += instance.OnScrollTrack;
-            @PlayPauseSong.started += instance.OnPlayPauseSong;
-            @PlayPauseSong.performed += instance.OnPlayPauseSong;
-            @PlayPauseSong.canceled += instance.OnPlayPauseSong;
             @MiddleMouseClick.started += instance.OnMiddleMouseClick;
             @MiddleMouseClick.performed += instance.OnMiddleMouseClick;
             @MiddleMouseClick.canceled += instance.OnMiddleMouseClick;
@@ -1930,9 +1987,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @ScrollTrack.started -= instance.OnScrollTrack;
             @ScrollTrack.performed -= instance.OnScrollTrack;
             @ScrollTrack.canceled -= instance.OnScrollTrack;
-            @PlayPauseSong.started -= instance.OnPlayPauseSong;
-            @PlayPauseSong.performed -= instance.OnPlayPauseSong;
-            @PlayPauseSong.canceled -= instance.OnPlayPauseSong;
             @MiddleMouseClick.started -= instance.OnMiddleMouseClick;
             @MiddleMouseClick.performed -= instance.OnMiddleMouseClick;
             @MiddleMouseClick.canceled -= instance.OnMiddleMouseClick;
@@ -2008,6 +2062,8 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private List<IExternalChartingActions> m_ExternalChartingActionsCallbackInterfaces = new List<IExternalChartingActions>();
     private readonly InputAction m_ExternalCharting_IncreaseStep;
     private readonly InputAction m_ExternalCharting_DecreaseStep;
+    private readonly InputAction m_ExternalCharting_IncreaseStepByOne;
+    private readonly InputAction m_ExternalCharting_DecreaseStepByOne;
     private readonly InputAction m_ExternalCharting_PlayPause;
     private readonly InputAction m_ExternalCharting_Metronome;
     /// <summary>
@@ -2029,6 +2085,14 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "ExternalCharting/DecreaseStep".
         /// </summary>
         public InputAction @DecreaseStep => m_Wrapper.m_ExternalCharting_DecreaseStep;
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/IncreaseStepByOne".
+        /// </summary>
+        public InputAction @IncreaseStepByOne => m_Wrapper.m_ExternalCharting_IncreaseStepByOne;
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/DecreaseStepByOne".
+        /// </summary>
+        public InputAction @DecreaseStepByOne => m_Wrapper.m_ExternalCharting_DecreaseStepByOne;
         /// <summary>
         /// Provides access to the underlying input action "ExternalCharting/PlayPause".
         /// </summary>
@@ -2069,6 +2133,12 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @DecreaseStep.started += instance.OnDecreaseStep;
             @DecreaseStep.performed += instance.OnDecreaseStep;
             @DecreaseStep.canceled += instance.OnDecreaseStep;
+            @IncreaseStepByOne.started += instance.OnIncreaseStepByOne;
+            @IncreaseStepByOne.performed += instance.OnIncreaseStepByOne;
+            @IncreaseStepByOne.canceled += instance.OnIncreaseStepByOne;
+            @DecreaseStepByOne.started += instance.OnDecreaseStepByOne;
+            @DecreaseStepByOne.performed += instance.OnDecreaseStepByOne;
+            @DecreaseStepByOne.canceled += instance.OnDecreaseStepByOne;
             @PlayPause.started += instance.OnPlayPause;
             @PlayPause.performed += instance.OnPlayPause;
             @PlayPause.canceled += instance.OnPlayPause;
@@ -2092,6 +2162,12 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @DecreaseStep.started -= instance.OnDecreaseStep;
             @DecreaseStep.performed -= instance.OnDecreaseStep;
             @DecreaseStep.canceled -= instance.OnDecreaseStep;
+            @IncreaseStepByOne.started -= instance.OnIncreaseStepByOne;
+            @IncreaseStepByOne.performed -= instance.OnIncreaseStepByOne;
+            @IncreaseStepByOne.canceled -= instance.OnIncreaseStepByOne;
+            @DecreaseStepByOne.started -= instance.OnDecreaseStepByOne;
+            @DecreaseStepByOne.performed -= instance.OnDecreaseStepByOne;
+            @DecreaseStepByOne.canceled -= instance.OnDecreaseStepByOne;
             @PlayPause.started -= instance.OnPlayPause;
             @PlayPause.performed -= instance.OnPlayPause;
             @PlayPause.canceled -= instance.OnPlayPause;
@@ -2590,13 +2666,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnScrollTrack(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "PlayPauseSong" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnPlayPauseSong(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "MiddleMouseClick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -2702,6 +2771,20 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDecreaseStep(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "IncreaseStepByOne" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnIncreaseStepByOne(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DecreaseStepByOne" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDecreaseStepByOne(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "PlayPause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

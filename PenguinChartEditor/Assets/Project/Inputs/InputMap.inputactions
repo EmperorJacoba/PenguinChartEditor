@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "InputMap",
     "maps": [
         {
@@ -13,15 +14,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "PlayPauseSong",
-                    "type": "Button",
-                    "id": "c9b4e671-a4ca-4073-b643-14ddd55b6738",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 },
                 {
                     "name": "MiddleMouseClick",
@@ -141,17 +133,6 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "ScrollTrack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "86e7ad09-bbfd-41dc-a685-b738ea73a2f1",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "PlayPauseSong",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -433,6 +414,24 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "IncreaseStepByOne",
+                    "type": "Button",
+                    "id": "5041fa30-05be-4699-b501-8ceb681d0034",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DecreaseStepByOne",
+                    "type": "Button",
+                    "id": "ff00a0f8-bd38-4e4f-8847-048f1941fe0b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "PlayPause",
                     "type": "Button",
                     "id": "816115bb-21f3-4da1-b39c-94f8289bdcf8",
@@ -495,6 +494,72 @@
                     "action": "Metronome",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "20b8b998-5dd0-4bfb-aac8-6e637bea35c5",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "IncreaseStepByOne",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "8ebad72b-ddd7-4674-b450-157188a0880e",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "IncreaseStepByOne",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "d0fa4e83-4bb4-49a2-a032-f7e9bb90c4bb",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "IncreaseStepByOne",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "c0ef6767-e4a2-41e6-a648-9b642960f359",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DecreaseStepByOne",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "b902b989-4d89-467d-8ba0-019623e25470",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DecreaseStepByOne",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "a009f60d-5068-4c24-a727-2f21006dba2e",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DecreaseStepByOne",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
