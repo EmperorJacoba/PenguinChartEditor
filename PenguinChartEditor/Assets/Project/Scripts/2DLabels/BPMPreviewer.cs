@@ -43,10 +43,9 @@ public class BPMPreviewer : Previewer
         if (bpmLabel.Visible && !Tempo.Events.ContainsKey(bpmLabel.Tick))
         {
             bpmLabel.CreateEvent(bpmLabel.Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp));
+            Chart.Refresh();
+            justCreated = true;
         }
-
-        Chart.Refresh();
-        justCreated = true;
     }
 
     public override void Hide()

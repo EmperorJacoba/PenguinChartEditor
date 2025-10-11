@@ -47,10 +47,9 @@ public class TSPreviewer : Previewer
         if (tsLabel.Visible && !TimeSignature.Events.ContainsKey(tsLabel.Tick))
         {
             tsLabel.CreateEvent(tsLabel.Tick, displayedTS);
+            Chart.Refresh();
+            justCreated = true;
         }
-
-        Chart.Refresh();
-        justCreated = true;
     }
     public override void Hide()
     {

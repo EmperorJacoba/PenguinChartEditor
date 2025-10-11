@@ -40,6 +40,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     }
 
     public abstract void HandleManualEndEdit(string newVal);
+
     public void ActivateManualInput()
     {
         if (!LabelObject.activeInHierarchy || !GetEventSet().ContainsKey(Tick)) return;
@@ -49,15 +50,16 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         LabelEntryBox.ActivateInputField();
 
         LabelEntryBox.text = ConvertDataToPreviewString();
-        //BeatlinePreviewer.editMode = false;
+        Previewer.Hide();
 
         SongTime.DisableChartingInputMap();
-
     }
 
     public void DeactivateManualInput()
     {
         LabelEntryBox.gameObject.SetActive(false);
+
+        Previewer.Show();
         SongTime.EnableChartingInputMap();
     }
 
