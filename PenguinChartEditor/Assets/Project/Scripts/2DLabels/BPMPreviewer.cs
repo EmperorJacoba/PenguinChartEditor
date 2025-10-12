@@ -17,9 +17,9 @@ public class BPMPreviewer : Previewer
         instance = this;
     }
 
-    public override bool UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    public override void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
-        if (!base.UpdatePosition(percentOfScreenVertical, percentOfScreenHorizontal)) return false;
+        if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) return;
 
         bpmLabel.Tick = SongTime.CalculateGridSnappedTick(percentOfScreenVertical);
         bpmLabel.UpdatePosition((Tempo.ConvertTickTimeToSeconds(bpmLabel.Tick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
@@ -32,13 +32,11 @@ public class BPMPreviewer : Previewer
             bpmLabel.LabelText = Tempo.Events[Tempo.GetLastTempoEventTickInclusive(bpmLabel.Tick)].BPMChange.ToString();
         }
         else bpmLabel.Visible = false;
-
-        return true;
     }
 
     public override void CreateEvent()
     {
-        if (IsRaycasterHit(overlayUIRaycaster)) return;
+        if (MiscTools.IsRaycasterHit(overlayUIRaycaster)) return;
 
         if (bpmLabel.Visible && !Tempo.Events.ContainsKey(bpmLabel.Tick))
         {

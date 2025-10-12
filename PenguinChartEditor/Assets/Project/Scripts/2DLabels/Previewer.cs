@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public interface IPreviewer
 {
     void CreateEvent();
-    bool UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
+    void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
     void Hide();
     void Show();
     bool IsOverlayUIHit();
@@ -18,9 +18,35 @@ public interface IPreviewer
 public abstract class Previewer : MonoBehaviour, IPreviewer
 {
     [SerializeField] protected GraphicRaycaster overlayUIRaycaster;
-    public bool justCreated { get; set; } = false;
     protected InputMap inputMap;
     protected bool hidden = false;
+
+    public abstract void CreateEvent();
+    public abstract void Hide();
+    public abstract void Show();
+    public bool IsOverlayUIHit() => MiscTools.IsRaycasterHit(overlayUIRaycaster);
+    public int Tick { get; set; }
+    public bool justCreated { get; set; } = false;
+
+    /// <summary>
+    /// Shortcut to allow void events call the main UpdatePreviewPosition function.
+    /// </summary>
+    public void UpdatePosition() => UpdatePosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
+    public abstract void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
+
+    public bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    {
+        if (!Chart.editMode || IsOverlayUIHit() ||
+            percentOfScreenVertical < 0 ||
+            percentOfScreenHorizontal < 0 ||
+            percentOfScreenVertical > 1 ||
+            percentOfScreenHorizontal > 1)
+        {
+            Hide();
+            return false;
+        }
+        return true;
+    }
 
     protected virtual void Awake()
     {
@@ -31,55 +57,8 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
     }
 
-    // take this function out of this class
-    public bool IsRaycasterHit(GraphicRaycaster targetRaycaster)
-    {
-        PointerEventData pointerData = new(EventSystem.current)
-        {
-            position = Input.mousePosition
-        };
-
-        List<RaycastResult> results = new();
-        targetRaycaster.Raycast(pointerData, results);
-
-        // If a component from the toolboxes is raycasted from the cursor, then the overlay is hit.
-        if (results.Count > 0) return true; else return false;
-    }
-
-    public bool IsOverlayUIHit()
-    {
-        return IsRaycasterHit(overlayUIRaycaster);
-    }
     private void Update()
     {
         if (justCreated) justCreated = false;
-    }
-
-    public abstract void CreateEvent();
-    public virtual bool UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
-    {
-        if (!Chart.editMode ||
-            percentOfScreenVertical < 0 ||
-            percentOfScreenHorizontal < 0 || 
-            percentOfScreenVertical > 1 || 
-            percentOfScreenHorizontal > 1 ||
-            IsOverlayUIHit())
-        {
-            Hide(); 
-            return false;
-        }
-        return true;
-    }
-    public abstract void Hide();
-    public abstract void Show();
-
-    public int Tick { get; set; }
-
-    /// <summary>
-    /// Shortcut to allow void events call the main UpdatePreviewPosition function.
-    /// </summary>
-    public void UpdatePreviewPosition()
-    {
-        UpdatePosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
     }
 }

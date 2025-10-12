@@ -40,6 +40,6 @@ public class TSLane : Lane<TSData>
         TSPooler.instance.DeactivateUnused(i);
         WarningPooler.instance.DeactivateUnused(warningCount);
 
-        TSPreviewer.instance.UpdatePreviewPosition();
+        TSPreviewer.instance.UpdatePosition();
     }
 }

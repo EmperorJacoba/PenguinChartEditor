@@ -27,6 +27,6 @@ public class BPMLane : Lane<BPMData>
 
         BPMPooler.instance.DeactivateUnused(i);
 
-        BPMPreviewer.instance.UpdatePreviewPosition();
+        BPMPreviewer.instance.UpdatePosition();
     }
 }

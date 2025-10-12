@@ -19,7 +19,6 @@ public class BeatlineLane : MonoBehaviour
     /// </summary>
     public void UpdateEvents()
     {
-        Debug.Log("Updating beatlines");
         int currentBeatline = 0;
         // Generate the division and half-division beatlines
         var currentTSEventTick = TimeSignature.GetLastTSEventTick(Waveform.startTick);

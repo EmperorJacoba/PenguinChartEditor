@@ -14,10 +14,6 @@ public class Waveform : MonoBehaviour
     /// <para>The tuple in the value holds the data (float[]) and the number of bytes per sample (long)</para>
     /// </summary>
     public static Dictionary<Metadata.StemType, StemWaveformData> WaveformData { get; private set; } = new();
-    // The number of bytes per sample is needed in order to accurately play and seek through the track in PluginBassManager
-    // The number of bytes can vary based on the type of audio file the user inputs, like if they use .opus, .mp3 together, etc.
-    // long is just what Bass returns and I don't want to do a million casts just to make this a regular int
-    // 64 bit values are actually kinda baller in my opinion so i'm not opposed 
 
     #region Scene Objects
     /// <summary>
@@ -274,6 +270,10 @@ public class Waveform : MonoBehaviour
     public static double startTime;
     public double endTime;
 
+    /// <summary>
+    /// Caches the current properties of the displayed waveform segment and refreshes data.
+    /// <para>Should be called after generating waveform points.</para>
+    /// </summary>
     public void UpdateWaveformData()
     {
         GetCurrentDisplayedWaveformInfo(out startTick, out endTick, out timeShown, out startTime, out endTime);

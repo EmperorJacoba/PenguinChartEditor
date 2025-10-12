@@ -50,7 +50,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         LabelEntryBox.ActivateInputField();
 
         LabelEntryBox.text = ConvertDataToPreviewString();
-        Previewer.Hide();
+        EventPreviewer.Hide();
 
         SongTime.DisableChartingInputMap();
     }
@@ -59,7 +59,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     {
         LabelEntryBox.gameObject.SetActive(false);
 
-        Previewer.Show();
+        EventPreviewer.Show();
         SongTime.EnableChartingInputMap();
     }
 

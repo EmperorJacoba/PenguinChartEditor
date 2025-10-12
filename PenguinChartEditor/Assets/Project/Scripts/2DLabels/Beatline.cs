@@ -65,6 +65,7 @@ public class Beatline : MonoBehaviour
         get { return _bt; }
         set
         {
+            // enum value corresponds to index in thickness array
             UpdateThickness(value);
             _bt = value;
         }

@@ -320,7 +320,6 @@ public class AudioManager : MonoBehaviour
 
     public static void PauseAudio()
     {
-        Debug.Log("pause");
         if (AudioPlaying)
         {
             Bass.BASS_ChannelPause(StemStreams[StreamLink]);

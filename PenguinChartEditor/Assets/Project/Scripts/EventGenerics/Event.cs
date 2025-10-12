@@ -18,7 +18,7 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
     void SetEvents(SortedDictionary<int, T> newEvents);
     void RefreshEvents();
 
-    IPreviewer Previewer { get; }
+    IPreviewer EventPreviewer { get; }
 
     // So that Lane<T> can access these easily
     void DeleteSelection();
@@ -81,7 +81,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public abstract SortedDictionary<int, T> GetEventSet();
     public abstract void RefreshEvents();
-    public abstract IPreviewer Previewer { get; }
+    public abstract IPreviewer EventPreviewer { get; }
     #endregion
 
     // Oops! All naming confusion!
@@ -103,7 +103,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public virtual void PasteSelection()
     {
         var pasteAction = new Paste<T>(GetEventSet());
-        pasteAction.Execute(Previewer.Tick, GetEventData().Clipboard);
+        pasteAction.Execute(EventPreviewer.Tick, GetEventData().Clipboard);
         Chart.Refresh();
     }
 
@@ -139,7 +139,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         // Early return if attempting to start a move while over an overlay element
         // Allows moves to start only if interacting with main content
-        if (Previewer.IsOverlayUIHit() && !moveData.moveInProgress) return;
+        if (EventPreviewer.IsOverlayUIHit() && !moveData.moveInProgress) return;
 
         var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
 
@@ -239,7 +239,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         moveData.currentMoveAction = new(GetEventSet(), moveData.MovingGhostSet, lowestTick);
         moveData.lastTempGhostPasteStartTick = moveData.selectionOriginTick;
 
-        Previewer.Hide();
+        EventPreviewer.Hide();
     }
 
     public virtual void CompleteMove()
@@ -257,14 +257,14 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         }
 
 
-        Previewer.Show();
+        EventPreviewer.Show();
 
         Chart.Refresh();
     }
 
     public virtual void CheckForSelectionClear()
     {
-        if (!Previewer.IsOverlayUIHit())
+        if (!EventPreviewer.IsOverlayUIHit())
         {
             GetEventData().Selection.Clear();
         }
@@ -293,7 +293,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public virtual void OnPointerUp(PointerEventData pointerEventData)
     {
-        if (Previewer.justCreated) return;
+        if (EventPreviewer.justCreated) return;
 
         if (!GetEventData().RMBHeld || pointerEventData.button != PointerEventData.InputButton.Left)
         {

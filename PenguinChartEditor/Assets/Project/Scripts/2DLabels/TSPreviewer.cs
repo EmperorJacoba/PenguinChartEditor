@@ -14,9 +14,9 @@ public class TSPreviewer : Previewer
         instance = this;
     }
 
-    public override bool UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    public override void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
-        if (!base.UpdatePosition(percentOfScreenVertical, percentOfScreenHorizontal)) return false;
+        if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) return;
 
         Tick = SongTime.CalculateGridSnappedTick(percentOfScreenVertical);
         tsLabel.Tick = Tick;
@@ -36,13 +36,11 @@ public class TSPreviewer : Previewer
         {
             tsLabel.Visible = false;
         }
-
-        return true;
     }
 
     public override void CreateEvent()
     {
-        if (IsRaycasterHit(overlayUIRaycaster)) return;
+        if (IsOverlayUIHit()) return;
 
         if (tsLabel.Visible && !TimeSignature.Events.ContainsKey(tsLabel.Tick))
         {
