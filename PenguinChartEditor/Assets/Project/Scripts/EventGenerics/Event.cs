@@ -88,10 +88,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     #region Event Handlers
 
     protected InputMap inputMap;
-    protected virtual void Awake()
-    {
-
-    }
 
     public void CopySelection()
     {
@@ -256,7 +252,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             GetEventData().Selection.Add(item.Key + GetMoveData().lastTempGhostPasteStartTick, item.Value);
         }
 
-
         EventPreviewer.Show();
 
         Chart.Refresh();
@@ -267,8 +262,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         if (!EventPreviewer.IsOverlayUIHit())
         {
             GetEventData().Selection.Clear();
+            RefreshEvents();
         }
-        RefreshEvents();
     }
 
     public void SelectAllEvents()
@@ -278,15 +273,17 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         {
             GetEventData().Selection.Add(item.Key, item.Value);
         }
-        RefreshEvents();
+        if (GetEventData().Selection.Count != 0) RefreshEvents();
     }
 
+    public static bool justDeleted = false;
     public virtual void OnPointerDown(PointerEventData pointerEventData)
     {
         if (GetEventData().RMBHeld && pointerEventData.button == PointerEventData.InputButton.Left)
         {
             var deleteAction = new Delete<T>(GetEventSet());
-            deleteAction.Execute(Tick);
+            justDeleted = deleteAction.Execute(Tick);
+
             Chart.Refresh();
         }
     }
@@ -298,9 +295,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         if (!GetEventData().RMBHeld || pointerEventData.button != PointerEventData.InputButton.Left)
         {
             CalculateSelectionStatus(pointerEventData);
+            RefreshEvents();
         }
-
-        RefreshEvents();
     }
 
     #endregion

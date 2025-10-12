@@ -43,9 +43,10 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
 
     public void ActivateManualInput()
     {
+        if (LabelEntryBox == null) return;
         if (!LabelObject.activeInHierarchy || !GetEventSet().ContainsKey(Tick)) return;
 
-        try { LabelEntryBox.gameObject.SetActive(true); } catch { return; } // omg unity shut up about this (genuinely this should not be possible)
+        LabelEntryBox.gameObject.SetActive(true);
 
         LabelEntryBox.ActivateInputField();
 
@@ -93,7 +94,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     {
         base.OnPointerDown(pointerEventData);
 
-        clickCount++;
+        if (pointerEventData.button == PointerEventData.InputButton.Left) clickCount++;
         // Double click functionality for manual entry of beatline number
         // eventData.clickCount does not work here - pointerDown and pointerUp do not trigger click count for some reason
         // so manual coroutine solution is here to circumvent that issue
@@ -101,6 +102,11 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         {
             ActivateManualInput();
             RefreshEvents();
+
+            // if you click too fast, clickCount will exceed 2
+            // at some point and will never be able to reset
+            // reset here to avoid arbitrarily bricked label object
+            clickCount = 0;
         }
 
         if (clickCount == 1 && gameObject.activeInHierarchy) StartCoroutine(TriggerDoubleClick());
