@@ -487,7 +487,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""a074e63d-5ef5-4144-b2a7-131445c16043"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableModifiers"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -496,7 +496,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""0d6cad2f-8993-4ac0-b023-b3bada9c71cc"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableModifiers"",
                     ""initialStateCheck"": false
                 },
                 {

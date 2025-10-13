@@ -20,8 +20,8 @@ public class DivisionChanger : MonoBehaviour
         inputMap = new();
         inputMap.Enable();
 
-        inputMap.ExternalCharting.IncreaseStep.performed += _ => { if (!Keyboard.current.ctrlKey.isPressed) IncreaseDivision(); };
-        inputMap.ExternalCharting.DecreaseStep.performed += _ => { if (!Keyboard.current.ctrlKey.isPressed) DecreaseDivision(); };
+        inputMap.ExternalCharting.IncreaseStep.performed += _ => IncreaseDivision();
+        inputMap.ExternalCharting.DecreaseStep.performed += _ => DecreaseDivision();
         inputMap.ExternalCharting.IncreaseStepByOne.performed += _ => IncreaseDivisionByOne();
         inputMap.ExternalCharting.DecreaseStepByOne.performed += _ => DecreaseDivisionByOne();
     }
