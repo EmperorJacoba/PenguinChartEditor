@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPoolable
 {
     [SerializeField] RectTransform rectTransform;
     public void OnPointerEnter(PointerEventData eventData) => Tooltip.NewTooltip(warningDescriptions[type]);

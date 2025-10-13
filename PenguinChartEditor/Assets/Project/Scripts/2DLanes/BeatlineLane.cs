@@ -39,7 +39,7 @@ public class BeatlineLane : MonoBehaviour
                 currentTSEventTick = TimeSignature.GetLastTSEventTick(currentTick);
             }
 
-            var workedBeatline = BeatlinePooler.instance.GetBeatline(currentBeatline);
+            var workedBeatline = BeatlinePooler.instance.GetObject(currentBeatline);
             workedBeatline.Tick = currentTick;
 
             workedBeatline.UpdateBeatlinePosition((Tempo.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
@@ -51,6 +51,6 @@ public class BeatlineLane : MonoBehaviour
             currentTick += TimeSignature.IncreaseByHalfDivision(currentTick);
         }
 
-        BeatlinePooler.instance.DeactivateUnusedBeatlines(currentBeatline);
+        BeatlinePooler.instance.DeactivateUnused(currentBeatline);
     }
 }

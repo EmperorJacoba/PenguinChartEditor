@@ -4,9 +4,8 @@ using System;
 using UnityEngine.EventSystems;
 using System.Linq;
 
-public class BPMLabel : Label<BPMData>, IDragHandler
+public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 {
-
     #region Event Sets
 
     public static EventData<BPMData> EventData = new();

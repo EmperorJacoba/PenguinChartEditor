@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using UnityEngine;
 
-public class TSLabel : Label<TSData>
+public class TSLabel : Label<TSData>, IPoolable
 {
     #region Event Sets
 

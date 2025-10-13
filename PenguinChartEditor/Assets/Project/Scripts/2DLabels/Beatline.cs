@@ -5,7 +5,7 @@ using UnityEngine;
 /// <para>The beatline prefab is a UI element with a line renderer with two points set to the width of the track, and has malleable BPM and TS labels.</para>
 /// <remarks>Beatline game object control should happen through this class.</remarks>
 /// </summary>
-public class Beatline : MonoBehaviour
+public class Beatline : MonoBehaviour, IPoolable
 {
     protected InputMap inputMap;
     public int Tick { get; set; }
