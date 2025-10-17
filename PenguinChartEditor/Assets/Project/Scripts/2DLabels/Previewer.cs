@@ -11,6 +11,7 @@ public interface IPreviewer
     void Hide();
     void Show();
     bool IsOverlayUIHit();
+    bool AreLaneObjectsHit();
     int Tick { get; set; }
     bool justCreated { get; set; }
 }
@@ -18,6 +19,7 @@ public interface IPreviewer
 public abstract class Previewer : MonoBehaviour, IPreviewer
 {
     [SerializeField] protected GraphicRaycaster overlayUIRaycaster;
+    [SerializeField] protected BaseRaycaster eventRaycaster;
     protected InputMap inputMap;
     protected bool hidden = false;
 
@@ -57,8 +59,5 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
     }
 
-    private void Update()
-    {
-        if (justCreated) justCreated = false;
-    }
+    public bool AreLaneObjectsHit() => MiscTools.IsRaycasterHit(eventRaycaster);
 }

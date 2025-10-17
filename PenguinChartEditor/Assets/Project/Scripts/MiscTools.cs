@@ -15,7 +15,7 @@ public static class MiscTools
         return char.ToLower(name[0]) + name.Substring(1);
     }
 
-    public static bool IsRaycasterHit(GraphicRaycaster targetRaycaster)
+    public static bool IsRaycasterHit(BaseRaycaster targetRaycaster)
     {
         PointerEventData pointerData = new(EventSystem.current)
         {

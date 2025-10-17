@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-public interface IInstrument<T> where T : IEventData
+// no <T> definition because otherwise IInstrument collections do not work properly
+public interface IInstrument
 {
-    public SortedDictionary<int, T>[] Lanes { get; set; }
     SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     InstrumentType Instrument { get; set; }
@@ -12,7 +12,7 @@ public interface IInstrument<T> where T : IEventData
 
 }
 
-public class FiveFretInstrument : IInstrument<FiveFretNoteData>
+public class FiveFretInstrument : IInstrument
 {
     public SortedDictionary<int, FiveFretNoteData>[] Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
@@ -66,7 +66,7 @@ public class FiveFretInstrument : IInstrument<FiveFretNoteData>
     }
 }
 
-public class FourLaneDrumInstrument : IInstrument<FourLaneDrumNoteData>
+public class FourLaneDrumInstrument : IInstrument
 {
     public SortedDictionary<int, FourLaneDrumNoteData>[] Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
@@ -83,7 +83,7 @@ public class FourLaneDrumInstrument : IInstrument<FourLaneDrumNoteData>
     }
 }
 
-public class GHLInstrument : IInstrument<GHLNoteData>
+public class GHLInstrument : IInstrument
 {
     public SortedDictionary<int, GHLNoteData>[] Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }

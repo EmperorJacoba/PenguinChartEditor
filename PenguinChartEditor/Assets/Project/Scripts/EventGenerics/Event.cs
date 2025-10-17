@@ -45,6 +45,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         }
         set
         {
+           // Debug.Log($"Selection property accessed. {Tick}");
             SelectionOverlay.SetActive(value);
             _selected = value;
         }
@@ -133,30 +134,44 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         // Early return if attempting to start a move while over an overlay element
         // Allows moves to start only if interacting with main content
-        if (EventPreviewer.IsOverlayUIHit() && !moveData.moveInProgress) return;
+        if (EventPreviewer.IsOverlayUIHit() && !moveData.moveInProgress)
+        {
+            Debug.Log("Returned because overlay UI was hit and move was not in progress.");
+            return;
+        }
 
         var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
 
         // early return if no changes to mouse's grid snap
         if (currentMouseTick == moveData.lastMouseTick)
         {
+            Debug.Log("Returned because no tick delta.");
             moveData.lastMouseTick = currentMouseTick;
             return;
         }
 
         if (!moveData.moveInProgress)
         {
+            Debug.Log("Returned because no move action.");
             InitializeMoveAction(currentMouseTick);
             return;
         }
 
         // in some cases this runs even when nothing is moving which will throw an error 
-        if (moveData.MovingGhostSet.Count == 0) return;
+        if (moveData.MovingGhostSet.Count == 0)
+        {
+            Debug.Log("Returned because no items in ghost set.");
+            return;
+        }
 
         // temporarily clear selection to avoid selection jank while moving
         // (items that are not selected could appear selected and vice versa b/c of selection logic)
         // selection gets restored upon drag ending
-        if (GetEventData().Selection.Count > 0) GetEventData().Selection.Clear();
+        if (GetEventData().Selection.Count > 0)
+        {
+            Debug.Log("Cleared selection");
+            GetEventData().Selection.Clear();
+        }
 
         // Write everything to a temporary dictionary because otherwise when moving from t=0
         // tick 0 will not exist in the dictionary for TS & BPM events, which are needed
@@ -216,7 +231,11 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         {
             lowestTick = GetEventData().Selection.Keys.Min();
         }
-        else return; // nothing to move
+        else
+        {
+            Debug.Log("Returned initialization because nothing in selection.");
+            return; // nothing to move
+        }
         moveData.selectionOriginTick = lowestTick;
 
         foreach (var selectedTick in GetEventData().Selection)
@@ -245,6 +264,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         GetMoveData().moveInProgress = false;
 
         GetEventData().Selection.Clear();
+        Debug.Log("Selection cleared.");
         foreach (var item in GetMoveData().MovingGhostSet)
         {
             GetEventData().Selection.Add(item.Key + GetMoveData().lastTempGhostPasteStartTick, item.Value);
@@ -257,11 +277,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public virtual void CheckForSelectionClear()
     {
-        if (!EventPreviewer.IsOverlayUIHit())
-        {
-            GetEventData().Selection.Clear();
-            RefreshEvents();
-        }
+        if (EventPreviewer.IsOverlayUIHit() || EventPreviewer.AreLaneObjectsHit()) return;
+
+        GetEventData().Selection.Clear();
+        RefreshEvents();
     }
 
     public void SelectAllEvents()
@@ -282,7 +301,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         {
             var deleteAction = new Delete<T>(GetEventSet());
             justDeleted = deleteAction.Execute(Tick);
-
             Chart.Refresh();
         }
 
@@ -291,13 +309,17 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public virtual void OnPointerUp(PointerEventData pointerEventData)
     {
-        if (EventPreviewer.justCreated) return;
+        if (EventPreviewer.justCreated)
+        {
+            EventPreviewer.justCreated = false;
+            return;
+        }
 
         if (!GetEventData().RMBHeld || pointerEventData.button != PointerEventData.InputButton.Left)
         {
             CalculateSelectionStatus(pointerEventData);
-            RefreshEvents();
         }
+        RefreshEvents();
     }
 
     #endregion
