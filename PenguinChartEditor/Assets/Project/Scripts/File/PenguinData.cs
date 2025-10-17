@@ -1,9 +1,12 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using MessagePack;
+using System.Collections;
 
 
-[System.Serializable]
+[MessagePackObject]
 public class PenguinData
 {
+    // Include all needed data in this file
 
+    // Checklist:
+    //
 }
