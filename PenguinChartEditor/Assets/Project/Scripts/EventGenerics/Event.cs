@@ -87,8 +87,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     // Oops! All naming confusion!
     #region Event Handlers
 
-    protected InputMap inputMap;
-
     public void CopySelection()
     {
         GetEventData().Clipboard.Clear();
@@ -279,6 +277,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public static bool justDeleted = false;
     public virtual void OnPointerDown(PointerEventData pointerEventData)
     {
+        // used for right click + left click delete functionality
         if (GetEventData().RMBHeld && pointerEventData.button == PointerEventData.InputButton.Left)
         {
             var deleteAction = new Delete<T>(GetEventSet());
@@ -286,6 +285,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
             Chart.Refresh();
         }
+
+        // move action fix here
     }
 
     public virtual void OnPointerUp(PointerEventData pointerEventData)

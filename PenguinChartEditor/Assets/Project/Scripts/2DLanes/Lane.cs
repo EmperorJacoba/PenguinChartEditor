@@ -16,9 +16,6 @@ public abstract class Lane<T> : MonoBehaviour where T : IEventData
     {
         eventAccessor = gameObject.GetComponentInChildren<IEvent<T>>();
 
-        // kinda implements a partial singleton where input mapped actions
-        // will only occur on one event object of each type
-        // w/o boolean guard this will run for every event object and result in needless calculations
         inputMap = new();
         inputMap.Enable();
 

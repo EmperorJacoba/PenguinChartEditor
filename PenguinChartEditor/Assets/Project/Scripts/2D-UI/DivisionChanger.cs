@@ -2,15 +2,17 @@ using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class DivisionChanger : MonoBehaviour
 {
+    private const int MAX_DIVISION = 768;
+    private const int MIN_DIVISION = 1;
+
     [SerializeField] TMP_InputField entryBox;
     InputMap inputMap;
-    public static int CurrentDivision {get; set;} = 8;
-    
-    readonly int[] steps = {1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512, 768};
+    public static int CurrentDivision { get; set; } = 8;
+
+    readonly int[] steps = { 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512, 768 };
 
     void Start()
     {
@@ -27,7 +29,7 @@ public class DivisionChanger : MonoBehaviour
     }
     public void IncreaseDivision()
     {
-        if (CurrentDivision >= 768) return;
+        if (CurrentDivision >= MAX_DIVISION) return;
         if (!steps.Contains(CurrentDivision))
         {
             CurrentDivision = steps[~Array.BinarySearch(steps, CurrentDivision)];
@@ -37,13 +39,12 @@ public class DivisionChanger : MonoBehaviour
             CurrentDivision = steps[Array.IndexOf(steps, CurrentDivision) + 1];
         }
 
-
         entryBox.text = CurrentDivision.ToString();
     }
 
     public void DecreaseDivision()
     {
-        if (CurrentDivision <= 1) return;
+        if (CurrentDivision <= MIN_DIVISION) return;
 
         if (!steps.Contains(CurrentDivision))
         {
@@ -59,14 +60,14 @@ public class DivisionChanger : MonoBehaviour
 
     public void DecreaseDivisionByOne()
     {
-        if (CurrentDivision <= 1) return;
+        if (CurrentDivision <= MIN_DIVISION) return;
         CurrentDivision--;
         entryBox.text = CurrentDivision.ToString();
     }
 
     public void IncreaseDivisionByOne()
     {
-        if (CurrentDivision >= 768) return;
+        if (CurrentDivision >= MAX_DIVISION) return;
         CurrentDivision++;
         entryBox.text = CurrentDivision.ToString();
     }

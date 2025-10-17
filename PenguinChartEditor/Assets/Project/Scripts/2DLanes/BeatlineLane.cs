@@ -32,7 +32,7 @@ public class BeatlineLane : MonoBehaviour
             // If the user places a TS event on an irregular position (using 1/3 or 1/6 or 1/12 step)
             // the beatlines will generate based on the beggining TS event, but not based on the irregular TS event,
             // if it happens in the middle of a generation window. It skips over the TS event and generates nothing
-            // after the badly placed TS event. This prevents that from happening.
+            // after the badly placed TS event. This check prevents that from happening.
             if (TimeSignature.GetLastTSEventTick(currentTick) != currentTSEventTick)
             {
                 currentTick = TimeSignature.GetLastTSEventTick(currentTick);
