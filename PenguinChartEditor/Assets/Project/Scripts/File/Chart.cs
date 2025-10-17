@@ -59,7 +59,7 @@ public class Chart : MonoBehaviour
 
     public void LoadFile()
     {
-
+        
     }
 
     void Awake()
