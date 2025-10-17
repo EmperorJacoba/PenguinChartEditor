@@ -362,6 +362,8 @@ public class ChartParser
             _ => throw new ArgumentException("Tried to identify an invalid instrument.")
         };
 
+        Chart.DifficultyType difficulty = chartEventGroup.GetDifficulty();
+
         for (int i = 0; i < chartEventGroup.data.Count; i++)
         {
             var entry = chartEventGroup.data[i];
@@ -463,7 +465,7 @@ public class ChartParser
             }
         }
 
-        return new FiveFretInstrument(lanes, starpower, localEvents, instrument);
+        return new FiveFretInstrument(lanes, starpower, localEvents, instrument, difficulty);
     }
 
     #endregion
@@ -553,14 +555,6 @@ class ChartEventGroup
         Vox,
     }
 
-    public enum Difficulty
-    {
-        Easy = 0,
-        Medium = 1,
-        Hard = 2,
-        Expert = 3
-    }
-
     public InstrumentGroup GetInstrumentGroup()
     {
         return (int)EventGroupIdentifier switch
@@ -574,14 +568,14 @@ class ChartEventGroup
         };
     }
 
-    public Difficulty GetDifficulty()
+    public Chart.DifficultyType GetDifficulty()
     {
         return ((int)EventGroupIdentifier % 10) switch
         {
-            0 => Difficulty.Easy,
-            1 => Difficulty.Medium,
-            2 => Difficulty.Hard,
-            3 => Difficulty.Expert,
+            0 => Chart.DifficultyType.easy,
+            1 => Chart.DifficultyType.medium,
+            2 => Chart.DifficultyType.hard,
+            3 => Chart.DifficultyType.expert,
             _ => throw new ArgumentException("Tried to get invalid instrument difficulty.")
         };
     }

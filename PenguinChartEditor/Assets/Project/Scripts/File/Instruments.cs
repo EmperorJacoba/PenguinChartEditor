@@ -7,6 +7,8 @@ public interface IInstrument
     SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     Chart.InstrumentType Instrument { get; set; }
+    Chart.DifficultyType Difficulty { get; set; }
+
 }
 
 public class FiveFretInstrument : IInstrument
@@ -15,6 +17,7 @@ public class FiveFretInstrument : IInstrument
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     public Chart.InstrumentType Instrument { get; set; }
+    public Chart.DifficultyType Difficulty { get; set; }
 
     /// <summary>
     /// Corresponds to this lane's position in Lanes[].
@@ -33,13 +36,15 @@ public class FiveFretInstrument : IInstrument
         SortedDictionary<int, FiveFretNoteData>[] lanes,
         SortedDictionary<int, SpecialData> starpower,
         SortedDictionary<int, LocalEventData> localEvents,
-        Chart.InstrumentType instrument
+        Chart.InstrumentType instrument,
+        Chart.DifficultyType difficulty
         )
     {
         Lanes = lanes;
         SpecialEvents = starpower;
         LocalEvents = localEvents;
         Instrument = instrument;
+        Difficulty = difficulty;
     }
 
     public List<string> ExportAllNotes()
@@ -66,7 +71,7 @@ public class FourLaneDrumInstrument : IInstrument
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     public Chart.InstrumentType Instrument { get; set; }
-
+    public Chart.DifficultyType Difficulty { get; set; }
     public enum LaneOrientation
     {
         red = 0,
@@ -83,6 +88,7 @@ public class GHLInstrument : IInstrument
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     public Chart.InstrumentType Instrument { get; set; }
+    public Chart.DifficultyType Difficulty { get; set; }
 
     public enum LaneOrientation
     {
