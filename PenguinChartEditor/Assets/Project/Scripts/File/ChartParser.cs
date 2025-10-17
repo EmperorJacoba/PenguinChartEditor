@@ -171,6 +171,7 @@ public class ChartParser
 
         List<KeyValuePair<string, string>> eventData = new();
 
+        // index 0 is [Song] - not necessary
         for (int lineIndex = 1; lineIndex < iniData.Length; lineIndex++)
         {
             var lineParts = iniData[lineIndex].Split(" = ");
@@ -205,11 +206,11 @@ public class ChartParser
                 {
                     metadata.SongInfo.Add((Metadata.MetadataType)formattedKey, kvp.Value);
                 }
-                else if (Enum.TryParse(typeof(Metadata.InstrumentDifficultyType), kvp.Key, true, out var formattedInstrumentDiff))
+                else if (Enum.TryParse(typeof(Metadata.InstrumentDifficultyIdentifier), kvp.Key, true, out var formattedInstrumentDiff))
                 {
                     if (int.TryParse(kvp.Value, out int instrumentDifficulty))
                     {
-                        metadata.Difficulties.Add((Metadata.InstrumentDifficultyType)formattedInstrumentDiff, instrumentDifficulty);
+                        metadata.Difficulties.Add((Metadata.InstrumentDifficultyIdentifier)formattedInstrumentDiff, instrumentDifficulty);
                     }
                 }
                 // log warning about unrecognized key
@@ -352,17 +353,17 @@ public class ChartParser
         SortedDictionary<int, SpecialData> starpower = new();
         SortedDictionary<int, LocalEventData> localEvents = new();
 
-        Chart.InstrumentType instrument = (int)chartEventGroup.EventGroupIdentifier switch
+        InstrumentType instrument = (int)chartEventGroup.EventGroupIdentifier switch
         {
-            <= 13 => Chart.InstrumentType.guitar,
-            <= 23 => Chart.InstrumentType.coopGuitar,
-            <= 33 => Chart.InstrumentType.bass,
-            <= 43 => Chart.InstrumentType.rhythm,
-            <= 53 => Chart.InstrumentType.keys,
+            <= 13 => InstrumentType.guitar,
+            <= 23 => InstrumentType.coopGuitar,
+            <= 33 => InstrumentType.bass,
+            <= 43 => InstrumentType.rhythm,
+            <= 53 => InstrumentType.keys,
             _ => throw new ArgumentException("Tried to identify an invalid instrument.")
         };
 
-        Chart.DifficultyType difficulty = chartEventGroup.GetDifficulty();
+        DifficultyType difficulty = chartEventGroup.GetDifficulty();
 
         for (int i = 0; i < chartEventGroup.data.Count; i++)
         {
@@ -568,14 +569,14 @@ class ChartEventGroup
         };
     }
 
-    public Chart.DifficultyType GetDifficulty()
+    public DifficultyType GetDifficulty()
     {
         return ((int)EventGroupIdentifier % 10) switch
         {
-            0 => Chart.DifficultyType.easy,
-            1 => Chart.DifficultyType.medium,
-            2 => Chart.DifficultyType.hard,
-            3 => Chart.DifficultyType.expert,
+            0 => DifficultyType.easy,
+            1 => DifficultyType.medium,
+            2 => DifficultyType.hard,
+            3 => DifficultyType.expert,
             _ => throw new ArgumentException("Tried to get invalid instrument difficulty.")
         };
     }

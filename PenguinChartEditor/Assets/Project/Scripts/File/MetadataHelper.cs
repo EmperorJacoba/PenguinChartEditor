@@ -106,7 +106,7 @@ public class MetadataHelper : MonoBehaviour
             ClearAudioStem(selectedStem); // Empty the dictionary val first to avoid throwing error
 
             // Convert the string passed in from the button to the enum type Metadata.StemType
-            Metadata.StemType selectedStemAsEnum = (Metadata.StemType)Enum.Parse(typeof(Metadata.StemType), selectedStem);
+            StemType selectedStemAsEnum = (StemType)Enum.Parse(typeof(StemType), selectedStem);
             // Add the selected audio path to dictionary with key as the enum type of the string
             Chart.Metadata.StemPaths.Add(selectedStemAsEnum, selectedAudioPath[0]);
 
@@ -120,7 +120,7 @@ public class MetadataHelper : MonoBehaviour
     /// <param name="selectedStem"></param>
     public void ClearAudioStem(string selectedStem)
     {
-        Metadata.StemType selectedStemAsEnum = (Metadata.StemType)Enum.Parse(typeof(Metadata.StemType), selectedStem);
+        StemType selectedStemAsEnum = (StemType)Enum.Parse(typeof(StemType), selectedStem);
         if (Chart.Metadata.StemPaths.ContainsKey(selectedStemAsEnum))
         {
             Chart.Metadata.StemPaths.Remove(selectedStemAsEnum);

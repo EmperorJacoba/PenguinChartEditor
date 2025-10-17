@@ -23,10 +23,10 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// Holds BASS stream data for playing audio. Stem is audio stem identifier, int is BASS stream data.
     /// </summary>
-    public static Dictionary<Metadata.StemType, int> StemStreams { get; private set; } = new();
+    public static Dictionary<StemType, int> StemStreams { get; private set; } = new();
 
-    public static Dictionary<Metadata.StemType, StemVolumeData> StemVolumes { get; private set; } = new();
-    public static HashSet<Metadata.StemType> soloedStems = new();
+    public static Dictionary<StemType, StemVolumeData> StemVolumes { get; private set; } = new();
+    public static HashSet<StemType> soloedStems = new();
 
     /// <summary>
     /// Is the audio currently playing?
@@ -58,7 +58,7 @@ public class AudioManager : MonoBehaviour
     /// The stem with the longest stream length in StemStreams. All other stem streams are linked to this stem for playback purposes.
     /// <para>This stream is guaranteed to exist in StemStreams at all times EXCEPT when there is no audio loaded.</para> 
     /// </summary>
-    private static Metadata.StemType StreamLink { get; set; }
+    private static StemType StreamLink { get; set; }
 
     /// <summary>
     /// The length of the stream attached to the longest stem.
@@ -113,7 +113,7 @@ public class AudioManager : MonoBehaviour
     /// <param name="bytesPerSample">Number of bytes in the original track that each sample represents. Can vary based on encoding.</param>
     /// <returns>Compressed float array of an audio file's sample data.</returns>
     /// <exception cref="ArgumentException">Invalid song path</exception>
-    public static float[] GetAudioSamples(Metadata.StemType stem, out long bytesPerSample)
+    public static float[] GetAudioSamples(StemType stem, out long bytesPerSample)
     {
         var songPath = Chart.Metadata.StemPaths[stem];
 
@@ -201,7 +201,7 @@ public class AudioManager : MonoBehaviour
     /// <param name="stemType">The stem that the BASS stream belongs to.</param>
     /// <param name="songPath">The file path to create a stream from.</param>
     /// <exception cref="ArgumentException">Thrown when created stem returns an error (0) from BASS</exception>
-    public void UpdateAudioStream(Metadata.StemType stemType, string songPath)
+    public void UpdateAudioStream(StemType stemType, string songPath)
     {
         // Make this asynchronous for later? idk
         // Create master stream in data set to avoid creating a stream over and over during frequent start/stopping
@@ -241,11 +241,11 @@ public class AudioManager : MonoBehaviour
     /// Get the longest audio file to link playing all other stems to. Needed to properly play audio synchronously.
     /// </summary>
     /// <returns>Stem with longest playback length</returns>
-    private Metadata.StemType GetLongestStream()
+    private StemType GetLongestStream()
     {
         // Basic max value finder algorithm: get length of each stem, overwrite current longest stem if new longest is found
         long streamLength = 0;
-        Metadata.StemType longestStream = 0; // if this function returns 0 then it shows nothing has been loaded
+        StemType longestStream = 0; // if this function returns 0 then it shows nothing has been loaded
         foreach (var stream in StemStreams)
         {
             var currentStreamLength = Bass.BASS_ChannelGetLength(stream.Value);
@@ -271,19 +271,19 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public static void MuteStem(Metadata.StemType stem)
+    public static void MuteStem(StemType stem)
     {
         StemVolumes[stem] = new(StemVolumes[stem].Volume, true);
         Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, 0);
     }
 
-    public static void UnmuteStem(Metadata.StemType stem)
+    public static void UnmuteStem(StemType stem)
     {
         StemVolumes[stem] = new(StemVolumes[stem].Volume, false);
         Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, StemVolumes[stem].Volume);
     }
 
-    public static void SetStemVolume(Metadata.StemType stem, float newVolume)
+    public static void SetStemVolume(StemType stem, float newVolume)
     {
         StemVolumes[stem] = new(newVolume, StemVolumes[stem].Muted);
 

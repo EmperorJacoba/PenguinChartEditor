@@ -22,7 +22,7 @@ public class WaveformSelectorDropdown : MonoBehaviour
     /// Contains the stems and their stored option order in the waveform selector dropdown.
     /// <para>Index 0 has a value of 0 for a "null" or invisible value, which signals that the waveform has been turned off. First option is always "none."</para>
     /// </summary>
-    private List<Metadata.StemType> dropdownIndexes = new();
+    private List<StemType> dropdownIndexes = new();
 
     /// <summary>
     /// 
@@ -52,7 +52,7 @@ public class WaveformSelectorDropdown : MonoBehaviour
     /// <param name="index"></param>
     private void OnValueChanged(int index)
     {
-        if (Enum.IsDefined(typeof(Metadata.StemType), index)) // value can be zero, but zero is not in StemType
+        if (Enum.IsDefined(typeof(StemType), index)) // value can be zero, but zero is not in StemType
         {
             waveformManager.ChangeDisplayedWaveform(dropdownIndexes[index]);
             // ^^ dropdownIndexes is used instead of just the index because the dropdown only contains stems the user has defined

@@ -18,28 +18,6 @@ public class Chart : MonoBehaviour
     }
     public static TabType currentTab;
 
-    public enum InstrumentType
-    {
-        guitar,
-        coopGuitar,
-        rhythm,
-        bass,
-        keys,
-        drums,
-        ghlGuitar,
-        ghlBass,
-        ghlRhythm,
-        vox
-    }
-
-    public enum DifficultyType
-    {
-        easy,
-        medium,
-        hard,
-        expert
-    }
-
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
     /// </summary>

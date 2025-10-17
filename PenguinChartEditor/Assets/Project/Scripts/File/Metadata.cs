@@ -42,7 +42,7 @@ public class Metadata
     /// <summary>
     /// Stores valid instrument difficulties.
     /// </summary>
-    public enum InstrumentDifficultyType
+    public enum InstrumentDifficultyIdentifier
     {
         diff_band,
         diff_guitar,
@@ -60,28 +60,7 @@ public class Metadata
         diff_vocals_harm
     }
 
-    public Dictionary<InstrumentDifficultyType, int> Difficulties = new();
-
-    /// <summary>
-    /// Stores valid types of audio stems.
-    /// </summary>
-    public enum StemType
-    {
-        // 0 is reserved for none
-        song = 1,
-        guitar = 2,
-        bass = 3,
-        rhythm = 4,
-        keys = 5,
-        vocals = 6,
-        vocals_1 = 7,
-        vocals_2 = 8,
-        drums = 9,
-        drums_1 = 10,
-        drums_2 = 11,
-        drums_3 = 12,
-        drums_4 = 13,
-    }
+    public Dictionary<InstrumentDifficultyIdentifier, int> Difficulties = new();
 
     public Dictionary<StemType, string> StemPaths = new();
 

@@ -10,7 +10,7 @@ using System.Linq;
 /// </summary>
 public class StemVolumeEditor : MonoBehaviour
 {
-    public Metadata.StemType StemType
+    public StemType StemType
     {
         get
         {
@@ -23,7 +23,7 @@ public class StemVolumeEditor : MonoBehaviour
             _type = value;
         }
     }
-    private Metadata.StemType _type;
+    private StemType _type;
 
     [SerializeField] Slider slider;
     [SerializeField] TextMeshProUGUI label;

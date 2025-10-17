@@ -2,22 +2,23 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-public interface IInstrument
+public interface IInstrument<T> where T : IEventData
 {
+    public SortedDictionary<int, T>[] Lanes { get; set; }
     SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
-    Chart.InstrumentType Instrument { get; set; }
-    Chart.DifficultyType Difficulty { get; set; }
+    InstrumentType Instrument { get; set; }
+    DifficultyType Difficulty { get; set; }
 
 }
 
-public class FiveFretInstrument : IInstrument
+public class FiveFretInstrument : IInstrument<FiveFretNoteData>
 {
     public SortedDictionary<int, FiveFretNoteData>[] Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
-    public Chart.InstrumentType Instrument { get; set; }
-    public Chart.DifficultyType Difficulty { get; set; }
+    public InstrumentType Instrument { get; set; }
+    public DifficultyType Difficulty { get; set; }
 
     /// <summary>
     /// Corresponds to this lane's position in Lanes[].
@@ -36,8 +37,8 @@ public class FiveFretInstrument : IInstrument
         SortedDictionary<int, FiveFretNoteData>[] lanes,
         SortedDictionary<int, SpecialData> starpower,
         SortedDictionary<int, LocalEventData> localEvents,
-        Chart.InstrumentType instrument,
-        Chart.DifficultyType difficulty
+        InstrumentType instrument,
+        DifficultyType difficulty
         )
     {
         Lanes = lanes;
@@ -65,13 +66,13 @@ public class FiveFretInstrument : IInstrument
     }
 }
 
-public class FourLaneDrumInstrument : IInstrument
+public class FourLaneDrumInstrument : IInstrument<FourLaneDrumNoteData>
 {
     public SortedDictionary<int, FourLaneDrumNoteData>[] Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
-    public Chart.InstrumentType Instrument { get; set; }
-    public Chart.DifficultyType Difficulty { get; set; }
+    public InstrumentType Instrument { get; set; }
+    public DifficultyType Difficulty { get; set; }
     public enum LaneOrientation
     {
         red = 0,
@@ -82,13 +83,13 @@ public class FourLaneDrumInstrument : IInstrument
     }
 }
 
-public class GHLInstrument : IInstrument
+public class GHLInstrument : IInstrument<GHLNoteData>
 {
     public SortedDictionary<int, GHLNoteData>[] Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
-    public Chart.InstrumentType Instrument { get; set; }
-    public Chart.DifficultyType Difficulty { get; set; }
+    public InstrumentType Instrument { get; set; }
+    public DifficultyType Difficulty { get; set; }
 
     public enum LaneOrientation
     {

@@ -10,10 +10,10 @@ public class Waveform : MonoBehaviour
 
     /// <summary>
     /// Dictionary that contains waveform point data for each song stem.
-    /// <para>ChartMetadata.StemType is the audio stem the data belongs to</para>
+    /// <para>StemType is the audio stem the data belongs to</para>
     /// <para>The tuple in the value holds the data (float[]) and the number of bytes per sample (long)</para>
     /// </summary>
-    public static Dictionary<Metadata.StemType, StemWaveformData> WaveformData { get; private set; } = new();
+    public static Dictionary<StemType, StemWaveformData> WaveformData { get; private set; } = new();
 
     #region Scene Objects
     /// <summary>
@@ -111,7 +111,7 @@ public class Waveform : MonoBehaviour
     /// <summary>
     /// The currently displayed waveform.
     /// </summary>
-    private static Metadata.StemType CurrentWaveform { get; set; }
+    private static StemType CurrentWaveform { get; set; }
 
     #endregion
 
@@ -157,7 +157,7 @@ public class Waveform : MonoBehaviour
     /// Update waveform data to a new audio file.
     /// </summary>
     /// <param name="stem">The BASS stream to get audio samples of.</param>
-    public void UpdateWaveformData(Metadata.StemType stem) // pass in file path here later
+    public void UpdateWaveformData(StemType stem) // pass in file path here later
     {
         float[] stemWaveformData = AudioManager.GetAudioSamples(stem, out long bytesPerSample);
 
@@ -225,7 +225,7 @@ public class Waveform : MonoBehaviour
     /// Update the visible and calculated-upon waveform.
     /// </summary>
     /// <param name="stem">The stem to set to the active waveform.</param>
-    public void ChangeDisplayedWaveform(Metadata.StemType stem)
+    public void ChangeDisplayedWaveform(StemType stem)
     {
         SetWaveformVisibility(true);
         CurrentWaveform = stem;
