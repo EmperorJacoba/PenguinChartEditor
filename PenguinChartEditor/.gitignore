@@ -74,5 +74,3 @@ crashlytics-build.properties
 
 /.vsconfig
 /.vs
-/ProjectSettings/Packages/com.unity.probuilder/Settings.json
-/ProjectSettings/ShaderGraphSettings.asset
