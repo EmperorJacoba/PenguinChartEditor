@@ -13,7 +13,7 @@ public interface IPreviewer
     bool IsOverlayUIHit();
     bool AreLaneObjectsHit();
     int Tick { get; set; }
-    bool justCreated { get; set; }
+    bool disableNextSelectionCheck { get; set; }
 }
 
 public abstract class Previewer : MonoBehaviour, IPreviewer
@@ -28,7 +28,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     public abstract void Show();
     public bool IsOverlayUIHit() => MiscTools.IsRaycasterHit(overlayUIRaycaster);
     public int Tick { get; set; }
-    public bool justCreated { get; set; } = false;
+    public bool disableNextSelectionCheck { get; set; } = false;
 
     /// <summary>
     /// Shortcut to allow void events call the main UpdatePreviewPosition function.

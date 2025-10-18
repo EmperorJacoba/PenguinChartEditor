@@ -46,7 +46,7 @@ public class TSPreviewer : Previewer
         {
             tsLabel.CreateEvent(tsLabel.Tick, displayedTS);
             Chart.Refresh();
-            justCreated = true;
+            disableNextSelectionCheck = true;
         }
     }
     public override void Hide()

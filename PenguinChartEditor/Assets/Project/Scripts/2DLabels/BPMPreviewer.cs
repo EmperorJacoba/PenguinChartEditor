@@ -43,7 +43,7 @@ public class BPMPreviewer : Previewer
         {
             bpmLabel.CreateEvent(bpmLabel.Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp));
             Chart.Refresh();
-            justCreated = true;
+            disableNextSelectionCheck = true;
         }
     }
 

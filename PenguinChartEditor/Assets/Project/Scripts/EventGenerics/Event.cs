@@ -136,7 +136,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // Allows moves to start only if interacting with main content
         if (EventPreviewer.IsOverlayUIHit() && !moveData.moveInProgress)
         {
-            Debug.Log("Returned because overlay UI was hit and move was not in progress.");
             return;
         }
 
@@ -145,14 +144,12 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // early return if no changes to mouse's grid snap
         if (currentMouseTick == moveData.lastMouseTick)
         {
-            Debug.Log("Returned because no tick delta.");
             moveData.lastMouseTick = currentMouseTick;
             return;
         }
 
         if (!moveData.moveInProgress)
         {
-            Debug.Log("Returned because no move action.");
             InitializeMoveAction(currentMouseTick);
             return;
         }
@@ -160,7 +157,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // in some cases this runs even when nothing is moving which will throw an error 
         if (moveData.MovingGhostSet.Count == 0)
         {
-            Debug.Log("Returned because no items in ghost set.");
             return;
         }
 
@@ -169,7 +165,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // selection gets restored upon drag ending
         if (GetEventData().Selection.Count > 0)
         {
-            Debug.Log("Cleared selection");
             GetEventData().Selection.Clear();
         }
 
@@ -233,7 +228,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         }
         else
         {
-            Debug.Log("Returned initialization because nothing in selection.");
             return; // nothing to move
         }
         moveData.selectionOriginTick = lowestTick;
@@ -255,6 +249,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         EventPreviewer.Hide();
     }
 
+    static bool disableNextSelectionCheck = false;
     public virtual void CompleteMove()
     {
         // On "cancel" (CompleteMove), record edit action and put in undo stack
@@ -264,13 +259,14 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         GetMoveData().moveInProgress = false;
 
         GetEventData().Selection.Clear();
-        Debug.Log("Selection cleared.");
         foreach (var item in GetMoveData().MovingGhostSet)
         {
             GetEventData().Selection.Add(item.Key + GetMoveData().lastTempGhostPasteStartTick, item.Value);
         }
 
         EventPreviewer.Show();
+
+        disableNextSelectionCheck = true;
 
         Chart.Refresh();
     }
@@ -304,22 +300,27 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             Chart.Refresh();
         }
 
-        // move action fix here
     }
 
     public virtual void OnPointerUp(PointerEventData pointerEventData)
     {
-        if (EventPreviewer.justCreated)
+        if (EventPreviewer.disableNextSelectionCheck)
         {
-            EventPreviewer.justCreated = false;
+            EventPreviewer.disableNextSelectionCheck = false;
+            return;
+        }
+
+        if (disableNextSelectionCheck)
+        {
+            disableNextSelectionCheck = false;
             return;
         }
 
         if (!GetEventData().RMBHeld || pointerEventData.button != PointerEventData.InputButton.Left)
         {
             CalculateSelectionStatus(pointerEventData);
+            RefreshEvents();
         }
-        RefreshEvents();
     }
 
     #endregion
