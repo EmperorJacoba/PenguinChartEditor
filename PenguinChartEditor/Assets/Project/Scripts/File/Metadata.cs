@@ -63,24 +63,4 @@ public class Metadata
     public Dictionary<InstrumentDifficultyIdentifier, int> Difficulties = new();
 
     public Dictionary<StemType, string> StemPaths = new();
-
-    // test paths to make this easier
-    static string[] stems = new string[6] {
-        "", // song
-        "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Guitar.opus", // guitar
-        "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Bass.opus", // bass
-        "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Keys.opus", // keys
-        "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Vocals.opus", // vocals
-        "C:/_PCE_files/TestAudioFiles/Yes - Perpetual Change/Drums.opus"  // drums
-    };
-
-    public void TempSetUpStemDict()
-    {
-        //Stems[StemType.song] = stems[0];
-        StemPaths[StemType.guitar] = stems[1];
-        StemPaths[StemType.bass] = stems[2];
-        StemPaths[StemType.keys] = stems[3];
-        StemPaths[StemType.vocals] = stems[4];
-        StemPaths[StemType.drums] = stems[5];
-    }
 }

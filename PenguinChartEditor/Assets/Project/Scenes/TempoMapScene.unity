@@ -12064,6 +12064,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overlayUIRaycaster: {fileID: 1606916091}
+  eventRaycaster: {fileID: 1814809336}
   tsLabel: {fileID: 1993092259}
   boundaryReference: {fileID: 1489170079}
 --- !u!1 &2006968511
@@ -12225,6 +12226,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overlayUIRaycaster: {fileID: 1606916091}
+  eventRaycaster: {fileID: 1814809336}
   bpmLabel: {fileID: 2011355158}
   boundaryReference: {fileID: 1489170079}
 --- !u!114 &2011355158 stripped
