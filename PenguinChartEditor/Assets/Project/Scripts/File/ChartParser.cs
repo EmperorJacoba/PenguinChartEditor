@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using SFB;
 
 public class ChartParser
 {
@@ -112,7 +111,10 @@ public class ChartParser
         for (int lineNumber = 0; lineNumber < chartAsLines.Length; lineNumber++)
         {
             if (chartAsLines[lineNumber].Contains("["))
-                identifiedSections.Add(InitializeEventGroup(lineNumber));
+            {
+                var eventGroup = InitializeEventGroup(lineNumber);
+                if (eventGroup != null) identifiedSections.Add(eventGroup);
+            }
         }
         return identifiedSections;
     }
@@ -128,9 +130,11 @@ public class ChartParser
         var identifierLine = chartAsLines[lineIndex];
         var cleanIdentifier = identifierLine.Replace("[", "").Replace("]", "");
 
-        ChartEventGroup identifiedSection = new(
-            (ChartEventGroup.HeaderType)Enum.Parse(typeof(ChartEventGroup.HeaderType), cleanIdentifier, true)
-            );
+        if (!Enum.TryParse(typeof(ChartEventGroup.HeaderType), cleanIdentifier, true, out var enumObject))
+        {
+            return null;
+        }
+        ChartEventGroup identifiedSection = new((ChartEventGroup.HeaderType)enumObject);
 
         if (chartAsLines[lineIndex + 1] != "{") // line with { to mark beginning of section
             throw new ArgumentException($"{identifiedSection.EventGroupIdentifier} is not enclosed properly. {HELPFUL_REMINDER}");
@@ -289,7 +293,7 @@ public class ChartParser
                 int denominator = DEFAULT_TS_DENOMINATOR;
                 if (tsParts.Length == 2) // There is no space in the event value (only one number)
                 {
-                    if (int.TryParse(tsParts[1], out int denominatorLog2))
+                    if (!int.TryParse(tsParts[1], out int denominatorLog2))
                         throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature denominator. {HELPFUL_REMINDER}");
                     denominator = (int)Math.Pow(TS_POWER_CONVERSION_NUMBER, denominatorLog2);
                 }
@@ -438,7 +442,10 @@ public class ChartParser
                     }
 
                     var noteData = new FiveFretNoteData(sustain, flagType);
-                    lanes[noteIdentifier].Add(tickValue, noteData);
+
+                    lanes[(int)lane].Add(tickValue, noteData);
+
+
 
                     break;
                 case SPECIAL_INDICATOR:
