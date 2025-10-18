@@ -20,6 +20,7 @@ public class BeatlineLane : MonoBehaviour
     public void UpdateEvents()
     {
         int currentBeatline = 0;
+
         // Generate the division and half-division beatlines
         var currentTSEventTick = TimeSignature.GetLastTSEventTick(Waveform.startTick);
         for (
@@ -39,8 +40,7 @@ public class BeatlineLane : MonoBehaviour
                 currentTSEventTick = TimeSignature.GetLastTSEventTick(currentTick);
             }
 
-            var workedBeatline = BeatlinePooler.instance.GetObject(currentBeatline);
-            workedBeatline.Tick = currentTick;
+            var workedBeatline = BeatlinePooler.instance.ActivateObject(currentBeatline, currentTick);
 
             workedBeatline.UpdateBeatlinePosition((Tempo.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
 

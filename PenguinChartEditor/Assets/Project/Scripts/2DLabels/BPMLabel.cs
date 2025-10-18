@@ -28,6 +28,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     public override void MoveSelection() => ExecuteWithRecalculate(() => base.MoveSelection());
     public override void RefreshEvents() => BPMLane.instance.UpdateEvents();
     public override IPreviewer EventPreviewer => BPMPreviewer.instance;
+    public Coroutine destructionCoroutine { get; set; }
 
 
     void ExecuteWithRecalculate(Action action)

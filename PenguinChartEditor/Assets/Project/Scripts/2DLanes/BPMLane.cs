@@ -18,9 +18,8 @@ public class BPMLane : Lane<BPMData>
         int i = 0;
         for (i = 0; i < eventsToDisplay.Count; i++)
         {
-            var bpmLabel = BPMPooler.instance.GetObject(i);
-            bpmLabel.Tick = eventsToDisplay[i];
-            bpmLabel.SetLabelActive();
+            var bpmLabel = BPMPooler.instance.ActivateObject(i, eventsToDisplay[i]);
+            bpmLabel.InitializeLabel();
 
             // w/o this the input field will stay on if you delete it while editing
             // leading to jank where the input field for the next event is visible

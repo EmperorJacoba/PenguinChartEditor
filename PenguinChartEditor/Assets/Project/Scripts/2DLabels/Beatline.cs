@@ -18,13 +18,11 @@ public class Beatline : MonoBehaviour, IPoolable
         }
         set
         {
-            if (!value) { destructionCoroutine = BeatlinePooler.instance.StartCoroutine(BeatlinePooler.instance.DestructionTimer(this)); }
-            else BeatlinePooler.instance.StopCoroutine(destructionCoroutine);
             gameObject.SetActive(value);
         }
     }
 
-    Coroutine destructionCoroutine;
+    public Coroutine destructionCoroutine { get; set; }
 
     #region Components
 

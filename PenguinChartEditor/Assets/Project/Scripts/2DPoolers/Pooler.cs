@@ -6,6 +6,9 @@ public interface IPoolable
 {
     // needed for DeactivateUnused()
     bool Visible { get; set; }
+    int Tick { get; set; }
+    Coroutine destructionCoroutine { get; set; }
+    
 }
 
 // Adapted from Unity's intro to object pooling
@@ -29,13 +32,20 @@ public abstract class Pooler<T> : MonoBehaviour where T : MonoBehaviour, IPoolab
     /// </summary>
     /// <param name="index">The target object number.</param>
     /// <returns>The requested object.</returns>
-    public T GetObject(int index)
+    public T ActivateObject(int index, int activationTick)
     {
         while (eventObjects.Count <= index)
         {
             CreateNew();
         }
         T @object = eventObjects[index];
+
+        if (@object.destructionCoroutine != null)
+            StopCoroutine(@object.destructionCoroutine);
+
+        @object.Visible = true;
+        @object.Tick = activationTick;
+
         return @object;
     }
 
@@ -49,6 +59,7 @@ public abstract class Pooler<T> : MonoBehaviour where T : MonoBehaviour, IPoolab
         for (int i = lastIndex; i < eventObjects.Count; i++)
         {
             eventObjects[i].Visible = false;
+            eventObjects[i].destructionCoroutine = StartCoroutine(DestructionTimer(eventObjects[i]));
         }
     }
 
@@ -63,8 +74,11 @@ public abstract class Pooler<T> : MonoBehaviour where T : MonoBehaviour, IPoolab
     {
         yield return new WaitForSeconds(5.0f);
 
-        eventObjects.Remove(@object);
+        if (@object != null && !@object.Visible)
+        {
+            eventObjects.Remove(@object);
 
-        if (@object != null) Destroy(@object.gameObject);
+            if (@object != null) Destroy(@object.gameObject);
+        }
     }
 }

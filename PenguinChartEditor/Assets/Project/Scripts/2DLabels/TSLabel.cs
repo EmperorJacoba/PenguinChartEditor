@@ -17,6 +17,7 @@ public class TSLabel : Label<TSData>, IPoolable
     public override MoveData<TSData> GetMoveData() => moveData;
     public override void RefreshEvents() => TSLane.instance.UpdateEvents();
     public override IPreviewer EventPreviewer => TSPreviewer.instance;
+    public Coroutine destructionCoroutine { get; set; }
 
     #endregion
 

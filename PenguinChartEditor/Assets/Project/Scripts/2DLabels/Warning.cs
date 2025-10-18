@@ -7,6 +7,7 @@ public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     [SerializeField] RectTransform rectTransform;
     public void OnPointerEnter(PointerEventData eventData) => Tooltip.NewTooltip(warningDescriptions[type]);
     public void OnPointerExit(PointerEventData eventData) => Tooltip.Deactivate();
+    public Coroutine destructionCoroutine { get; set; }
 
     public void InitializeWarning(WarningType warningType)
     {
@@ -14,6 +15,8 @@ public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
 
         gameObject.SetActive(true);
     }
+
+    public int Tick { get; set; }
 
     public bool Visible
     {

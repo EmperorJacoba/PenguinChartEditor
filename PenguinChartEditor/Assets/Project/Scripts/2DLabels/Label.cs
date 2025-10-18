@@ -76,9 +76,8 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         ConcludeManualEdit();
     }
 
-    public virtual void SetLabelActive()
+    public virtual void InitializeLabel()
     {
-        Visible = true;
         LabelText = ConvertDataToPreviewString();
         Selected = CheckForSelection();
     }

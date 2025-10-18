@@ -20,9 +20,8 @@ public class TSLane : Lane<TSData>
         int i;
         for (i = 0; i < eventsToDisplay.Count; i++)
         {
-            var tsLabel = TSPooler.instance.GetObject(i);
-            tsLabel.Tick = eventsToDisplay[i];
-            tsLabel.SetLabelActive();
+            var tsLabel = TSPooler.instance.ActivateObject(i, eventsToDisplay[i]);
+            tsLabel.InitializeLabel();
 
             double percentOfScreen = (Tempo.ConvertTickTimeToSeconds(eventsToDisplay[i]) - Waveform.startTime) / Waveform.timeShown;
 
@@ -30,9 +29,11 @@ public class TSLane : Lane<TSData>
 
             if (!TimeSignature.IsEventValid(eventsToDisplay[i]))
             {
-                var tsWarningAlert = WarningPooler.instance.GetObject(warningCount);
+                var tsWarningAlert = WarningPooler.instance.ActivateObject(warningCount, eventsToDisplay[i]);
+
                 tsWarningAlert.InitializeWarning(Warning.WarningType.invalidTimeSignature);
                 tsWarningAlert.UpdatePosition(percentOfScreen, boundaryReference.rect.height);
+
                 warningCount++;
             }
         }
