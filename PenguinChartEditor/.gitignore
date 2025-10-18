@@ -71,3 +71,8 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+/PenguinChartEditor/.vsconfig
+/PenguinChartEditor/.vs
+/PenguinChartEditor/ProjectSettings/Packages/com.unity.probuilder/Settings.json
+/PenguinChartEditor/ProjectSettings/ShaderGraphSettings.asset
