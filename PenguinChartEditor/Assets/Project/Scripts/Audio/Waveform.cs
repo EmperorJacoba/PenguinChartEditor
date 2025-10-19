@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -126,7 +127,9 @@ public class Waveform : MonoBehaviour
 
     void Start()
     {
+        Debug.Log($"W1 {Time.realtimeSinceStartup}");
         InitializeWaveformData();
+        Debug.Log($"W2 {Time.realtimeSinceStartup}");
 
         // Invisible by default so that a bunch of dropdown defaulting logic isn't needed
         // Just have user select it
@@ -137,6 +140,7 @@ public class Waveform : MonoBehaviour
 
         var boundsRectTransform = boundaryReference.GetComponent<RectTransform>();
         rt.pivot = boundsRectTransform.pivot;
+        Debug.Log($"W3 {Time.realtimeSinceStartup}");
     }
     #endregion
 
@@ -147,10 +151,8 @@ public class Waveform : MonoBehaviour
     /// </summary>
     void InitializeWaveformData()
     {
-        foreach (var pair in Chart.Metadata.StemPaths)
-        {
-            UpdateWaveformData(pair.Key);
-        }
+        WaveformData = new();
+        Parallel.ForEach(Chart.Metadata.StemPaths.Keys, item => UpdateWaveformData(item));
     }
 
     /// <summary>
@@ -160,11 +162,6 @@ public class Waveform : MonoBehaviour
     public void UpdateWaveformData(StemType stem) // pass in file path here later
     {
         float[] stemWaveformData = AudioManager.GetAudioSamples(stem, out long bytesPerSample);
-
-        if (WaveformData.ContainsKey(stem))
-        {
-            WaveformData.Remove(stem);
-        } // Flush current value to allow for new one
 
         WaveformData.Add(stem, new(stemWaveformData, bytesPerSample));
     }
