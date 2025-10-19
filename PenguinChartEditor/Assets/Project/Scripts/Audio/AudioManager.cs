@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using Un4seen.Bass;
 using System.Collections.Generic;
+using System.Linq;
 
 public class AudioManager : MonoBehaviour
 {
@@ -106,6 +107,8 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    const int MAXIMUM_DATA_BUFFER = 268435455;
+
     /// <summary>
     /// Simplify an audio file into x samples taken every ArrayResolution milliseconds from the audio file.
     /// </summary>
@@ -126,53 +129,43 @@ public class AudioManager : MonoBehaviour
             BASSFlag.BASS_STREAM_PRESCAN
         );
 
-        if (currentTrackStream == 0)
-        {
-            throw new ArgumentException("File could not be loaded");
-        }
+        if (currentTrackStream == 0) throw new ArgumentException($"File {stem} could not be loaded");
 
         var songLengthBytes = Bass.BASS_ChannelGetLength(currentTrackStream);
-        var floatArrayLength = songLengthBytes / 4; // # of vals in float[] array will be 1/4 of this bc 4 bytes per 32 bit float
 
-        float[] allSamples = new float[floatArrayLength];
-        Bass.BASS_ChannelGetData(currentTrackStream, allSamples, (int)songLengthBytes);
+        long sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, ARRAY_RESOLUTION) / sizeof(float);
+        bytesPerSample = sampleIntervalBytes * 2;
 
-        // averages left and right channels for more accurate waveform representation
-        allSamples = ConvertStereoSamplestoMono(allSamples); // manual conversion b/c BASS flag only works for mp3 files
-
-        long sampleIntervalBytes = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, ARRAY_RESOLUTION) / 8; // Number of bytes in x seconds of audio (/4) - div by extra 2 because converted to mono audio
-        bytesPerSample = sampleIntervalBytes * 4; // multiply by 4 to undo /2 for floats and /2 for mono 
-        // ^ this is *4 and not *8 because 16 bit is still 2 bytes
-
-        var compressedArraySize = (int)Math.Floor((double)songLengthBytes / sampleIntervalBytes) / 8;
+        var compressedArraySize = (int)Math.Floor((double)songLengthBytes / sampleIntervalBytes) / sizeof(float);
 
         float[] waveformData = new float[compressedArraySize]; // Array of vals to hold compressed data
 
-        for (var i = 0; i < compressedArraySize; i++)
+        long bytesUnread = songLengthBytes;
+        long currentWaveformDataPosition = 0;
+        var buffer = Bass.BASS_ChannelSeconds2Bytes(currentTrackStream, 10);
+
+        while (bytesUnread > 0)
         {
-            waveformData[i] = Math.Abs(allSamples[i * sampleIntervalBytes]); // Select abs val of sample every 1 ms from all the samples and store it in the compressed array
+            var bytesToRead = Math.Min(buffer, bytesUnread);
+
+            float[] stereoSamples = new float[bytesToRead / sizeof(float)];
+            Bass.BASS_ChannelGetData(currentTrackStream, stereoSamples, (int)bytesToRead);
+
+            int sample;
+            for (sample = 0; sample * sampleIntervalBytes + 1 < stereoSamples.Length && currentWaveformDataPosition + sample < waveformData.Length; sample++)
+            {
+                var averagedMonoSample = (stereoSamples[sample * sampleIntervalBytes] + stereoSamples[sample * sampleIntervalBytes + 1]) / 2;
+                waveformData[currentWaveformDataPosition + sample] = Math.Abs(averagedMonoSample);
+            }
+
+            bytesUnread -= bytesToRead;
+            currentWaveformDataPosition += sample;
+            Bass.BASS_ChannelSetPosition(currentTrackStream, songLengthBytes - bytesUnread, BASSMode.BASS_POS_BYTE); // length - unread = read
         }
 
         // BASS is unmanaged; memory must be manually freed
         Bass.BASS_StreamFree(currentTrackStream);
-
         return waveformData;
-    }
-
-    /// <summary>
-    /// Converts stereo samples to mono samples to get a more accurate waveform.
-    /// </summary>
-    /// <param name="stereoSamples"></param>
-    /// <returns></returns>
-    private static float[] ConvertStereoSamplestoMono(float[] stereoSamples)
-    {
-        var monoSamples = new float[stereoSamples.Length / 2]; // stereo samples have two data points for every sample (L+R track)
-                                                               // so mono will have half the number of samples
-        for (var i = 0; i < monoSamples.Length; i++)
-        {
-            monoSamples[i] = (stereoSamples[i * 2] + stereoSamples[i * 2 + 1]) / 2; // average both stereo samples
-        }
-        return monoSamples;
     }
 
     /// <summary>
