@@ -50,7 +50,9 @@ public class Chart : MonoBehaviour
         ChartPath = StandaloneFileBrowser.OpenFilePanel($"Open .chart file to load from.", "", new[] { new ExtensionFilter(".chart files ", "chart") }, false)[0];
         FolderPath = ChartPath[..ChartPath.LastIndexOf("\\")];
 
+        Debug.Log($"1: {Time.realtimeSinceStartup}");
         ChartParser chartParser = new(ChartPath);
+        Debug.Log($"2: {Time.realtimeSinceStartup}");
 
         Resolution = chartParser.resolution;
         Metadata = chartParser.metadata;

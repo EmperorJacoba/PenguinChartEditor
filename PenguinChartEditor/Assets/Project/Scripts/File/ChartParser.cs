@@ -1,7 +1,13 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+using UnityEngine;
+using static System.Windows.Forms.LinkLabel;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class ChartParser
 {
@@ -42,8 +48,8 @@ public class ChartParser
     const int IDENTIFIER_INDEX = 0;
     const int NOTE_IDENTIFIER_INDEX = 1;
     const int SUSTAIN_INDEX = 2;
-    const string FORCED_SUBSTRING = "N 5";
-    const string TAP_SUBSTRING = "N 6";
+    const string FORCED_SUBSTRING = "N 5 0";
+    const string TAP_SUBSTRING = "N 6 0";
     const int EVENT_DATA_INDEX = 1;
     const int FORCED_IDENTIFIER = 5;
     const int TAP_IDENTIFIER = 6;
@@ -77,28 +83,27 @@ public class ChartParser
     {
         var eventGroups = FormatEventSections();
 
-        foreach (var eventGroup in eventGroups)
-        {
-            switch (eventGroup.EventGroupIdentifier)
-            {
-                case ChartEventGroup.HeaderType.Song: // required (needs exception handling)
-                    (metadata, resolution) = ParseSongMetadata(eventGroup);
-                    break;
-                case ChartEventGroup.HeaderType.SyncTrack: // required (needs exception handling)
-                    (bpmEvents, tsEvents) = ParseSyncTrack(eventGroup);
-                    break;
-                case ChartEventGroup.HeaderType.Events:
-                    // events parse
-                    break;
-                default:
-                    instruments.Add(ParseInstrumentGroup(eventGroup));
-                    break;
-            }
-        }
+        Parallel.ForEach(eventGroups, item => ProcessEventGroup(item));
 
         // also need to parse chart stems
         // find properly named files - add to stems
         // find other audio files - ask to assign
+    }
+
+    void ProcessEventGroup(ChartEventGroup eventGroup)
+    {
+        switch (eventGroup.EventGroupIdentifier)
+        {
+            case ChartEventGroup.HeaderType.SyncTrack: // required (needs exception handling)
+                (bpmEvents, tsEvents) = ParseSyncTrack(eventGroup);
+                break;
+            case ChartEventGroup.HeaderType.Events:
+                // events parse
+                break;
+            default:
+                instruments.Add(ParseInstrumentGroup(eventGroup));
+                break;
+        }
     }
 
     #endregion
@@ -107,15 +112,24 @@ public class ChartParser
 
     List<ChartEventGroup> FormatEventSections()
     {
+        List<int> sectionHeaderCandidates = Enumerable.Range(0, chartAsLines.Length).Where(i => chartAsLines[i].Contains("[")).ToList();
+
         List<ChartEventGroup> identifiedSections = new();
-        for (int lineNumber = 0; lineNumber < chartAsLines.Length; lineNumber++)
+
+        if (sectionHeaderCandidates.Contains(0))
         {
-            if (chartAsLines[lineNumber].Contains("["))
-            {
-                var eventGroup = InitializeEventGroup(lineNumber);
-                if (eventGroup != null) identifiedSections.Add(eventGroup);
-            }
+            sectionHeaderCandidates.Remove(0);
+
+            var songData = InitializeSongGroup(0);
+            (metadata, resolution) = ParseSongMetadata(songData);
         }
+
+        foreach(var candidate in sectionHeaderCandidates)
+        {
+            var eventGroup = InitializeEventGroup(candidate);
+            if (eventGroup != null) identifiedSections.Add(eventGroup);
+        }
+
         return identifiedSections;
     }
 
@@ -140,26 +154,25 @@ public class ChartParser
             throw new ArgumentException($"{identifiedSection.EventGroupIdentifier} is not enclosed properly. {HELPFUL_REMINDER}");
 
         lineIndex += 2; // line with first bit of data
-        List<string> eventData = new();
+        List<KeyValuePair<int,string>> eventData = new();
         string workingLine = chartAsLines[lineIndex];
 
         // this needs more exception handling (not properly enclosed sections, etc.)
         while (workingLine != "}" && lineIndex < chartAsLines.Length - 1)
         {
-            eventData.Add(workingLine);
+            var parts = workingLine.Split(" = ", 2);
+            if (!int.TryParse(parts[0].Trim(), out int tick))
+            {
+                throw new ArgumentException($"Problem parsing tick {parts[0].Trim()}");
+            }
+
+            eventData.Add(new(tick, parts[1]));
 
             lineIndex++;
             workingLine = chartAsLines[lineIndex];
         }
 
-        var kvpConversion = eventData.Select(line =>
-        {
-            var parts = line.Split(" = ", 2);
-            return new KeyValuePair<string, string>(parts[0].Trim(), parts[1].Trim());
-        }).ToList();
-
-
-        identifiedSection.data = kvpConversion;
+        identifiedSection.data = eventData;
         return identifiedSection;
     }
 
@@ -168,10 +181,9 @@ public class ChartParser
     /// </summary>
     /// <param name="iniPath">File path of the .ini file.</param>
     /// <returns>ChartEventGroup with data from .ini file.</returns>
-    ChartEventGroup InitializeEventGroup(string iniPath)
+    SongDataGroup InitializeIniGroup(string iniPath)
     {
         var iniData = File.ReadAllLines(iniPath);
-        ChartEventGroup iniGroup = new(ChartEventGroup.HeaderType.Song);
 
         List<KeyValuePair<string, string>> eventData = new();
 
@@ -183,8 +195,32 @@ public class ChartParser
                 eventData.Add(new KeyValuePair<string, string>(lineParts[0].Trim(), lineParts[1].Trim()));
         }
 
-        iniGroup.data = eventData;
+        SongDataGroup iniGroup = new(eventData);
+
         return iniGroup;
+    }
+
+    SongDataGroup InitializeSongGroup(int lineIndex)
+    {
+        if (chartAsLines[lineIndex + 1] != "{") // line with { to mark beginning of section
+            throw new ArgumentException($"[Song] is not enclosed properly. {HELPFUL_REMINDER}");
+
+        lineIndex += 2; // line with first bit of data
+
+        List<KeyValuePair<string, string>> eventData = new();
+        string workingLine = chartAsLines[lineIndex];
+
+        // this needs more exception handling (not properly enclosed sections, etc.)
+        while (workingLine != "}" && lineIndex < chartAsLines.Length - 1)
+        {
+            var parts = workingLine.Split(" = ", 2);
+            eventData.Add(new(parts[0].Trim(), parts[1].Trim()));
+
+            lineIndex++;
+            workingLine = chartAsLines[lineIndex];
+        }
+
+        return new(eventData);
     }
 
     #endregion
@@ -197,12 +233,12 @@ public class ChartParser
     /// <param name="songEventGroup">ChartEventGroup object with [Song] header.</param>
     /// <returns>Constructed Metadata, resolution</returns>
     /// <exception cref="ArgumentException"></exception>
-    (Metadata, int) ParseSongMetadata(ChartEventGroup songEventGroup)
+    (Metadata, int) ParseSongMetadata(SongDataGroup songEventGroup)
     {
         Metadata metadata = new();
         if (File.Exists($"{Chart.FolderPath}/song.ini")) // read from ini if exists (most reliable scenario)
         {
-            var iniEventGroup = InitializeEventGroup($"{Chart.FolderPath}/song.ini");
+            var iniEventGroup = InitializeIniGroup($"{Chart.FolderPath}/song.ini");
 
             foreach (var kvp in iniEventGroup.data)
             {
@@ -264,12 +300,9 @@ public class ChartParser
             if (!entry.Value.Contains(TEMPO_EVENT_INDICATOR) && !entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
                 continue;
 
-            if (!int.TryParse(entry.Key, out int tickValue))
-                throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid Key. {HELPFUL_REMINDER}");
-
             if (entry.Value.Contains(TEMPO_EVENT_INDICATOR))
             {
-                tempoTickTimeKeys.Add(tickValue);
+                tempoTickTimeKeys.Add(entry.Key);
 
                 var eventData = entry.Value;
                 eventData = eventData.Replace($"{TEMPO_EVENT_INDICATOR} ", ""); // SPACE IS VERY IMPORTANT HERE
@@ -298,7 +331,7 @@ public class ChartParser
                     denominator = (int)Math.Pow(TS_POWER_CONVERSION_NUMBER, denominatorLog2);
                 }
 
-                tsEvents.Add(tickValue, new TSData(numerator, denominator));
+                tsEvents.Add(entry.Key, new TSData(numerator, denominator));
             }
         }
 
@@ -354,6 +387,8 @@ public class ChartParser
     FiveFretInstrument ParseFiveFret(ChartEventGroup chartEventGroup)
     {
         SortedDictionary<int, FiveFretNoteData>[] lanes = new SortedDictionary<int, FiveFretNoteData>[6] { new(), new(), new(), new(), new(), new() };
+        int[] lastNoteTicks = new int[6] {-hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff };
+
         SortedDictionary<int, SpecialData> starpower = new();
         SortedDictionary<int, LocalEventData> localEvents = new();
 
@@ -369,107 +404,113 @@ public class ChartParser
 
         DifficultyType difficulty = chartEventGroup.GetDifficulty();
 
-        for (int i = 0; i < chartEventGroup.data.Count; i++)
-        {
-            var entry = chartEventGroup.data[i];
-            if (!int.TryParse(entry.Key, out int tickValue))
-                throw new ArgumentException($"[{entry.Key} = {entry.Value}]. Error type: Invalid Key. {HELPFUL_REMINDER}");
+        HashSet<int> uniqueTicks = chartEventGroup.data.Select(item => item.Key).ToHashSet();
 
-            // 0 will be identifier
-            // 1 will be type for non-events
-            // 2 will be sustain for non-events
-            // for events 0 will be E and 1 will be data
-            var values = entry.Value.Split(' ');
+        foreach (var uniqueTick in uniqueTicks)
+        {
+            var eventsAtTick = chartEventGroup.data.Where(item => item.Key == uniqueTick).Select(item => item.Value).ToList();
+            bool tapModifier = false;
+            bool forcedModifier = false;
+
+            if (eventsAtTick.Contains($"{FORCED_SUBSTRING}"))
+            {
+                forcedModifier = true;
+                eventsAtTick.Remove($"{FORCED_SUBSTRING}");
+            }
+
+            if (eventsAtTick.Contains($"{TAP_SUBSTRING}"))
+            {
+                tapModifier = true;
+                eventsAtTick.Remove($"{TAP_SUBSTRING}");
+            }
+
+            var noteCount = 0;
+            for (int i = 0; i < eventsAtTick.Count; i++)
+            {
+                if (eventsAtTick[i].Contains("N")) noteCount++;
+            }
 
             int noteIdentifier;
             int sustain;
-            switch (values[IDENTIFIER_INDEX])
+            foreach (var @event in eventsAtTick)
             {
-                case NOTE_INDICATOR:
+                var values = @event.Split(' ');
+                switch (values[IDENTIFIER_INDEX])
+                {
+                    case NOTE_INDICATOR:
 
-                    if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
-                        throw new ArgumentException($"Invalid note identifier for {instrument} @ tick {tickValue}: {values[NOTE_IDENTIFIER_INDEX]}");
+                        if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
+                            throw new ArgumentException($"Invalid note identifier for {instrument} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
 
-                    if (noteIdentifier == FORCED_IDENTIFIER || noteIdentifier == TAP_IDENTIFIER || noteIdentifier > LAST_VALID_IDENTIFIER) continue;
+                        if (noteIdentifier > LAST_VALID_IDENTIFIER) continue;
 
-                    if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
-                        throw new ArgumentException($"Invalid sustain for {instrument} @ tick {tickValue}: {values[SUSTAIN_INDEX]}");
+                        if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
+                            throw new ArgumentException($"Invalid sustain for {instrument} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
 
-                    FiveFretInstrument.LaneOrientation lane;
-                    if (noteIdentifier != OPEN_IDENTIFIER)
-                        lane = (FiveFretInstrument.LaneOrientation)noteIdentifier;
-                    else lane = FiveFretInstrument.LaneOrientation.open; // open identifier is not the same as lane orientation (index of lane dictionary)
+                        FiveFretInstrument.LaneOrientation lane;
+                        if (noteIdentifier != OPEN_IDENTIFIER)
+                            lane = (FiveFretInstrument.LaneOrientation)noteIdentifier;
+                        else lane = FiveFretInstrument.LaneOrientation.open; // open identifier is not the same as lane orientation (index of lane dictionary)
 
-                    // looks wack, but this just whittles down the main KVP list into just forced & tap identifiers for this tick
-                    var modifierEventsAtNoteIndex = chartEventGroup.data.Where(
-                        eventPair => eventPair.Key == chartEventGroup.data[i].Key // get only events at this tick
-                        && (eventPair.Value.Contains(FORCED_SUBSTRING) || eventPair.Value.Contains(TAP_SUBSTRING)) // filter for taps and hopos
-                        ).Select(kvp =>
+                        // calculate if note is strum or tap or hopo
+
+                        FiveFretNoteData.FlagType flagType;
+                        if (tapModifier)
                         {
-                            int lastSpace = kvp.Value.LastIndexOf(" ");
-                            return lastSpace >= 0 ? kvp.Value[..lastSpace] : kvp.Value;
-                        }).ToList(); // get only the values sans 0 sustain, keys are irrelevant 
-
-                    // calculate if note is strum or tap or hopo
-
-                    FiveFretNoteData.FlagType flagType;
-                    if (modifierEventsAtNoteIndex.Contains(TAP_SUBSTRING))
-                    {
-                        flagType = FiveFretNoteData.FlagType.tap; // tap overrides any hopo/forcing logic
-                    }
-                    else
-                    {
-                        bool hopoEligible = false;
-                        for (var j = 0; j < lanes.Length - 1; j++)
+                            flagType = FiveFretNoteData.FlagType.tap; // tap overrides any hopo/forcing logic
+                        }
+                        else
                         {
-                            if ((FiveFretInstrument.LaneOrientation)j == lane) continue;
+                            bool hopoEligible = false;
 
-                            var closeEvents = lanes[j].Where
-                            (kvp => tickValue - kvp.Key < hopoCutoff && kvp.Key != tickValue) // hopo eligibility does not apply to chord note groups (e.g a green and red note on the same tick)
-                            .ToList();
-
-                            if (closeEvents.Count() > 0)
+                            for (var j = 0; j < lastNoteTicks.Length; j++)
                             {
-                                hopoEligible = true;
-                                break;
+                                if ((FiveFretInstrument.LaneOrientation)j == lane || lastNoteTicks[j] == uniqueTick) continue;
+
+                                if (uniqueTick - lastNoteTicks[j] < hopoCutoff && noteCount == 1)
+                                {
+                                    hopoEligible = true;
+                                    break;
+                                }
                             }
+
+                            if (forcedModifier)
+                            {
+                                hopoEligible = !hopoEligible;
+                            }
+
+                            flagType = hopoEligible ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
                         }
-                        if (modifierEventsAtNoteIndex.Contains(FORCED_SUBSTRING))
-                        {
-                            hopoEligible = !hopoEligible;
-                        }
-                        flagType = hopoEligible ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-                    }
 
-                    var noteData = new FiveFretNoteData(sustain, flagType);
+                        var noteData = new FiveFretNoteData(sustain, flagType);
 
-                    lanes[(int)lane].Add(tickValue, noteData);
+                        lanes[(int)lane].Add(uniqueTick, noteData);
+                        lastNoteTicks[(int)lane] = uniqueTick;
 
+                        break;
+                    case SPECIAL_INDICATOR:
 
+                        if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
+                            throw new ArgumentException($"Invalid special identifier for {instrument} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
 
-                    break;
-                case SPECIAL_INDICATOR:
+                        if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
+                            throw new ArgumentException($"Invalid sustain for {instrument} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
 
-                    if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
-                        throw new ArgumentException($"Invalid special identifier for {instrument} @ tick {tickValue}: {values[NOTE_IDENTIFIER_INDEX]}");
+                        if (noteIdentifier != STARPOWER_INDICATOR) continue; // should only have starpower indicator, no fills or anything
 
-                    if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
-                        throw new ArgumentException($"Invalid sustain for {instrument} @ tick {tickValue}: {values[SUSTAIN_INDEX]}");
+                        starpower.Add(uniqueTick, new SpecialData(sustain, SpecialData.EventType.starpower));
 
-                    if (noteIdentifier != STARPOWER_INDICATOR) continue; // should only have starpower indicator, no fills or anything
+                        break;
+                    case EVENT_INDICATOR:
+                        if (!Enum.TryParse(typeof(LocalEventData.EventType), values[EVENT_DATA_INDEX], true, out var localEvent))
+                            throw new ArgumentException($"Error at {uniqueTick}: Unsupported event type: {values[EVENT_DATA_INDEX]}");
 
-                    starpower.Add(tickValue, new SpecialData(sustain, SpecialData.EventType.starpower));
+                        localEvents.Add(uniqueTick, new LocalEventData((LocalEventData.EventType)localEvent));
 
-                    break;
-                case EVENT_INDICATOR:
-                    if (!Enum.TryParse(typeof(LocalEventData.EventType), values[EVENT_DATA_INDEX], true, out var localEvent))
-                        throw new ArgumentException($"Error at {tickValue}: Unsupported event type: {values[EVENT_DATA_INDEX]}");
-
-                    localEvents.Add(tickValue, new LocalEventData((LocalEventData.EventType)localEvent));
-
-                    break;
-                case DEPRECATED_HAND_INDICATOR:
-                    continue;
+                        break;
+                    case DEPRECATED_HAND_INDICATOR:
+                        continue;
+                }
             }
         }
 
@@ -494,7 +535,7 @@ class ChartEventGroup
     /// </summary>
     public enum HeaderType
     {
-        Song = 0,
+        //Song = 0,
         SyncTrack = 1,
         Events = 2,
 
@@ -589,11 +630,21 @@ class ChartEventGroup
     }
 
     public HeaderType EventGroupIdentifier;
-    public List<KeyValuePair<string, string>> data;
+    public List<KeyValuePair<int, string>> data;
 
     public ChartEventGroup(HeaderType identifier)
     {
         EventGroupIdentifier = identifier;
+    }
+}
+
+class SongDataGroup
+{
+    public List<KeyValuePair<string, string>> data;
+
+    public SongDataGroup(List<KeyValuePair<string, string>> data)
+    {
+        this.data = data;
     }
 }
 
