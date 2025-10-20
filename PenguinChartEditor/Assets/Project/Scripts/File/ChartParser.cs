@@ -1,13 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
-using UnityEngine;
-using static System.Windows.Forms.LinkLabel;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class ChartParser
 {
@@ -15,6 +10,7 @@ public class ChartParser
 
     const string QUOTES_STRING = "\"";
     const string YEAR_COMMA = ", ";
+    const int SONG_HEADER_LOCATION = 0;
 
     #endregion
 
@@ -51,8 +47,6 @@ public class ChartParser
     const string FORCED_SUBSTRING = "N 5 0";
     const string TAP_SUBSTRING = "N 6 0";
     const int EVENT_DATA_INDEX = 1;
-    const int FORCED_IDENTIFIER = 5;
-    const int TAP_IDENTIFIER = 6;
     const int LAST_VALID_IDENTIFIER = 7;
     const int OPEN_IDENTIFIER = 7;
     const int STARPOWER_INDICATOR = 2;
@@ -112,25 +106,31 @@ public class ChartParser
 
     List<ChartEventGroup> FormatEventSections()
     {
+        // "[" begins a section header => begins a section of interest to parse (details are validated later)
         List<int> sectionHeaderCandidates = Enumerable.Range(0, chartAsLines.Length).Where(i => chartAsLines[i].Contains("[")).ToList();
 
         List<ChartEventGroup> identifiedSections = new();
 
-        if (sectionHeaderCandidates.Contains(0))
+        // song data is processed seperately (string, string) vs (int, string) with all other sections
+        // get it done first to get resolution handled => essential for sync track and others
+        if (sectionHeaderCandidates.Contains(SONG_HEADER_LOCATION))
         {
-            sectionHeaderCandidates.Remove(0);
+            sectionHeaderCandidates.Remove(SONG_HEADER_LOCATION);
 
-            var songData = InitializeSongGroup(0);
+            var songData = InitializeSongGroup(SONG_HEADER_LOCATION);
             (metadata, resolution) = ParseSongMetadata(songData);
         }
 
-        foreach(var candidate in sectionHeaderCandidates)
-        {
-            var eventGroup = InitializeEventGroup(candidate);
-            if (eventGroup != null) identifiedSections.Add(eventGroup);
-        }
+        Parallel.ForEach(sectionHeaderCandidates, item => identifiedSections.Add(FormatEventSection(item)));
 
         return identifiedSections;
+    }
+
+    ChartEventGroup FormatEventSection(int lineIndex)
+    {
+        var eventGroup = InitializeEventGroup(lineIndex);
+        if (eventGroup != null) return eventGroup;
+        return null;
     }
 
     /// <summary>
@@ -154,10 +154,10 @@ public class ChartParser
             throw new ArgumentException($"{identifiedSection.EventGroupIdentifier} is not enclosed properly. {HELPFUL_REMINDER}");
 
         lineIndex += 2; // line with first bit of data
+
         List<KeyValuePair<int,string>> eventData = new();
         string workingLine = chartAsLines[lineIndex];
 
-        // this needs more exception handling (not properly enclosed sections, etc.)
         while (workingLine != "}" && lineIndex < chartAsLines.Length - 1)
         {
             var parts = workingLine.Split(" = ", 2);
@@ -386,8 +386,11 @@ public class ChartParser
 
     FiveFretInstrument ParseFiveFret(ChartEventGroup chartEventGroup)
     {
+        // this is where all parsed data ends up, data is processed lane-by-lane
         SortedDictionary<int, FiveFretNoteData>[] lanes = new SortedDictionary<int, FiveFretNoteData>[6] { new(), new(), new(), new(), new(), new() };
-        int[] lastNoteTicks = new int[6] {-hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff };
+
+        // this is for simplifying hopo checks - initialized with -hopoCutoff to prevent the first note from starting as a hopo
+        int[] lastNoteTicks = new int[6] { -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff };
 
         SortedDictionary<int, SpecialData> starpower = new();
         SortedDictionary<int, LocalEventData> localEvents = new();
@@ -451,8 +454,6 @@ public class ChartParser
                         if (noteIdentifier != OPEN_IDENTIFIER)
                             lane = (FiveFretInstrument.LaneOrientation)noteIdentifier;
                         else lane = FiveFretInstrument.LaneOrientation.open; // open identifier is not the same as lane orientation (index of lane dictionary)
-
-                        // calculate if note is strum or tap or hopo
 
                         FiveFretNoteData.FlagType flagType;
                         if (tapModifier)
@@ -535,7 +536,7 @@ class ChartEventGroup
     /// </summary>
     public enum HeaderType
     {
-        //Song = 0,
+        //Song = 0, => moved to SongDataGroup
         SyncTrack = 1,
         Events = 2,
 
@@ -638,6 +639,7 @@ class ChartEventGroup
     }
 }
 
+// ChartEventGroup but formatted for .ini and [Song] sections 
 class SongDataGroup
 {
     public List<KeyValuePair<string, string>> data;
