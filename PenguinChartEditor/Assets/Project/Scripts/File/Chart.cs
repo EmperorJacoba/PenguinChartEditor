@@ -52,8 +52,9 @@ public class Chart : MonoBehaviour
         FolderPath = ChartPath[..ChartPath.LastIndexOf("\\")];
         Debug.Log($"2 {Time.realtimeSinceStartup}");
 
+        Debug.Log($"1: {Time.realtimeSinceStartup}");
         ChartParser chartParser = new(ChartPath);
-        Debug.Log($"3 {Time.realtimeSinceStartup}");
+        Debug.Log($"2: {Time.realtimeSinceStartup}");
 
         Resolution = chartParser.resolution;
         Metadata = chartParser.metadata;
