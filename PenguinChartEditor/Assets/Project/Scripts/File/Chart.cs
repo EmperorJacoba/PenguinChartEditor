@@ -47,14 +47,11 @@ public class Chart : MonoBehaviour
 
     public void LoadFile()
     {
-        Debug.Log($"1 {Time.realtimeSinceStartup}");
         ChartPath = StandaloneFileBrowser.OpenFilePanel($"Open .chart file to load from.", "", new[] { new ExtensionFilter(".chart files ", "chart") }, false)[0];
         FolderPath = ChartPath[..ChartPath.LastIndexOf("\\")];
-        Debug.Log($"2 {Time.realtimeSinceStartup}");
+        
 
-        Debug.Log($"1: {Time.realtimeSinceStartup}");
         ChartParser chartParser = new(ChartPath);
-        Debug.Log($"2: {Time.realtimeSinceStartup}");
 
         Resolution = chartParser.resolution;
         Metadata = chartParser.metadata;
@@ -67,7 +64,6 @@ public class Chart : MonoBehaviour
                 Metadata.StemPaths.Add(key, targetFilePath);
             }
         }
-        Debug.Log($"4 {Time.realtimeSinceStartup}");
 
         Tempo.Events = chartParser.bpmEvents;
         TimeSignature.Events = chartParser.tsEvents;
@@ -82,7 +78,6 @@ public class Chart : MonoBehaviour
         {
             TimeSignature.Events.Add(0, new TSData(4, 4));
         }
-        Debug.Log($"5 {Time.realtimeSinceStartup}");
     }
 
     void Awake()
@@ -99,10 +94,6 @@ public class Chart : MonoBehaviour
         LoadFile();
 
         AudioManager.PlaybackStateChanged += x => { editMode = !AudioManager.AudioPlaying; };
-    }
-    void Start()
-    {
-        Debug.Log($"Finished in {Time.realtimeSinceStartup}");
     }
 
     public static void Refresh()

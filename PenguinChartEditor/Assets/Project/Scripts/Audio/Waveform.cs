@@ -127,9 +127,7 @@ public class Waveform : MonoBehaviour
 
     void Start()
     {
-        Debug.Log($"W1 {Time.realtimeSinceStartup}");
         InitializeWaveformData();
-        Debug.Log($"W2 {Time.realtimeSinceStartup}");
 
         // Invisible by default so that a bunch of dropdown defaulting logic isn't needed
         // Just have user select it
@@ -140,7 +138,6 @@ public class Waveform : MonoBehaviour
 
         var boundsRectTransform = boundaryReference.GetComponent<RectTransform>();
         rt.pivot = boundsRectTransform.pivot;
-        Debug.Log($"W3 {Time.realtimeSinceStartup}");
     }
     #endregion
 
