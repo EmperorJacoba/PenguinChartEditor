@@ -289,7 +289,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public static void ToggleAudioPlayback()
     {
-        Debug.Log(AudioPlaying);
         if (!AudioPlaying)
         {
             PlayAudio();
