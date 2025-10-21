@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using UnityEngine;
 
 public class LeftOptionsPanel : MonoBehaviour
 {
-    PanelType currentPanel = PanelType.tempoMapMain;
+    PanelConnector currentPanel;
 
     public List<PanelConnector> panels;
     public enum PanelType
@@ -14,11 +15,25 @@ public class LeftOptionsPanel : MonoBehaviour
         stemVolumeEditor = 1
     }
 
-    public void SwitchPanel(PanelType newPanel)
+    void Awake()
     {
-        if (newPanel == currentPanel) return;
+        currentPanel = panels[0];
+    }
 
-        // change panel displayed
+    public bool SwitchPanel(PanelType newPanel)
+    {
+        if (newPanel == currentPanel.panelType) return false;
+
+        var newPanelConnector = panels.Where(item => item.panelType == newPanel).ToList()[0];
+        var oldPanelConnector = panels[panels.IndexOf(currentPanel)];
+
+        oldPanelConnector.panelObject.SetActive(false);
+        newPanelConnector.panelObject.SetActive(true);
+
+        newPanelConnector.correspondingTab.SwitchToActive();
+        oldPanelConnector.correspondingTab.SwitchToInactive();
+        currentPanel = newPanelConnector;
+        return true;
     }
 }
 
@@ -27,4 +42,5 @@ public struct PanelConnector
 {
     public LeftOptionsPanel.PanelType panelType;
     public GameObject panelObject;
+    public LeftOptionsPanelTab correspondingTab;
 }
