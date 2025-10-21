@@ -1704,6 +1704,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 298357522}
+  - component: {fileID: 298357523}
   m_Layer: 5
   m_Name: Speed
   m_TagString: Untagged
@@ -1733,6 +1734,21 @@ RectTransform:
   m_AnchoredPosition: {x: -142.4325, y: -15.726791}
   m_SizeDelta: {x: 350, y: 87}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!114 &298357523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 298357521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d6c49ebaba52ba479dc696a9cafbd4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slider: {fileID: 129040216}
+  entryBox: {fileID: 537570158}
+  dataType: 2
 --- !u!1 &369433924
 GameObject:
   m_ObjectHideFlags: 0
@@ -1827,6 +1843,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 403324846}
+  - component: {fileID: 403324847}
   m_Layer: 5
   m_Name: Amplitude
   m_TagString: Untagged
@@ -1856,6 +1873,21 @@ RectTransform:
   m_AnchoredPosition: {x: -142.4325, y: 99.27312}
   m_SizeDelta: {x: 350, y: 87}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!114 &403324847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 403324845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d6c49ebaba52ba479dc696a9cafbd4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slider: {fileID: 1252915034}
+  entryBox: {fileID: 404017152}
+  dataType: 1
 --- !u!1 &404017150
 GameObject:
   m_ObjectHideFlags: 0
@@ -13450,6 +13482,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2133290965}
+  - component: {fileID: 2133290966}
   m_Layer: 5
   m_Name: Hyperspeed
   m_TagString: Untagged
@@ -13479,6 +13512,21 @@ RectTransform:
   m_AnchoredPosition: {x: -142.43251, y: 214.2732}
   m_SizeDelta: {x: 347.58, y: 87}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!114 &2133290966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2133290964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d6c49ebaba52ba479dc696a9cafbd4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slider: {fileID: 1243331546}
+  entryBox: {fileID: 1824017404}
+  dataType: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
