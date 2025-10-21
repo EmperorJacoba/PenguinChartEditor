@@ -10,14 +10,16 @@ public class StemVolumeScrollView : MonoBehaviour
     [SerializeField] GameObject volumeEditor;
     [SerializeField] RectTransform scrollViewContentRt;
     [SerializeField] ScrollRect scrollView;
+    const int BUFFER = -20;
 
     void Start()
     {
         var volumeEditorHeight = volumeEditor.GetComponent<RectTransform>().sizeDelta.y;
 
         // Create volume slider for each stem AND fit a scroll view perfectly around them!
-        // Set the height of the content rect transform so that it can fit all the volume sliders
-        scrollViewContentRt.sizeDelta = new Vector2(0, volumeEditorHeight * Chart.Metadata.StemPaths.Count);
+        // Set the height of the content rect transform so that it can fit all the volume sliders,
+        // plus a little bit so that the last slider isn't cut off
+        scrollViewContentRt.sizeDelta = new Vector2(0, volumeEditorHeight * Chart.Metadata.StemPaths.Count + (volumeEditorHeight / 2));
 
         int numEntries = 0;
         // Create a slider package for each stem the user has
@@ -28,16 +30,14 @@ public class StemVolumeScrollView : MonoBehaviour
             currentEditor.GetComponent<StemVolumeEditor>().StemType = entry.Key;
 
             // Space the packages evenly from one another
-            var yPos = (scrollViewContentRt.sizeDelta.y / 2) - (volumeEditorHeight / 2) - (numEntries * volumeEditorHeight);
+            // Pivot of the content rect is at the top, so stem packages fill in downwards
+            // Buffer is needed to prevent clipping with the top of the panel
+            var yPos = BUFFER - (volumeEditorHeight / 2) - (numEntries * volumeEditorHeight);
             currentEditor.GetComponent<RectTransform>().localPosition = new Vector2(0, yPos);
 
             numEntries++;
         }
 
-        // This sets the scroll view to the top
-        // The rect is in the middle of the scroll view so that the math above works out cleanly, 
-        // so this is needed to set the scroll view to the top (for cleanliness)
         scrollView.normalizedPosition = new Vector2(0, 1);
     }
-
 }
