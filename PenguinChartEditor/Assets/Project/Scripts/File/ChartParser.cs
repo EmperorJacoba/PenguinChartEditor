@@ -86,6 +86,7 @@ public class ChartParser
 
     void ProcessEventGroup(ChartEventGroup eventGroup)
     {
+        if (eventGroup == null) return;
         switch (eventGroup.EventGroupIdentifier)
         {
             case ChartEventGroup.HeaderType.SyncTrack: // required (needs exception handling)
