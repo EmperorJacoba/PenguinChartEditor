@@ -111,6 +111,9 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         // Inclusive would always return the same event, which causes 0/0 and thus NaN.
         var lastBPMTick = Tempo.GetLastTempoEventTickExclusive(Tick);
 
+        // anchored bpms are locked
+        if (Tempo.AnchoredEvents.Contains(lastBPMTick) || Tempo.AnchoredEvents.Contains(Tick)) return;
+
         var newTime = Tempo.Events[Tick].Timestamp + (float)timeChange;
 
         // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM

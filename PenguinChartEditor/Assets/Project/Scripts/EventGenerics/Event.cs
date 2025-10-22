@@ -77,7 +77,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public abstract MoveData<T> GetMoveData();
 
     // Used to clean up input data before actually committing event changes to dictionaries
-    // Stops tick 0 being erased and/or having invalid data when changing the EventData.Events. 
+    // Stops tick 0 being erased and/or having invalid data when changing EventData.Events. 
     public abstract void SetEvents(SortedDictionary<int, T> newEvents);
 
     public abstract SortedDictionary<int, T> GetEventSet();

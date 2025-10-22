@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public static class Tempo
 {
@@ -11,6 +12,7 @@ public static class Tempo
     const int BPM_CONVERSION = 1000;
 
     public static SortedDictionary<int, BPMData> Events { get; set; } = new();
+    public static HashSet<int> AnchoredEvents { get; set; } = new();
 
     public static List<string> ExportAllEvents()
     {
@@ -61,7 +63,7 @@ public static class Tempo
         var index = tickTimeKeys.BinarySearch(currentTick);
 
         // bitwise complement is negative
-        if (index > 0) return tickTimeKeys[index - 1];
+        if (index > 0) return tickTimeKeys[index - 1]; // exclusivity happens here
 
         // modify index if the found timestamp is at the end of the array (last tempo event)
         if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
@@ -94,9 +96,31 @@ public static class Tempo
         // modify index if the found timestamp is at the end of the array (last tempo event)
         if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
         // else just get the index proper 
-        else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
+        else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before
 
         return tickTimeKeys[index];
+    }
+
+    public static int GetNextAnchor(int currentTick)
+    {
+        var nextAnchors = AnchoredEvents.Where(item => item > currentTick).ToList();
+        if (nextAnchors.Count > 0) return nextAnchors[0];
+        else return -1;
+    }
+
+    public static int GetLastAnchor(int currentTick)
+    {
+        var precedingAnchors = AnchoredEvents.Where(item => item < currentTick).ToList();
+        if (precedingAnchors.Count > 0) return precedingAnchors[^1];
+        else return -1;
+    }
+
+    public static float CalculateLastBPMBeforeAnchor(int currentTick, float newTime)
+    {
+        var nextBPMTick = GetNextAnchor(currentTick);
+        float anchoredBPS = ((nextBPMTick - currentTick) / (float)Chart.Resolution) / (Tempo.Events[nextBPMTick].Timestamp - newTime);
+        float anchoredBPM = (float)Math.Round((anchoredBPS * 60), 3);
+        return anchoredBPM;
     }
 
     public static void RecalculateTempoEventDictionary(int modifiedTick, float timeChange)
@@ -117,7 +141,14 @@ public static class Tempo
         double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Timestamp;
         for (int i = positionOfTick + 1; i < tickEvents.Count; i++)
         {
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Events[tickEvents[i]].BPMChange, Events[tickEvents[i]].Timestamp + timeChange));
+            var bpmChange = Events[tickEvents[i]].BPMChange;
+
+            if (AnchoredEvents.Contains(tickEvents[i]]) timeChange = 0;
+
+            if (AnchoredEvents.Contains(tickEvents[i + 1])) bpmChange = CalculateLastBPMBeforeAnchor(i, timeChange);
+
+
+            outputTempoEventsDict.Add(tickEvents[i], new BPMData(bpmChange, Events[tickEvents[i]].Timestamp + timeChange));
         }
 
         Events = outputTempoEventsDict;

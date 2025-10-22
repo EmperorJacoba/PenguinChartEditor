@@ -456,6 +456,7 @@ public class ChartParser
                             lane = (FiveFretInstrument.LaneOrientation)noteIdentifier;
                         else lane = FiveFretInstrument.LaneOrientation.open; // open identifier is not the same as lane orientation (index of lane dictionary)
 
+                        bool defaultOrientation = true; // equivilent to forced
                         FiveFretNoteData.FlagType flagType;
                         if (tapModifier)
                         {
@@ -479,12 +480,13 @@ public class ChartParser
                             if (forcedModifier)
                             {
                                 hopoEligible = !hopoEligible;
+                                defaultOrientation = false;
                             }
 
                             flagType = hopoEligible ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
                         }
 
-                        var noteData = new FiveFretNoteData(sustain, flagType);
+                        var noteData = new FiveFretNoteData(sustain, flagType, defaultOrientation);
 
                         lanes[(int)lane].Add(uniqueTick, noteData);
                         lastNoteTicks[(int)lane] = uniqueTick;
@@ -581,74 +583,6 @@ class SongDataGroup
     {
         this.data = data;
     }
-}
-
-/// <summary>
-/// Contains possible section headers enclosed as [Name] in a .chart file.
-/// Identifiers follow a pattern based on instrument parsing needs. Metadata/tempo has values 10^0, Five-fret is 10^1, Drums is 10^2, GHL is 10^3, Vox is 10^4.
-/// Difficulties: E = 0, M = 1, H = 2, X = 3
-/// <para> Example: Song = 0, EasySingle (Easy Guitar) = 10, MediumDrums = 101 </para>
-/// </summary>
-public enum HeaderType
-{
-    Song = 0,
-    SyncTrack = 1,
-    Events = 2,
-
-    EasySingle = 10,
-    MediumSingle = 11,
-    HardSingle = 12,
-    ExpertSingle = 13,
-
-    EasyDoubleGuitar = 20,
-    MediumDoubleGuitar = 21,
-    HardDoubleGuitar = 22,
-    ExpertDoubleGuitar = 23,
-
-    EasyDoubleBass = 30,
-    MediumDoubleBass = 31,
-    HardDoubleBass = 32,
-    ExpertDoubleBass = 33,
-
-    EasyDoubleRhythm = 40,
-    MediumDoubleRhythm = 41,
-    HardDoubleRhythm = 42,
-    ExpertDoubleRhythm = 43,
-
-    EasyKeyboard = 50,
-    MediumKeyboard = 51,
-    HardKeyboard = 52,
-    ExpertKeyboard = 53,
-
-    EasyDrums = 100,
-    MediumDrums = 101,
-    HardDrums = 102,
-    ExpertDrums = 103,
-
-    EasyGHLGuitar = 1000,
-    MediumGHLGuitar = 1001,
-    HardGHLGuitar = 1002,
-    ExpertGHLGuitar = 1003,
-
-    EasyGHLBass = 1010,
-    MediumGHLBass = 1011,
-    HardGHLBass = 1012,
-    ExpertGHLBass = 1013,
-
-    EasyGHLCoop = 1020,
-    MediumGHLCoop = 1021,
-    HardGHLCoop = 1022,
-    ExpertGHLCoop = 1023,
-
-    EasyGHLRhythm = 1030,
-    MediumGHLRhythm = 1031,
-    HardGHLRhythm = 1032,
-    ExpertGHLRhythm = 1033,
-
-    EasyVox = 10000,
-    MediumVox = 10001,
-    HardVox = 10002,
-    ExpertVox = 10003
 }
 
 #endregion
