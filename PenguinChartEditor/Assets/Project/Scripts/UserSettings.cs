@@ -22,7 +22,7 @@ public static class UserSettings
     /// Is the chart mode currently using extended sustains?
     /// </summary>
     public static bool ExtSustains { get; set; }   // Note: must be able to switch readily
-                                            // Why? -> No ExtSus means that sustain gap applies automatically even if not cleanly terminated
+                                                   // Why? -> No ExtSus means that sustain gap applies automatically even if not cleanly terminated
 
     /// <summary>
     /// The required distance between the end of a sustained note and the beginning of any next note, in milliseconds.
@@ -40,4 +40,8 @@ public static class UserSettings
     public static int ScrollSensitivity { get; set; } = 10;
 
     public static float ButtonScrollSensitivity { get; set; } = 0.025f;
+
+    // used only for .chart [Song] headers, no bearing on .ini files
+    // in milliseconds!!
+    public static float DefaultPreviewLength { get; set; } = 3000.0f;
 }

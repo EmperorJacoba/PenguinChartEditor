@@ -6,27 +6,29 @@ using UnityEngine;
 /// </summary>
 public enum DifficultyType
 {
-    easy,
-    medium,
-    hard,
-    expert
+    easy = 0,
+    medium = 1,
+    hard = 2,
+    expert = 3
 }
 
 /// <summary>
 /// The instrument that a given chunk of track data belongs to (guitar, bass, drums, etc.)
+/// <para>Parallel to HeaderType numbering.</para>
 /// </summary>
 public enum InstrumentType
 {
-    guitar,
-    coopGuitar,
-    rhythm,
-    bass,
-    keys,
-    drums,
-    ghlGuitar,
-    ghlBass,
-    ghlRhythm,
-    vox
+    guitar = 10,
+    coopGuitar = 20,
+    rhythm = 30,
+    bass = 40,
+    keys = 50,
+    drums = 100,
+    ghlGuitar = 1000,
+    ghlCoop = 1010,
+    ghlBass = 1020,
+    ghlRhythm = 1030,
+    vox = 10000
 }
 
 /// <summary>
@@ -48,4 +50,5 @@ public enum StemType
     drums_2 = 11,
     drums_3 = 12,
     drums_4 = 13,
+    crowd = 14
 }

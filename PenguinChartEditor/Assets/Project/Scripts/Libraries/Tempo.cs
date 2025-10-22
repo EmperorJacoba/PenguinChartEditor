@@ -6,8 +6,24 @@ using UnityEngine;
 public static class Tempo
 {
     const int SECONDS_PER_MINUTE = 60;
+    const string SEPARATOR = " = ";
+    const string BPM_IDENTIFIER = "B";
+    const int BPM_CONVERSION = 1000;
 
     public static SortedDictionary<int, BPMData> Events { get; set; } = new();
+
+    public static List<string> ExportAllEvents()
+    {
+        List<string> eventContainer = new(Events.Count);
+        foreach (var @event in Events)
+        {
+            string tick = $"{@event.Key}";
+            string value = $"{BPM_IDENTIFIER} {@event.Value.BPMChange * BPM_CONVERSION}";
+            string output = $"\t{tick}{SEPARATOR}{value}";
+            eventContainer.Add(output);
+        }
+        return eventContainer;
+    }
 
     public static int GetNextTempoEventExclusive(int currentTick)
     {

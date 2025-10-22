@@ -38,11 +38,28 @@ public class Chart : MonoBehaviour
     private static int _chartResolution = 0;
 
     public static string FolderPath { get; private set; }
-    public static string ChartPath { get; private set; }
+    public static string ChartPath
+    {
+        get
+        {
+            if (_chPath == null)
+            {
+                var name = Metadata.SongInfo[Metadata.MetadataType.name];
+                var artist = Metadata.SongInfo[Metadata.MetadataType.artist];
+                _chPath = FolderPath + $"\\{artist} - {name}.chart";
+            }
+            return _chPath;
+        }
+        private set
+        {
+            _chPath = value;
+        }
+    }
+    static string _chPath;
 
     public void SaveFile()
     {
-
+        ChartWriter.WriteChart();
     }
 
     public void LoadFile()
@@ -50,7 +67,6 @@ public class Chart : MonoBehaviour
         ChartPath = StandaloneFileBrowser.OpenFilePanel($"Open .chart file to load from.", "", new[] { new ExtensionFilter(".chart files ", "chart") }, false)[0];
         FolderPath = ChartPath[..ChartPath.LastIndexOf("\\")];
         
-
         ChartParser chartParser = new(ChartPath);
 
         Resolution = chartParser.resolution;

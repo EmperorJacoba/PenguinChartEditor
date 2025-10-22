@@ -9,7 +9,7 @@ public interface IInstrument
     SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     InstrumentType Instrument { get; set; }
     DifficultyType Difficulty { get; set; }
-
+    List<string> ExportAllEvents();
 }
 
 public class FiveFretInstrument : IInstrument
@@ -48,7 +48,9 @@ public class FiveFretInstrument : IInstrument
         Difficulty = difficulty;
     }
 
-    public List<string> ExportAllNotes()
+    // currently only supports N events, need support for E and S
+    // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough)
+    public List<string> ExportAllEvents()
     {
         List<string> notes = new();
         for (int i = 0; i < Lanes.Length; i++)
@@ -57,10 +59,13 @@ public class FiveFretInstrument : IInstrument
 
             foreach (var note in Lanes[i])
             {
-                string value = $"{note.Key} = N {laneIdentifier} {note.Value.Sustain}: {note.Value.Flag}";
+                string value = $"\t{note.Key} = N {laneIdentifier} {note.Value.Sustain}";
                 notes.Add(value);
             }
         }
+
+
+
         var orderedStrings = notes.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
         return orderedStrings;
     }
@@ -81,6 +86,10 @@ public class FourLaneDrumInstrument : IInstrument
         green = 3,
         kick = 4
     }
+    public List<string> ExportAllEvents()
+    {
+        throw new System.Exception();
+    }
 }
 
 public class GHLInstrument : IInstrument
@@ -100,6 +109,10 @@ public class GHLInstrument : IInstrument
         black2 = 4,
         black3 = 5,
         open = 6
+    }
+    public List<string> ExportAllEvents()
+    {
+        throw new System.Exception();
     }
 }
 

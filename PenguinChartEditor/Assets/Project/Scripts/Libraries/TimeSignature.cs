@@ -5,6 +5,8 @@ using System;
 
 public static class TimeSignature
 {
+    const string SEPARATOR = " = ";
+    const string TS_IDENTIFIER = "TS";
     public static SortedDictionary<int, TSData> Events { get; set; } = new();
     public static void SetEvents(SortedDictionary<int, TSData> newEvents)
     {
@@ -13,6 +15,26 @@ public static class TimeSignature
             newEvents.Add(0, TSLabel.moveData.currentMoveAction.poppedData[0]);
         }
         Events = newEvents;
+    }
+
+    public static List<string> ExportAllEvents()
+    {
+        List<string> eventContainer = new(Events.Count);
+        foreach (var @event in Events)
+        {
+            string tick = $"{@event.Key}";
+
+            string denom;
+
+            if (@event.Value.Denominator == 4) denom = "";
+            else denom = $" {Math.Log(@event.Value.Denominator, 2)}";
+
+            string value = $"{TS_IDENTIFIER} {@event.Value.Numerator}{denom}"; // denom will contain leading space if needed
+
+            string output = $"\t{tick}{SEPARATOR}{value}";
+            eventContainer.Add(output);
+        }
+        return eventContainer;
     }
 
     /// <summary>

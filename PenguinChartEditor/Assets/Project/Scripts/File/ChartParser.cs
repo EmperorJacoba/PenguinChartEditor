@@ -89,10 +89,10 @@ public class ChartParser
         if (eventGroup == null) return;
         switch (eventGroup.EventGroupIdentifier)
         {
-            case ChartEventGroup.HeaderType.SyncTrack: // required (needs exception handling)
+            case HeaderType.SyncTrack: // required (needs exception handling)
                 (bpmEvents, tsEvents) = ParseSyncTrack(eventGroup);
                 break;
-            case ChartEventGroup.HeaderType.Events:
+            case HeaderType.Events:
                 // events parse
                 break;
             default:
@@ -145,11 +145,11 @@ public class ChartParser
         var identifierLine = chartAsLines[lineIndex];
         var cleanIdentifier = identifierLine.Replace("[", "").Replace("]", "");
 
-        if (!Enum.TryParse(typeof(ChartEventGroup.HeaderType), cleanIdentifier, true, out var enumObject))
+        if (!Enum.TryParse(typeof(HeaderType), cleanIdentifier, true, out var enumObject))
         {
             return null;
         }
-        ChartEventGroup identifiedSection = new((ChartEventGroup.HeaderType)enumObject);
+        ChartEventGroup identifiedSection = new((HeaderType)enumObject);
 
         if (chartAsLines[lineIndex + 1] != "{") // line with { to mark beginning of section
             throw new ArgumentException($"{identifiedSection.EventGroupIdentifier} is not enclosed properly. {HELPFUL_REMINDER}");
@@ -529,74 +529,6 @@ public class ChartParser
 /// </summary>
 class ChartEventGroup
 {
-    /// <summary>
-    /// Contains possible section headers enclosed as [Name] in a .chart file.
-    /// Identifiers follow a pattern based on instrument parsing needs. Metadata/tempo has values 10^0, Five-fret is 10^1, Drums is 10^2, GHL is 10^3, Vox is 10^4.
-    /// Difficulties: E = 0, M = 1, H = 2, X = 3
-    /// <para> Example: Song = 0, EasySingle (Easy Guitar) = 10, MediumDrums = 101 </para>
-    /// </summary>
-    public enum HeaderType
-    {
-        //Song = 0, => moved to SongDataGroup
-        SyncTrack = 1,
-        Events = 2,
-
-        EasySingle = 10,
-        MediumSingle = 11,
-        HardSingle = 12,
-        ExpertSingle = 13,
-
-        EasyDoubleGuitar = 20,
-        MediumDoubleGuitar = 21,
-        HardDoubleGuitar = 22,
-        ExpertDoubleGuitar = 23,
-
-        EasyDoubleBass = 30,
-        MediumDoubleBass = 31,
-        HardDoubleBass = 32,
-        ExpertDoubleBass = 33,
-
-        EasyDoubleRhythm = 40,
-        MediumDoubleRhythm = 41,
-        HardDoubleRhythm = 42,
-        ExpertDoubleRhythm = 43,
-
-        EasyKeyboard = 50,
-        MediumKeyboard = 51,
-        HardKeyboard = 52,
-        ExpertKeyboard = 53,
-
-        EasyDrums = 100,
-        MediumDrums = 101,
-        HardDrums = 102,
-        ExpertDrums = 103,
-
-        EasyGHLGuitar = 1000,
-        MediumGHLGuitar = 1001,
-        HardGHLGuitar = 1002,
-        ExpertGHLGuitar = 1003,
-
-        EasyGHLBass = 1010,
-        MediumGHLBass = 1011,
-        HardGHLBass = 1012,
-        ExpertGHLBass = 1013,
-
-        EasyGHLCoop = 1020,
-        MediumGHLCoop = 1021,
-        HardGHLCoop = 1022,
-        ExpertGHLCoop = 1023,
-
-        EasyGHLRhythm = 1030,
-        MediumGHLRhythm = 1031,
-        HardGHLRhythm = 1032,
-        ExpertGHLRhythm = 1033,
-
-        EasyVox = 10000,
-        MediumVox = 10001,
-        HardVox = 10002,
-        ExpertVox = 10003
-    }
-
     public enum InstrumentGroup
     {
         None,
@@ -649,6 +581,74 @@ class SongDataGroup
     {
         this.data = data;
     }
+}
+
+/// <summary>
+/// Contains possible section headers enclosed as [Name] in a .chart file.
+/// Identifiers follow a pattern based on instrument parsing needs. Metadata/tempo has values 10^0, Five-fret is 10^1, Drums is 10^2, GHL is 10^3, Vox is 10^4.
+/// Difficulties: E = 0, M = 1, H = 2, X = 3
+/// <para> Example: Song = 0, EasySingle (Easy Guitar) = 10, MediumDrums = 101 </para>
+/// </summary>
+public enum HeaderType
+{
+    Song = 0,
+    SyncTrack = 1,
+    Events = 2,
+
+    EasySingle = 10,
+    MediumSingle = 11,
+    HardSingle = 12,
+    ExpertSingle = 13,
+
+    EasyDoubleGuitar = 20,
+    MediumDoubleGuitar = 21,
+    HardDoubleGuitar = 22,
+    ExpertDoubleGuitar = 23,
+
+    EasyDoubleBass = 30,
+    MediumDoubleBass = 31,
+    HardDoubleBass = 32,
+    ExpertDoubleBass = 33,
+
+    EasyDoubleRhythm = 40,
+    MediumDoubleRhythm = 41,
+    HardDoubleRhythm = 42,
+    ExpertDoubleRhythm = 43,
+
+    EasyKeyboard = 50,
+    MediumKeyboard = 51,
+    HardKeyboard = 52,
+    ExpertKeyboard = 53,
+
+    EasyDrums = 100,
+    MediumDrums = 101,
+    HardDrums = 102,
+    ExpertDrums = 103,
+
+    EasyGHLGuitar = 1000,
+    MediumGHLGuitar = 1001,
+    HardGHLGuitar = 1002,
+    ExpertGHLGuitar = 1003,
+
+    EasyGHLBass = 1010,
+    MediumGHLBass = 1011,
+    HardGHLBass = 1012,
+    ExpertGHLBass = 1013,
+
+    EasyGHLCoop = 1020,
+    MediumGHLCoop = 1021,
+    HardGHLCoop = 1022,
+    ExpertGHLCoop = 1023,
+
+    EasyGHLRhythm = 1030,
+    MediumGHLRhythm = 1031,
+    HardGHLRhythm = 1032,
+    ExpertGHLRhythm = 1033,
+
+    EasyVox = 10000,
+    MediumVox = 10001,
+    HardVox = 10002,
+    ExpertVox = 10003
 }
 
 #endregion
