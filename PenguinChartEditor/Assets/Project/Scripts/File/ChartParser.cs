@@ -341,6 +341,7 @@ public class ChartParser
         return (bpmEvents, tsEvents);
     }
 
+    // add anchor parsing!!!!
     SortedDictionary<int, BPMData> FormatBPMDictionary(List<int> ticks, List<float> bpms)
     {
         SortedDictionary<int, BPMData> outputDict = new();
@@ -356,7 +357,7 @@ public class ChartParser
                 currentSongTime += timeDelta;
             }
 
-            outputDict.Add(ticks[i], new BPMData(bpms[i], (float)currentSongTime));
+            outputDict.Add(ticks[i], new BPMData(bpms[i], (float)currentSongTime, false));
         }
         return outputDict;
     }

@@ -43,7 +43,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     {
         try
         {
-            Tempo.Events[Tick] = new BPMData(ProcessUnsafeBPMString(newVal), Tempo.Events[Tick].Timestamp);
+            Tempo.Events[Tick] = new BPMData(ProcessUnsafeBPMString(newVal), Tempo.Events[Tick].Timestamp, Tempo.Events[Tick].Anchor);
         }
         catch
         {
@@ -113,7 +113,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         var lastBPMTick = Tempo.GetLastTempoEventTickExclusive(Tick);
 
         // anchored bpms are locked
-        if (Tempo.AnchoredEvents.Contains(lastBPMTick) || Tempo.AnchoredEvents.Contains(Tick)) return;
+        if (Tempo.Events[lastBPMTick].Anchor || Tempo.Events[Tick].Anchor) return;
 
         var newTime = Tempo.Events[Tick].Timestamp + (float)timeChange;
 
@@ -138,7 +138,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
         if (!anchorNextEvent)
         {
-            if (Tempo.AnchoredEvents.Contains(nextBPMTick))
+            if (Tempo.Events[nextBPMTick].Anchor)
             {
                 anchorNextEvent = true;
             }
@@ -160,8 +160,8 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         }
 
         // Write new data: time changes for this beatline's tick, BPM changes for the last tick event.
-        Tempo.Events[Tick] = new BPMData(thisBPM, newTime);
-        Tempo.Events[lastBPMTick] = new BPMData(newBPM, Tempo.Events[lastBPMTick].Timestamp);
+        Tempo.Events[Tick] = new BPMData(thisBPM, newTime, Tempo.Events[Tick].Anchor);
+        Tempo.Events[lastBPMTick] = new BPMData(newBPM, Tempo.Events[lastBPMTick].Timestamp, Tempo.Events[lastBPMTick].Anchor);
 
         // Update rest of dictionary to account for the time change.
         if (!anchorNextEvent) Tempo.RecalculateTempoEventDictionary(Tick, (float)timeChange);
@@ -176,7 +176,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     public override void InitializeLabel()
     {
         base.InitializeLabel();
-        if (Tempo.AnchoredEvents.Contains(Tick)) anchorIcon.Opacity = 1f;
+        if (Tempo.Events[Tick].Anchor) anchorIcon.Opacity = 1f;
         else anchorIcon.Opacity = 0f;
     }
 

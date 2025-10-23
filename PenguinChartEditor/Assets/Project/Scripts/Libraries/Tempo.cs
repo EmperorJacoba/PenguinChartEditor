@@ -12,7 +12,6 @@ public static class Tempo
     const int BPM_CONVERSION = 1000;
 
     public static SortedDictionary<int, BPMData> Events { get; set; } = new();
-    public static HashSet<int> AnchoredEvents { get; set; } = new();
 
     public static List<string> ExportAllEvents()
     {
@@ -103,15 +102,15 @@ public static class Tempo
 
     public static int GetNextAnchor(int currentTick)
     {
-        var nextAnchors = AnchoredEvents.Where(item => item > currentTick).ToList();
-        if (nextAnchors.Count > 0) return nextAnchors[0];
+        var nextAnchors = Events.Where(item => item.Key > currentTick && item.Value.Anchor).ToList();
+        if (nextAnchors.Count > 0) return nextAnchors[0].Key;
         else return -1;
     }
 
     public static int GetLastAnchor(int currentTick)
     {
-        var precedingAnchors = AnchoredEvents.Where(item => item < currentTick).ToList();
-        if (precedingAnchors.Count > 0) return precedingAnchors[^1];
+        var lastAnchors = Events.Where(item => item.Key < currentTick && item.Value.Anchor).ToList();
+        if (lastAnchors.Count > 0) return lastAnchors[^1].Key;
         else return -1;
     }
 
@@ -145,19 +144,18 @@ public static class Tempo
 
             if (tickEvents.Count > (i + 1))
             {
-                if (AnchoredEvents.Contains(tickEvents[i + 1]))
+                if (Events[tickEvents[i + 1]].Anchor)
                 {
                     bpmChange = CalculateLastBPMBeforeAnchor(tickEvents[i], Events[tickEvents[i]].Timestamp + timeChange);
                 }
             }
 
-            if (AnchoredEvents.Contains(tickEvents[i]))
+            if (Events[tickEvents[i]].Anchor)
             {
                 timeChange = 0;
             }
 
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(bpmChange, Events[tickEvents[i]].Timestamp + timeChange));
-
+            outputTempoEventsDict.Add(tickEvents[i], new BPMData(bpmChange, Events[tickEvents[i]].Timestamp + timeChange, Events[tickEvents[i]].Anchor));
         }
 
         Events = outputTempoEventsDict;
@@ -178,7 +176,7 @@ public static class Tempo
         // Keep all events before change when creating new dictionary
         for (int i = 0; i <= positionOfTick; i++)
         {
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Events[tickEvents[i]].BPMChange, Events[tickEvents[i]].Timestamp));
+            outputTempoEventsDict.Add(tickEvents[i], Events[tickEvents[i]]);
         }
         // Start new data with the song timestamp of the change
         double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Timestamp;
@@ -194,7 +192,7 @@ public static class Tempo
             }
 
             currentSongTime += calculatedTimeSecondDifference;
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Events[tickEvents[i]].BPMChange, (float)currentSongTime));
+            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Events[tickEvents[i]].BPMChange, (float)currentSongTime, Events[tickEvents[i]].Anchor));
         }
 
         Events = outputTempoEventsDict;
@@ -289,7 +287,7 @@ public static class Tempo
 
         if (!Events.ContainsKey(0))
         {
-            Events.Add(0, new BPMData(BPMLabel.moveData.currentMoveAction.poppedData[0].BPMChange, 0));
+            Events.Add(0, new BPMData(BPMLabel.moveData.currentMoveAction.poppedData[0].BPMChange, 0, BPMLabel.moveData.currentMoveAction.poppedData[0].Anchor));
         }
 
         // Safety check before recalculating dictionary
@@ -298,7 +296,7 @@ public static class Tempo
         // Tick 0's timestamp is always 0
         if (Events[0].Timestamp != 0)
         {
-            Events[0] = new BPMData(Events[0].BPMChange, 0);
+            Events[0] = new BPMData(Events[0].BPMChange, 0, Tempo.Events[0].Anchor);
         }
 
         if (breakKey != -1)
