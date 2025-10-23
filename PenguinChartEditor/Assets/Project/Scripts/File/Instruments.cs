@@ -49,7 +49,7 @@ public class FiveFretInstrument : IInstrument
     }
 
     // currently only supports N events, need support for E and S
-    // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough)
+    // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)
     public List<string> ExportAllEvents()
     {
         List<string> notes = new();
@@ -63,8 +63,6 @@ public class FiveFretInstrument : IInstrument
                 notes.Add(value);
             }
         }
-
-
 
         var orderedStrings = notes.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
         return orderedStrings;

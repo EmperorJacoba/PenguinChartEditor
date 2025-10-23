@@ -7,11 +7,12 @@ public struct BPMData : IEquatable<BPMData>, IEventData
 {
     public float BPMChange;
     public float Timestamp;
-
-    public BPMData(float bpm, float timestamp)
+    public bool Anchor;
+    public BPMData(float bpm, float timestamp, bool anchor)
     {
         BPMChange = bpm;
         Timestamp = timestamp;
+        Anchor = anchor;
     }
 
     public static bool operator !=(BPMData one, BPMData two) => !one.Equals(two);

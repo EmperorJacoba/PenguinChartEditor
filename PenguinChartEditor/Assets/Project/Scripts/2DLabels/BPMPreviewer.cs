@@ -41,7 +41,7 @@ public class BPMPreviewer : Previewer
 
         if (bpmLabel.Visible && !Tempo.Events.ContainsKey(bpmLabel.Tick))
         {
-            bpmLabel.CreateEvent(bpmLabel.Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp));
+            bpmLabel.CreateEvent(bpmLabel.Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
             Chart.Refresh();
             disableNextSelectionCheck = true;
         }

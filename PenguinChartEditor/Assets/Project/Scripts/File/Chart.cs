@@ -88,7 +88,7 @@ public class Chart : MonoBehaviour
 
         if (Tempo.Events.Count == 0) // if there is no data to load in 
         {
-            Tempo.Events.Add(0, new BPMData(120.0f, 0)); // add placeholder bpm
+            Tempo.Events.Add(0, new BPMData(120.0f, 0, false)); // add placeholder bpm
         }
         if (TimeSignature.Events.Count == 0)
         {
