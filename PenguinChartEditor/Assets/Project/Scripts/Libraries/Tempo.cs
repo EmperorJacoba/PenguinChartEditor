@@ -10,6 +10,8 @@ public static class Tempo
     const string ANCHOR_IDENTIFIER = "A";
     const int BPM_CONVERSION = 1000;
     const int MICROSECOND_CONVERSION = 1000000;
+    const float MINIMUM_BPM_VALUE = 0;
+    const float MAXIMUM_BPM_VALUE = 1000;
 
     public static SortedDictionary<int, BPMData> Events { get; set; } = new();
 
@@ -119,13 +121,27 @@ public static class Tempo
         else return -1;
     }
 
+    // This anchoring logic may present some accuracy errors in the dictionary
+    // *should* only be microseconds at most but logic may need to be rethought if possible
+    // maybe re-validate dictionary when exporting?
+    // Effects currently unknown, but round off should fix it if anything
+    // Please remove and re-think if any errors arise from exporting to different software/YARG/Clone Hero
+    // NO EVIDENCE FOR INACCURACY AT THIS TIME
     public static float CalculateLastBPMBeforeAnchor(int currentTick, float newTime)
     {
-        var nextBPMTick = GetNextAnchor(currentTick);
-        float anchoredBPS = ((nextBPMTick - currentTick) / (float)Chart.Resolution) / (Tempo.Events[nextBPMTick].Timestamp - newTime);
+        var nextAnchor = GetNextAnchor(currentTick);
+        return CalculateLastBPMBeforeAnchor(currentTick, newTime, nextAnchor);
+    }
+
+    public static float CalculateLastBPMBeforeAnchor(int currentTick, float newTime, int nextAnchor)
+    {
+        float anchoredBPS = ((nextAnchor - currentTick) / (float)Chart.Resolution) / (Events[nextAnchor].Timestamp - newTime);
         float anchoredBPM = (float)Math.Round((anchoredBPS * 60), 3);
         return anchoredBPM;
     }
+
+    // BPM can't be negative and event selection gets screwed with when the BPM is too high
+    public static bool IsTickInBounds(float bpm) => bpm > MINIMUM_BPM_VALUE && bpm < MAXIMUM_BPM_VALUE;
 
     public static void RecalculateTempoEventDictionary(int modifiedTick, float timeChange)
     {
@@ -136,6 +152,7 @@ public static class Tempo
         if (positionOfTick == tickEvents.Count - 1) return; // no events to modify
 
         // Keep all events before change when creating new dictionary
+        // Manage anchors in BPMLabel.ChangePositionFromDrag() - much simpler
         for (int i = 0; i <= positionOfTick; i++)
         {
             outputTempoEventsDict.Add(tickEvents[i], Events[tickEvents[i]]);
@@ -147,14 +164,17 @@ public static class Tempo
         {
             var bpmChange = Events[tickEvents[i]].BPMChange;
 
-            if (tickEvents.Count > (i + 1))
+            if (tickEvents.Count > (i + 1)) // validation check - no anchor will be ahead of the last event
             {
+                // anchor calculations happen on the bpm event before an anchor, 
+                // so instead of catching the anchor when we get to it, catch it before to avoid multiple writes to the same index
                 if (Events[tickEvents[i + 1]].Anchor)
                 {
                     bpmChange = CalculateLastBPMBeforeAnchor(tickEvents[i], Events[tickEvents[i]].Timestamp + timeChange);
                 }
             }
 
+            // anchor = time no changey
             if (Events[tickEvents[i]].Anchor)
             {
                 timeChange = 0;

@@ -7,7 +7,6 @@ public class Anchor : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
 {
     [SerializeField] Image lockImage;
     [SerializeField] BPMLabel parentBPM;
-    const int MAX_ALPHA_CHANNEL_VALUE = 255;
 
     void Awake()
     {

@@ -6,6 +6,8 @@ using System.Linq;
 
 public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 {
+    private const int SECONDS_PER_MINUTE = 60;
+    private const int BPM_DIGITS = 3;
     #region Event Sets
 
     public static EventData<BPMData> EventData = new();
@@ -112,7 +114,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         // Inclusive would always return the same event, which causes 0/0 and thus NaN.
         var lastBPMTick = Tempo.GetLastTempoEventTickExclusive(Tick);
 
-        // anchored bpms are locked
+        // anchored bpms are locked - do not edit with dragging
         if (Tempo.Events[lastBPMTick].Anchor || Tempo.Events[Tick].Anchor) return;
 
         var newTime = Tempo.Events[Tick].Timestamp + (float)timeChange;
@@ -120,9 +122,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
         // Calculate the new BPM based on the time change
         float newBPS = ((Tick - lastBPMTick) / (float)Chart.Resolution) / (newTime - Tempo.Events[lastBPMTick].Timestamp);
-        float newBPM = (float)Math.Round((newBPS * 60), 3);
-
-        if (newBPM < 0 || newBPM > 1000) return; // BPM can't be negative and event selection gets screwed with when the BPM is too high
+        float newBPM = (float)Math.Round((newBPS * SECONDS_PER_MINUTE), BPM_DIGITS);
 
         var thisBPM = Tempo.Events[Tick].BPMChange;
 
@@ -144,26 +144,19 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
             }
         }
 
-        // This anchoring logic may present some accuracy errors in the dictionary
-        // *should* only be microseconds at most but logic may need to be rethought if possible
-        // maybe re-validate dictionary when exporting?
-        // Effects currently unknown, but round off should fix it if anything
-        // Please remove and re-think if any errors arise from exporting to different software/YARG/Clone Hero
         if (anchorNextEvent && nextBPMTick != Tick)
         {
-            // IF you want this to be modified to have anchors furthur than one beat:
-            // Apply this logic to the last event before the next anchor event while shifting everything else normally
-            // Recalculate range x to y function will probably be needed for that
-            float anchoredBPS = ((nextBPMTick - Tick) / (float)Chart.Resolution) / (Tempo.Events[nextBPMTick].Timestamp - newTime);
-            float anchoredBPM = (float)Math.Round((anchoredBPS * 60), 3);
-            thisBPM = anchoredBPM;
+            thisBPM = Tempo.CalculateLastBPMBeforeAnchor(Tick, newTime, nextBPMTick);
         }
+
+        if (!Tempo.IsTickInBounds(newBPM)) return;
+        if (!Tempo.IsTickInBounds(thisBPM)) return;
 
         // Write new data: time changes for this beatline's tick, BPM changes for the last tick event.
         Tempo.Events[Tick] = new BPMData(thisBPM, newTime, Tempo.Events[Tick].Anchor);
-        Tempo.Events[lastBPMTick] = new BPMData(newBPM, Tempo.Events[lastBPMTick].Timestamp, Tempo.Events[lastBPMTick].Anchor);
+        Tempo.Events[lastBPMTick] = new BPMData(newBPM, Tempo.Events[lastBPMTick].Timestamp, Tempo.Events[Tick].Anchor);
 
-        // Update rest of dictionary to account for the time change.
+        // Update rest of dictionary to account for the time change. Anchors are not moved, so no need to update.
         if (!anchorNextEvent) Tempo.RecalculateTempoEventDictionary(Tick, (float)timeChange);
 
         // Update waveform to reflect changes (needed before full refresh)
