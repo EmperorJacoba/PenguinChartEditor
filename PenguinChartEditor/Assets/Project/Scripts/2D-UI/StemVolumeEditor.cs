@@ -31,6 +31,9 @@ public class StemVolumeEditor : MonoBehaviour
     [SerializeField] Button muteButton;
     [SerializeField] Button soloButton;
 
+    delegate void UnsoloDelegate();
+    static event UnsoloDelegate SoloedStemOccurred;
+
     enum ButtonStates
     {
         normal,
@@ -40,6 +43,8 @@ public class StemVolumeEditor : MonoBehaviour
 
     void Start()
     {
+        SoloedStemOccurred += UpdateMuteButton;
+
         slider.onValueChanged.AddListener(x => SliderChange(x));
         entryBox.onEndEdit.AddListener(x => EntryBoxChange(x));
     }
@@ -122,6 +127,11 @@ public class StemVolumeEditor : MonoBehaviour
         }
     }
 
+    void UpdateMuteButton()
+    {
+        UpdateButtonState(muteButton, ButtonStates.normal);
+    }
+
     public void OnSoloButtonPress()
     {
         if (AudioManager.soloedStems.Contains(StemType))
@@ -152,6 +162,7 @@ public class StemVolumeEditor : MonoBehaviour
                 {
                     AudioManager.MuteStem(stem);
                 }
+                SoloedStemOccurred?.Invoke(); // undo any active mutes
             }
 
             AudioManager.UnmuteStem(StemType);

@@ -107,8 +107,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    const int MAXIMUM_DATA_BUFFER = 268435455;
-
     /// <summary>
     /// Simplify an audio file into x samples taken every ArrayResolution milliseconds from the audio file.
     /// </summary>
