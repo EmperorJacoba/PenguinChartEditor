@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public static class Tempo
 {
     const int SECONDS_PER_MINUTE = 60;
-    const string SEPARATOR = " = ";
     const string BPM_IDENTIFIER = "B";
+    const string ANCHOR_IDENTIFIER = "A";
     const int BPM_CONVERSION = 1000;
+    const int MICROSECOND_CONVERSION = 1000000;
 
     public static SortedDictionary<int, BPMData> Events { get; set; } = new();
 
@@ -20,8 +20,13 @@ public static class Tempo
         {
             string tick = $"{@event.Key}";
             string value = $"{BPM_IDENTIFIER} {@event.Value.BPMChange * BPM_CONVERSION}";
-            string output = $"\t{tick}{SEPARATOR}{value}";
+            string output = $"\t{tick} = {value}";
             eventContainer.Add(output);
+
+            if (@event.Value.Anchor)
+            {
+                eventContainer.Add($"{tick} = {ANCHOR_IDENTIFIER} {@event.Value.Timestamp * MICROSECOND_CONVERSION}");
+            }
         }
         return eventContainer;
     }

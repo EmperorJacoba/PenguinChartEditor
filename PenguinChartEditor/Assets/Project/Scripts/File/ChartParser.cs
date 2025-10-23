@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ public class ChartParser
     const int DEFAULT_TS_DENOMINATOR = 4;
     const string TEMPO_EVENT_INDICATOR = "B";
     const string TIME_SIGNATURE_EVENT_INDICATOR = "TS";
+    const string ANCHOR_INDICATOR = "A";
     const string SYNC_TRACK_ERROR = "[SyncTrack] has invalid tempo event:";
     const float BPM_FORMAT_CONVERSION = 1000.0f;
     const int TS_POWER_CONVERSION_NUMBER = 2;
@@ -295,10 +297,11 @@ public class ChartParser
         List<int> tempoTickTimeKeys = new();
         List<float> bpmVals = new();
         SortedDictionary<int, TSData> tsEvents = new();
+        HashSet<int> anchoredTicks = new();
 
         foreach (var entry in events)
         {
-            if (!entry.Value.Contains(TEMPO_EVENT_INDICATOR) && !entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
+            if (!entry.Value.Contains(TEMPO_EVENT_INDICATOR) && !entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR) && !entry.Value.Contains(ANCHOR_INDICATOR))
                 continue;
 
             if (entry.Value.Contains(TEMPO_EVENT_INDICATOR))
@@ -334,15 +337,25 @@ public class ChartParser
 
                 tsEvents.Add(entry.Key, new TSData(numerator, denominator));
             }
+            else if (entry.Value.Contains(ANCHOR_INDICATOR))
+            {
+                anchoredTicks.Add(entry.Key);
+
+                // if for some reason you need to add parsing for the microsecond value do it here
+                // that is not here because a) penguin already works with and calculates the timestamps of every event
+                // and b) if the microsecond value is parsed and it's not aligned with the Format calculations,
+                // then what is penguin supposed to do? change the incoming BPM data? no
+                // I think it has the microsecond value for programs that choose not to work with timestamps
+                // (timestamps are easier to deal with in my opinion, even if an extra (minor) step is needed after every edit)
+            }
         }
 
-        var bpmEvents = FormatBPMDictionary(tempoTickTimeKeys, bpmVals);
+        var bpmEvents = FormatBPMDictionary(tempoTickTimeKeys, bpmVals, anchoredTicks);
 
         return (bpmEvents, tsEvents);
     }
 
-    // add anchor parsing!!!!
-    SortedDictionary<int, BPMData> FormatBPMDictionary(List<int> ticks, List<float> bpms)
+    SortedDictionary<int, BPMData> FormatBPMDictionary(List<int> ticks, List<float> bpms, HashSet<int> anchors)
     {
         SortedDictionary<int, BPMData> outputDict = new();
 
@@ -357,7 +370,13 @@ public class ChartParser
                 currentSongTime += timeDelta;
             }
 
-            outputDict.Add(ticks[i], new BPMData(bpms[i], (float)currentSongTime, false));
+            outputDict.Add
+                (ticks[i], 
+                new BPMData(
+                    bpms[i], 
+                    (float)currentSongTime,
+                    anchors.Contains(ticks[i]))
+                );
         }
         return outputDict;
     }
