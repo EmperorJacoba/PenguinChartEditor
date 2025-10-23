@@ -134,7 +134,7 @@ public static class Tempo
         // Keep all events before change when creating new dictionary
         for (int i = 0; i <= positionOfTick; i++)
         {
-            outputTempoEventsDict.Add(tickEvents[i], new BPMData(Events[tickEvents[i]].BPMChange, Events[tickEvents[i]].Timestamp));
+            outputTempoEventsDict.Add(tickEvents[i], Events[tickEvents[i]]);
         }
 
         // Start new data with the song timestamp of the change
@@ -143,12 +143,21 @@ public static class Tempo
         {
             var bpmChange = Events[tickEvents[i]].BPMChange;
 
-            if (AnchoredEvents.Contains(tickEvents[i]]) timeChange = 0;
+            if (tickEvents.Count > (i + 1))
+            {
+                if (AnchoredEvents.Contains(tickEvents[i + 1]))
+                {
+                    bpmChange = CalculateLastBPMBeforeAnchor(tickEvents[i], Events[tickEvents[i]].Timestamp + timeChange);
+                }
+            }
 
-            if (AnchoredEvents.Contains(tickEvents[i + 1])) bpmChange = CalculateLastBPMBeforeAnchor(i, timeChange);
-
+            if (AnchoredEvents.Contains(tickEvents[i]))
+            {
+                timeChange = 0;
+            }
 
             outputTempoEventsDict.Add(tickEvents[i], new BPMData(bpmChange, Events[tickEvents[i]].Timestamp + timeChange));
+
         }
 
         Events = outputTempoEventsDict;

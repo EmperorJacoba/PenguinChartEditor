@@ -126,4 +126,12 @@ public class Chart : MonoBehaviour
                 break;
         }
     }
+
+    void Update()
+    {
+        foreach (var item in Tempo.AnchoredEvents)
+        {
+            Debug.Log(item);
+        }
+    }
 }

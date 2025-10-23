@@ -30,6 +30,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     public override IPreviewer EventPreviewer => BPMPreviewer.instance;
     public Coroutine destructionCoroutine { get; set; }
 
+    [SerializeField] Anchor anchorIcon;
 
     void ExecuteWithRecalculate(Action action)
     {
@@ -135,6 +136,14 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
             nextBPMTick = Tick;
         }
 
+        if (!anchorNextEvent)
+        {
+            if (Tempo.AnchoredEvents.Contains(nextBPMTick))
+            {
+                anchorNextEvent = true;
+            }
+        }
+
         // This anchoring logic may present some accuracy errors in the dictionary
         // *should* only be microseconds at most but logic may need to be rethought if possible
         // maybe re-validate dictionary when exporting?
@@ -162,6 +171,13 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
         // Display the changes
         Chart.Refresh();
+    }
+
+    public override void InitializeLabel()
+    {
+        base.InitializeLabel();
+        if (Tempo.AnchoredEvents.Contains(Tick)) anchorIcon.Opacity = 1f;
+        else anchorIcon.Opacity = 0f;
     }
 
     #endregion
