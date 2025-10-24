@@ -51,7 +51,7 @@ Example usage with prior data:
 ```
 Meaning: at tick 480, the vocal event data in `[Vox]` with the same tick has a lyric of "Ham".
 
-This match-up should be used for backwards-compatibility with Moonscraper, CH, etc., as much as I would like for `[Vocals]` to also have lyrics in it.
+This match-up should be used for backwards-compatibility with Moonscraper, CH, etc., as much as I would like for `[Vox]` to also have lyrics in it.
 
 `[Vox1]`, `[Vox2]`, `[Vox3]` are harmonies tracks. Since these lyrics aren't processed in the same way as main vocals in Moonscraper for .mid files (they are not shown or considered), there are no backwards compatibility issues with lyrics being shown in other programs. Therefore, text events can and should appear alongside pitched notes for `[Vox1]`, `[Vox2]`, and `[Vox3]`.
 
