@@ -7,9 +7,9 @@ This document defines how vocal editing should be handled within Penguin itself 
 > Note: .sng should also be an export option. Follow this same rule if .sng does not support .mid file data. If they do, export as .mid and then use converter to convert to .sng.
 RB2CON and RB3CON should also eventually be export options. The most practical way of doing this is likely via exporting as .mid and then plugging into [Onyx](https://github.com/mtolly/onyx). Make sure to attribute it if used! 
 
-Penguin should allow exporting charts as .chart with vocal data, but **strongly** warn against doing so. Opening a .chart file in Moonscraper and saving will delete all [Vox] data. However, a .chart file saved from Penguin with vocal data should be able to open up save data perfectly. Possibly save as \<Chart Name\>.penguin but use .chart encoding? 
+Penguin should allow exporting charts as .chart with vocal data, but **strongly** warn against doing so. Opening a .chart file in Moonscraper and saving will delete all `[Vox]` data. However, a .chart file saved from Penguin with vocal data should be able to open up save data perfectly. Possibly save as \<Chart Name\>.penguin but use .chart encoding? 
 
-> Note: Penguin will also need to save small binary metadata files for QoL features like opening back up at the same timestamp. This should be a hidden file called data.penguin. If chart data is saved as \<Chart Name\>.penguin, save data.penguin as a file called .pcedata or .penguindata.
+> Note: Penguin will also need to save small binary metadata files for QoL features like opening back up at the same timestamp. This should be a hidden file called data.penguin. If chart data is saved as `\<Chart Name\>.penguin`, save data.penguin as a file called .pcedata or .penguindata.
 
 ### Terminology
 
@@ -192,7 +192,7 @@ Users should be able to create unpitched notes via:
 
 Select the unpitched note by clicking anywhere in the unpitched event box.
 
-Users should be able to convert an unpitched note back to a pitched note by selecting it, and then using a button/keybind to switch it to a pitched note. A small prompt should appear for the user to enter a midi pitch or a letter pitch (e.g. A#4), where the lyric event should appear. 
+Users should be able to convert an unpitched note back to a pitched note by selecting it, and then using a button/keybind to switch it to a pitched note. A small prompt should appear for the user to enter a midi pitch or a letter pitch (e.g. A#4), where the vocal event should appear. 
 
 ### Caret `^`
 This lyric does not have a pitch, but the game should treat scoring it leniently. 
