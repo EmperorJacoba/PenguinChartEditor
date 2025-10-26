@@ -26,7 +26,7 @@ public class BPMLane : Lane<BPMData>
             // but was never edited
             if (BPMLabel.justDeleted) bpmLabel.DeactivateManualInput();
 
-            bpmLabel.UpdatePosition((Tempo.ConvertTickTimeToSeconds(eventsToDisplay[i]) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
+            bpmLabel.UpdatePosition((Tempo.ConvertTickTimeToSeconds(eventsToDisplay[i]) - Waveform.startTime) / Waveform.timeShown, boundaryReference2D.rect.height);
         }
 
         BPMPooler.instance.DeactivateUnused(i);

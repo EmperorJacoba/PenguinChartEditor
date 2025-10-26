@@ -2,7 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-// no <T> definition because otherwise IInstrument collections do not work properly
+// please please please do not add <T> to this
+// i have done this like 7 times and it makes chartparser really ugly
+// future me: PLEASE STOP ADDING <T>! IT WILL NOT WORK THIS TIME! LIKE THE 7 OTHER TIMES
 public interface IInstrument
 {
     SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
@@ -76,6 +78,17 @@ public class FourLaneDrumInstrument : IInstrument
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     public InstrumentType Instrument { get; set; }
     public DifficultyType Difficulty { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="lane">The integer value of LaneOrientation. Use a cast!</param>
+    /// <returns></returns>
+    public SortedDictionary<int, FourLaneDrumNoteData> GetLaneData(int lane)
+    {
+        return Lanes[lane];
+    }
+
     public enum LaneOrientation
     {
         red = 0,
@@ -97,6 +110,16 @@ public class GHLInstrument : IInstrument
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     public InstrumentType Instrument { get; set; }
     public DifficultyType Difficulty { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="lane">The integer value of LaneOrientation. Use a cast!</param>
+    /// <returns></returns>
+    public SortedDictionary<int, GHLNoteData> GetLaneData(int lane)
+    {
+        return Lanes[lane];
+    }
 
     public enum LaneOrientation
     {

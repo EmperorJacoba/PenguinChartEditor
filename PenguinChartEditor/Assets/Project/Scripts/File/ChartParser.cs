@@ -97,7 +97,8 @@ public class ChartParser
                 // events parse
                 break;
             default:
-                instruments.Add(ParseInstrumentGroup(eventGroup));
+                var instrument = ParseInstrumentGroup(eventGroup);
+                if (instrument != null) instruments.Add(instrument);
                 break;
         }
     }

@@ -3,7 +3,8 @@ using UnityEngine.EventSystems;
 
 public abstract class Lane<T> : MonoBehaviour where T : IEventData
 {
-    [SerializeField] protected RectTransform boundaryReference;
+    [SerializeField] protected RectTransform boundaryReference2D;
+    [SerializeField] protected Transform highway3D;
 
     // Leverages scene structure to access event actions
     // WITHOUT needing a selections flag to make sure
@@ -20,6 +21,7 @@ public abstract class Lane<T> : MonoBehaviour where T : IEventData
         inputMap = new();
         inputMap.Enable();
 
+        // needs updating to work with databroker approach
         inputMap.Charting.Delete.performed += x => eventAccessor.DeleteSelection();
         inputMap.Charting.Copy.performed += x => eventAccessor.CopySelection();
         inputMap.Charting.Paste.performed += x => eventAccessor.PasteSelection();

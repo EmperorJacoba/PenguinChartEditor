@@ -34,7 +34,7 @@ public abstract class Pooler<T> : MonoBehaviour where T : MonoBehaviour, IPoolab
     /// </summary>
     /// <param name="index">The target object number.</param>
     /// <returns>The requested object.</returns>
-    public T ActivateObject(int index, int activationTick)
+    public virtual T ActivateObject(int index, int activationTick)
     {
         while (eventObjects.Count <= index)
         {

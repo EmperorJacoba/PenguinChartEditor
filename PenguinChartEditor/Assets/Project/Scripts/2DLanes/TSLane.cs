@@ -25,14 +25,14 @@ public class TSLane : Lane<TSData>
 
             double percentOfScreen = (Tempo.ConvertTickTimeToSeconds(eventsToDisplay[i]) - Waveform.startTime) / Waveform.timeShown;
 
-            tsLabel.UpdatePosition(percentOfScreen, boundaryReference.rect.height);
+            tsLabel.UpdatePosition(percentOfScreen, boundaryReference2D.rect.height);
 
             if (!TimeSignature.IsEventValid(eventsToDisplay[i]))
             {
                 var tsWarningAlert = WarningPooler.instance.ActivateObject(warningCount, eventsToDisplay[i]);
 
                 tsWarningAlert.InitializeWarning(Warning.WarningType.invalidTimeSignature);
-                tsWarningAlert.UpdatePosition(percentOfScreen, boundaryReference.rect.height);
+                tsWarningAlert.UpdatePosition(percentOfScreen, boundaryReference2D.rect.height);
 
                 warningCount++;
             }

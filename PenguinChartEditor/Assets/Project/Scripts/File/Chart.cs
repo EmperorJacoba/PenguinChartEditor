@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SFB;
 using System.IO;
+using System.Linq;
 
 public class Chart : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class Chart : MonoBehaviour
         Chart
     }
     public static TabType currentTab;
+
+    public static IInstrument LoadedInstrument { get; set; }
 
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
@@ -111,9 +114,16 @@ public class Chart : MonoBehaviour
         DontDestroyOnLoad(instance);
 
         LoadFile();
+        LoadedInstrument = Instruments.
+            Where(
+            item => item.Instrument == InstrumentType.guitar).
+            ToList()[0];
 
         AudioManager.PlaybackStateChanged += x => { editMode = !AudioManager.AudioPlaying; };
     }
+
+    public delegate void ChartUpdatedDelegate();
+    public static event ChartUpdatedDelegate ChartUpdated;
 
     public static void Refresh()
     {
@@ -129,6 +139,7 @@ public class Chart : MonoBehaviour
                 break;
             case TabType.Chart:
                 BeatlineLane3D.instance.UpdateEvents();
+                ChartUpdated?.Invoke();
                 break;
         }
     }
