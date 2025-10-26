@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(BPMLabel))]
 public class BPMPreviewer : Previewer
 {
     public static BPMPreviewer instance;

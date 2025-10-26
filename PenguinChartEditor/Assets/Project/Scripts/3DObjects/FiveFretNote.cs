@@ -16,6 +16,23 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public Coroutine destructionCoroutine { get; set; }
 
+    public FiveFretInstrument.LaneOrientation laneIdentifier
+    {
+        get
+        {
+            return _li;
+        }
+        set
+        {
+            noteColor.material = noteColorMaterials[(int)value];
+            _li = value;
+        } 
+    }
+    FiveFretInstrument.LaneOrientation _li;
+
+    [SerializeField] MeshRenderer noteColor;
+    [SerializeField] List<Material> noteColorMaterials = new();
+
     public override IPreviewer EventPreviewer => lanePreviewer;
     public IPreviewer lanePreviewer; // define in pooler
 
@@ -48,8 +65,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         var instrument = (FiveFretInstrument)Chart.LoadedInstrument;
         instrument.Lanes[(int)laneIdentifier] = newEvents;
     }
-
-    public FiveFretInstrument.LaneOrientation laneIdentifier;
 
     public void InitializeNote()
     {

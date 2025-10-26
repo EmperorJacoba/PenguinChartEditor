@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(FiveFretNote))]
 public class FiveFretNotePreviewer : Previewer
 {
     [SerializeField] FiveFretNote note;
@@ -48,5 +49,12 @@ public class FiveFretNotePreviewer : Previewer
     public override void Show()
     {
         if (!note.Visible) note.Visible = true;
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
+        var fiveFretNote = GetComponent<FiveFretNote>();
+        fiveFretNote.lanePreviewer = this;
     }
 }

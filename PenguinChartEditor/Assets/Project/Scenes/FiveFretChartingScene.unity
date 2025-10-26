@@ -521,7 +521,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  laneIdentifier: 2
+  noteColor: {fileID: 0}
+  noteColorMaterials: []
 --- !u!4 &325951982
 Transform:
   m_ObjectHideFlags: 0
@@ -683,7 +684,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  laneIdentifier: 5
+  noteColor: {fileID: 0}
+  noteColorMaterials: []
 --- !u!4 &550080833
 Transform:
   m_ObjectHideFlags: 0
@@ -885,7 +887,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  laneIdentifier: 4
+  noteColor: {fileID: 0}
+  noteColorMaterials: []
 --- !u!4 &643972406
 Transform:
   m_ObjectHideFlags: 0
@@ -2297,7 +2300,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  laneIdentifier: 1
+  noteColor: {fileID: 0}
+  noteColorMaterials: []
 --- !u!4 &1731475917
 Transform:
   m_ObjectHideFlags: 0
@@ -3075,7 +3079,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  laneIdentifier: 0
+  noteColor: {fileID: 0}
+  noteColorMaterials: []
 --- !u!4 &2006768578
 Transform:
   m_ObjectHideFlags: 0
@@ -3223,7 +3228,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  laneIdentifier: 3
+  noteColor: {fileID: 0}
+  noteColorMaterials: []
 --- !u!4 &2117541872
 Transform:
   m_ObjectHideFlags: 0

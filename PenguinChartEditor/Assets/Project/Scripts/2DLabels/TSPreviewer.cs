@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(TSLabel))]
 public class TSPreviewer : Previewer
 {
     public static TSPreviewer instance { get; set; }

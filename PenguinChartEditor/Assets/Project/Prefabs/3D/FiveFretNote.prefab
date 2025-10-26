@@ -47,7 +47,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 1543690820077051992}
-  parentLane: {fileID: 0}
+  noteColor: {fileID: 1639979275541850618}
+  noteColorMaterials:
+  - {fileID: 2100000, guid: 4581aea49d8bfdc4aa94d291864b50b3, type: 2}
+  - {fileID: 2100000, guid: 9b4b664a22f05924a8efae8be3a593a0, type: 2}
+  - {fileID: 2100000, guid: 6fdab26df1d6caf49a173a70a065805c, type: 2}
+  - {fileID: 2100000, guid: 563f86fbb2c654d4e8897110a5fcd0ca, type: 2}
+  - {fileID: 2100000, guid: 372a3af51381021449083e55ec60298b, type: 2}
+  - {fileID: 2100000, guid: cd2c0c338170b4c4fa22bce28883fb72, type: 2}
 --- !u!1 &1543690820077051992
 GameObject:
   m_ObjectHideFlags: 0
@@ -252,5 +259,10 @@ PrefabInstance:
 --- !u!4 &797380883648330367 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+  m_PrefabInstance: {fileID: 908149107006561684}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1639979275541850618 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1898272445544690798, guid: 715f8556dc375704685742a5340c50c8, type: 3}
   m_PrefabInstance: {fileID: 908149107006561684}
   m_PrefabAsset: {fileID: 0}
