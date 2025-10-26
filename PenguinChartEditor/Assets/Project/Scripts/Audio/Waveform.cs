@@ -117,7 +117,7 @@ public class Waveform : MonoBehaviour
     #endregion
 
     #region Unity Functions
-    protected void Awake()
+    protected virtual void Awake()
     {
         instance = this;
 
@@ -131,11 +131,16 @@ public class Waveform : MonoBehaviour
 
         // Invisible by default so that a bunch of dropdown defaulting logic isn't needed
         // Just have user select it
-        SetWaveformVisibility(false);
+        SetWaveformVisibility(true);
 
         CurrentWaveform = Chart.Metadata.StemPaths.Keys.First(); // This doesn't matter much b/c waveform is invis by default
         // This is just so that the waveform has something to generate from (avoid bricking program from error)
+        if (wf2D) Init2D();
+    }
+    protected bool wf2D = true;
 
+    void Init2D()
+    {
         var boundsRectTransform = boundaryReference.GetComponent<RectTransform>();
         rt_2DOnly.pivot = boundsRectTransform.pivot;
     }
@@ -277,7 +282,7 @@ public class Waveform : MonoBehaviour
     public static int endTick;
     public static double timeShown;
     public static double startTime;
-    public double endTime;
+    public static double endTime;
 
     /// <summary>
     /// Caches the current properties of the displayed waveform segment and refreshes data.

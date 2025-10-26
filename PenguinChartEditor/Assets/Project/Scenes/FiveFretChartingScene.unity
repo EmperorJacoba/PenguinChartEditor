@@ -347,7 +347,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!120 &1248994117
 LineRenderer:
   serializedVersion: 2
@@ -398,7 +398,7 @@ LineRenderer:
   - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1
+    widthMultiplier: 0.015
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -640,7 +640,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1754544326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -655,10 +655,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lineRendererMain: {fileID: 1754544327}
   lineRendererMirror: {fileID: 1248994117}
-  rt: {fileID: 0}
+  rt_2DOnly: {fileID: 0}
   boundaryReference: {fileID: 0}
-  strikeline: {fileID: 0}
-  endTime: 0
+  highway: {fileID: 2069553715}
 --- !u!120 &1754544327
 LineRenderer:
   serializedVersion: 2
@@ -705,11 +704,11 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 0, y: 0, z: 0}
+  - {x: 1, y: 0, z: 1}
   - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1
+    widthMultiplier: 0.015
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -915,6 +914,7 @@ GameObject:
   - component: {fileID: 1936119446}
   - component: {fileID: 1936119445}
   - component: {fileID: 1936119444}
+  - component: {fileID: 1936119447}
   m_Layer: 0
   m_Name: Strikeline
   m_TagString: Untagged
@@ -1011,6 +1011,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1936119442}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1936119447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1936119442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 758286d6f122a104a8f11681c532cc9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highway: {fileID: 2069553715}
 --- !u!1001 &1992376335
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1063,11 +1076,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chart
       objectReference: {fileID: 0}
+    - target: {fileID: 8606462194274283166, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
+--- !u!4 &2069553715 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
+  m_PrefabInstance: {fileID: 29604111}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

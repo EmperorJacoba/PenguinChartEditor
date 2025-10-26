@@ -16,7 +16,8 @@ public class Chart : MonoBehaviour
     public enum TabType
     {
         SongSetup,
-        TempoMap
+        TempoMap,
+        Chart
     }
     public static TabType currentTab;
 
@@ -80,6 +81,8 @@ public class Chart : MonoBehaviour
                 Metadata.StemPaths.Add(key, targetFilePath);
             }
         }
+
+        AudioManager.InitializeAudio();
 
         Tempo.Events = chartParser.bpmEvents;
         TimeSignature.Events = chartParser.tsEvents;
