@@ -1,9 +1,14 @@
 using UnityEngine;
 
+public interface IStrikeline
+{
+    float GetStrikelineProportion();
+}
+
 /// <summary>
 /// Class attached to the Strikeline container game object. 
 /// </summary>
-public class Strikeline : MonoBehaviour
+public class Strikeline : MonoBehaviour, IStrikeline
 {
     [SerializeField] RectTransform strikelineRt;
     public static Strikeline instance;
@@ -19,7 +24,7 @@ public class Strikeline : MonoBehaviour
     /// <para>Example: 0.1 => the strikeline is 10% up from the bottom of the screen relative to the screen</para>
     /// </summary>
     /// <returns>Proportion as decimal</returns>
-    public float GetStrikelineScreenProportion()
+    public float GetStrikelineProportion()
     {
         // constraints:
         // 0 is at bottom of screen/track, which is where anchor point/pivot MUST be

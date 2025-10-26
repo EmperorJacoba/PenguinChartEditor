@@ -20,12 +20,12 @@ public class Waveform : MonoBehaviour
     /// <summary>
     /// Line renderer that contains rightward (positive dir) waveform render
     /// </summary>
-    [SerializeField] LineRenderer lineRendererMain;
+    [SerializeField] protected LineRenderer lineRendererMain;
 
     /// <summary>
     /// Line renderer that contains leftward (negative dir) waveform render
     /// </summary>
-    [SerializeField] LineRenderer lineRendererMirror;
+    [SerializeField] protected LineRenderer lineRendererMirror;
 
     // Note: Line renderer uses local positioning to more easily align with the screen
     // both of these line renderers combine to make a symmetrical waveform
@@ -34,19 +34,19 @@ public class Waveform : MonoBehaviour
     /// <summary>
     /// RectTransform attached to the waveform container.
     /// </summary>
-    [SerializeField] RectTransform rt;
+    [SerializeField] RectTransform rt_2DOnly;
 
     /// <summary>
     /// Height of the RectTransform component attached to the waveform's container GameObject.
     /// </summary>
-    private float rtHeight => rt.rect.height;
+    private float rtHeight => rt_2DOnly.rect.height;
 
     /// <summary>
     /// Panel that is always the size of the bounds of the waveform. Used to set waveform object at right distance from camera/background.
     /// </summary>
     [SerializeField] GameObject boundaryReference; // in tempo map, screen 
 
-    [SerializeField] Strikeline strikeline;
+    [SerializeField] IStrikeline strikeline;
 
     #endregion
 
@@ -112,12 +112,12 @@ public class Waveform : MonoBehaviour
     /// <summary>
     /// The currently displayed waveform.
     /// </summary>
-    private static StemType CurrentWaveform { get; set; }
+    protected static StemType CurrentWaveform { get; set; }
 
     #endregion
 
     #region Unity Functions
-    void Awake()
+    protected void Awake()
     {
         instance = this;
 
@@ -125,7 +125,7 @@ public class Waveform : MonoBehaviour
         SongTime.TimeChanged += ChangeWaveformSegment;
     }
 
-    void Start()
+    protected void Start()
     {
         InitializeWaveformData();
 
@@ -137,7 +137,7 @@ public class Waveform : MonoBehaviour
         // This is just so that the waveform has something to generate from (avoid bricking program from error)
 
         var boundsRectTransform = boundaryReference.GetComponent<RectTransform>();
-        rt.pivot = boundsRectTransform.pivot;
+        rt_2DOnly.pivot = boundsRectTransform.pivot;
     }
     #endregion
 
@@ -156,7 +156,7 @@ public class Waveform : MonoBehaviour
     /// Update waveform data to a new audio file.
     /// </summary>
     /// <param name="stem">The BASS stream to get audio samples of.</param>
-    public void UpdateWaveformData(StemType stem) // pass in file path here later
+    void UpdateWaveformData(StemType stem) // pass in file path here later
     {
         float[] stemWaveformData = AudioManager.GetAudioSamples(stem, out long bytesPerSample);
 
@@ -171,7 +171,7 @@ public class Waveform : MonoBehaviour
     /// Generate an array of line renderer positions based on waveform audio.
     /// </summary>
     /// <returns>Vector3 array of line renderer positions</returns>
-    private void GenerateWaveformPoints()
+    protected virtual void GenerateWaveformPoints()
     {
         float[] waveformData;
         if (WaveformData.ContainsKey(CurrentWaveform))
@@ -189,7 +189,7 @@ public class Waveform : MonoBehaviour
             waveformData = new float[0];
         }
 
-        var sampleCount = samplesPerScreen;
+        var sampleCount = samplesPerBoundary;
         var startSampleIndex = CurrentWaveformDataPosition - strikeSamplePoint;
 
         // each line renderer point is a sample
@@ -250,18 +250,18 @@ public class Waveform : MonoBehaviour
     /// </summary>
     /// <param name="startPoint">The first waveform point visible, in seconds.</param>
     /// <param name="endPoint">The last waveform point visible, in seconds</param>
-    public static (double, double) GetDisplayedAudio()
+    (double, double) GetDisplayedAudio()
     {
         var offset = strikeSamplePoint;
         // get to bottom of screen, calculate what that waveform position is in seconds
         var startPoint = (CurrentWaveformDataPosition - offset) * AudioManager.ARRAY_RESOLUTION;
         // get to bottom of screen, jump to top of screen with samplesPerScreen, calculate what that waveform position is in seconds
-        var endPoint = (CurrentWaveformDataPosition - offset + samplesPerScreen) * AudioManager.ARRAY_RESOLUTION;
+        var endPoint = (CurrentWaveformDataPosition - offset + samplesPerBoundary) * AudioManager.ARRAY_RESOLUTION;
 
         return (startPoint, endPoint);
     }
 
-    public static void GetCurrentDisplayedWaveformInfo(out int startTick, out int endTick, out double timeShown, out double startTime, out double endTime)
+    public void GetCurrentDisplayedWaveformInfo(out int startTick, out int endTick, out double timeShown, out double startTime, out double endTime)
     {
         (startTime, endTime) = GetDisplayedAudio();
         startTick = Tempo.ConvertSecondsToTickTime((float)startTime);
@@ -271,8 +271,8 @@ public class Waveform : MonoBehaviour
         //Debug.Log($"{Time.frameCount}: {startTick}, {endTick}, {timeShown}, {startTime}, {endTime}");
     }
 
-    static int samplesPerScreen => (int)Mathf.Round(instance.rtHeight / ShrinkFactor);
-    static int strikeSamplePoint => (int)Math.Ceiling(samplesPerScreen * instance.strikeline.GetStrikelineScreenProportion());
+    protected virtual int samplesPerBoundary => (int)Mathf.Round(instance.rtHeight / ShrinkFactor);
+    protected virtual int strikeSamplePoint => (int)Math.Ceiling(samplesPerBoundary * instance.strikeline.GetStrikelineProportion());
     public static int startTick;
     public static int endTick;
     public static double timeShown;
@@ -290,7 +290,7 @@ public class Waveform : MonoBehaviour
         Chart.Refresh();
     }
 
-    public void SetWaveformVisibility(bool isVisible)
+    public virtual void SetWaveformVisibility(bool isVisible)
     {
         if (isVisible) transform.position = boundaryReference.transform.position + Vector3.back;
         // ^^ In order for the waveform to be visible the container game object has to be moved in front of the background panel & vice versa
