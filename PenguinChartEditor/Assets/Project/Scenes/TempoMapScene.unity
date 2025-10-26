@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 6239090009231363197, guid: 6d12eaf9ec73a61478085a805dfbf106, type: 3}
-  canvas: {fileID: 266212997}
+  parentObject: {fileID: 266212997}
 --- !u!1001 &266212995
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -644,7 +644,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 6964610722790470207, guid: 662ae8843c8a0404ea37a3b28114c022, type: 3}
-  canvas: {fileID: 584328519}
+  parentObject: {fileID: 584328519}
 --- !u!1 &584328519 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6239090009231363197, guid: 6d12eaf9ec73a61478085a805dfbf106, type: 3}
@@ -1726,7 +1726,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 4282045479885994295, guid: 96a8ac1659ccb824f9aee5b49d8913a1, type: 3}
-  canvas: {fileID: 1503374290}
+  parentObject: {fileID: 1503374290}
 --- !u!114 &864451742 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8710046852765970343, guid: 74daa2c11298dcd4c83bd3aacd660b10, type: 3}
@@ -1787,7 +1787,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 2684071022864669012, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
-  canvas: {fileID: 584328519}
+  parentObject: {fileID: 584328519}
 --- !u!1 &988807910
 GameObject:
   m_ObjectHideFlags: 0
@@ -1925,6 +1925,11 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!224 &1067001788 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4765939004455367100, guid: add925d0cbfc55d4398d4741c3f66b35, type: 3}
+  m_PrefabInstance: {fileID: 795224856823106525}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1108257658
 GameObject:
   m_ObjectHideFlags: 0
@@ -3206,6 +3211,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Waveform
       objectReference: {fileID: 0}
+    - target: {fileID: 4045013100665676562, guid: add925d0cbfc55d4398d4741c3f66b35, type: 3}
+      propertyPath: rt_2DOnly
+      value: 
+      objectReference: {fileID: 1067001788}
     - target: {fileID: 4045013100665676562, guid: add925d0cbfc55d4398d4741c3f66b35, type: 3}
       propertyPath: strikeline
       value: 

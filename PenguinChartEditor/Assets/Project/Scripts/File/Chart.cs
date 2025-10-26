@@ -127,6 +127,9 @@ public class Chart : MonoBehaviour
                 BPMLane.instance.UpdateEvents();
                 TSLane.instance.UpdateEvents();
                 break;
+            case TabType.Chart:
+                BeatlineLane3D.instance.UpdateEvents();
+                break;
         }
     }
 }

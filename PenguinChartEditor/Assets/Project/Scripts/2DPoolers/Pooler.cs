@@ -17,13 +17,15 @@ public interface IPoolable
 public abstract class Pooler<T> : MonoBehaviour where T : MonoBehaviour, IPoolable
 {
     [SerializeField] protected GameObject objectPrefab;
-    [SerializeField] protected GameObject canvas;
+
+    [Tooltip("The object that the pooled objects will be children of. Use the canvas with all other events on it for 2D applications (TempoMap)")]
+    [SerializeField] protected GameObject parentObject;
 
     protected List<T> eventObjects = new();
 
     protected void CreateNew()
     {
-        GameObject tmp = Instantiate(objectPrefab, canvas.transform);
+        GameObject tmp = Instantiate(objectPrefab, parentObject.transform);
         eventObjects.Add(tmp.GetComponent<T>());
     }
 

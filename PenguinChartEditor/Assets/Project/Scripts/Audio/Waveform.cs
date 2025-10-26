@@ -46,8 +46,6 @@ public class Waveform : MonoBehaviour
     /// </summary>
     [SerializeField] GameObject boundaryReference; // in tempo map, screen 
 
-    [SerializeField] IStrikeline strikeline;
-
     #endregion
 
     #region Display Options
@@ -277,7 +275,7 @@ public class Waveform : MonoBehaviour
     }
 
     protected virtual int samplesPerBoundary => (int)Mathf.Round(instance.rtHeight / ShrinkFactor);
-    protected virtual int strikeSamplePoint => (int)Math.Ceiling(samplesPerBoundary * instance.strikeline.GetStrikelineProportion());
+    protected virtual int strikeSamplePoint => (int)Math.Ceiling(samplesPerBoundary * Strikeline.instance.GetStrikelineProportion());
     public static int startTick;
     public static int endTick;
     public static double timeShown;

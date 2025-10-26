@@ -13,7 +13,7 @@ public class Waveform3D : Waveform
         wf2D = false;
         Chart.currentTab = Chart.TabType.Chart;
     }
-    float ShrinkFactor3D => ShrinkFactor * 10;
+    float ShrinkFactor3D => ShrinkFactor * 5;
     float Amplitude3D => Amplitude * 5;
 
     /// <summary>

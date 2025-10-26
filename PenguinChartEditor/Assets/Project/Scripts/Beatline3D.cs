@@ -7,6 +7,16 @@ public class Beatline3D : BaseBeatline
     /// </summary>
     protected override float[] thicknesses => _thicknesses;
 
-    float[] _thicknesses = { 0, 1, 5, 10 };
+    float[] _thicknesses = { 0, 0.3f, 0.1f, 0.02f };
+
+    public void UpdateBeatlinePosition(double percentOfHighway, float highwayLength)
+    {
+        var zPos = (float)percentOfHighway * highwayLength;
+
+        Vector3[] newPos = new Vector3[2];
+        newPos[0] = new Vector3(line.GetPosition(0).x, line.GetPosition(0).y, (float)zPos);
+        newPos[1] = new Vector3(line.GetPosition(1).x, line.GetPosition(1).y, (float)zPos);
+        line.SetPositions(newPos);
+    }
 
 }
