@@ -112,8 +112,5 @@ public enum HeaderType
     HardGHLRhythm = 1032,
     ExpertGHLRhythm = 1033,
 
-    EasyVox = 10000,
-    MediumVox = 10001,
-    HardVox = 10002,
-    ExpertVox = 10003
+    Vox = 10000, // no difficulties
 }

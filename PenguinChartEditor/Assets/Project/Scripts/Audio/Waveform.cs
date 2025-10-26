@@ -173,7 +173,22 @@ public class Waveform : MonoBehaviour
     /// <returns>Vector3 array of line renderer positions</returns>
     private void GenerateWaveformPoints()
     {
-        var masterWaveformData = WaveformData[CurrentWaveform].volumeData;
+        float[] waveformData;
+        if (WaveformData.ContainsKey(CurrentWaveform))
+        {
+            waveformData = WaveformData[CurrentWaveform].volumeData;
+        }
+        else
+        {
+            // this is to generate waveform data even if there is either
+            // a) no data available (no audio loaded)
+            // or b) a call when CurrentWaveform = 0 (none) occurs.
+            // this lets the for loop below execute because it can't without SOMETHING in waveformData.
+            // the if statement in that loop is always true when an empty float[] exists in waveformData,
+            // so it accurately represents no data (even though the "waveform" is actually behind the track)
+            waveformData = new float[0];
+        }
+
         var sampleCount = samplesPerScreen;
         var startSampleIndex = CurrentWaveformDataPosition - strikeSamplePoint;
 
@@ -189,12 +204,12 @@ public class Waveform : MonoBehaviour
             yPos = lineRendererIndex * ShrinkFactor;
             var waveformIndex = startSampleIndex + lineRendererIndex;
 
-            if (waveformIndex < 0 || waveformIndex >= masterWaveformData.Length)
+            if (waveformIndex < 0 || waveformIndex >= waveformData.Length)
             {
                 lineRendererPositions[lineRendererIndex] = new Vector3(0, yPos);
                 continue;
             }
-            lineRendererPositions[lineRendererIndex] = new(masterWaveformData[waveformIndex] * Amplitude, yPos);
+            lineRendererPositions[lineRendererIndex] = new(waveformData[waveformIndex] * Amplitude, yPos);
         }
 
         lineRendererMain.SetPositions(lineRendererPositions);

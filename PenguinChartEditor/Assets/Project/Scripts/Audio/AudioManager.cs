@@ -64,7 +64,7 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// The length of the stream attached to the longest stem.
     /// </summary>
-    public static float SongLength { get; set; }
+    public static float SongLength { get; set; } = 0;
 
     #endregion
 
