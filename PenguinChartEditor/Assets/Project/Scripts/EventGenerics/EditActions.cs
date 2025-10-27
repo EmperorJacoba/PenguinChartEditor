@@ -60,10 +60,10 @@ public class Paste<T> : IEditAction<T>
     SortedDictionary<int, T> eventSetReference;
     public Delete<T> deleteAction;
 
-    public Paste(SortedDictionary<int, T> targetEventSet)
+    public Paste(SortedDictionary<int, T> targetEventSet, bool tick0Immune)
     {
         eventSetReference = targetEventSet;
-        deleteAction = new(targetEventSet);
+        deleteAction = new(targetEventSet, tick0Immune);
     }
 
     public bool Execute(int startPasteTick, SortedDictionary<int, T> clipboard)
@@ -101,12 +101,14 @@ public class Delete<T> : IEditAction<T>
 {
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     SortedDictionary<int, T> eventSetReference;
-    public Delete(SortedDictionary<int, T> targetEventSet)
+    public Delete(SortedDictionary<int, T> targetEventSet, bool tick0Immune)
     {
         eventSetReference = targetEventSet;
+        this.tick0Immune = tick0Immune;
     }
     int startTick;
     int endTick;
+    bool tick0Immune;
 
     /// <summary>
     /// Delete all events specified in a selection set.
@@ -119,7 +121,8 @@ public class Delete<T> : IEditAction<T>
 
         foreach (var tick in selectedEvents)
         {
-            if (tick.Key != 0 && eventSetReference.ContainsKey(tick.Key))
+            if (tick.Key == 0 && tick0Immune) continue;
+            if (eventSetReference.ContainsKey(tick.Key))
             {
                 eventSetReference.Remove(tick.Key, out T data);
                 SaveData.Add(tick.Key, data);
@@ -156,9 +159,8 @@ public class Delete<T> : IEditAction<T>
 
     public bool Execute(int tick)
     {
-        if (eventSetReference.Count == 0) return false;
-
-        if (!eventSetReference.ContainsKey(tick) || tick == 0) return false;
+        if (eventSetReference.Count == 0 || !eventSetReference.ContainsKey(tick)) return false;
+        if (tick0Immune && tick == 0) return false;
 
         eventSetReference.Remove(tick, out T data);
         SaveData.Add(tick, data);
@@ -194,10 +196,10 @@ public class Cut<T> : IEditAction<T>
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     SortedDictionary<int, T> eventSetReference;
     Delete<T> deleteAction;
-    public Cut(SortedDictionary<int, T> targetEventSet)
+    public Cut(SortedDictionary<int, T> targetEventSet, bool tick0Immune)
     {
         eventSetReference = targetEventSet;
-        deleteAction = new(eventSetReference);
+        deleteAction = new(eventSetReference, tick0Immune);
     }
 
     public bool Execute(SortedDictionary<int, T> clipboard, SortedDictionary<int, T> selection)

@@ -22,6 +22,7 @@ public class TSLabel : Label<TSData>, IPoolable
     #endregion
 
     #region Event Handlers
+    protected override bool tick0Immune { get; set; } = true;
 
     public override void HandleManualEndEdit(string newVal)
     {

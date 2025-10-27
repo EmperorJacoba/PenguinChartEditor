@@ -88,6 +88,14 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     // Oops! All naming confusion!
     #region Event Handlers
 
+    /// <summary>
+    /// Used to prevent the TS and BPM events at tick 0 from being deleted.
+    /// If TS and BPM events at tick 0 are deleted, the chart has no place to start its beatline calculations from.
+    /// [SyncTrack] must ALWAYS have one BPM and one TS event at tick 0.
+    /// Users should edit tick 0 events for TS & BPM, not delete them.
+    /// </summary>
+    protected virtual bool tick0Immune { get; set; } = false;
+
     public void CopySelection()
     {
         GetEventData().Clipboard.Clear();
@@ -97,21 +105,21 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public virtual void PasteSelection()
     {
-        var pasteAction = new Paste<T>(GetEventSet());
+        var pasteAction = new Paste<T>(GetEventSet(), tick0Immune);
         pasteAction.Execute(EventPreviewer.Tick, GetEventData().Clipboard);
         Chart.Refresh();
     }
 
     public virtual void CutSelection()
     {
-        var cutAction = new Cut<T>(GetEventSet());
+        var cutAction = new Cut<T>(GetEventSet(), tick0Immune);
         cutAction.Execute(GetEventData().Clipboard, GetEventData().Selection);
         Chart.Refresh();
     }
 
     public virtual void DeleteSelection()
     {
-        var deleteAction = new Delete<T>(GetEventSet());
+        var deleteAction = new Delete<T>(GetEventSet(), tick0Immune);
         deleteAction.Execute(GetEventData().Selection);
         Chart.Refresh();
     }
@@ -186,7 +194,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         SortedDictionary<int, T> movingData = new(GetEventSet());
 
         // delete last move preview's data
-        var deleteAction = new Delete<T>(movingData);
+        var deleteAction = new Delete<T>(movingData, tick0Immune);
         deleteAction.Execute(moveData.lastTempGhostPasteStartTick, moveData.lastTempGhostPasteEndTick);
 
         // re-add any data that was overwritten by last preview
@@ -307,7 +315,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // used for right click + left click delete functionality
         if (GetEventData().RMBHeld && pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            var deleteAction = new Delete<T>(GetEventSet());
+            var deleteAction = new Delete<T>(GetEventSet(), tick0Immune);
             justDeleted = deleteAction.Execute(Tick);
             Chart.Refresh();
         }

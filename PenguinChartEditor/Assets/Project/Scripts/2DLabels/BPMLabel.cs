@@ -22,6 +22,8 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
     #region Event Handlers
 
+    protected override bool tick0Immune { get; set; } = true;
+
     // Overriden to make sure faulty/inaccurate data is not in Tempo dict after any large modifications
     public override void PasteSelection() => ExecuteWithRecalculate(base.PasteSelection);
     public override void DeleteSelection() => ExecuteWithRecalculate(base.DeleteSelection);
