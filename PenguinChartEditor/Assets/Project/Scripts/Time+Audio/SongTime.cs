@@ -168,9 +168,9 @@ public class SongTime : MonoBehaviour
         SongPositionSeconds = newTimeCandidate;
     }
     
-    public static int CalculateGridSnappedTick(float percentOfScreenVertical)
+    public static int CalculateGridSnappedTick(float percentOfHighway)
     {
-        var cursorTimestamp = (percentOfScreenVertical * Waveform.timeShown) + Waveform.startTime;
+        var cursorTimestamp = (percentOfHighway * Waveform.timeShown) + Waveform.startTime;
         var cursorTickTime = Tempo.ConvertSecondsToTickTime((float)cursorTimestamp);
 
         if (cursorTickTime < 0) return 0;
