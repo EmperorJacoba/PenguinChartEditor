@@ -2,8 +2,12 @@ using System;
 using UnityEngine;
 using Un4seen.Bass;
 using System.Collections.Generic;
-using System.Linq;
 
+// This file is based around the licensed product plugin BASS and its .NET wrapper, BASS.NET.
+// You must obtain your own license of BASS and BASS.NET if you would like to repackage the code in this file by the terms each program specifies.
+// Information on licensing BASS: https://www.un4seen.com/bass.html | Information on licensing BASS.NET: https://www.radio42.com/bass/bass_register.html
+// The license for PenguinChartEditor for BASS.NET is held by EmperorJacoba. PCE is licensed under freeware terms.
+// Documentation about BASS is available here: https://www.radio42.com/bass/help/ (Overview will help the most)
 public class AudioManager : MonoBehaviour
 {
     #region Properties
@@ -82,7 +86,6 @@ public class AudioManager : MonoBehaviour
     {
         InitializeBassPlugin();
 
-        // streams are only updated in Song Setup so this data will remain the same throughout entire scene usage
         UpdateStemStreams();
 
         StreamLink = GetLongestStream();

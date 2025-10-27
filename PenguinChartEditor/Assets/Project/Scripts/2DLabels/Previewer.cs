@@ -14,6 +14,7 @@ public interface IPreviewer
     bool AreLaneObjectsHit();
     int Tick { get; set; }
     bool disableNextSelectionCheck { get; set; }
+    float GetHighwayProportion();
 }
 
 public abstract class Previewer : MonoBehaviour, IPreviewer
@@ -60,4 +61,5 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     }
 
     public bool AreLaneObjectsHit() => MiscTools.IsRaycasterHit(eventRaycaster);
+    public abstract float GetHighwayProportion();
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 // Each lane has its own set of notes and selections (EventData)
 // Lanes are defined with type T.
@@ -73,4 +74,14 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
 
     FiveFretInstrument chartInstrument => (FiveFretInstrument)Chart.LoadedInstrument;
+
+    public override void OnPointerUp(PointerEventData pointerEventData)
+    {
+        if (!GetEventData().RMBHeld || pointerEventData.button != PointerEventData.InputButton.Left)
+        {
+            CalculateSelectionStatus(pointerEventData);
+            RefreshEvents();
+        }
+    }
+
 } 

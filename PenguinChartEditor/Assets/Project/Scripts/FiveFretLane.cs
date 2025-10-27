@@ -12,7 +12,7 @@ public class FiveFretLane : Lane<FiveFretNoteData>
     protected override void Awake()
     {
         base.Awake();
-        Chart.ChartUpdated += UpdateEvents;
+        Chart.ChartTabUpdated += UpdateEvents;
     }
 
     public void UpdateEvents()

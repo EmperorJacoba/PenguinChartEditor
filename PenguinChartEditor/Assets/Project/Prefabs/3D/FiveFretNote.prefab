@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3696191114692330603}
   - component: {fileID: 7104254376686482190}
-  m_Layer: 0
+  - component: {fileID: 1592677647469395967}
+  m_Layer: 7
   m_Name: FiveFretNote
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 532864701870792285}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 14.15}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -55,6 +56,27 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 563f86fbb2c654d4e8897110a5fcd0ca, type: 2}
   - {fileID: 2100000, guid: 372a3af51381021449083e55ec60298b, type: 2}
   - {fileID: 2100000, guid: cd2c0c338170b4c4fa22bce28883fb72, type: 2}
+--- !u!65 &1592677647469395967
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 532864701870792285}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.9812438, y: 1.066319, z: 2.0897164}
+  m_Center: {x: -0.2482208, y: 0.54569936, z: -0.060852528}
 --- !u!1 &1543690820077051992
 GameObject:
   m_ObjectHideFlags: 0
@@ -67,7 +89,7 @@ GameObject:
   - component: {fileID: 2119546045030939568}
   - component: {fileID: 3948150327283054172}
   - component: {fileID: 4446484960867336254}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SelectionOverlay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,6 +193,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3696191114692330603}
     m_Modifications:
+    - target: {fileID: -8739825771319507774, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 715f8556dc375704685742a5340c50c8, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.8
@@ -227,10 +253,22 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -8574959399360484712, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: -6055574400320242532, guid: 715f8556dc375704685742a5340c50c8, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 012df9cb33546f54b84753bf14a620de, type: 2}
+    - target: {fileID: -5590564834978018546, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -3133498875991405556, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: -2859109400176981367, guid: 715f8556dc375704685742a5340c50c8, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -243,10 +281,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Model
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 1898272445544690798, guid: 715f8556dc375704685742a5340c50c8, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 4581aea49d8bfdc4aa94d291864b50b3, type: 2}
+    - target: {fileID: 5218222596378575883, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 8123322236738107862, guid: 715f8556dc375704685742a5340c50c8, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 

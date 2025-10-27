@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(BPMLabel))]
 public class BPMPreviewer : Previewer
@@ -56,5 +52,10 @@ public class BPMPreviewer : Previewer
     public override void Show()
     {
         if (!bpmLabel.Visible) bpmLabel.Visible = true;
+    }
+
+    public override float GetHighwayProportion()
+    {
+        throw new System.NotImplementedException();
     }
 }

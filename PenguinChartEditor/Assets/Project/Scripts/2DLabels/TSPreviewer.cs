@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(TSLabel))]
 public class TSPreviewer : Previewer
@@ -57,5 +56,9 @@ public class TSPreviewer : Previewer
     public override void Show()
     {
         if (!tsLabel.Visible) tsLabel.Visible = true;
+    }
+    public override float GetHighwayProportion()
+    {
+        throw new System.NotImplementedException();
     }
 }

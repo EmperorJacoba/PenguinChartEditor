@@ -17,7 +17,7 @@ public class FiveFretNotePreviewer : Previewer
         if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) return;
 
         var hitPosition = GetHighwayPosition();
-        var highwayProportion = hitPosition.z / highway.localScale.z;
+        var highwayProportion = GetHighwayProportion();
         if (highwayProportion == 0) return;
 
         Tick = SongTime.CalculateGridSnappedTick(highwayProportion);
@@ -50,7 +50,7 @@ public class FiveFretNotePreviewer : Previewer
         }
     }
 
-    Vector3 GetHighwayPosition()
+    private Vector3 GetHighwayPosition()
     {
         PointerEventData pointerData = new PointerEventData(EventSystem.current)
         {
@@ -63,6 +63,11 @@ public class FiveFretNotePreviewer : Previewer
         if (results.Count == 0) return Vector3.zero;
 
         return results[0].worldPosition;
+    }
+
+    public override float GetHighwayProportion()
+    {
+        return GetHighwayPosition().z / highway.localScale.z;
     }
 
     public override void CreateEvent()

@@ -123,7 +123,7 @@ public class Chart : MonoBehaviour
     }
 
     public delegate void ChartUpdatedDelegate();
-    public static event ChartUpdatedDelegate ChartUpdated;
+    public static event ChartUpdatedDelegate ChartTabUpdated;
 
     public static void Refresh()
     {
@@ -139,7 +139,7 @@ public class Chart : MonoBehaviour
                 break;
             case TabType.Chart:
                 BeatlineLane3D.instance.UpdateEvents();
-                ChartUpdated?.Invoke();
+                ChartTabUpdated?.Invoke();
                 break;
         }
     }

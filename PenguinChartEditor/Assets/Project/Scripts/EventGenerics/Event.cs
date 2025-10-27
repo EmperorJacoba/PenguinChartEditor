@@ -139,7 +139,18 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             return;
         }
 
-        var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
+        float highwayPercent;
+        if (Chart.currentTab == Chart.TabType.TempoMap)
+        {
+            highwayPercent = Input.mousePosition.y / Screen.height;
+        }
+        else
+        {
+            // this throws a not implemented exception if this is called on a previewer not on a 3D scene
+            highwayPercent = EventPreviewer.GetHighwayProportion();
+        }
+
+        var currentMouseTick = SongTime.CalculateGridSnappedTick(highwayPercent);
 
         // early return if no changes to mouse's grid snap
         if (currentMouseTick == moveData.lastMouseTick)
@@ -208,6 +219,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         }
 
         SetEvents(movingData);
+        Chart.Refresh();
 
         // set up variables for next loop
         moveData.lastMouseTick = currentMouseTick;
@@ -299,7 +311,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             justDeleted = deleteAction.Execute(Tick);
             Chart.Refresh();
         }
-
     }
 
     public virtual void OnPointerUp(PointerEventData pointerEventData)
