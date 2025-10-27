@@ -716,6 +716,7 @@ MonoBehaviour:
   note: {fileID: 325951981}
   highway: {fileID: 2069553715}
   cameraHighwayRaycaster: {fileID: 732549082}
+  lane: {fileID: 1933190197}
   laneCenterPosition: 0
 --- !u!114 &325951981
 MonoBehaviour:
@@ -979,6 +980,7 @@ MonoBehaviour:
   note: {fileID: 550080832}
   highway: {fileID: 2069553715}
   cameraHighwayRaycaster: {fileID: 732549082}
+  lane: {fileID: 1292801093}
   laneCenterPosition: -6
 --- !u!114 &550080832
 MonoBehaviour:
@@ -1184,6 +1186,7 @@ MonoBehaviour:
   note: {fileID: 643972405}
   highway: {fileID: 2069553715}
   cameraHighwayRaycaster: {fileID: 732549082}
+  lane: {fileID: 536290878}
   laneCenterPosition: 4
 --- !u!114 &643972405
 MonoBehaviour:
@@ -2822,6 +2825,7 @@ MonoBehaviour:
   note: {fileID: 1731475916}
   highway: {fileID: 2069553715}
   cameraHighwayRaycaster: {fileID: 732549082}
+  lane: {fileID: 1158524636}
   laneCenterPosition: -2
 --- !u!114 &1731475916
 MonoBehaviour:
@@ -3701,6 +3705,7 @@ MonoBehaviour:
   note: {fileID: 2006768577}
   highway: {fileID: 2069553715}
   cameraHighwayRaycaster: {fileID: 732549082}
+  lane: {fileID: 143122575}
   laneCenterPosition: -4
 --- !u!114 &2006768577
 MonoBehaviour:
@@ -3852,6 +3857,7 @@ MonoBehaviour:
   note: {fileID: 2117541871}
   highway: {fileID: 2069553715}
   cameraHighwayRaycaster: {fileID: 732549082}
+  lane: {fileID: 1482099733}
   laneCenterPosition: 2
 --- !u!114 &2117541871
 MonoBehaviour:

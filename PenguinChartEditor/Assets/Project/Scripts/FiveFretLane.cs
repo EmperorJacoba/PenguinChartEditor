@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FiveFretLane : Lane<FiveFretNoteData>
 {
-    [SerializeField] FiveFretInstrument.LaneOrientation laneIdentifier;
+    [SerializeField] public FiveFretInstrument.LaneOrientation laneIdentifier;
     [SerializeField] FiveFretNotePooler lanePooler;
     [SerializeField] public FiveFretNotePreviewer previewer;
     [SerializeField] int laneCenterPosition;

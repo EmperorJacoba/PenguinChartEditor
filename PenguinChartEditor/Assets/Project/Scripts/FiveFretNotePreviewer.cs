@@ -9,6 +9,7 @@ public class FiveFretNotePreviewer : Previewer
     [SerializeField] FiveFretNote note;
     [SerializeField] Transform highway;
     [SerializeField] PhysicsRaycaster cameraHighwayRaycaster;
+    [SerializeField] FiveFretLane lane;
     [SerializeField] int laneCenterPosition;
 
     public override void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
@@ -22,6 +23,12 @@ public class FiveFretNotePreviewer : Previewer
         Tick = SongTime.CalculateGridSnappedTick(highwayProportion);
 
         note.Tick = Tick;
+        if (note.GetEventSet().ContainsKey(Tick))
+        {
+            note.Visible = false;
+            return;
+        }
+
         note.UpdatePosition(
             (Tempo.ConvertTickTimeToSeconds(Tick) - Waveform.startTime) / Waveform.timeShown,
             highway.localScale.z,
@@ -29,6 +36,7 @@ public class FiveFretNotePreviewer : Previewer
 
         var lowerBound = laneCenterPosition - 1;
         var upperBound = laneCenterPosition + 1;
+        
 
         // only call this function when cursor is within certain range?
         // takes the functionality out of this function
@@ -61,7 +69,7 @@ public class FiveFretNotePreviewer : Previewer
     {
         if (IsOverlayUIHit()) return;
 
-        if (note.Visible && !TimeSignature.Events.ContainsKey(note.Tick))
+        if (note.Visible && !note.GetEventSet().ContainsKey(note.Tick))
         {
             note.CreateEvent(note.Tick, new FiveFretNoteData(0, FiveFretNoteData.FlagType.strum)); // strum flag needs to be changed
             Chart.Refresh();
@@ -82,5 +90,6 @@ public class FiveFretNotePreviewer : Previewer
         base.Awake();
         var fiveFretNote = GetComponent<FiveFretNote>();
         fiveFretNote.lanePreviewer = this;
+        fiveFretNote.laneIdentifier = lane.laneIdentifier;
     }
 }

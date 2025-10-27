@@ -8,11 +8,8 @@ using UnityEngine;
 
 public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 {
-    static MoveData<FiveFretNoteData> moveData = new(); // needs data broker
-    public override MoveData<FiveFretNoteData> GetMoveData() => moveData;
-
-    static EventData<FiveFretNoteData> eventData = new(); // needs data broker
-    public override EventData<FiveFretNoteData> GetEventData() => eventData;
+    public override MoveData<FiveFretNoteData> GetMoveData() => chartInstrument.InstrumentMoveData[(int)laneIdentifier];
+    public override EventData<FiveFretNoteData> GetEventData() => chartInstrument.InstrumentEventData[(int)laneIdentifier];
 
     public Coroutine destructionCoroutine { get; set; }
 
@@ -24,7 +21,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
         set
         {
-            noteColor.material = noteColorMaterials[(int)value];
+            if (noteColorMaterials.Count > 0) noteColor.material = noteColorMaterials[(int)value];
             _li = value;
         } 
     }
@@ -56,14 +53,12 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public override SortedDictionary<int, FiveFretNoteData> GetEventSet()
     {
-        var instrument = (FiveFretInstrument)Chart.LoadedInstrument;
-        return instrument.Lanes[(int)laneIdentifier];
+        return chartInstrument.Lanes[(int)laneIdentifier];
     }
 
     public override void SetEvents(SortedDictionary<int, FiveFretNoteData> newEvents)
     {
-        var instrument = (FiveFretInstrument)Chart.LoadedInstrument;
-        instrument.Lanes[(int)laneIdentifier] = newEvents;
+        chartInstrument.Lanes[(int)laneIdentifier] = newEvents;
     }
 
     public void InitializeNote()
@@ -76,4 +71,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         var trackProportion = (float)percentOfTrack * trackLength;
         transform.position = new Vector3(xPosition, 0, trackProportion);
     }
+
+    FiveFretInstrument chartInstrument => (FiveFretInstrument)Chart.LoadedInstrument;
 } 

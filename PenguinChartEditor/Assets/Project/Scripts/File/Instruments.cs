@@ -17,6 +17,12 @@ public interface IInstrument
 public class FiveFretInstrument : IInstrument
 {
     public SortedDictionary<int, FiveFretNoteData>[] Lanes { get; set; }
+    public EventData<FiveFretNoteData>[] InstrumentEventData { get; set; } = 
+        new EventData<FiveFretNoteData>[6] { new (), new(), new(), new(), new(), new() };
+
+    public MoveData<FiveFretNoteData>[] InstrumentMoveData { get; set; } =
+        new MoveData<FiveFretNoteData>[6] { new(), new(), new(), new(), new(), new() };
+
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     public InstrumentType Instrument { get; set; }
