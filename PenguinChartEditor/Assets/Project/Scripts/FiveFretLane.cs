@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class FiveFretLane : Lane<FiveFretNoteData>
 {
@@ -18,8 +19,11 @@ public class FiveFretLane : Lane<FiveFretNoteData>
     public void UpdateEvents()
     {
         var workingInstrument = (FiveFretInstrument)Chart.LoadedInstrument;
-        var eventsToDisplay = workingInstrument.Lanes[(int)laneIdentifier].Keys.
-            Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
+
+        var eventsToDisplay = workingInstrument.Lanes[(int)laneIdentifier].
+            Where(tick => (tick.Key <= Waveform.endTick) &&
+            (tick.Key + tick.Value.Sustain >= Waveform.startTick)).
+            Select(item => item.Key).ToList();
 
         int i = 0;
         for (i = 0; i < eventsToDisplay.Count; i++)
@@ -32,6 +36,7 @@ public class FiveFretLane : Lane<FiveFretNoteData>
                 (Tempo.ConvertTickTimeToSeconds(eventsToDisplay[i]) - Waveform.startTime) / Waveform.timeShown, 
                 highway3D.localScale.z, 
                 laneCenterPosition);
+            note.UpdateSustain(highway3D.localScale.z);
         }
 
         lanePooler.DeactivateUnused(i);

@@ -22,12 +22,18 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
         set
         {
-            if (noteColorMaterials.Count > 0) noteColor.material = noteColorMaterials[(int)value];
+            if (noteColorMaterials.Count > 0)
+            {
+                noteColor.material = noteColorMaterials[(int)value];
+                sustainColor.material = noteColorMaterials[(int)value];
+            }
             _li = value;
         } 
     }
     FiveFretInstrument.LaneOrientation _li;
 
+    [SerializeField] Transform sustain;
+    [SerializeField] MeshRenderer sustainColor;
     [SerializeField] MeshRenderer noteColor;
     [SerializeField] List<Material> noteColorMaterials = new();
 
@@ -82,6 +88,22 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             CalculateSelectionStatus(pointerEventData);
             RefreshEvents();
         }
+    }
+
+    public void UpdateSustain(float trackLength)
+    {
+        var sustainEndPointTicks = Tick + GetEventSet()[Tick].Sustain;
+
+        var trackProportion = (Tempo.ConvertTickTimeToSeconds(sustainEndPointTicks) - Waveform.startTime) / Waveform.timeShown;
+        var trackPosition = trackProportion * trackLength;
+
+        var noteProportion = (Tempo.ConvertTickTimeToSeconds(Tick) - Waveform.startTime) / Waveform.timeShown;
+        var notePosition = noteProportion * trackLength;
+
+        var localScaleZ = (float)(trackPosition - notePosition);
+        if (localScaleZ + transform.localPosition.z > trackLength) localScaleZ = trackLength - transform.localPosition.z;
+
+        sustain.localScale = new Vector3(sustain.localScale.x, sustain.localScale.y, localScaleZ);
     }
 
 } 

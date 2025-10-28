@@ -18,15 +18,17 @@ public class FiveFretNotePreviewer : Previewer
 
         var hitPosition = GetHighwayPosition();
         var highwayProportion = GetHighwayProportion();
-        if (highwayProportion == 0) return;
+        if (highwayProportion == 0)
+        {
+            Hide(); return;
+        }
 
         Tick = SongTime.CalculateGridSnappedTick(highwayProportion);
 
         note.Tick = Tick;
         if (note.GetEventSet().ContainsKey(Tick))
         {
-            note.Visible = false;
-            return;
+            Hide(); return;
         }
 
         note.UpdatePosition(
