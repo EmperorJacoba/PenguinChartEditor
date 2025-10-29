@@ -33,6 +33,12 @@ public class TSLabel : Label<TSData>, IPoolable
 
     #endregion
 
+    public override void SustainSelection() { return; }
+    public override void CompleteSustain()
+    {
+        return;
+    }
+
     #region Conversions
 
     /// <summary>

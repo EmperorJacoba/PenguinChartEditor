@@ -37,6 +37,8 @@ public static class UserSettings
     // With current vars in scripts:
     // (note2.TickPosition - note1.TickPosition) / ChartMetadata.Resolution * 60 / beatline.Tempo
 
+    public static int SustainGapTicks { get; set; } = 50;
+
     public static int ScrollSensitivity { get; set; } = 10;
 
     public static float ButtonScrollSensitivity { get; set; } = 0.025f;

@@ -31,6 +31,11 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     public override void CutSelection() => ExecuteWithRecalculate(base.CutSelection);
     public override void MoveSelection() => ExecuteWithRecalculate(() => base.MoveSelection());
     public override void RefreshEvents() => BPMLane.instance.UpdateEvents();
+    public override void SustainSelection() { return; }
+    public override void CompleteSustain()
+    {
+        return;
+    }
     public override IPreviewer EventPreviewer => BPMPreviewer.instance;
     public Coroutine destructionCoroutine { get; set; }
 

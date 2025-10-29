@@ -56,6 +56,27 @@ public class FiveFretInstrument : IInstrument
         Difficulty = difficulty;
     }
 
+    public int TotalSelectionCount 
+    { 
+        get
+        {
+            var sum = 0;
+            foreach(var eventData in InstrumentEventData)
+            {
+                sum += eventData.Selection.Count;
+            }
+            return sum;
+        } 
+    }
+
+    public void ClearAllSelections()
+    {
+        foreach (var eventData in InstrumentEventData)
+        {
+            eventData.Selection.Clear();
+        }
+    }
+
     // currently only supports N events, need support for E and S
     // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)
     public List<string> ExportAllEvents()

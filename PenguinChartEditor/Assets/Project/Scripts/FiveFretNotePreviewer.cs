@@ -62,7 +62,7 @@ public class FiveFretNotePreviewer : Previewer
         List<RaycastResult> results = new();
         cameraHighwayRaycaster.Raycast(pointerData, results);
 
-        if (results.Count == 0) return Vector3.zero;
+        if (results.Count == 0) return Vector3.down;
 
         return results[0].worldPosition;
     }
@@ -79,8 +79,15 @@ public class FiveFretNotePreviewer : Previewer
         if (note.Visible && !note.GetEventSet().ContainsKey(note.Tick))
         {
             note.CreateEvent(note.Tick, new FiveFretNoteData(0, FiveFretNoteData.FlagType.strum)); // strum flag needs to be changed
-            Chart.Refresh();
+
+            // please actually find the root cause of this issue
+            // this is a fix for the event randomly being selected when the event is created (? - I mean, obviously not ACTUALLY random, but it doesn't always happen?)
+            // I put checks everywhere I can think of to stop this and it will not obey me in the way in which I intend
+            // so nip it in the bud by putting a check right at the source (even though this functionality is better suited elsewhere)
+            if (note.GetEventData().Selection.ContainsKey(Tick)) note.GetEventData().Selection.Remove(Tick);
+
             disableNextSelectionCheck = true;
+            Chart.Refresh();
         }
     }
     public override void Hide()

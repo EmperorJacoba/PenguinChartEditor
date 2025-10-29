@@ -208,6 +208,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SustainDrag"",
+                    ""type"": ""Button"",
+                    ""id"": ""519d9736-5305-421f-95cf-716764c759c5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -472,6 +481,39 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SelectAll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""d9225e35-3acc-4199-9a1b-410727ec96ed"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainDrag"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""53d7a325-08c2-40e0-91ec-8ba778670942"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainDrag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""135129f2-2497-4880-94df-7c3e4cc29e9b"",
+                    ""path"": ""<Mouse>/delta/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainDrag"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 }
@@ -1718,6 +1760,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_Drag = m_Charting.FindAction("Drag", throwIfNotFound: true);
         m_Charting_LMB = m_Charting.FindAction("LMB", throwIfNotFound: true);
         m_Charting_RMB = m_Charting.FindAction("RMB", throwIfNotFound: true);
+        m_Charting_SustainDrag = m_Charting.FindAction("SustainDrag", throwIfNotFound: true);
         // ExternalCharting
         m_ExternalCharting = asset.FindActionMap("ExternalCharting", throwIfNotFound: true);
         m_ExternalCharting_IncreaseStep = m_ExternalCharting.FindAction("IncreaseStep", throwIfNotFound: true);
@@ -1845,6 +1888,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_Drag;
     private readonly InputAction m_Charting_LMB;
     private readonly InputAction m_Charting_RMB;
+    private readonly InputAction m_Charting_SustainDrag;
     /// <summary>
     /// Provides access to input actions defined in input action map "Charting".
     /// </summary>
@@ -1908,6 +1952,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Charting/RMB".
         /// </summary>
         public InputAction @RMB => m_Wrapper.m_Charting_RMB;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SustainDrag".
+        /// </summary>
+        public InputAction @SustainDrag => m_Wrapper.m_Charting_SustainDrag;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1973,6 +2021,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @RMB.started += instance.OnRMB;
             @RMB.performed += instance.OnRMB;
             @RMB.canceled += instance.OnRMB;
+            @SustainDrag.started += instance.OnSustainDrag;
+            @SustainDrag.performed += instance.OnSustainDrag;
+            @SustainDrag.canceled += instance.OnSustainDrag;
         }
 
         /// <summary>
@@ -2023,6 +2074,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @RMB.started -= instance.OnRMB;
             @RMB.performed -= instance.OnRMB;
             @RMB.canceled -= instance.OnRMB;
+            @SustainDrag.started -= instance.OnSustainDrag;
+            @SustainDrag.performed -= instance.OnSustainDrag;
+            @SustainDrag.canceled -= instance.OnSustainDrag;
         }
 
         /// <summary>
@@ -2749,6 +2803,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRMB(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SustainDrag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSustainDrag(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ExternalCharting" which allows adding and removing callbacks.

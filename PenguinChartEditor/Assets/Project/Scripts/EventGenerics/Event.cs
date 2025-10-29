@@ -26,6 +26,8 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
     void PasteSelection();
     void CutSelection();
     void MoveSelection();
+    void SustainSelection();
+    void CompleteSustain();
     void CompleteMove();
     void CheckForSelectionClear();
     void SelectAllEvents();
@@ -83,6 +85,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public abstract SortedDictionary<int, T> GetEventSet();
     public abstract void RefreshEvents();
     public abstract IPreviewer EventPreviewer { get; }
+    public abstract void SustainSelection();
+    public abstract void CompleteSustain();
     #endregion
 
     // Oops! All naming confusion!
@@ -269,7 +273,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         EventPreviewer.Hide();
     }
 
-    static bool disableNextSelectionCheck = false;
+    static bool justMoved = false;
     public virtual void CompleteMove()
     {
         // On "cancel" (CompleteMove), record edit action and put in undo stack
@@ -286,7 +290,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         EventPreviewer.Show();
 
-        disableNextSelectionCheck = true;
+        justMoved = true;
 
         Chart.Refresh();
     }
@@ -317,21 +321,30 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         {
             var deleteAction = new Delete<T>(GetEventSet(), tick0Immune);
             justDeleted = deleteAction.Execute(Tick);
+
+            GetEventData().Selection.Remove(Tick); // otherwise it will lay dorment and screw up anything to do with selections
+            disableNextSelectionCheck = true;
+
             Chart.Refresh();
         }
     }
+    protected bool disableNextSelectionCheck = false; // used in charted instruments only
 
     public virtual void OnPointerUp(PointerEventData pointerEventData)
     {
+        // stops this from firing on the release after clicking to create an event
         if (EventPreviewer.disableNextSelectionCheck)
         {
             EventPreviewer.disableNextSelectionCheck = false;
             return;
         }
 
-        if (disableNextSelectionCheck)
+        // move action's selection logic is very particular
+        // needs to reinstate old selection after move completes, and that happens BEFORE the CalculateSelectionStatus() call,
+        // so the reinstated selection immediately gets overwritten as a result
+        if (justMoved)
         {
-            disableNextSelectionCheck = false;
+            justMoved = false;
             return;
         }
 

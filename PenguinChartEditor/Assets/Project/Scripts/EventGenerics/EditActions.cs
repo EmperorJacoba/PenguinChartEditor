@@ -286,3 +286,31 @@ public class Move<T> : IEditAction<T>
 
     }
 }
+
+public class Sustain<T> : IEditAction<T>
+{
+    public SortedDictionary<int, T> SaveData { get; set; } = new();
+
+    SortedDictionary<int, T> eventSetReference;
+
+    public Sustain(SortedDictionary<int, T> targetEventSet)
+    {
+        eventSetReference = targetEventSet;
+    }
+
+    public void CaptureOriginalSustain(List<int> ticks)
+    {
+        foreach (var tick in ticks)
+        {
+            if (eventSetReference.ContainsKey(tick))
+            {
+                SaveData.Add(tick, eventSetReference[tick]);
+            }
+        }
+    }
+
+    public void Undo()
+    {
+
+    }
+}

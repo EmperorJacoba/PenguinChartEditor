@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
 
 public abstract class Lane<T> : MonoBehaviour where T : IEventData
 {
@@ -31,6 +30,8 @@ public abstract class Lane<T> : MonoBehaviour where T : IEventData
         inputMap.Charting.LMB.performed += x => eventAccessor.CheckForSelectionClear();
         inputMap.Charting.RMB.performed += x => eventAccessor.GetEventData().RMBHeld = true;
         inputMap.Charting.RMB.canceled += x => eventAccessor.GetEventData().RMBHeld = false;
+        inputMap.Charting.RMB.canceled += x => eventAccessor.CompleteSustain();
         inputMap.Charting.SelectAll.performed += x => eventAccessor.SelectAllEvents();
+        inputMap.Charting.SustainDrag.performed += x => eventAccessor.SustainSelection();
     }
 }

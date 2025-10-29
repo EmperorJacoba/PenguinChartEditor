@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class FiveFretLane : Lane<FiveFretNoteData>
 {
@@ -9,6 +8,8 @@ public class FiveFretLane : Lane<FiveFretNoteData>
     [SerializeField] FiveFretNotePooler lanePooler;
     [SerializeField] public FiveFretNotePreviewer previewer;
     [SerializeField] int laneCenterPosition;
+
+    public SustainData<FiveFretNoteData> sustainData = new();
 
     protected override void Awake()
     {
