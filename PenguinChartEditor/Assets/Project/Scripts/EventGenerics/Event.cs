@@ -15,11 +15,10 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
     MoveData<T> GetMoveData();
     SortedDictionary<int, T> GetEventSet();
     IInstrument parentInstrument { get; }
+    IPreviewer EventPreviewer { get; }
 
     void SetEvents(SortedDictionary<int, T> newEvents);
-    void RefreshEvents();
-
-    IPreviewer EventPreviewer { get; }
+    void RefreshLane();
 
     // So that Lane<T> can access these easily
     void DeleteSelection();
@@ -36,6 +35,17 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
 
 #endregion
 
+// Note about how event handlers are managed versus data contained within each object itself
+// Event handlers (like a click + drag from the input map) are handled within Lane<T>
+// and then sent to the Lane's event reference (usually the component on its previewer for simplicity; it always exists)
+// Then the Event<T> component on the previewer will handle the "event action" (like copy/paste/sustain/etc)
+// At the end of the component's handling, it calls a refresh of the chart
+// (or lane, depending => some need full refresh, like labels; notes do not need full refresh)
+// so important distinction: anything to do with an input happens on ONE EVENT<T> OBJECT, so you cannot reference the Tick property
+// possible refactor: split these functions up to avoid the dual purpose of this class
+
+// Each event (including one tasked with event handler) has an assigned lane 
+// Lane assignment happens through GetEventSet() and GetEventData(), which is just a reference to its "instrument" lane data.
 public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 {
     #region Properties
@@ -84,7 +94,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public abstract void SetEvents(SortedDictionary<int, T> newEvents);
 
     public abstract SortedDictionary<int, T> GetEventSet();
-    public abstract void RefreshEvents();
+    public abstract void RefreshLane();
     public abstract IPreviewer EventPreviewer { get; }
     public abstract void SustainSelection();
     public abstract void CompleteSustain();
@@ -302,7 +312,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         if (EventPreviewer.IsOverlayUIHit() || EventPreviewer.AreLaneObjectsHit()) return;
 
         GetEventData().Selection.Clear();
-        RefreshEvents();
+        RefreshLane();
     }
 
     public void SelectAllEvents()
@@ -312,7 +322,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         {
             GetEventData().Selection.Add(item.Key, item.Value);
         }
-        if (GetEventData().Selection.Count != 0) RefreshEvents();
+        if (GetEventData().Selection.Count != 0) RefreshLane();
     }
 
     public static bool justDeleted = false;
@@ -353,7 +363,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         if (!GetEventData().RMBHeld || pointerEventData.button != PointerEventData.InputButton.Left)
         {
             CalculateSelectionStatus(pointerEventData);
-            RefreshEvents();
+            RefreshLane();
         }
     }
 
@@ -407,6 +417,18 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         // Record the last selection data for shift-click selection
         if (selection.Keys.Contains(Tick)) lastTickSelection = Tick;
+    }
+
+    public void AddToSelection()
+    {
+        if (GetEventData().Selection.ContainsKey(Tick)) return;
+        GetEventData().Selection.Add(Tick, GetEventSet()[Tick]);
+    }
+
+    public void RemoveFromSelection()
+    {
+        if (!GetEventData().Selection.ContainsKey(Tick)) return;
+        GetEventData().Selection.Remove(Tick);
     }
 
     #endregion

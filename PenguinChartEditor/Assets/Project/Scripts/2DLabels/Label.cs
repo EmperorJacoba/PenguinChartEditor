@@ -100,7 +100,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         if (!Input.GetKey(KeyCode.LeftControl) && pointerEventData.button == PointerEventData.InputButton.Left && clickCount == 2)
         {
             ActivateManualInput();
-            RefreshEvents();
+            RefreshLane();
 
             // if you click too fast, clickCount will exceed 2
             // at some point and will never be able to reset

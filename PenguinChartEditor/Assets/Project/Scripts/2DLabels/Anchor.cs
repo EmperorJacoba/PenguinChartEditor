@@ -36,29 +36,21 @@ public class Anchor : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
         }
     }
 
-    bool isAnchor => Tempo.Events[parentBPM.Tick].Anchor;
+    bool IsAnchor => Tempo.Events[parentBPM.Tick].Anchor;
 
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
-        if (!isAnchor) Opacity = 0.5f;
+        if (!IsAnchor) Opacity = 0.5f;
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
-        if (!isAnchor) Opacity = 0f;
+        if (!IsAnchor) Opacity = 0f;
     }
 
     public void OnPointerClick(PointerEventData pointerEventData)
     {
-        if (isAnchor)
-        {
-            Tempo.Events[parentBPM.Tick] = new BPMData(Tempo.Events[parentBPM.Tick].BPMChange, Tempo.Events[parentBPM.Tick].Timestamp, false);
-            parentBPM.RefreshEvents();
-        }
-        else
-        {
-            Tempo.Events[parentBPM.Tick] = new BPMData(Tempo.Events[parentBPM.Tick].BPMChange, Tempo.Events[parentBPM.Tick].Timestamp, true);
-            parentBPM.RefreshEvents();
-        }
+        Tempo.Events[parentBPM.Tick] = new BPMData(Tempo.Events[parentBPM.Tick].BPMChange, Tempo.Events[parentBPM.Tick].Timestamp, !IsAnchor);
+        parentBPM.RefreshLane();
     }
 }

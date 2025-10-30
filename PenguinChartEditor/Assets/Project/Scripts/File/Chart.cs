@@ -1,29 +1,71 @@
+using UnityEngine;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using SFB;
 using System.IO;
 using System.Linq;
 
 public class Chart : MonoBehaviour
 {
+    static Chart instance;
+
+    public static void Log(string x) => Debug.Log(x); // debug shortcut for static classes like parsers
+
+    #region Chart Data
+
     public static Metadata Metadata { get; set; } = new();
     public static List<IInstrument> Instruments { get; set; }
-    static Chart instance;
-    public static void Log(string x) => Debug.Log(x);
-
-    public static bool editMode = true;
-
-    public enum TabType
-    {
-        SongSetup,
-        TempoMap,
-        Chart
-    }
-    public static TabType currentTab;
-
     public static IInstrument LoadedInstrument { get; set; }
     public static SyncTrackInstrument SyncTrackInstrument { get; set; } = new();
+
+    #endregion
+
+    #region Modify Chart Data
+
+    public void SaveFile()
+    {
+        ChartWriter.WriteChart();
+    }
+
+    public void LoadFile()
+    {
+        ChartPath = StandaloneFileBrowser.OpenFilePanel($"Open .chart file to load from.", "", new[] { new ExtensionFilter(".chart files ", "chart") }, false)[0];
+        FolderPath = ChartPath[..ChartPath.LastIndexOf("\\")];
+
+        ChartParser chartParser = new(ChartPath);
+
+        Resolution = chartParser.resolution;
+        Metadata = chartParser.metadata;
+
+        foreach (StemType key in Enum.GetValues(typeof(StemType)))
+        {
+            string targetFilePath = $"{FolderPath}/{key}.opus";
+            if (File.Exists(targetFilePath))
+            {
+                Metadata.StemPaths.Add(key, targetFilePath);
+            }
+        }
+
+        AudioManager.InitializeAudio();
+
+        Tempo.Events = chartParser.bpmEvents;
+        TimeSignature.Events = chartParser.tsEvents;
+
+        Instruments = chartParser.instruments;
+
+        if (Tempo.Events.Count == 0) // if there is no data to load in 
+        {
+            Tempo.Events.Add(0, new BPMData(120.0f, 0, false)); // add placeholder bpm
+        }
+        if (TimeSignature.Events.Count == 0)
+        {
+            TimeSignature.Events.Add(0, new TSData(4, 4));
+        }
+    }
+
+    #endregion
+
+    #region Chart Properties
 
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
@@ -62,51 +104,22 @@ public class Chart : MonoBehaviour
     }
     static string _chPath;
 
-    public void SaveFile()
+    public enum TabType
     {
-        ChartWriter.WriteChart();
+        SongSetup,
+        TempoMap,
+        Chart
     }
+    public static TabType currentTab;
 
-    public void LoadFile()
-    {
-        ChartPath = StandaloneFileBrowser.OpenFilePanel($"Open .chart file to load from.", "", new[] { new ExtensionFilter(".chart files ", "chart") }, false)[0];
-        FolderPath = ChartPath[..ChartPath.LastIndexOf("\\")];
-        
-        ChartParser chartParser = new(ChartPath);
+    #endregion
 
-        Resolution = chartParser.resolution;
-        Metadata = chartParser.metadata;
-        
-        foreach (StemType key in Enum.GetValues(typeof(StemType)))
-        {
-            string targetFilePath = $"{FolderPath}/{key}.opus";
-            if (File.Exists(targetFilePath))
-            {
-                Metadata.StemPaths.Add(key, targetFilePath);
-            }
-        }
-
-        AudioManager.InitializeAudio();
-
-        Tempo.Events = chartParser.bpmEvents;
-        TimeSignature.Events = chartParser.tsEvents;
-
-        Instruments = chartParser.instruments;
-
-        if (Tempo.Events.Count == 0) // if there is no data to load in 
-        {
-            Tempo.Events.Add(0, new BPMData(120.0f, 0, false)); // add placeholder bpm
-        }
-        if (TimeSignature.Events.Count == 0)
-        {
-            TimeSignature.Events.Add(0, new TSData(4, 4));
-        }
-    }
+    public static bool editMode = true; // for previewers
 
     void Awake()
     {
         // Only ever one chart game object active
-        if (instance)
+        if (instance != null)
         {
             Destroy(gameObject);
         }
@@ -117,7 +130,7 @@ public class Chart : MonoBehaviour
         LoadFile();
         LoadedInstrument = Instruments.
             Where(
-            item => item.Instrument == InstrumentType.guitar).
+            item => item.Instrument == InstrumentType.guitar). // for testing only
             ToList()[0];
 
         AudioManager.PlaybackStateChanged += x => { editMode = !AudioManager.AudioPlaying; };
@@ -140,7 +153,7 @@ public class Chart : MonoBehaviour
                 break;
             case TabType.Chart:
                 BeatlineLane3D.instance.UpdateEvents();
-                ChartTabUpdated?.Invoke();
+                ChartTabUpdated?.Invoke(); // shortcut for all lanes to update
                 break;
         }
     }

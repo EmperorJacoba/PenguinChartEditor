@@ -55,10 +55,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public override IInstrument parentInstrument => chartInstrument;
 
-    public override void RefreshEvents()
-    {
-        parentLane.UpdateEvents();
-    }
+    public override void RefreshLane() => parentLane.UpdateEvents();
 
     public override SortedDictionary<int, FiveFretNoteData> GetEventSet()
     {
@@ -95,7 +92,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         if (pointerEventData.button == PointerEventData.InputButton.Right && chartInstrument.TotalSelectionCount == 1)
         {
             if (GetEventData().Selection.ContainsKey(Tick)) GetEventData().Selection.Remove(Tick);
-            RefreshEvents();
+            RefreshLane();
             return;
         }
 
@@ -107,7 +104,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
                 return;
             }
             CalculateSelectionStatus(pointerEventData);
-            RefreshEvents();
+            RefreshLane();
             return;
         }
     } 
@@ -145,13 +142,17 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         sustain.localScale = new Vector3(sustain.localScale.x, sustain.localScale.y, localScaleZ);
     }
 
+    // true = start sustain editing from the bottom of the note (sustain = 0)
+    // use when editing sustains from the note (root of sustain)
+    // false = start sustain editing from mouse cursor/current sustain positioning
+    // use when editing sustain from the sustain tail 
     public static bool resetSustains = true;
     public override void SustainSelection()
     {
         var sustainData = parentLane.sustainData;
 
-        // Early return if attempting to start a move while over an overlay element
-        // Allows moves to start only if interacting with main content
+        // Early return if attempting to start an edit while over an overlay element
+        // Allows edit to start only if interacting with main content
         if (EventPreviewer.IsOverlayUIHit() && !sustainData.sustainInProgress)
         {
             return;
@@ -163,39 +164,19 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         // early return if no changes to mouse's grid snap
         if (currentMouseTick == sustainData.lastMouseTick)
         {
-            if (sustainData.sustainInProgress && !sustainData.sustainsReset && resetSustains)
-            {
-                ResetSustains(sustainData); // do it here so that there isn't a flicker before actually sustaining
-            }
-
             sustainData.lastMouseTick = currentMouseTick;
             return;
         }
 
         if (!sustainData.sustainInProgress)
         {
-            sustainData.sustainEventAction = new(GetEventSet());
-            sustainData.sustainInProgress = true;
-            sustainData.lastMouseTick = currentMouseTick;
-            sustainData.firstMouseTick = currentMouseTick;
-
-            sustainData.sustainingTicks.Clear();
-            sustainData.sustainingTicks = new(GetEventData().Selection);
-
-            GetEventData().Selection.Clear();
-            sustainData.sustainEventAction.CaptureOriginalSustain(sustainData.sustainingTicks.Keys.ToList());
-
+            // directly access parent lane here to avoid reassigning the local shortcut variable
+            parentLane.sustainData = new(GetEventSet(), GetEventData().Selection, currentMouseTick);
             return;
         }
 
         var workingEventSet = GetEventSet();
         var ticks = workingEventSet.Keys.ToList();
-
-        if (!sustainData.sustainsReset && resetSustains) // in case the mouse is moved so fast that the check above never runs
-        {
-            ResetSustains(sustainData);
-            return;
-        }
 
         var cursorMoveDifference = currentMouseTick - sustainData.firstMouseTick;
 
@@ -206,7 +187,10 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
             var newSustain = sustainOffset + cursorMoveDifference;
 
-            if (newSustain < -DivisionChanger.CurrentDivision) newSustain = SongTime.SongLengthTicks; // max out sustain, clamping function will take care of the rest
+            // drag behind the note to max out sustain - cool feature from moonscraper
+            // -CurrentDivison is easy arbitrary value for when to max out - so that there is a buffer for users to remove sustain entirely
+            // SongLengthTicks will get clamped to max sustain length
+            if (newSustain < -DivisionChanger.CurrentDivision) newSustain = SongTime.SongLengthTicks;
 
             newSustain = CalculateSustainClamp(newSustain, tick, ticks);
 
@@ -216,7 +200,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             }
         }
 
-        RefreshEvents();
+        RefreshLane();
         sustainData.lastMouseTick = currentMouseTick;
     }
 
@@ -242,53 +226,29 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         return sustain;
     }
 
-    void ResetSustains(SustainData<FiveFretNoteData> sustainData)
-    {
-        var workingEventSet = GetEventSet();
-        foreach (var tick in sustainData.sustainingTicks.Keys)
-        {
-            if (workingEventSet.ContainsKey(tick))
-            {
-                workingEventSet[tick] = new(0, workingEventSet[tick].Flag, workingEventSet[tick].Default);
-            }
-        }
-        RefreshEvents();
-        sustainData.sustainsReset = true;
-    }
-
     public override void CompleteSustain()
     {
-        parentLane.sustainData.sustainInProgress = false;
-        parentLane.sustainData.sustainsReset = false;
         GetEventData().Selection = new(parentLane.sustainData.sustainingTicks);
-        RefreshEvents();
-    }
 
-    public void AddToSelection()
-    {
-        if (GetEventData().Selection.ContainsKey(Tick)) return;
-        GetEventData().Selection.Add(Tick, GetEventSet()[Tick]);
-    }
-
-    public void RemoveFromSelection()
-    {
-        if (!GetEventData().Selection.ContainsKey(Tick)) return;
-        GetEventData().Selection.Remove(Tick);
+        // parameterless new() = flag as empty 
+        parentLane.sustainData = new();
+        RefreshLane();
     }
 
     public int GetCurrentMouseTick()
     {
         var newHighwayPercent = EventPreviewer.GetCursorHighwayProportion();
 
-        // 0 is very unlikely as an actual position, but is returned if cursor is outside track (meaning the sustain is temporarily reset - looks weird)
-        // could theoretically be possible but even then other checks would fail later in this loop, so just don't do anything 
+        // 0 is very unlikely as an actual position (as 0 is at the very bottom of the TRACK, which should be outside the screen in most cases)
+        // but is returned if cursor is outside track
+        // min value serves as an easy exit check in case the cursor is outside the highway
         if (newHighwayPercent == 0) return int.MinValue;
 
         return SongTime.CalculateGridSnappedTick(newHighwayPercent);
     }
 
-    public void ClampSustain(int tickLength)
-    {
+    // used on sustain trail itself when click happens on trail
+    // click on sustain trail + drag activates SustainSelection() within the previewer object
+    public void ClampSustain(int tickLength) =>
         GetEventSet()[Tick] = new(tickLength, GetEventSet()[Tick].Flag, GetEventSet()[Tick].Default);
-    }
 } 

@@ -15,12 +15,17 @@ public interface IPreviewer
     float GetCursorHighwayProportion();
 }
 
+/// <summary>
+/// Each previewer is the child of a Lane object, that it is attached to.
+/// </summary>
 public abstract class Previewer : MonoBehaviour, IPreviewer
 {
+    private const int RIGHT_MOUSE_ID = 1;
+
     [SerializeField] protected GraphicRaycaster overlayUIRaycaster;
     [SerializeField] protected BaseRaycaster eventRaycaster;
+
     protected InputMap inputMap;
-    protected bool hidden = false;
 
     public abstract void CreateEvent();
     public abstract void Hide();
@@ -37,11 +42,12 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     public bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
-        if (!Chart.editMode || IsOverlayUIHit() || Input.GetMouseButton(1) ||
+        if (!Chart.editMode || IsOverlayUIHit() || Input.GetMouseButton(RIGHT_MOUSE_ID) || // right mouse = sustaining
             percentOfScreenVertical < 0 ||
             percentOfScreenHorizontal < 0 ||
             percentOfScreenVertical > 1 ||
-            percentOfScreenHorizontal > 1)
+            percentOfScreenHorizontal > 1
+            )
         {
             Hide();
             return false;
@@ -54,10 +60,13 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         inputMap = new();
         inputMap.Enable();
 
-        inputMap.Charting.PreviewMousePos.performed += position => UpdatePosition(position.ReadValue<Vector2>().y / Screen.height, position.ReadValue<Vector2>().x / Screen.width);
+        inputMap.Charting.PreviewMousePos.performed += position => 
+            UpdatePosition(position.ReadValue<Vector2>().y / Screen.height, position.ReadValue<Vector2>().x / Screen.width);
+
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
     }
 
+    // with 3D physics raycaster, make sure lane objects are castable by the raycaster
     public bool AreLaneObjectsHit() => MiscTools.IsRaycasterHit(eventRaycaster);
     public abstract float GetCursorHighwayProportion();
 }

@@ -20,7 +20,6 @@ public interface IInstrument
     public void ShiftClickSelect(int tick);
 }
 
-// used for 
 public class SyncTrackInstrument : IInstrument
 {
     // Lanes located in respective libraries
