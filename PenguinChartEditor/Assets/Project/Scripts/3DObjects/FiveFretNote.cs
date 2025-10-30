@@ -54,6 +54,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     } // define in pooler
     FiveFretLane _lane;
 
+    public override IInstrument parentInstrument => chartInstrument;
+
     public override void RefreshEvents()
     {
         parentLane.UpdateEvents();
@@ -108,7 +110,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             }
             CalculateSelectionStatus(pointerEventData);
             RefreshEvents();
-            Debug.Log($"Just checked {Tick} - {Selected} (Leftclick)");
             return;
         }
     } 
@@ -120,10 +121,13 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                parentInstrument.ShiftClickSelect(Tick);
+                return;
+            }
             if (!GetEventData().Selection.ContainsKey(Tick))
                 GetEventData().Selection.Add(Tick, GetEventSet()[Tick]);
-
-            Debug.Log($"Just checked {Tick} - {Selected} (RClick Down)");
         }
     }
 

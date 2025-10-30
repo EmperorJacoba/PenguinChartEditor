@@ -23,6 +23,7 @@ public class Chart : MonoBehaviour
     public static TabType currentTab;
 
     public static IInstrument LoadedInstrument { get; set; }
+    public static SyncTrackInstrument SyncTrackInstrument { get; set; } = new();
 
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)

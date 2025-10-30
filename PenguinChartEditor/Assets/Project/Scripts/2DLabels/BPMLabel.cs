@@ -10,13 +10,12 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     private const int BPM_DIGITS = 3;
     #region Event Sets
 
-    public static EventData<BPMData> EventData = new();
-    public override EventData<BPMData> GetEventData() => EventData;
+    public override EventData<BPMData> GetEventData() => Chart.SyncTrackInstrument.bpmEventData;
     public override SortedDictionary<int, BPMData> GetEventSet() => Tempo.Events;
     public override void SetEvents(SortedDictionary<int, BPMData> newEvents) => Tempo.SetEvents(newEvents);
 
-    public static MoveData<BPMData> moveData = new();
-    public override MoveData<BPMData> GetMoveData() => moveData;
+    public override MoveData<BPMData> GetMoveData() => Chart.SyncTrackInstrument.bpmMoveData;
+    public override IInstrument parentInstrument => Chart.SyncTrackInstrument;
 
     #endregion
 

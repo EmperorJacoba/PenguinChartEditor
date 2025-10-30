@@ -14,6 +14,7 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
     EventData<T> GetEventData();
     MoveData<T> GetMoveData();
     SortedDictionary<int, T> GetEventSet();
+    IInstrument parentInstrument { get; }
 
     void SetEvents(SortedDictionary<int, T> newEvents);
     void RefreshEvents();
@@ -87,6 +88,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public abstract IPreviewer EventPreviewer { get; }
     public abstract void SustainSelection();
     public abstract void CompleteSustain();
+    public abstract IInstrument parentInstrument { get; }
     #endregion
 
     // Oops! All naming confusion!
@@ -380,15 +382,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            selection.Clear();
-
             var minNum = Math.Min(lastTickSelection, Tick);
             var maxNum = Math.Max(lastTickSelection, Tick);
-            var selectedEvents = targetEventSet.Keys.ToList().Where(x => x <= maxNum && x >= minNum);
-            foreach (var tick in selectedEvents)
-            {
-                selection.Add(tick, targetEventSet[tick]);
-            }
+            parentInstrument.ShiftClickSelect(minNum, maxNum);
+            Chart.Refresh();
         }
         else if (Input.GetKey(KeyCode.LeftControl))
         {
@@ -404,7 +401,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // Regular click, no extra significant keybinds
         else
         {
-            selection.Clear();
+            parentInstrument.ClearAllSelections();
             if (targetEventSet.ContainsKey(Tick)) selection.Add(Tick, targetEventSet[Tick]);
         }
 

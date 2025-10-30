@@ -1,22 +1,19 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
 using UnityEngine;
 
 public class TSLabel : Label<TSData>, IPoolable
 {
     #region Event Sets
+    public override EventData<TSData> GetEventData() => Chart.SyncTrackInstrument.tsEventData;
 
-    public static EventData<TSData> EventData = new();
-    public override EventData<TSData> GetEventData() => EventData;
     public override SortedDictionary<int, TSData> GetEventSet() => TimeSignature.Events;
+
     public override void SetEvents(SortedDictionary<int, TSData> newEvents) => TimeSignature.SetEvents(newEvents);
 
-    public static MoveData<TSData> moveData = new();
-    public override MoveData<TSData> GetMoveData() => moveData;
+    public override MoveData<TSData> GetMoveData() => Chart.SyncTrackInstrument.tsMoveData;
     public override void RefreshEvents() => TSLane.instance.UpdateEvents();
     public override IPreviewer EventPreviewer => TSPreviewer.instance;
+    public override IInstrument parentInstrument => Chart.SyncTrackInstrument;
     public Coroutine destructionCoroutine { get; set; }
 
     #endregion

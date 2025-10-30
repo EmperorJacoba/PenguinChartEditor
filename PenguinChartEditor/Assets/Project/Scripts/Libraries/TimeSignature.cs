@@ -12,7 +12,7 @@ public static class TimeSignature
     {
         if (!newEvents.ContainsKey(0))
         {
-            newEvents.Add(0, TSLabel.moveData.currentMoveAction.poppedData[0]);
+            newEvents.Add(0, Chart.SyncTrackInstrument.tsMoveData.currentMoveAction.poppedData[0]);
         }
         Events = newEvents;
     }
