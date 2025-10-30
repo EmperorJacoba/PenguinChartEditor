@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -82,9 +81,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         transform.position = new Vector3(xPosition, 0, trackProportion);
     }
 
-    FiveFretInstrument chartInstrument => (FiveFretInstrument)Chart.LoadedInstrument;
+    public FiveFretInstrument chartInstrument => (FiveFretInstrument)Chart.LoadedInstrument;
 
-    
     public override void OnPointerUp(PointerEventData pointerEventData)
     {
         if (disableNextSelectionCheck)
@@ -147,6 +145,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         sustain.localScale = new Vector3(sustain.localScale.x, sustain.localScale.y, localScaleZ);
     }
 
+    public static bool resetSustains = true;
     public override void SustainSelection()
     {
         var sustainData = parentLane.sustainData;
@@ -158,18 +157,13 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             return;
         }
 
-        var newHighwayPercent = EventPreviewer.GetHighwayProportion();
-
-        // 0 is very unlikely as an actual position, but is returned if cursor is outside track (meaning the sustain is temporarily reset - looks weird)
-        // could theoretically be possible but even then other checks would fail later in this loop, so just don't do anything 
-        if (newHighwayPercent == 0) return; 
-
-        var currentMouseTick = SongTime.CalculateGridSnappedTick(newHighwayPercent);
+        var currentMouseTick = GetCurrentMouseTick();
+        if (currentMouseTick == int.MinValue) return;
 
         // early return if no changes to mouse's grid snap
         if (currentMouseTick == sustainData.lastMouseTick)
         {
-            if (sustainData.sustainInProgress && !sustainData.sustainsReset)
+            if (sustainData.sustainInProgress && !sustainData.sustainsReset && resetSustains)
             {
                 ResetSustains(sustainData); // do it here so that there isn't a flicker before actually sustaining
             }
@@ -197,7 +191,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         var workingEventSet = GetEventSet();
         var ticks = workingEventSet.Keys.ToList();
 
-        if (!sustainData.sustainsReset) // in case the mouse is moved so fast that the check above never runs
+        if (!sustainData.sustainsReset && resetSustains) // in case the mouse is moved so fast that the check above never runs
         {
             ResetSustains(sustainData);
             return;
@@ -207,7 +201,10 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
         foreach (var tick in sustainData.sustainingTicks.Keys)
         {
-            var newSustain = cursorMoveDifference;
+            int sustainOffset = 0;
+            if (!resetSustains) sustainOffset = sustainData.firstMouseTick - tick;
+
+            var newSustain = sustainOffset + cursorMoveDifference;
 
             if (newSustain < -DivisionChanger.CurrentDivision) newSustain = SongTime.SongLengthTicks; // max out sustain, clamping function will take care of the rest
 
@@ -265,5 +262,33 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         parentLane.sustainData.sustainsReset = false;
         GetEventData().Selection = new(parentLane.sustainData.sustainingTicks);
         RefreshEvents();
+    }
+
+    public void AddToSelection()
+    {
+        if (GetEventData().Selection.ContainsKey(Tick)) return;
+        GetEventData().Selection.Add(Tick, GetEventSet()[Tick]);
+    }
+
+    public void RemoveFromSelection()
+    {
+        if (!GetEventData().Selection.ContainsKey(Tick)) return;
+        GetEventData().Selection.Remove(Tick);
+    }
+
+    public int GetCurrentMouseTick()
+    {
+        var newHighwayPercent = EventPreviewer.GetCursorHighwayProportion();
+
+        // 0 is very unlikely as an actual position, but is returned if cursor is outside track (meaning the sustain is temporarily reset - looks weird)
+        // could theoretically be possible but even then other checks would fail later in this loop, so just don't do anything 
+        if (newHighwayPercent == 0) return int.MinValue;
+
+        return SongTime.CalculateGridSnappedTick(newHighwayPercent);
+    }
+
+    public void ClampSustain(int tickLength)
+    {
+        GetEventSet()[Tick] = new(tickLength, GetEventSet()[Tick].Flag, GetEventSet()[Tick].Default);
     }
 } 

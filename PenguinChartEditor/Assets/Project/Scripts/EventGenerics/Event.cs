@@ -161,7 +161,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         else
         {
             // this throws a not implemented exception if this is called on a previewer not on a 3D scene
-            highwayPercent = EventPreviewer.GetHighwayProportion();
+            highwayPercent = EventPreviewer.GetCursorHighwayProportion();
         }
 
         var currentMouseTick = SongTime.CalculateGridSnappedTick(highwayPercent);

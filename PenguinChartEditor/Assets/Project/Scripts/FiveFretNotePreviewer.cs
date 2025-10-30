@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,8 +15,8 @@ public class FiveFretNotePreviewer : Previewer
     {
         if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) return;
 
-        var hitPosition = GetHighwayPosition();
-        var highwayProportion = GetHighwayProportion();
+        var hitPosition = GetCursorHighwayPosition();
+        var highwayProportion = GetCursorHighwayProportion();
         if (highwayProportion == 0)
         {
             Hide(); return;
@@ -52,9 +51,9 @@ public class FiveFretNotePreviewer : Previewer
         }
     }
 
-    private Vector3 GetHighwayPosition()
+    private Vector3 GetCursorHighwayPosition()
     {
-        PointerEventData pointerData = new PointerEventData(EventSystem.current)
+        PointerEventData pointerData = new(EventSystem.current)
         {
             position = Input.mousePosition
         };
@@ -67,9 +66,22 @@ public class FiveFretNotePreviewer : Previewer
         return results[0].worldPosition;
     }
 
-    public override float GetHighwayProportion()
+    /// <summary>
+    /// Get the highway proportion but set the X value of the raycast to the center of the screen.
+    /// </summary>
+    /// <returns></returns>
+    public override float GetCursorHighwayProportion()
     {
-        return GetHighwayPosition().z / highway.localScale.z;
+        PointerEventData modifiedPointerData = new(EventSystem.current)
+        {
+            position = new(Screen.width / 2, Input.mousePosition.y)
+        };
+
+        List<RaycastResult> results = new();
+        cameraHighwayRaycaster.Raycast(modifiedPointerData, results);
+
+        if (results.Count == 0) return 0;
+        return results[0].worldPosition.z / highway.localScale.z;
     }
 
     public override void CreateEvent()

@@ -57,7 +57,7 @@ public class TSPreviewer : Previewer
     {
         if (!tsLabel.Visible) tsLabel.Visible = true;
     }
-    public override float GetHighwayProportion()
+    public override float GetCursorHighwayProportion()
     {
         throw new System.NotImplementedException();
     }

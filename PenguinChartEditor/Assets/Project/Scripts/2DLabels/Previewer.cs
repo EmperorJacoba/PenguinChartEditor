@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -14,7 +12,7 @@ public interface IPreviewer
     bool AreLaneObjectsHit();
     int Tick { get; set; }
     bool disableNextSelectionCheck { get; set; }
-    float GetHighwayProportion();
+    float GetCursorHighwayProportion();
 }
 
 public abstract class Previewer : MonoBehaviour, IPreviewer
@@ -39,7 +37,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     public bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
-        if (!Chart.editMode || IsOverlayUIHit() ||
+        if (!Chart.editMode || IsOverlayUIHit() || Input.GetMouseButton(1) ||
             percentOfScreenVertical < 0 ||
             percentOfScreenHorizontal < 0 ||
             percentOfScreenVertical > 1 ||
@@ -61,5 +59,5 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     }
 
     public bool AreLaneObjectsHit() => MiscTools.IsRaycasterHit(eventRaycaster);
-    public abstract float GetHighwayProportion();
+    public abstract float GetCursorHighwayProportion();
 }

@@ -70,7 +70,6 @@ public class SyncTrackInstrument : IInstrument
     }
 
     public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
-
     public List<string> ExportAllEvents()
     {
         throw new System.NotImplementedException();
@@ -156,6 +155,17 @@ public class FiveFretInstrument : IInstrument
         }
     }
     public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
+
+    public void ShiftClickSustainClamp(int tick, int tickLength)
+    {
+        for (int i = 0; i < Lanes.Length; i++)
+        {
+            if (Lanes[i].ContainsKey(tick))
+            {
+                Lanes[i][tick] = new(tickLength, Lanes[i][tick].Flag, Lanes[i][tick].Default);
+            }
+        }
+    }
 
     // currently only supports N events, need support for E and S
     // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)

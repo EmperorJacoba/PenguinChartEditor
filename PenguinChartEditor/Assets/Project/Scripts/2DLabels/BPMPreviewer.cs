@@ -54,7 +54,7 @@ public class BPMPreviewer : Previewer
         if (!bpmLabel.Visible) bpmLabel.Visible = true;
     }
 
-    public override float GetHighwayProportion()
+    public override float GetCursorHighwayProportion()
     {
         throw new System.NotImplementedException();
     }
