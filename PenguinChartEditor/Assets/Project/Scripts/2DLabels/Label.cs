@@ -44,7 +44,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     public void ActivateManualInput()
     {
         if (LabelEntryBox == null) return;
-        if (!LabelObject.activeInHierarchy || !GetEventSet().ContainsKey(Tick)) return;
+        if (!LabelObject.activeInHierarchy || !LaneData.ContainsKey(Tick)) return;
 
         LabelEntryBox.gameObject.SetActive(true);
 

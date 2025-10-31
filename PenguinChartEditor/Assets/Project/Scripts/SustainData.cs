@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class SustainData<T>
+public class SustainData<T> where T : IEventData
 {
     public bool sustainInProgress;
     public int lastMouseTick;
@@ -9,7 +9,7 @@ public class SustainData<T>
     public Sustain<T> sustainEventAction;
     public SortedDictionary<int, T> sustainingTicks = new();
 
-    public SustainData(SortedDictionary<int, T> eventSet, SortedDictionary<int, T> selection, int mouseTick)
+    public SustainData(SortedDictionary<int, T> eventSet, SelectionSet<T> selection, int mouseTick)
     {
         sustainEventAction = new(eventSet);
         sustainInProgress = true;

@@ -28,8 +28,6 @@ public abstract class Lane<T> : MonoBehaviour where T : IEventData
         inputMap.Charting.Drag.performed += x => eventAccessor.MoveSelection(); // runs every frame drag is active
         inputMap.Charting.LMB.canceled += x => eventAccessor.CompleteMove(); // runs ONLY when move action is completed; this wraps up the move action
         inputMap.Charting.LMB.performed += x => eventAccessor.CheckForSelectionClear();
-        inputMap.Charting.RMB.performed += x => eventAccessor.GetEventData().RMBHeld = true;
-        inputMap.Charting.RMB.canceled += x => eventAccessor.GetEventData().RMBHeld = false;
         inputMap.Charting.RMB.canceled += x => eventAccessor.CompleteSustain();
         inputMap.Charting.SelectAll.performed += x => eventAccessor.SelectAllEvents();
         inputMap.Charting.SustainDrag.performed += x => eventAccessor.SustainSelection();

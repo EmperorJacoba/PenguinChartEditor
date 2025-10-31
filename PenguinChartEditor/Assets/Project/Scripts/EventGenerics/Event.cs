@@ -11,9 +11,10 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
     int Tick { get; set; }
     bool Visible { get; set; }
 
-    EventData<T> GetEventData();
+    SelectionSet<T> Selection { get; }
+    ClipboardSet<T> Clipboard { get;  }
+    SortedDictionary<int, T> LaneData { get; }
     MoveData<T> GetMoveData();
-    SortedDictionary<int, T> GetEventSet();
     IInstrument parentInstrument { get; }
     IPreviewer EventPreviewer { get; }
 
@@ -63,6 +64,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             _selected = value;
         }
     }
+
+    private const int RMB_ID = 1;
     bool _selected = false;
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
 
@@ -86,14 +89,15 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     // so they can be used in the broad "Event" class.
     // For all event and move data, only one exists for each set, but
     // static members cannot be accessed directly without these functions.
-    public abstract EventData<T> GetEventData();
+    public abstract SelectionSet<T> Selection { get; }
+    public abstract ClipboardSet<T> Clipboard { get; }
+    public abstract SortedDictionary<int, T> LaneData { get; }
     public abstract MoveData<T> GetMoveData();
 
     // Used to clean up input data before actually committing event changes to dictionaries
     // Stops tick 0 being erased and/or having invalid data when changing EventData.Events. 
     public abstract void SetEvents(SortedDictionary<int, T> newEvents);
 
-    public abstract SortedDictionary<int, T> GetEventSet();
     public abstract void RefreshLane();
     public abstract IPreviewer EventPreviewer { get; }
     public abstract void SustainSelection();
@@ -114,36 +118,36 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public void CopySelection()
     {
-        GetEventData().Clipboard.Clear();
-        var copyAction = new Copy<T>(GetEventSet());
-        copyAction.Execute(GetEventData().Clipboard, GetEventData().Selection);
+        Clipboard.Clear();
+        var copyAction = new Copy<T>(LaneData);
+        copyAction.Execute(Clipboard, Selection);
     }
 
     public virtual void PasteSelection()
     {
-        var pasteAction = new Paste<T>(GetEventSet(), tick0Immune);
-        pasteAction.Execute(EventPreviewer.Tick, GetEventData().Clipboard);
+        var pasteAction = new Paste<T>(LaneData, tick0Immune);
+        pasteAction.Execute(EventPreviewer.Tick, Clipboard);
         Chart.Refresh();
     }
 
     public virtual void CutSelection()
     {
-        var cutAction = new Cut<T>(GetEventSet(), tick0Immune);
-        cutAction.Execute(GetEventData().Clipboard, GetEventData().Selection);
+        var cutAction = new Cut<T>(LaneData, tick0Immune);
+        cutAction.Execute(Clipboard, Selection);
         Chart.Refresh();
     }
 
     public virtual void DeleteSelection()
     {
-        var deleteAction = new Delete<T>(GetEventSet(), tick0Immune);
-        deleteAction.Execute(GetEventData().Selection);
+        var deleteAction = new Delete<T>(LaneData, tick0Immune);
+        deleteAction.Execute(Selection);
         Chart.Refresh();
     }
 
     public virtual void CreateEvent(int newTick, T newData)
     {
-        var createAction = new Create<T>(GetEventSet());
-        createAction.Execute(newTick, newData, GetEventData().Selection);
+        var createAction = new Create<T>(LaneData);
+        createAction.Execute(newTick, newData, Selection);
         Chart.Refresh();
     }
 
@@ -198,16 +202,13 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // temporarily clear selection to avoid selection jank while moving
         // (items that are not selected could appear selected and vice versa b/c of selection logic)
         // selection gets restored upon drag ending
-        if (GetEventData().Selection.Count > 0)
-        {
-            GetEventData().Selection.Clear();
-        }
+        Selection.Clear();
 
         // Write everything to a temporary dictionary because otherwise when moving from t=0
         // tick 0 will not exist in the dictionary for TS & BPM events, which are needed
         // SetEvents() in BPM/TS cleans up data before actually applying the changes, which is required for BPM/TS
         // SetEvents() is already guaranteed by the interface so all event types will have it 
-        SortedDictionary<int, T> movingData = new(GetEventSet());
+        SortedDictionary<int, T> movingData = new(LaneData);
 
         // delete last move preview's data
         var deleteAction = new Delete<T>(movingData, tick0Immune);
@@ -257,21 +258,12 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         // first tick of move set should be 0 for correct pasting (localization)
         // so get lowest tick to shift ticks down
-        int lowestTick;
-        if (GetEventData().Selection.Count > 0)
-        {
-            lowestTick = GetEventData().Selection.Keys.Min();
-        }
-        else
-        {
-            return; // nothing to move
-        }
+        var lowestTick = Selection.GetFirstSelectedTick();
+        if (lowestTick == SelectionSet<T>.NONE_SELECTED) return;
+
         moveData.selectionOriginTick = lowestTick;
 
-        foreach (var selectedTick in GetEventData().Selection)
-        {
-            moveData.MovingGhostSet.Add(selectedTick.Key - lowestTick, selectedTick.Value);
-        }
+        moveData.MovingGhostSet = Selection.GetNormalizedSelection();
 
         moveData.firstMouseTick = currentMouseTick;
         moveData.lastMouseTick = currentMouseTick;
@@ -279,7 +271,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // happens after the moving set init in case no set is created (count = 0)
         moveData.moveInProgress = true;
 
-        moveData.currentMoveAction = new(GetEventSet(), moveData.MovingGhostSet, lowestTick);
+        moveData.currentMoveAction = new(LaneData, moveData.MovingGhostSet, lowestTick);
         moveData.lastTempGhostPasteStartTick = moveData.selectionOriginTick;
 
         EventPreviewer.Hide();
@@ -294,11 +286,9 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         GetMoveData().moveInProgress = false;
 
-        GetEventData().Selection.Clear();
-        foreach (var item in GetMoveData().MovingGhostSet)
-        {
-            GetEventData().Selection.Add(item.Key + GetMoveData().lastTempGhostPasteStartTick, item.Value);
-        }
+        Selection.ApplyScaledSelection(
+            GetMoveData().MovingGhostSet, 
+            GetMoveData().lastTempGhostPasteStartTick);
 
         EventPreviewer.Show();
 
@@ -311,30 +301,26 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     {
         if (EventPreviewer.IsOverlayUIHit() || EventPreviewer.AreLaneObjectsHit()) return;
 
-        GetEventData().Selection.Clear();
+        Selection.Clear();
         RefreshLane();
     }
 
     public void SelectAllEvents()
     {
-        GetEventData().Selection.Clear();
-        foreach (var item in GetEventSet())
-        {
-            GetEventData().Selection.Add(item.Key, item.Value);
-        }
-        if (GetEventData().Selection.Count != 0) RefreshLane();
+        Selection.SelectAll();
+        RefreshLane();
     }
 
     public static bool justDeleted = false;
     public virtual void OnPointerDown(PointerEventData pointerEventData)
     {
         // used for right click + left click delete functionality
-        if (GetEventData().RMBHeld && pointerEventData.button == PointerEventData.InputButton.Left)
+        if (Input.GetMouseButton(RMB_ID) && pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            var deleteAction = new Delete<T>(GetEventSet(), tick0Immune);
+            var deleteAction = new Delete<T>(LaneData, tick0Immune);
             justDeleted = deleteAction.Execute(Tick);
 
-            GetEventData().Selection.Remove(Tick); // otherwise it will lay dorment and screw up anything to do with selections
+            Selection.Remove(Tick); // otherwise it will lay dorment and screw up anything to do with selections
             disableNextSelectionCheck = true;
 
             Chart.Refresh();
@@ -360,11 +346,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
             return;
         }
 
-        if (!GetEventData().RMBHeld || pointerEventData.button != PointerEventData.InputButton.Left)
-        {
-            CalculateSelectionStatus(pointerEventData);
-            RefreshLane();
-        }
+        CalculateSelectionStatus(pointerEventData);
     }
 
     #endregion
@@ -373,7 +355,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public bool CheckForSelection()
     {
-        if (GetEventData().Selection.Keys.Contains(Tick)) return true;
+        if (Selection.Contains(Tick)) return true;
         else return false;
     }
 
@@ -382,11 +364,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     /// Calculate the event(s) to be selected based on the last click event.
     /// </summary>
     /// <param name="clickButton">PointerEventData.button</param>
-    public void CalculateSelectionStatus(PointerEventData clickData)
+    public void CalculateSelectionStatus(PointerEventData clickData) // refactor this pls
     {
-        var selection = GetEventData().Selection;
-        SortedDictionary<int, T> targetEventSet = GetEventSet();
-
         // Goal is to follow standard selection functionality of most productivity programs
         if (clickData.button != PointerEventData.InputButton.Left) return;
 
@@ -399,36 +378,36 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         }
         else if (Input.GetKey(KeyCode.LeftControl))
         {
-            if (selection.Keys.Contains(Tick))
+            if (Selection.Contains(Tick))
             {
-                selection.Remove(Tick);
+                Selection.Remove(Tick);
             }
             else
             {
-                selection.Add(Tick, targetEventSet[Tick]);
+                Selection.Add(Tick, LaneData[Tick]);
             }
+            RefreshLane();
         }
         // Regular click, no extra significant keybinds
         else
         {
             parentInstrument.ClearAllSelections();
-            if (targetEventSet.ContainsKey(Tick)) selection.Add(Tick, targetEventSet[Tick]);
+            if (LaneData.ContainsKey(Tick)) Selection.Add(Tick);
+            Chart.Refresh();
         }
 
         // Record the last selection data for shift-click selection
-        if (selection.Keys.Contains(Tick)) lastTickSelection = Tick;
+        if (Selection.Contains(Tick)) lastTickSelection = Tick;
     }
 
     public void AddToSelection()
     {
-        if (GetEventData().Selection.ContainsKey(Tick)) return;
-        GetEventData().Selection.Add(Tick, GetEventSet()[Tick]);
+        Selection.Add(Tick);
     }
 
     public void RemoveFromSelection()
     {
-        if (!GetEventData().Selection.ContainsKey(Tick)) return;
-        GetEventData().Selection.Remove(Tick);
+        Selection.Remove(Tick);
     }
 
     #endregion

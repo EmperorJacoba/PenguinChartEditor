@@ -408,7 +408,7 @@ public class ChartParser
     FiveFretInstrument ParseFiveFret(ChartEventGroup chartEventGroup)
     {
         // this is where all parsed data ends up, data is processed lane-by-lane
-        SortedDictionary<int, FiveFretNoteData>[] lanes = new SortedDictionary<int, FiveFretNoteData>[6] { new(), new(), new(), new(), new(), new() };
+        Lanes<FiveFretNoteData> lanes = new(6);
 
         // this is for simplifying hopo checks - initialized with -hopoCutoff to prevent the first note from starting as a hopo
         int[] lastNoteTicks = new int[6] { -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff };
@@ -508,7 +508,7 @@ public class ChartParser
 
                         var noteData = new FiveFretNoteData(sustain, flagType, defaultOrientation);
 
-                        lanes[(int)lane].Add(uniqueTick, noteData);
+                        lanes.GetLane((int)lane).Add(uniqueTick, noteData);
                         lastNoteTicks[(int)lane] = uniqueTick;
 
                         break;

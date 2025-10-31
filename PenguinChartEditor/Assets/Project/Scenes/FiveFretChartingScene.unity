@@ -3919,6 +3919,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FiveFretNote
       objectReference: {fileID: 0}
+    - target: {fileID: 532864701870792285, guid: a0d861de1d10a6744b120be2a996b9bd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3696191114692330603, guid: a0d861de1d10a6744b120be2a996b9bd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.34

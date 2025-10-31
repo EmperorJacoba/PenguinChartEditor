@@ -18,6 +18,9 @@ public interface IInstrument
     int TotalSelectionCount { get; }
     public void ShiftClickSelect(int start, int end);
     public void ShiftClickSelect(int tick);
+    public void ShiftClickSelect(int tick, bool temporary);
+    public void ReleaseTemporaryTicks();
+    public void RemoveTickFromAllSelections(int tick);
 }
 
 public class SyncTrackInstrument : IInstrument
@@ -27,8 +30,11 @@ public class SyncTrackInstrument : IInstrument
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
 
-    public EventData<BPMData> bpmEventData = new();
-    public EventData<TSData> tsEventData = new();
+    public SelectionSet<BPMData> bpmSelection = new(Tempo.Events);
+    public SelectionSet<TSData> tsSelection = new(TimeSignature.Events);
+
+    public ClipboardSet<BPMData> bpmClipboard = new(Tempo.Events);
+    public ClipboardSet<TSData> tsClipboard = new(TimeSignature.Events);
 
     public MoveData<BPMData> bpmMoveData = new();
     public MoveData<TSData> tsMoveData = new();
@@ -40,48 +46,45 @@ public class SyncTrackInstrument : IInstrument
     {
         get
         {
-            return bpmEventData.Selection.Count + tsEventData.Selection.Count;
+            return bpmSelection.Count + tsSelection.Count;
         }
     }
 
     public void ClearAllSelections()
     {
-        bpmEventData.Selection.Clear();
-        tsEventData.Selection.Clear();
+        bpmSelection.Clear();
+        tsSelection.Clear();
     }
 
     public void ShiftClickSelect(int start, int end)
     {
-        bpmEventData.Selection.Clear();
-        tsEventData.Selection.Clear();
+        bpmSelection.Clear();
+        tsSelection.Clear();
 
-        var bpmSelection = Tempo.Events.Keys.ToList().Where(x => x >= start && x <= end);
-        foreach (var tick in bpmSelection)
-        {
-            bpmEventData.Selection.Add(tick, Tempo.Events[tick]);
-        }
-
-        var tsSelection = TimeSignature.Events.Keys.ToList().Where(x => x >= start && x <= end);
-        foreach (var tick in tsSelection)
-        {
-            tsEventData.Selection.Add(tick, TimeSignature.Events[tick]);
-        }
+        bpmSelection.AddInRange(start, end);
+        tsSelection.AddInRange(start, end);
     }
 
     public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
     public List<string> ExportAllEvents()
     {
-        throw new System.NotImplementedException();
+        throw new System.NotImplementedException("Use export functions in Tempo and TimeSignature libraries.");
         // maybe use this instead of individual libraries in future?
     }
+
+    public void ShiftClickSelect(int tick, bool temporary) => ShiftClickSelect(tick);
+    public void ReleaseTemporaryTicks() { } // unneeded - no sustains lol
+    public void RemoveTickFromAllSelections(int tick) 
+    {
+        bpmSelection.Remove(tick);
+        tsSelection.Remove(tick);
+    } // unneeded
+
 }
 
 public class FiveFretInstrument : IInstrument
 {
-    public SortedDictionary<int, FiveFretNoteData>[] Lanes { get; set; }
-    public EventData<FiveFretNoteData>[] InstrumentEventData { get; set; } = 
-        new EventData<FiveFretNoteData>[6] { new (), new(), new(), new(), new(), new() };
-
+    public Lanes<FiveFretNoteData> Lanes { get; set; }
     public MoveData<FiveFretNoteData>[] InstrumentMoveData { get; set; } =
         new MoveData<FiveFretNoteData>[6] { new(), new(), new(), new(), new(), new() };
 
@@ -91,7 +94,7 @@ public class FiveFretInstrument : IInstrument
     public DifficultyType Difficulty { get; set; }
 
     /// <summary>
-    /// Corresponds to this lane's position in Lanes[].
+    /// Corresponds to this lane's position in Lanes.
     /// </summary>
     public enum LaneOrientation
     {
@@ -104,7 +107,7 @@ public class FiveFretInstrument : IInstrument
     }
 
     public FiveFretInstrument(
-        SortedDictionary<int, FiveFretNoteData>[] lanes,
+        Lanes<FiveFretNoteData> lanes,
         SortedDictionary<int, SpecialData> starpower,
         SortedDictionary<int, LocalEventData> localEvents,
         InstrumentType instrument,
@@ -123,9 +126,9 @@ public class FiveFretInstrument : IInstrument
         get
         {
             var sum = 0;
-            foreach(var eventData in InstrumentEventData)
+            for (int i = 0; i < Lanes.Count; i++)
             {
-                sum += eventData.Selection.Count;
+                sum += Lanes.GetLaneSelection(i).Count;
             }
             return sum;
         } 
@@ -133,36 +136,47 @@ public class FiveFretInstrument : IInstrument
 
     public void ClearAllSelections()
     {
-        foreach (var eventData in InstrumentEventData)
+        for (int i = 0; i < Lanes.Count; i++)
         {
-            eventData.Selection.Clear();
+            Lanes.GetLaneSelection(i).Clear();
         }
     }
 
     public void ShiftClickSelect(int start, int end)
     {
-        for (int i = 0; i < InstrumentEventData.Length; i++)
+        for (int i = 0; i < Lanes.Count; i++)
         {
-            var selectionSet = InstrumentEventData[i].Selection;
-            selectionSet.Clear();
-
-            var selection = Lanes[i].Keys.ToList().Where(x => x >= start && x <= end);
-            foreach (var tick in selection)
-            {
-                selectionSet.Add(tick, Lanes[i][tick]);
-            }
+            Lanes.GetLaneSelection(i).ShiftClickSelectInRange(start, end);
         }
     }
     public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
 
     public void ShiftClickSustainClamp(int tick, int tickLength)
     {
-        for (int i = 0; i < Lanes.Length; i++)
+        for (int i = 0; i < Lanes.Count; i++)
         {
-            if (Lanes[i].ContainsKey(tick))
+            if (Lanes.GetLane(i).ContainsKey(tick))
             {
-                Lanes[i][tick] = new(tickLength, Lanes[i][tick].Flag, Lanes[i][tick].Default);
+                Lanes.GetLane(i)[tick] = new(tickLength, Lanes.GetLane(i)[tick].Flag, Lanes.GetLane(i)[tick].Default);
             }
+        }
+    }
+    public void ShiftClickSelect(int tick, bool temporary)
+    {
+        Lanes.TempSustainTicks.Add(tick);
+        ShiftClickSelect(tick);
+    }
+
+    public void ReleaseTemporaryTicks()
+    {
+        Lanes.TempSustainTicks.Clear();
+    }
+
+    public void RemoveTickFromAllSelections(int tick)
+    {
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            Lanes.GetLaneSelection(i).Remove(tick);
         }
     }
 
@@ -171,11 +185,11 @@ public class FiveFretInstrument : IInstrument
     public List<string> ExportAllEvents()
     {
         List<string> notes = new();
-        for (int i = 0; i < Lanes.Length; i++)
+        for (int i = 0; i < Lanes.Count; i++)
         {
             int laneIdentifier = i != 5 ? i : 7;
 
-            foreach (var note in Lanes[i])
+            foreach (var note in Lanes.GetLane(i))
             {
                 string value = $"\t{note.Key} = N {laneIdentifier} {note.Value.Sustain}";
                 notes.Add(value);
@@ -189,26 +203,16 @@ public class FiveFretInstrument : IInstrument
 
 public class FourLaneDrumInstrument : IInstrument
 {
-    public SortedDictionary<int, FourLaneDrumNoteData>[] Lanes { get; set; }
+    public Lanes<FourLaneDrumNoteData> Lanes;
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
-    public EventData<FourLaneDrumNoteData>[] InstrumentEventData { get; set; } =
-    new EventData<FourLaneDrumNoteData>[6] { new(), new(), new(), new(), new(), new() };
 
     public MoveData<FourLaneDrumNoteData>[] InstrumentMoveData { get; set; } =
         new MoveData<FourLaneDrumNoteData>[6] { new(), new(), new(), new(), new(), new() };
     public InstrumentType Instrument { get; set; }
     public DifficultyType Difficulty { get; set; }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="lane">The integer value of LaneOrientation. Use a cast!</param>
-    /// <returns></returns>
-    public SortedDictionary<int, FourLaneDrumNoteData> GetLaneData(int lane)
-    {
-        return Lanes[lane];
-    }
+    public int TotalSelectionCount => throw new System.NotImplementedException();
 
     public enum LaneOrientation
     {
@@ -223,66 +227,49 @@ public class FourLaneDrumInstrument : IInstrument
         throw new System.Exception();
     }
 
-    public int TotalSelectionCount
-    {
-        get
-        {
-            var sum = 0;
-            foreach (var eventData in InstrumentEventData)
-            {
-                sum += eventData.Selection.Count;
-            }
-            return sum;
-        }
-    }
-
     public void ClearAllSelections()
     {
-        foreach (var eventData in InstrumentEventData)
-        {
-            eventData.Selection.Clear();
-        }
+        throw new System.NotImplementedException();
     }
 
     public void ShiftClickSelect(int start, int end)
     {
-        for (int i = 0; i < InstrumentEventData.Length; i++)
-        {
-            var selectionSet = InstrumentEventData[i].Selection;
-            selectionSet.Clear();
-
-            var selection = Lanes[i].Keys.ToList().Where(x => x >= start && x <= end);
-            foreach (var tick in selection)
-            {
-                selectionSet.Add(tick, Lanes[i][tick]);
-            }
-        }
+        throw new System.NotImplementedException();
     }
-    public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
+
+    public void ShiftClickSelect(int tick)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void ShiftClickSelect(int tick, bool temporary)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void ReleaseTemporaryTicks()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void RemoveTickFromAllSelections(int tick)
+    {
+        throw new System.NotImplementedException();
+    }
 }
 
 public class GHLInstrument : IInstrument
 {
-    public SortedDictionary<int, GHLNoteData>[] Lanes { get; set; }
+    public Lanes<GHLNoteData> Lanes;
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
-    public EventData<GHLNoteData>[] InstrumentEventData { get; set; } =
-        new EventData<GHLNoteData>[6] { new(), new(), new(), new(), new(), new() };
 
     public MoveData<GHLNoteData>[] InstrumentMoveData { get; set; } =
         new MoveData<GHLNoteData>[6] { new(), new(), new(), new(), new(), new() };
     public InstrumentType Instrument { get; set; }
     public DifficultyType Difficulty { get; set; }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="lane">The integer value of LaneOrientation. Use a cast!</param>
-    /// <returns></returns>
-    public SortedDictionary<int, GHLNoteData> GetLaneData(int lane)
-    {
-        return Lanes[lane];
-    }
+    public int TotalSelectionCount => throw new System.NotImplementedException();
 
     public enum LaneOrientation
     {
@@ -299,42 +286,35 @@ public class GHLInstrument : IInstrument
         throw new System.Exception();
     }
 
-    public int TotalSelectionCount
-    {
-        get
-        {
-            var sum = 0;
-            foreach (var eventData in InstrumentEventData)
-            {
-                sum += eventData.Selection.Count;
-            }
-            return sum;
-        }
-    }
-
     public void ClearAllSelections()
     {
-        foreach (var eventData in InstrumentEventData)
-        {
-            eventData.Selection.Clear();
-        }
+        throw new System.NotImplementedException();
     }
 
     public void ShiftClickSelect(int start, int end)
     {
-        for (int i = 0; i < InstrumentEventData.Length; i++)
-        {
-            var selectionSet = InstrumentEventData[i].Selection;
-            selectionSet.Clear();
-
-            var selection = Lanes[i].Keys.ToList().Where(x => x >= start && x <= end);
-            foreach (var tick in selection)
-            {
-                selectionSet.Add(tick, Lanes[i][tick]);
-            }
-        }
+        throw new System.NotImplementedException();
     }
-    public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
+
+    public void ShiftClickSelect(int tick)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void ShiftClickSelect(int tick, bool temporary)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void ReleaseTemporaryTicks()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void RemoveTickFromAllSelections(int tick)
+    {
+        throw new System.NotImplementedException();
+    }
 }
 
 /*

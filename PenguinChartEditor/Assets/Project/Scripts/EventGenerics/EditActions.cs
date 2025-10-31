@@ -10,7 +10,7 @@ public interface IEditAction<T>
     public SortedDictionary<int, T> SaveData { get; set; }
 }
 
-public class Copy<T> : IEditAction<T>
+public class Copy<T> : IEditAction<T> where T : IEventData
 {
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     public SortedDictionary<int, T> eventSetReference;
@@ -18,7 +18,7 @@ public class Copy<T> : IEditAction<T>
     {
         eventSetReference = targetEventSet;
     }
-    public bool Execute(SortedDictionary<int, T> clipboard, SortedDictionary<int, T> selection)
+    public bool Execute(ClipboardSet<T> clipboard, SelectionSet<T> selection)
     {
         // Note: to make up for separate selection sets and clipboards,
         // make a hashset<int> property that when referenced, combines
@@ -31,8 +31,9 @@ public class Copy<T> : IEditAction<T>
         // copy data is shifted to zero for relative pasting 
         // (ex. an event sequence 100, 200, 300 is converted to 0, 100, 200)
         int lowestTick = 0;
-        if (selection.Count > 0) lowestTick = selection.Keys.Min();
+        if (selection.Count > 0) lowestTick = selection.GetFirstSelectedTick();
 
+        // optimize this with new ClipboardSet<T> class methods!
         // add relevant data for each tick into clipboard
         foreach (var selectedTick in selection)
         {
@@ -54,7 +55,7 @@ public class Copy<T> : IEditAction<T>
     }
 }
 
-public class Paste<T> : IEditAction<T>
+public class Paste<T> : IEditAction<T> where T : IEventData
 {
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     SortedDictionary<int, T> eventSetReference;
@@ -66,7 +67,7 @@ public class Paste<T> : IEditAction<T>
         deleteAction = new(targetEventSet, tick0Immune);
     }
 
-    public bool Execute(int startPasteTick, SortedDictionary<int, T> clipboard)
+    public bool Execute(int startPasteTick, ClipboardSet<T> clipboard)
     {
         if (clipboard.Count == 0) return false;
     
@@ -97,7 +98,7 @@ public class Paste<T> : IEditAction<T>
     }
 }
 
-public class Delete<T> : IEditAction<T>
+public class Delete<T> : IEditAction<T> where T : IEventData
 {
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     SortedDictionary<int, T> eventSetReference;
@@ -115,11 +116,11 @@ public class Delete<T> : IEditAction<T>
     /// </summary>
     /// <param name="selectedEvents"></param>
     /// <returns></returns>
-    public bool Execute(SortedDictionary<int, T> selectedEvents)
+    public bool Execute(SelectionSet<T> selection)
     {
-        if (eventSetReference.Count == 0 || selectedEvents.Count == 0) return false;
+        if (eventSetReference.Count == 0 || selection.Count == 0) return false;
 
-        foreach (var tick in selectedEvents)
+        foreach (var tick in selection)
         {
             if (tick.Key == 0 && tick0Immune) continue;
             if (eventSetReference.ContainsKey(tick.Key))
@@ -129,7 +130,7 @@ public class Delete<T> : IEditAction<T>
             }
         }
 
-        selectedEvents.Clear();
+        selection.Clear();
         return true;
     }
 
@@ -191,7 +192,7 @@ public class Delete<T> : IEditAction<T>
     }
 }
 
-public class Cut<T> : IEditAction<T>
+public class Cut<T> : IEditAction<T> where T : IEventData
 {
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     SortedDictionary<int, T> eventSetReference;
@@ -202,7 +203,7 @@ public class Cut<T> : IEditAction<T>
         deleteAction = new(eventSetReference, tick0Immune);
     }
 
-    public bool Execute(SortedDictionary<int, T> clipboard, SortedDictionary<int, T> selection)
+    public bool Execute(ClipboardSet<T> clipboard, SelectionSet<T> selection)
     {
         var copyAction = new Copy<T>(eventSetReference);
         copyAction.Execute(clipboard, selection);
@@ -218,7 +219,7 @@ public class Cut<T> : IEditAction<T>
     }
 }
 
-public class Create<T> : IEditAction<T>
+public class Create<T> : IEditAction<T> where T : IEventData
 {
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     SortedDictionary<int, T> eventSetReference;
@@ -228,7 +229,7 @@ public class Create<T> : IEditAction<T>
         eventSetReference = targetEventSet;
     }
 
-    public bool Execute(int newTick, T newData, SortedDictionary<int, T> selectedEvents)
+    public bool Execute(int newTick, T newData, SelectionSet<T> selection)
     {
         // All editing of events does not come from adding an event that already exists
         // Do not create event if one already exists at that point in the set
@@ -237,7 +238,7 @@ public class Create<T> : IEditAction<T>
         // Creating the same event twice is a waste of computing power.
         if (eventSetReference.ContainsKey(newTick))
         {
-            selectedEvents.Clear();
+            selection.Clear();
             return false;
         }
 

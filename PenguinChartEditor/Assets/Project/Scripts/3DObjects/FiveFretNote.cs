@@ -10,8 +10,12 @@ using UnityEngine.EventSystems;
 public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 {
     public override MoveData<FiveFretNoteData> GetMoveData() => chartInstrument.InstrumentMoveData[(int)laneIdentifier];
-    public override EventData<FiveFretNoteData> GetEventData() => chartInstrument.InstrumentEventData[(int)laneIdentifier];
+    public override ClipboardSet<FiveFretNoteData> Clipboard => chartInstrument.Lanes.GetLaneClipboard((int)laneIdentifier);
+    public override SortedDictionary<int, FiveFretNoteData> LaneData => chartInstrument.Lanes.GetLane((int)laneIdentifier);
+    public override SelectionSet<FiveFretNoteData> Selection => chartInstrument.Lanes.GetLaneSelection((int)laneIdentifier);
 
+    private const int RMB_ID = 1;
+    HashSet<int> temporarySustainTicks = new();
     public Coroutine destructionCoroutine { get; set; }
 
     public FiveFretInstrument.LaneOrientation laneIdentifier
@@ -57,14 +61,9 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public override void RefreshLane() => parentLane.UpdateEvents();
 
-    public override SortedDictionary<int, FiveFretNoteData> GetEventSet()
-    {
-        return chartInstrument.Lanes[(int)laneIdentifier];
-    }
-
     public override void SetEvents(SortedDictionary<int, FiveFretNoteData> newEvents)
     {
-        chartInstrument.Lanes[(int)laneIdentifier] = newEvents;
+        chartInstrument.Lanes.SetLane((int)laneIdentifier, newEvents);
     }
 
     public void InitializeNote()
@@ -88,23 +87,28 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             return;
         }
 
-        // undo temporary selection add due to sustain when right-click dragging on a single note (sustaining is based on selection)
-        if (pointerEventData.button == PointerEventData.InputButton.Right && chartInstrument.TotalSelectionCount == 1)
+        if (justDeleted)
         {
-            if (GetEventData().Selection.ContainsKey(Tick)) GetEventData().Selection.Remove(Tick);
+            justDeleted = false;
+            return;
+        }
+
+        // undo temporary selection add due to sustain when right-click dragging on a single note (sustaining is based on selection)
+        if (pointerEventData.button == PointerEventData.InputButton.Right)
+        {
+            if (chartInstrument.Lanes.TempSustainTicks.Contains(Tick) && Selection.Contains(Tick))
+            {
+                parentInstrument.RemoveTickFromAllSelections(Tick);
+                parentInstrument.ReleaseTemporaryTicks();
+            }
+            chartInstrument.Lanes.TempSustainTicks.Clear();
             RefreshLane();
             return;
         }
 
-        if (!GetEventData().RMBHeld && pointerEventData.button == PointerEventData.InputButton.Left)
+        if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            if (justDeleted)
-            {
-                justDeleted = false;
-                return;
-            }
             CalculateSelectionStatus(pointerEventData);
-            RefreshLane();
             return;
         }
     } 
@@ -112,23 +116,22 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public override void OnPointerDown(PointerEventData pointerEventData)
     {
         base.OnPointerDown(pointerEventData);
-        if (justDeleted) return;
         
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                parentInstrument.ShiftClickSelect(Tick);
+                parentInstrument.ShiftClickSelect(Tick, true);
                 return;
             }
-            if (!GetEventData().Selection.ContainsKey(Tick))
-                GetEventData().Selection.Add(Tick, GetEventSet()[Tick]);
+            chartInstrument.Lanes.TempSustainTicks.Add(Tick);
+            Selection.Add(Tick, LaneData[Tick]);
         }
     }
 
     public void UpdateSustain(float trackLength)
     {
-        var sustainEndPointTicks = Tick + GetEventSet()[Tick].Sustain;
+        var sustainEndPointTicks = Tick + LaneData[Tick].Sustain;
 
         var trackProportion = (Tempo.ConvertTickTimeToSeconds(sustainEndPointTicks) - Waveform.startTime) / Waveform.timeShown;
         var trackPosition = trackProportion * trackLength;
@@ -137,7 +140,10 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         var notePosition = noteProportion * trackLength;
 
         var localScaleZ = (float)(trackPosition - notePosition);
-        if (localScaleZ + transform.localPosition.z > trackLength) localScaleZ = trackLength - transform.localPosition.z; // stop it from appearing past the end of the highway
+
+        // stop it from appearing past the end of the highway
+        if (localScaleZ + transform.localPosition.z > trackLength) localScaleZ = trackLength - transform.localPosition.z; 
+        if (localScaleZ < 0) localScaleZ = 0; // box collider negative size issues??
 
         sustain.localScale = new Vector3(sustain.localScale.x, sustain.localScale.y, localScaleZ);
     }
@@ -171,11 +177,11 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         if (!sustainData.sustainInProgress)
         {
             // directly access parent lane here to avoid reassigning the local shortcut variable
-            parentLane.sustainData = new(GetEventSet(), GetEventData().Selection, currentMouseTick);
+            parentLane.sustainData = new(LaneData, Selection, currentMouseTick);
             return;
         }
 
-        var workingEventSet = GetEventSet();
+        var workingEventSet = LaneData;
         var ticks = workingEventSet.Keys.ToList();
 
         var cursorMoveDifference = currentMouseTick - sustainData.firstMouseTick;
@@ -228,7 +234,12 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public override void CompleteSustain()
     {
-        GetEventData().Selection = new(parentLane.sustainData.sustainingTicks);
+        Selection.Overwrite(parentLane.sustainData.sustainingTicks);
+
+        foreach (var item in chartInstrument.Lanes.TempSustainTicks)
+        {
+            Selection.Remove(item);
+        }
 
         // parameterless new() = flag as empty 
         parentLane.sustainData = new();
@@ -250,5 +261,5 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     // used on sustain trail itself when click happens on trail
     // click on sustain trail + drag activates SustainSelection() within the previewer object
     public void ClampSustain(int tickLength) =>
-        GetEventSet()[Tick] = new(tickLength, GetEventSet()[Tick].Flag, GetEventSet()[Tick].Default);
+        LaneData[Tick] = new(tickLength, LaneData[Tick].Flag, LaneData[Tick].Default);
 } 

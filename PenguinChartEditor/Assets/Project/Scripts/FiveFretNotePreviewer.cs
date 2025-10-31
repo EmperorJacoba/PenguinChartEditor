@@ -25,7 +25,7 @@ public class FiveFretNotePreviewer : Previewer
         Tick = SongTime.CalculateGridSnappedTick(highwayProportion);
 
         note.Tick = Tick;
-        if (note.GetEventSet().ContainsKey(Tick))
+        if (note.LaneData.ContainsKey(Tick))
         {
             Hide(); return;
         }
@@ -88,7 +88,7 @@ public class FiveFretNotePreviewer : Previewer
     {
         if (IsOverlayUIHit()) return;
 
-        if (note.Visible && !note.GetEventSet().ContainsKey(note.Tick))
+        if (note.Visible && !note.LaneData.ContainsKey(note.Tick))
         {
             note.CreateEvent(note.Tick, new FiveFretNoteData(0, FiveFretNoteData.FlagType.strum)); // strum flag needs to be changed
 
@@ -96,7 +96,7 @@ public class FiveFretNotePreviewer : Previewer
             // this is a fix for the event randomly being selected when the event is created (? - I mean, obviously not ACTUALLY random, but it doesn't always happen?)
             // I put checks everywhere I can think of to stop this and it will not obey me in the way in which I intend
             // so nip it in the bud by putting a check right at the source (even though this functionality is better suited elsewhere)
-            if (note.GetEventData().Selection.ContainsKey(Tick)) note.GetEventData().Selection.Remove(Tick);
+            note.Selection.Remove(Tick);
 
             disableNextSelectionCheck = true;
             Chart.Refresh();

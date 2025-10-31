@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
-public interface IEventData {}
-
+public interface IEventData { }
 public struct BPMData : IEquatable<BPMData>, IEventData
 {
     public float BPMChange;
@@ -35,6 +35,7 @@ public struct BPMData : IEquatable<BPMData>, IEventData
             return hash;
         }
     }
+
 }
 
 public struct TSData : IEquatable<TSData>, IEventData

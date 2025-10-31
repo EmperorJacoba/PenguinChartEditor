@@ -21,7 +21,7 @@ public class FiveFretLane : Lane<FiveFretNoteData>
     {
         var workingInstrument = (FiveFretInstrument)Chart.LoadedInstrument;
 
-        var eventsToDisplay = workingInstrument.Lanes[(int)laneIdentifier].
+        var eventsToDisplay = workingInstrument.Lanes.GetLane((int)laneIdentifier).
             Where(tick => (tick.Key <= Waveform.endTick) &&
             (tick.Key + tick.Value.Sustain >= Waveform.startTick)).
             Select(item => item.Key).ToList();
