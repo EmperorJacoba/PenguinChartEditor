@@ -645,6 +645,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 6964610722790470207, guid: 662ae8843c8a0404ea37a3b28114c022, type: 3}
   parentObject: {fileID: 584328519}
+  eventObjects: []
 --- !u!1 &584328519 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6239090009231363197, guid: 6d12eaf9ec73a61478085a805dfbf106, type: 3}
@@ -3032,9 +3033,21 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: de710ead1092fef47bd056f94500722a, type: 3}
+    - target: {fileID: 5551071674935695016, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6363054742930952074, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 6.990696
+      objectReference: {fileID: 0}
+    - target: {fileID: 6828928993693948052, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
+      propertyPath: <LabelEntryBox>k__BackingField
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6828928993693948052, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
+      propertyPath: <SelectionOverlay>k__BackingField
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7144059694187888909, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
       propertyPath: m_Pivot.x
@@ -3117,7 +3130,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6993460132202874020, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
+    - {fileID: 6854207117225479928, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2684071022864669012, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}

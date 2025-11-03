@@ -15,6 +15,7 @@ public class TSLabel : Label<TSData>, IPoolable
     public override IPreviewer EventPreviewer => TSPreviewer.instance;
     public override IInstrument parentInstrument => Chart.SyncTrackInstrument;
     public Coroutine destructionCoroutine { get; set; }
+    [SerializeField] Warning tsWarningAlert;
 
     #endregion
 
@@ -34,11 +35,15 @@ public class TSLabel : Label<TSData>, IPoolable
         InitializeLabel();
         UpdatePosition(Waveform.GetWaveformRatio(_tick), highwayLength);
 
+        tsWarningAlert.Visible = !TimeSignature.IsEventValid(tick);
+
         // w/o this the input field will stay on if you delete it while editing
         // leading to jank where the input field for the next event is visible
         // but was never edited
         if (justDeleted) DeactivateManualInput(); // does not work properly
     }
+
+
 
 
     #region Event Handlers

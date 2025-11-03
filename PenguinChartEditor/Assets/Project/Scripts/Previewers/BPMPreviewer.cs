@@ -35,7 +35,7 @@ public class BPMPreviewer : Previewer
     {
         if (MiscTools.IsRaycasterHit(overlayUIRaycaster)) return;
 
-        if (bpmLabel.Visible && !Tempo.Events.ContainsKey(bpmLabel.Tick))
+        if (bpmLabel.Visible && !Tempo.Events.ContainsKey(Tick))
         {
             bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
             Chart.Refresh();

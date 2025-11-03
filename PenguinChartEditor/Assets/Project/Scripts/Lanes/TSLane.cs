@@ -16,25 +16,13 @@ public class TSLane : Lane<TSData>
     {
         var events = GetEventsToDisplay();
 
-        int warningCount = 0;
         int i;
         for (i = 0; i < events.Count; i++)
         {
             var tsLabel = TSPooler.instance.ActivateObject(i, events[i], HighwayLength);
-
-            if (!TimeSignature.IsEventValid(events[i]))
-            {
-                var tsWarningAlert = WarningPooler.instance.ActivateObject(warningCount, events[i], HighwayLength);
-
-                tsWarningAlert.InitializeWarning(Warning.WarningType.invalidTimeSignature);
-
-                warningCount++;
-            }
         }
 
         TSPooler.instance.DeactivateUnused(i);
-        WarningPooler.instance.DeactivateUnused(warningCount);
-
         TSPreviewer.instance.UpdatePosition();
     }
 

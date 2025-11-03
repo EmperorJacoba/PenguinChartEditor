@@ -39,10 +39,13 @@ public class TSPreviewer : Previewer
 
     public override void CreateEvent()
     {
+        Debug.Log("Creating event");
         if (IsOverlayUIHit()) return;
-
-        if (tsLabel.Visible && !TimeSignature.Events.ContainsKey(tsLabel.Tick))
+        Debug.Log("Passed overlay check.");
+        Debug.Log($"{tsLabel.Visible}, {TimeSignature.Events.ContainsKey(tsLabel.Tick)}");
+        if (tsLabel.Visible && !TimeSignature.Events.ContainsKey(Tick))
         {
+            Debug.Log("Passed event check.");
             tsLabel.CreateEvent(Tick, displayedTS);
             Chart.Refresh();
             disableNextSelectionCheck = true;

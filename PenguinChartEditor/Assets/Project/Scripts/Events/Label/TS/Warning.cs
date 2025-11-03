@@ -19,13 +19,6 @@ public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
     public int Tick => _tick;
     int _tick;
 
-    public void InitializeEvent(int tick, float highwayLength)
-    {
-        _tick = tick;
-        Visible = true;
-        UpdatePosition(Waveform.GetWaveformRatio(tick), highwayLength);
-    }
-
     public bool Visible
     {
         get

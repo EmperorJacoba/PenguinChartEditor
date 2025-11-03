@@ -24,7 +24,6 @@ public class BPMLane : Lane<BPMData>
         BPMPooler.instance.DeactivateUnused(i);
 
         BPMPreviewer.instance.UpdatePosition();
-        BPMLabel.justDeleted = false;
     }
 
     protected override List<int> GetEventsToDisplay()
