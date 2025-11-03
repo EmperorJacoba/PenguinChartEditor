@@ -7,7 +7,7 @@ using System.Linq;
 
 public class Chart : MonoBehaviour
 {
-    static Chart instance;
+    public static Chart instance;
 
     public static void Log(string x) => Debug.Log(x); // debug shortcut for static classes like parsers
 
@@ -111,6 +111,8 @@ public class Chart : MonoBehaviour
         Chart
     }
     public static TabType currentTab;
+
+    public LanePositions lanePositionReference;
 
     #endregion
 

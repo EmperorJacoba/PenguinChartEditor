@@ -18,8 +18,32 @@ public class TSLabel : Label<TSData>, IPoolable
 
     #endregion
 
+    public override int Tick
+    {
+        get
+        {
+            return _tick;
+        }
+    }
+    int _tick;
+
+    public void InitializeEvent(int tick, float highwayLength)
+    {
+        _tick = tick;
+        Visible = true;
+        InitializeLabel();
+        UpdatePosition(Waveform.GetWaveformRatio(_tick), highwayLength);
+
+        // w/o this the input field will stay on if you delete it while editing
+        // leading to jank where the input field for the next event is visible
+        // but was never edited
+        if (justDeleted) DeactivateManualInput(); // does not work properly
+    }
+
+
     #region Event Handlers
-    protected override bool tick0Immune { get; set; } = true;
+    protected override bool tick0Immune => _localimmune;
+    bool _localimmune = true;
 
     public override void HandleManualEndEdit(string newVal)
     {

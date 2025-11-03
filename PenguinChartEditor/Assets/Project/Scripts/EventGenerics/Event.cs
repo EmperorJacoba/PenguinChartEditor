@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 
 public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IEventData
 {
-    int Tick { get; set; }
+    int Tick { get; }
     bool Visible { get; set; }
 
     SelectionSet<T> Selection { get; }
@@ -50,7 +50,7 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
 public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 {
     #region Properties
-    public int Tick { get; set; }
+    public virtual int Tick { get; }
     public bool Selected
     {
         get
@@ -114,7 +114,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     /// [SyncTrack] must ALWAYS have one BPM and one TS event at tick 0.
     /// Users should edit tick 0 events for TS & BPM, not delete them.
     /// </summary>
-    protected virtual bool tick0Immune { get; set; } = false;
+    protected virtual bool tick0Immune { get => _immune; }
+    bool _immune = false;
 
     public void CopySelection()
     {
@@ -355,7 +356,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public bool CheckForSelection()
     {
-        if (Selection.Contains(Tick)) return true;
+        if (Selection.Contains(Tick) && SelectionOverlay != null) return true;
         else return false;
     }
 

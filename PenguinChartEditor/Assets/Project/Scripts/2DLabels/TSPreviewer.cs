@@ -19,8 +19,7 @@ public class TSPreviewer : Previewer
         if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) return;
 
         Tick = SongTime.CalculateGridSnappedTick(percentOfScreenVertical);
-        tsLabel.Tick = Tick;
-        tsLabel.UpdatePosition((Tempo.ConvertTickTimeToSeconds(Tick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
+        tsLabel.UpdatePosition(Waveform.GetWaveformRatio(Tick), boundaryReference.rect.height);
 
         // only call this function when cursor is within certain range?
         // takes the functionality out of this function
@@ -44,7 +43,7 @@ public class TSPreviewer : Previewer
 
         if (tsLabel.Visible && !TimeSignature.Events.ContainsKey(tsLabel.Tick))
         {
-            tsLabel.CreateEvent(tsLabel.Tick, displayedTS);
+            tsLabel.CreateEvent(Tick, displayedTS);
             Chart.Refresh();
             disableNextSelectionCheck = true;
         }

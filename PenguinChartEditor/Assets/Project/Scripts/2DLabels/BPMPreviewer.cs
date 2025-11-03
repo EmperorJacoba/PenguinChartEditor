@@ -19,8 +19,7 @@ public class BPMPreviewer : Previewer
         if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) return;
 
         Tick = SongTime.CalculateGridSnappedTick(percentOfScreenVertical);
-        bpmLabel.Tick = Tick;
-        bpmLabel.UpdatePosition((Tempo.ConvertTickTimeToSeconds(Tick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
+        bpmLabel.UpdatePosition(Waveform.GetWaveformRatio(Tick), boundaryReference.rect.height);
 
         // only call this function when cursor is within certain range?
         // takes the functionality out of this function
@@ -38,7 +37,7 @@ public class BPMPreviewer : Previewer
 
         if (bpmLabel.Visible && !Tempo.Events.ContainsKey(bpmLabel.Tick))
         {
-            bpmLabel.CreateEvent(bpmLabel.Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
+            bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
             Chart.Refresh();
             disableNextSelectionCheck = true;
         }

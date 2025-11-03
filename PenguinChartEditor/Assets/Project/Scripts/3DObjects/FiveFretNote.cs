@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,10 +15,34 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public override SortedDictionary<int, FiveFretNoteData> LaneData => chartInstrument.Lanes.GetLane((int)laneIdentifier);
     public override SelectionSet<FiveFretNoteData> Selection => chartInstrument.Lanes.GetLaneSelection((int)laneIdentifier);
 
-    private const int RMB_ID = 1;
-    HashSet<int> temporarySustainTicks = new();
     public Coroutine destructionCoroutine { get; set; }
 
+    public override int Tick
+    {
+        get
+        {
+            return _tick;
+        }
+    }
+    int _tick;
+
+    public void InitializeEvent(int tick, float highwayLength, FiveFretInstrument.LaneOrientation lane)
+    {
+        _tick = tick;
+        Visible = true;
+        laneIdentifier = lane;
+
+        InitializeNote();
+
+        UpdatePosition(
+            Waveform.GetWaveformRatio(tick),
+            highwayLength,
+            XCoordinate);
+
+        UpdateSustain(highwayLength);
+    }
+
+    public float XCoordinate => Chart.instance.lanePositionReference.GetLaneWorldSpaceXCoordinate((int)laneIdentifier);
     public FiveFretInstrument.LaneOrientation laneIdentifier
     {
         get
@@ -68,7 +93,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public void InitializeNote()
     {
-        Selected = CheckForSelection();
+        if (SelectionOverlay != null) Selected = CheckForSelection();
     }
 
     public void UpdatePosition(double percentOfTrack, float trackLength, float xPosition)

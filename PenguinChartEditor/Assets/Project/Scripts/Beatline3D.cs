@@ -19,4 +19,8 @@ public class Beatline3D : BaseBeatline
         line.SetPositions(newPos);
     }
 
+    public override void InitializeEvent(int tick, float highwayLength)
+    {
+
+    }
 }

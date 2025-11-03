@@ -39,9 +39,9 @@ public class BeatlineLane3D : MonoBehaviour
                 currentTSEventTick = TimeSignature.GetLastTSEventTick(currentTick);
             }
 
-            var workedBeatline = BeatlinePooler3D.instance.ActivateObject(currentBeatline, currentTick);
+            var workedBeatline = BeatlinePooler3D.instance.ActivateObject(currentBeatline, currentTick, highway.localScale.z);
 
-            workedBeatline.UpdateBeatlinePosition((Tempo.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime) / Waveform.timeShown, highway.localScale.z);
+            workedBeatline.UpdateBeatlinePosition(Waveform.GetWaveformRatio(currentTick), highway.localScale.z);
 
             // Needed to generate correct thickness
             workedBeatline.Type = TimeSignature.CalculateBeatlineType(currentTick);

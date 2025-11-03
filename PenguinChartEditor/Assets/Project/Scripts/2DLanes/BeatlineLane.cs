@@ -40,9 +40,9 @@ public class BeatlineLane : MonoBehaviour
                 currentTSEventTick = TimeSignature.GetLastTSEventTick(currentTick);
             }
 
-            var workedBeatline = BeatlinePooler.instance.ActivateObject(currentBeatline, currentTick);
+            var workedBeatline = BeatlinePooler.instance.ActivateObject(currentBeatline, currentTick, boundaryReference.rect.height);
 
-            workedBeatline.UpdateBeatlinePosition((Tempo.ConvertTickTimeToSeconds(currentTick) - Waveform.startTime) / Waveform.timeShown, boundaryReference.rect.height);
+            workedBeatline.UpdateBeatlinePosition(Waveform.GetWaveformRatio(currentTick), boundaryReference.rect.height);
 
             // Needed to generate correct thickness
             workedBeatline.Type = TimeSignature.CalculateBeatlineType(currentTick);

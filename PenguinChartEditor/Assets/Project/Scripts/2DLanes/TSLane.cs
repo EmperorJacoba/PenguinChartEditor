@@ -14,25 +14,19 @@ public class TSLane : Lane<TSData>
 
     public void UpdateEvents()
     {
-        var eventsToDisplay = TimeSignature.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
+        var events = GetEventsToDisplay();
 
         int warningCount = 0;
         int i;
-        for (i = 0; i < eventsToDisplay.Count; i++)
+        for (i = 0; i < events.Count; i++)
         {
-            var tsLabel = TSPooler.instance.ActivateObject(i, eventsToDisplay[i]);
-            tsLabel.InitializeLabel();
+            var tsLabel = TSPooler.instance.ActivateObject(i, events[i], HighwayLength);
 
-            double percentOfScreen = (Tempo.ConvertTickTimeToSeconds(eventsToDisplay[i]) - Waveform.startTime) / Waveform.timeShown;
-
-            tsLabel.UpdatePosition(percentOfScreen, boundaryReference2D.rect.height);
-
-            if (!TimeSignature.IsEventValid(eventsToDisplay[i]))
+            if (!TimeSignature.IsEventValid(events[i]))
             {
-                var tsWarningAlert = WarningPooler.instance.ActivateObject(warningCount, eventsToDisplay[i]);
+                var tsWarningAlert = WarningPooler.instance.ActivateObject(warningCount, events[i], HighwayLength);
 
                 tsWarningAlert.InitializeWarning(Warning.WarningType.invalidTimeSignature);
-                tsWarningAlert.UpdatePosition(percentOfScreen, boundaryReference2D.rect.height);
 
                 warningCount++;
             }
@@ -43,4 +37,8 @@ public class TSLane : Lane<TSData>
 
         TSPreviewer.instance.UpdatePosition();
     }
+
+    protected override List<int> GetEventsToDisplay() => 
+        TimeSignature.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
+
 }

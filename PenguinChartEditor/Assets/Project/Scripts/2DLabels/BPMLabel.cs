@@ -1,8 +1,9 @@
-using UnityEngine;
-using System.Collections.Generic;
 using System;
-using UnityEngine.EventSystems;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using static UnityEngine.Rendering.DebugUI;
 
 public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 {
@@ -20,9 +21,33 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
     #endregion
 
+    public override int Tick
+    {
+        get
+        {
+            return _tick;
+        }
+    }
+    int _tick;
+
+    public void InitializeEvent(int tick, float highwayLength)
+    {
+        _tick = tick;
+        Visible = true;
+        InitializeLabel();
+        UpdatePosition(Waveform.GetWaveformRatio(_tick), highwayLength);
+
+        // w/o this the input field will stay on if you delete it while editing
+        // leading to jank where the input field for the next event is visible
+        // but was never edited
+        if (justDeleted) DeactivateManualInput(); // does not work properly
+    }
+
+
     #region Event Handlers
 
-    protected override bool tick0Immune { get; set; } = true;
+    protected override bool tick0Immune => _localimmune;
+    bool _localimmune = true;
 
     // Overriden to make sure faulty/inaccurate data is not in Tempo dict after any large modifications
     public override void PasteSelection() => ExecuteWithRecalculate(base.PasteSelection);

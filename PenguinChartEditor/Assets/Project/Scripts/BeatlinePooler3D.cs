@@ -13,4 +13,11 @@ public class BeatlinePooler3D : Pooler<Beatline3D>
     {
         instance = this;
     }
+
+    public override Beatline3D ActivateObject(int index, int activationTick, float highwayLength)
+    {
+        var beat = base.ActivateObject(index, activationTick, highwayLength);
+        beat.InitializeEvent(activationTick, highwayLength);
+        return beat;
+    }
 }

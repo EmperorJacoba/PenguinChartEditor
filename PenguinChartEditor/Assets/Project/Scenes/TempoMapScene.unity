@@ -667,8 +667,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb81d2aaee7d964da5af12c2995737d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundaryReference2D: {fileID: 1489170079}
-  highway3D: {fileID: 0}
+  properties:
+    is3D: 0
+  eventBoundary: {fileID: 1489170079}
 --- !u!224 &588628610 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2728955328886321131, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
@@ -2442,8 +2443,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b53604da01237e6449a775f270ae7e72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundaryReference2D: {fileID: 1489170079}
-  highway3D: {fileID: 0}
+  properties:
+    is3D: 0
+  eventBoundary: {fileID: 72448263}
 --- !u!114 &1584868801 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2028792947772201148, guid: 3b60190f110bb344197c98c108f9975a, type: 3}

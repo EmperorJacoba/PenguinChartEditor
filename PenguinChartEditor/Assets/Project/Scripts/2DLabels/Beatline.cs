@@ -37,5 +37,12 @@ public class Beatline : BaseBeatline
         line.SetPositions(newPos);
     }
 
+    public override void InitializeEvent(int tick, float highwayLength)
+    {
+        Visible = true;
+    }
+
+
+
     #endregion
 }

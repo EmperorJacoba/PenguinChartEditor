@@ -19,6 +19,8 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
 
     public Coroutine destructionCoroutine { get; set; }
 
+
+
     #region Components
 
     /// <summary>
@@ -79,6 +81,8 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
         line.startWidth = thickness;
         line.endWidth = thickness;
     }
+
+    public abstract void InitializeEvent(int tick, float highwayLength);
 
     #endregion
 }

@@ -303,6 +303,11 @@ public class Waveform : MonoBehaviour
         else transform.position = boundaryReference.transform.position - 2 * Vector3.back; // 2* b/c this looks weird in the scene view otherwise
     }
 
+    public static double GetWaveformRatio(int tick)
+    {
+        return (Tempo.ConvertTickTimeToSeconds(tick) - startTime) / timeShown;
+    }
+
     #endregion
 }
 

@@ -613,12 +613,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundaryReference2D: {fileID: 0}
-  highway3D: {fileID: 2069553715}
+  properties:
+    is3D: 1
+  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 0
   lanePooler: {fileID: 1844158015}
   previewer: {fileID: 2006768576}
-  laneCenterPosition: -4
 --- !u!4 &143122576
 Transform:
   m_ObjectHideFlags: 0
@@ -665,7 +665,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1708384033}
-  - {fileID: 1636806882}
   - {fileID: 764433764}
   - {fileID: 473643696}
   m_Father: {fileID: 0}
@@ -790,6 +789,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1636806882}
   - {fileID: 1844158014}
   - {fileID: 1432554525}
   - {fileID: 1233862334}
@@ -925,12 +925,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundaryReference2D: {fileID: 0}
-  highway3D: {fileID: 2069553715}
+  properties:
+    is3D: 1
+  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 4
   lanePooler: {fileID: 1417207405}
   previewer: {fileID: 643972404}
-  laneCenterPosition: 4
 --- !u!4 &536290879
 Transform:
   m_ObjectHideFlags: 0
@@ -1655,12 +1655,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundaryReference2D: {fileID: 0}
-  highway3D: {fileID: 2069553715}
+  properties:
+    is3D: 1
+  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 1
   lanePooler: {fileID: 1432554526}
   previewer: {fileID: 1731475915}
-  laneCenterPosition: -2
 --- !u!4 &1158524637
 Transform:
   m_ObjectHideFlags: 0
@@ -1821,6 +1821,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 532864701870792285, guid: a0d861de1d10a6744b120be2a996b9bd, type: 3}
   parentObject: {fileID: 1933190196}
+  lane: 2
 --- !u!1 &1248994116
 GameObject:
   m_ObjectHideFlags: 0
@@ -2006,6 +2007,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 532864701870792285, guid: a0d861de1d10a6744b120be2a996b9bd, type: 3}
   parentObject: {fileID: 1482099732}
+  lane: 3
 --- !u!1 &1270468730 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8391222552659086748, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
@@ -2062,12 +2064,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundaryReference2D: {fileID: 0}
-  highway3D: {fileID: 2069553715}
+  properties:
+    is3D: 1
+  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 5
   lanePooler: {fileID: 1907842689}
   previewer: {fileID: 550080831}
-  laneCenterPosition: -6
 --- !u!4 &1292801094
 Transform:
   m_ObjectHideFlags: 0
@@ -2235,6 +2237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 532864701870792285, guid: a0d861de1d10a6744b120be2a996b9bd, type: 3}
   parentObject: {fileID: 536290877}
+  lane: 4
 --- !u!1 &1426883439
 GameObject:
   m_ObjectHideFlags: 0
@@ -2378,6 +2381,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 532864701870792285, guid: a0d861de1d10a6744b120be2a996b9bd, type: 3}
   parentObject: {fileID: 1158524635}
+  lane: 1
 --- !u!224 &1475291738 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 654223331871004247, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
@@ -2412,12 +2416,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundaryReference2D: {fileID: 0}
-  highway3D: {fileID: 2069553715}
+  properties:
+    is3D: 1
+  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 3
   lanePooler: {fileID: 1255020706}
   previewer: {fileID: 2117541870}
-  laneCenterPosition: 2
 --- !u!4 &1482099734
 Transform:
   m_ObjectHideFlags: 0
@@ -2730,12 +2734,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1636806881}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 183943802}
+  m_Father: {fileID: 473643696}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1636806883
 MonoBehaviour:
@@ -3289,6 +3293,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 532864701870792285, guid: a0d861de1d10a6744b120be2a996b9bd, type: 3}
   parentObject: {fileID: 143122574}
+  lane: 0
 --- !u!1 &1907842687
 GameObject:
   m_ObjectHideFlags: 0
@@ -3335,6 +3340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 532864701870792285, guid: a0d861de1d10a6744b120be2a996b9bd, type: 3}
   parentObject: {fileID: 1292801092}
+  lane: 5
 --- !u!1 &1933190196
 GameObject:
   m_ObjectHideFlags: 0
@@ -3364,12 +3370,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundaryReference2D: {fileID: 0}
-  highway3D: {fileID: 2069553715}
+  properties:
+    is3D: 1
+  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 2
   lanePooler: {fileID: 1233862335}
   previewer: {fileID: 325951980}
-  laneCenterPosition: 0
 --- !u!4 &1933190198
 Transform:
   m_ObjectHideFlags: 0
@@ -3625,6 +3631,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 55859144864384448, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
+      propertyPath: lanePositionReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 60cf2b79c86187446b4b64e0ef96ffcb, type: 2}
     - target: {fileID: 2408800730247674004, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -3977,8 +3987,8 @@ SceneRoots:
   - {fileID: 29604111}
   - {fileID: 1936119443}
   - {fileID: 183943802}
-  - {fileID: 1992376335}
   - {fileID: 1754544328}
   - {fileID: 33471336540357674}
   - {fileID: 2015534944}
   - {fileID: 1387491383}
+  - {fileID: 1992376335}

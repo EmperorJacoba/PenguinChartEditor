@@ -10,4 +10,10 @@ public class TSPooler : Pooler<TSLabel>
     {
         instance = this;
     }
+    public override TSLabel ActivateObject(int index, int activationTick, float highwayLength)
+    {
+        var label = base.ActivateObject(index, activationTick, highwayLength);
+        label.InitializeEvent(activationTick, highwayLength);
+        return label;
+    }
 }

@@ -13,25 +13,22 @@ public class BPMLane : Lane<BPMData>
 
     public void UpdateEvents()
     {
-        var eventsToDisplay = Tempo.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
+        var events = GetEventsToDisplay();
 
-        int i = 0;
-        for (i = 0; i < eventsToDisplay.Count; i++)
+        int i;
+        for (i = 0; i < events.Count; i++)
         {
-            var bpmLabel = BPMPooler.instance.ActivateObject(i, eventsToDisplay[i]);
-            bpmLabel.InitializeLabel();
-
-            // w/o this the input field will stay on if you delete it while editing
-            // leading to jank where the input field for the next event is visible
-            // but was never edited
-            if (BPMLabel.justDeleted) bpmLabel.DeactivateManualInput();
-
-            bpmLabel.UpdatePosition((Tempo.ConvertTickTimeToSeconds(eventsToDisplay[i]) - Waveform.startTime) / Waveform.timeShown, boundaryReference2D.rect.height);
+            var bpmLabel = BPMPooler.instance.ActivateObject(i, events[i], HighwayLength);
         }
 
         BPMPooler.instance.DeactivateUnused(i);
 
         BPMPreviewer.instance.UpdatePosition();
         BPMLabel.justDeleted = false;
+    }
+
+    protected override List<int> GetEventsToDisplay()
+    {
+        return Tempo.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
     }
 }

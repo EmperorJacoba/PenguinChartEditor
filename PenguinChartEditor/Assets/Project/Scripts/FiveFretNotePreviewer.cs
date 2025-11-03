@@ -24,16 +24,11 @@ public class FiveFretNotePreviewer : Previewer
 
         Tick = SongTime.CalculateGridSnappedTick(highwayProportion);
 
-        note.Tick = Tick;
         if (note.LaneData.ContainsKey(Tick))
         {
             Hide(); return;
         }
-
-        note.UpdatePosition(
-            (Tempo.ConvertTickTimeToSeconds(Tick) - Waveform.startTime) / Waveform.timeShown,
-            highway.localScale.z,
-            laneCenterPosition);
+        note.UpdatePosition(Waveform.GetWaveformRatio(Tick), highway.localScale.z, note.XCoordinate);
 
         var lowerBound = laneCenterPosition - 1;
         var upperBound = laneCenterPosition + 1;
@@ -90,7 +85,7 @@ public class FiveFretNotePreviewer : Previewer
 
         if (note.Visible && !note.LaneData.ContainsKey(note.Tick))
         {
-            note.CreateEvent(note.Tick, new FiveFretNoteData(0, FiveFretNoteData.FlagType.strum)); // strum flag needs to be changed
+            note.CreateEvent(Tick, new FiveFretNoteData(0, FiveFretNoteData.FlagType.strum)); // strum flag needs to be changed
 
             // please actually find the root cause of this issue
             // this is a fix for the event randomly being selected when the event is created (? - I mean, obviously not ACTUALLY random, but it doesn't always happen?)
