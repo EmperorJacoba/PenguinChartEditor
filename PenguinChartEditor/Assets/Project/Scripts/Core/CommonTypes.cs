@@ -15,7 +15,7 @@ public enum DifficultyType
 /// </summary>
 public enum InstrumentType
 {
-    synctrack = 0,
+    synctrack = 1,
     guitar = 10,
     coopGuitar = 20,
     rhythm = 30,

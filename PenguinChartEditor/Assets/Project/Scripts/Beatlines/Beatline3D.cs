@@ -21,6 +21,6 @@ public class Beatline3D : BaseBeatline
 
     public override void InitializeEvent(int tick, float highwayLength)
     {
-
+        Visible = true;
     }
 }
