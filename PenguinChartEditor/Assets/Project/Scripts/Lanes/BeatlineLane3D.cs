@@ -9,6 +9,8 @@ public class BeatlineLane3D : MonoBehaviour
     [SerializeField] Transform highway;
     public static BeatlineLane3D instance;
 
+    [SerializeField] BeatlinePooler3D pooler;
+
     void Awake()
     {
         instance = this;
@@ -40,7 +42,7 @@ public class BeatlineLane3D : MonoBehaviour
                 currentTSEventTick = TimeSignature.GetLastTSEventTick(currentTick);
             }
 
-            var workedBeatline = BeatlinePooler3D.instance.GetObject(currentBeatline);
+            var workedBeatline = pooler.GetObject(currentBeatline);
             workedBeatline.InitializeEvent(currentTick, highway.localScale.z);
 
 
@@ -53,6 +55,6 @@ public class BeatlineLane3D : MonoBehaviour
             currentTick += TimeSignature.IncreaseByHalfDivision(currentTick);
         }
 
-        BeatlinePooler3D.instance.DeactivateUnused(currentBeatline);
+        pooler.DeactivateUnused(currentBeatline);
     }
 }

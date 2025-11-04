@@ -9,6 +9,8 @@ public class BeatlineLane : MonoBehaviour
     [SerializeField] RectTransform boundaryReference;
     public static BeatlineLane instance;
 
+    [SerializeField] BeatlinePooler pooler;
+
     void Awake()
     {
         instance = this;
@@ -41,7 +43,7 @@ public class BeatlineLane : MonoBehaviour
                 currentTSEventTick = TimeSignature.GetLastTSEventTick(currentTick);
             }
 
-            var workedBeatline = BeatlinePooler.instance.GetObject(currentBeatline);
+            var workedBeatline = pooler.GetObject(currentBeatline);
             workedBeatline.InitializeEvent(currentTick, boundaryReference.rect.height);
 
             workedBeatline.UpdateBeatlinePosition(Waveform.GetWaveformRatio(currentTick), boundaryReference.rect.height);
@@ -53,6 +55,6 @@ public class BeatlineLane : MonoBehaviour
             currentTick += TimeSignature.IncreaseByHalfDivision(currentTick);
         }
 
-        BeatlinePooler.instance.DeactivateUnused(currentBeatline);
+        pooler.DeactivateUnused(currentBeatline);
     }
 }

@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Timeline;
 
 public class BPMLane : Lane<BPMData>
 {
     public static BPMLane instance;
+
+    [SerializeField] BPMPooler pooler;
     protected override void Awake()
     {
         base.Awake();
@@ -19,12 +20,12 @@ public class BPMLane : Lane<BPMData>
         int i;
         for (i = 0; i < events.Count; i++)
         {
-            var bpmLabel = BPMPooler.instance.GetObject(i);
+            var bpmLabel = pooler.GetObject(i);
             bpmLabel.InitializeEvent(events[i], HighwayLength);
 
         }
 
-        BPMPooler.instance.DeactivateUnused(i);
+        pooler.DeactivateUnused(i);
 
         BPMPreviewer.instance.UpdatePosition();
     }

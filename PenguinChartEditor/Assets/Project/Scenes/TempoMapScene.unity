@@ -382,6 +382,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boundaryReference: {fileID: 1489170079}
+  pooler: {fileID: 113968235}
 --- !u!1 &291849582
 GameObject:
   m_ObjectHideFlags: 0
@@ -620,6 +621,7 @@ MonoBehaviour:
   properties:
     is3D: 0
   eventBoundary: {fileID: 1489170079}
+  pooler: {fileID: 950550349}
 --- !u!224 &588628610 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2728955328886321131, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
@@ -2430,6 +2432,7 @@ MonoBehaviour:
   properties:
     is3D: 0
   eventBoundary: {fileID: 72448263}
+  pooler: {fileID: 853507101}
 --- !u!114 &1584868801 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2028792947772201148, guid: 3b60190f110bb344197c98c108f9975a, type: 3}
