@@ -10,11 +10,5 @@ public class BPMPooler : Pooler<BPMLabel>
     {
         instance = this;
     }
-    public override BPMLabel ActivateObject(int index, int activationTick, float highwayLength)
-    {
-        var label = base.ActivateObject(index, activationTick, highwayLength);
-        label.InitializeEvent(activationTick, highwayLength);
-        return label;
-    }
 
 }

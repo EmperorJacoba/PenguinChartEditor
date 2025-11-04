@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 public class FiveFretLane : Lane<FiveFretNoteData>
 {
@@ -23,11 +24,12 @@ public class FiveFretLane : Lane<FiveFretNoteData>
         int i;
         for (i = 0; i < events.Count; i++)
         {
-            var note = lanePooler.ActivateObject(i, events[i], HighwayLength);
+            var note = lanePooler.GetObject(i);
+            note.InitializeEvent(events[i], HighwayLength, laneIdentifier);
+            note.lanePreviewer = previewer;
         }
 
         lanePooler.DeactivateUnused(i);
-
         previewer.UpdatePosition();
     }
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 public class TSLane : Lane<TSData>
 {
@@ -19,7 +20,8 @@ public class TSLane : Lane<TSData>
         int i;
         for (i = 0; i < events.Count; i++)
         {
-            var tsLabel = TSPooler.instance.ActivateObject(i, events[i], HighwayLength);
+            var tsLabel = TSPooler.instance.GetObject(i);
+            tsLabel.InitializeEvent(events[i], HighwayLength);
         }
 
         TSPooler.instance.DeactivateUnused(i);

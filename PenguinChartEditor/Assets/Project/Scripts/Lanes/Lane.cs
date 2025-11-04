@@ -49,8 +49,6 @@ public abstract class Lane<T> : MonoBehaviour where T : IEventData
         inputMap.Charting.SelectAll.performed += x => eventAccessor.SelectAllEvents();
         inputMap.Charting.SustainDrag.performed += x => eventAccessor.SustainSelection();
     }
-
-
 }
 
 [System.Serializable]

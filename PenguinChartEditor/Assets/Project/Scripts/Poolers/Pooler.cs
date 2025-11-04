@@ -33,7 +33,7 @@ public abstract class Pooler<T> : MonoBehaviour where T : MonoBehaviour, IPoolab
     /// </summary>
     /// <param name="index">The target object number.</param>
     /// <returns>The requested object.</returns>
-    public virtual T ActivateObject(int index, int activationTick, float highwayLength)
+    public virtual T GetObject(int index)
     {
         while (eventObjects.Count <= index)
         {
@@ -44,8 +44,9 @@ public abstract class Pooler<T> : MonoBehaviour where T : MonoBehaviour, IPoolab
         if (@object.destructionCoroutine != null)
             StopCoroutine(@object.destructionCoroutine);
 
-        // initialize in derived classes
+        @object.Visible = true;
 
+        // initialize in lane!
         return @object;
     }
 

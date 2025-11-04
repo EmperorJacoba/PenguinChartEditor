@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Timeline;
 
 // This does not inherit from Lane<T> because it does not use event data
 // Beatlines are specially generated based on time signature and tempo data
@@ -40,7 +41,8 @@ public class BeatlineLane : MonoBehaviour
                 currentTSEventTick = TimeSignature.GetLastTSEventTick(currentTick);
             }
 
-            var workedBeatline = BeatlinePooler.instance.ActivateObject(currentBeatline, currentTick, boundaryReference.rect.height);
+            var workedBeatline = BeatlinePooler.instance.GetObject(currentBeatline);
+            workedBeatline.InitializeEvent(currentTick, boundaryReference.rect.height);
 
             workedBeatline.UpdateBeatlinePosition(Waveform.GetWaveformRatio(currentTick), boundaryReference.rect.height);
 

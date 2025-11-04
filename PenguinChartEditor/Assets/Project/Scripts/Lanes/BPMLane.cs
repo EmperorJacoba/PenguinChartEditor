@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 public class BPMLane : Lane<BPMData>
 {
@@ -18,7 +19,9 @@ public class BPMLane : Lane<BPMData>
         int i;
         for (i = 0; i < events.Count; i++)
         {
-            var bpmLabel = BPMPooler.instance.ActivateObject(i, events[i], HighwayLength);
+            var bpmLabel = BPMPooler.instance.GetObject(i);
+            bpmLabel.InitializeEvent(events[i], HighwayLength);
+
         }
 
         BPMPooler.instance.DeactivateUnused(i);
