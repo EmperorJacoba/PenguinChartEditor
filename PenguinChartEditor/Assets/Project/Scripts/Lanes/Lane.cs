@@ -66,10 +66,18 @@ public abstract class Lane<TEvent, TEventData> : MonoBehaviour where TEvent : IP
         }
 
         Pooler.DeactivateUnused(i);
-        Previewer.UpdatePosition();
+
+        // HasPreviewer() is only overriden in beatline lanes
+        // there is no previewer, but rest of logic is the same
+        if (HasPreviewer()) Previewer.UpdatePosition();
     }
 
     protected abstract void InitializeEvent(TEvent @event, int tick);
+
+    protected virtual bool HasPreviewer()
+    {
+        return true;
+    }
 }
 
 [System.Serializable]

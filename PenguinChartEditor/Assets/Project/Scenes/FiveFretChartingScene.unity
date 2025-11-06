@@ -2780,7 +2780,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8feb50f7f5234c48b55ea839941beab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highway: {fileID: 2069553715}
+  properties:
+    is3D: 1
+  eventBoundary: {fileID: 2069553715}
   pooler: {fileID: 1636806883}
 --- !u!4 &1708384033
 Transform:

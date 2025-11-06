@@ -381,7 +381,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a01a1ac9e19f2fc428171da8c074f972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundaryReference: {fileID: 1489170079}
+  properties:
+    is3D: 0
+  eventBoundary: {fileID: 1489170079}
   pooler: {fileID: 113968235}
 --- !u!1 &291849582
 GameObject:
