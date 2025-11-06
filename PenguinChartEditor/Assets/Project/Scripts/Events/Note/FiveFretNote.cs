@@ -91,7 +91,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         chartInstrument.Lanes.SetLane((int)laneIdentifier, newEvents);
     }
 
-    public void InitializeNote()
+    void InitializeNote()
     {
         if (SelectionOverlay != null) Selected = CheckForSelection();
     }

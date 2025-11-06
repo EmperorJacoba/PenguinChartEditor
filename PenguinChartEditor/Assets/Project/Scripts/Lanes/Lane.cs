@@ -1,14 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public abstract class Lane<T> : MonoBehaviour where T : IEventData
+// get rid of need for TEventData via either
+// a) separate IEvent interface from IEvent<T> (for functions that don't need a type)
+// or b) create another GameObject (maybe a scriptable object?) that deals with inputs
+public abstract class Lane<TEvent, TEventData> : MonoBehaviour where TEvent : IPoolable where TEventData : IEventData
 {
     [SerializeField] protected LaneProperties properties;
 
     [Tooltip("Use \"ScreenReference\" in TempoMap, use highway GameObject in Chart.")]
     [SerializeField] protected Transform eventBoundary;
     protected abstract List<int> GetEventsToDisplay();
-
+    protected abstract IPooler<TEvent> Pooler { get; }
+    protected abstract IPreviewer Previewer { get; }
 
     protected float HighwayLength
     {
@@ -27,13 +31,13 @@ public abstract class Lane<T> : MonoBehaviour where T : IEventData
     // WITHOUT needing a selections flag to make sure
     // only one label manages event actions at a time
     // this variable references the Event script on the previewer
-    protected IEvent<T> eventAccessor;
+    protected IEvent<TEventData> eventAccessor;
 
     protected InputMap inputMap;
 
     protected virtual void Awake()
     {
-        eventAccessor = gameObject.GetComponentInChildren<IEvent<T>>();
+        eventAccessor = gameObject.GetComponentInChildren<IEvent<TEventData>>();
 
         inputMap = new();
         inputMap.Enable();
@@ -49,6 +53,23 @@ public abstract class Lane<T> : MonoBehaviour where T : IEventData
         inputMap.Charting.SelectAll.performed += x => eventAccessor.SelectAllEvents();
         inputMap.Charting.SustainDrag.performed += x => eventAccessor.SustainSelection();
     }
+
+    public void UpdateEvents()
+    {
+        var events = GetEventsToDisplay();
+
+        int i;
+        for (i = 0; i < events.Count; i++)
+        {
+            TEvent @event = Pooler.GetObject(i);
+            InitializeEvent(@event, events[i]);
+        }
+
+        Pooler.DeactivateUnused(i);
+        Previewer.UpdatePosition();
+    }
+
+    protected abstract void InitializeEvent(TEvent @event, int tick);
 }
 
 [System.Serializable]

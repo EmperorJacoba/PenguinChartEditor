@@ -10,10 +10,16 @@ public interface IPoolable
     Coroutine destructionCoroutine { get; set; }
 }
 
+public interface IPooler<T>
+{
+    T GetObject(int index);
+    void DeactivateUnused(int lastIndex);
+}
+
 // Adapted from Unity's intro to object pooling
 // https://learn.unity.com/tutorial/introduction-to-object-pooling
 
-public abstract class Pooler<T> : MonoBehaviour where T : MonoBehaviour, IPoolable
+public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehaviour, IPoolable
 {
     [SerializeField] protected GameObject objectPrefab;
 

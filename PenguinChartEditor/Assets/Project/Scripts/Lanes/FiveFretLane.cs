@@ -1,36 +1,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Timeline;
 
-public class FiveFretLane : Lane<FiveFretNoteData>
+public class FiveFretLane : Lane<FiveFretNote, FiveFretNoteData>
 {
-    [SerializeField] public FiveFretInstrument.LaneOrientation laneIdentifier;
-    [SerializeField] public FiveFretNotePooler lanePooler;
-    [SerializeField] public FiveFretNotePreviewer previewer;
+    public FiveFretInstrument.LaneOrientation laneIdentifier;
 
-    public SustainData<FiveFretNoteData> sustainData = new();
+    [SerializeField] FiveFretNotePooler lanePooler;
+    [SerializeField] FiveFretNotePreviewer previewer;
+
+    // notes rely on this for their lane's sustain data
+    public SustainData<FiveFretNoteData> sustainData;
+
+    protected override IPooler<FiveFretNote> Pooler => (IPooler<FiveFretNote>)lanePooler;
+    protected override IPreviewer Previewer => previewer;
 
     protected override void Awake()
     {
         base.Awake();
         Chart.ChartTabUpdated += UpdateEvents;
-    }
-
-    public void UpdateEvents()
-    {
-        var events = GetEventsToDisplay();
-
-        int i;
-        for (i = 0; i < events.Count; i++)
-        {
-            var note = lanePooler.GetObject(i);
-            note.InitializeEvent(events[i], HighwayLength, laneIdentifier);
-            note.lanePreviewer = previewer;
-        }
-
-        lanePooler.DeactivateUnused(i);
-        previewer.UpdatePosition();
     }
 
     protected override List<int> GetEventsToDisplay()
@@ -42,4 +30,6 @@ public class FiveFretLane : Lane<FiveFretNoteData>
             (tick.Key + tick.Value.Sustain >= Waveform.startTick)).
             Select(item => item.Key).ToList();
     }
+
+    protected override void InitializeEvent(FiveFretNote @event, int tick) => @event.InitializeEvent(tick, HighwayLength, laneIdentifier);
 }

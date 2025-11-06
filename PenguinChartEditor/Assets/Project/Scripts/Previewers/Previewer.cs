@@ -6,6 +6,7 @@ public interface IPreviewer
 {
     void CreateEvent();
     void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
+    void UpdatePosition();
     void Hide();
     void Show();
     bool IsOverlayUIHit();

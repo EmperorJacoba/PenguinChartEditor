@@ -2,11 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TSLane : Lane<TSData>
+public class TSLane : Lane<TSLabel, TSData>
 {
     public static TSLane instance;
 
     [SerializeField] TSPooler pooler;
+
+    protected override IPooler<TSLabel> Pooler => (IPooler<TSLabel>)pooler;
+    protected override IPreviewer Previewer => TSPreviewer.instance;
 
     protected override void Awake()
     {
@@ -14,22 +17,8 @@ public class TSLane : Lane<TSData>
         instance = this;
     }
 
-    public void UpdateEvents()
-    {
-        var events = GetEventsToDisplay();
-
-        int i;
-        for (i = 0; i < events.Count; i++)
-        {
-            var tsLabel = pooler.GetObject(i);
-            tsLabel.InitializeEvent(events[i], HighwayLength);
-        }
-
-        pooler.DeactivateUnused(i);
-        TSPreviewer.instance.UpdatePosition();
-    }
-
     protected override List<int> GetEventsToDisplay() => 
         TimeSignature.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
 
+    protected override void InitializeEvent(TSLabel @event, int tick) => @event.InitializeEvent(tick, HighwayLength);
 }
