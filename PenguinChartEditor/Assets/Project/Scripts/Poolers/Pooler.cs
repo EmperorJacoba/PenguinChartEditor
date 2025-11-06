@@ -71,7 +71,7 @@ public abstract class Pooler<T> : MonoBehaviour where T : MonoBehaviour, IPoolab
     /// </summary>
     /// <param name="beatline">The target beatline to destroy after five seconds.</param>
     /// <returns></returns>
-    public IEnumerator DestructionTimer(T @object)
+    IEnumerator DestructionTimer(T @object)
     {
         yield return new WaitForSeconds(5.0f);
 

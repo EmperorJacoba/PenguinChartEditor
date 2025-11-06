@@ -26,7 +26,7 @@ public class Beatline : BaseBeatline
     /// Update the position of the beatline to a specified proportion up the screen.
     /// </summary>
     /// <param name="percentOfScreen">The percent of the screen that should exist between the bottom and the beatline.</param>
-    public void UpdateBeatlinePosition(double percentOfScreen, float screenHeight)
+    public override void UpdateBeatlinePosition(double percentOfScreen, float screenHeight)
     {
         // use screen ref to calculate percent of screen -> scale is 1:1 in the line renderer (scale must be 1, 1, 1)
         yScreenProportion = (float)(percentOfScreen * screenHeight);
@@ -36,13 +36,6 @@ public class Beatline : BaseBeatline
         newPos[1] = new Vector2(line.GetPosition(1).x, (float)yScreenProportion);
         line.SetPositions(newPos);
     }
-
-    public override void InitializeEvent(int tick, float highwayLength)
-    {
-        Visible = true;
-    }
-
-
 
     #endregion
 }

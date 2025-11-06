@@ -155,6 +155,27 @@ public static class TimeSignature
         return (int)(ts + numIntervals * tickInterval);
     }
 
+    public static int GetNextBeatlineEventExclusive(int currentTick)
+    {
+        currentTick++;
+        var ts = GetLastTSEventTick(currentTick);
+        var tickDiff = (currentTick - ts);
+        var tickInterval = Chart.Resolution / ((float)Events[ts].Denominator / 2);
+        int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
+
+        var proposedNext = (int)(ts + numIntervals * tickInterval);
+        var middleTSEvent = GetLastTSEventTick(proposedNext);
+
+        // edge case where a new TS event falls within the calculated next event and current tick
+        // happens if a TS event is placed on a non-beatline - that new TS has to be the next barline
+        // this is only something that applies during testing stage - this is important tho
+        if (middleTSEvent != GetLastTSEventTick(currentTick))
+        {
+            return middleTSEvent;
+        }
+        return proposedNext;
+    }
+
     public static int GetNextDivisionEvent(int currentTick)
     {
         var ts = GetLastTSEventTick(currentTick);
