@@ -4,12 +4,12 @@ using UnityEngine;
 [CreateAssetMenu]
 public class NoteColors : ScriptableObject
 {
-    [SerializeField] List<Material> noteColorMaterials = new();
-    public Material GetNoteMaterial(int lane)
+    [SerializeField] List<ColorPairing> noteColorMaterials = new();
+    public Material GetNoteMaterial(int lane, bool tap)
     {
         if (noteColorMaterials.Count > lane)
         {
-            return noteColorMaterials[lane];
+            return tap ? noteColorMaterials[lane].tapMat : noteColorMaterials[lane].normalMat;
         }
         else
         {
@@ -21,4 +21,20 @@ public class NoteColors : ScriptableObject
             return null;
         }
     }
+
+    [SerializeField] Material normalBorderColor;
+    [SerializeField] Material tapBorderColor;
+
+    public Material GetHeadColor(bool tap)
+    {
+        if (tap) return tapBorderColor;
+        return normalBorderColor;
+    }
+}
+
+[System.Serializable]
+internal struct ColorPairing
+{
+    public Material normalMat;
+    public Material tapMat;
 }

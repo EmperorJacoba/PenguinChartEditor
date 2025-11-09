@@ -13,9 +13,15 @@ MonoBehaviour:
   m_Name: FiveFretNoteColors
   m_EditorClassIdentifier: 
   noteColorMaterials:
-  - {fileID: 2100000, guid: 4581aea49d8bfdc4aa94d291864b50b3, type: 2}
-  - {fileID: 2100000, guid: 9b4b664a22f05924a8efae8be3a593a0, type: 2}
-  - {fileID: 2100000, guid: 6fdab26df1d6caf49a173a70a065805c, type: 2}
-  - {fileID: 2100000, guid: 563f86fbb2c654d4e8897110a5fcd0ca, type: 2}
-  - {fileID: 2100000, guid: 372a3af51381021449083e55ec60298b, type: 2}
-  - {fileID: 2100000, guid: cd2c0c338170b4c4fa22bce28883fb72, type: 2}
+  - normalMat: {fileID: 2100000, guid: 4581aea49d8bfdc4aa94d291864b50b3, type: 2}
+    tapMat: {fileID: 2100000, guid: 943e27bf2a2c2fa4197ee1a11674db8b, type: 2}
+  - normalMat: {fileID: 2100000, guid: 9b4b664a22f05924a8efae8be3a593a0, type: 2}
+    tapMat: {fileID: 2100000, guid: 957ee38a388da004fb2b63f051285fe5, type: 2}
+  - normalMat: {fileID: 2100000, guid: 6fdab26df1d6caf49a173a70a065805c, type: 2}
+    tapMat: {fileID: 2100000, guid: 8d2a1a5dfdb1fb7448f75d82f2a4f935, type: 2}
+  - normalMat: {fileID: 2100000, guid: 563f86fbb2c654d4e8897110a5fcd0ca, type: 2}
+    tapMat: {fileID: 2100000, guid: 46987d558a2ea494c965c5e9ba168f26, type: 2}
+  - normalMat: {fileID: 2100000, guid: 372a3af51381021449083e55ec60298b, type: 2}
+    tapMat: {fileID: 2100000, guid: 60c8b4b839592a9439bb248fd377fe5d, type: 2}
+  - normalMat: {fileID: 2100000, guid: cd2c0c338170b4c4fa22bce28883fb72, type: 2}
+    tapMat: {fileID: 2100000, guid: 69cefc446831cb34bbcefd13d815b258, type: 2}

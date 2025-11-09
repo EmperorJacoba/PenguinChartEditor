@@ -20,6 +20,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     [SerializeField] NoteColors colors;
     [SerializeField] GameObject hopoTopper;
     [SerializeField] GameObject strumTopper;
+    [SerializeField] GameObject tapTopper;
+    [SerializeField] MeshRenderer headBorder;
 
     public Coroutine destructionCoroutine { get; set; }
 
@@ -34,8 +36,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             if (_li == value) return;
             if (colors != null)
             {
-                noteColor.material = colors.GetNoteMaterial((int)value);
-                sustainColor.material = colors.GetNoteMaterial((int)value);
+                noteColor.material = colors.GetNoteMaterial((int)value, Tap);
+                sustainColor.material = colors.GetNoteMaterial((int)value, Tap);
             }
             _li = value;
         } 
@@ -72,7 +74,25 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             _isHopo = value;
         }
     }
-    [SerializeField] bool _isHopo = false;
+    bool _isHopo = false;
+
+    public bool Tap
+    {
+        get => _isTap;
+        set
+        {
+            if (_isTap == value) return;
+
+            noteColor.material = colors.GetNoteMaterial((int)laneIdentifier, value);
+            headBorder.material = colors.GetHeadColor(value);
+
+            strumTopper.SetActive(!value);
+            tapTopper.SetActive(value);
+
+            _isTap = value;
+        }
+    }
+    bool _isTap = false;
 
     public override IInstrument parentInstrument => chartInstrument;
 
@@ -82,6 +102,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             return _tick;
         }
+
     }
     int _tick;
 
@@ -101,7 +122,9 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
         UpdateSustain(highwayLength);
 
-        Hopo = (LaneData[tick].Flag == FiveFretNoteData.FlagType.hopo);
+        var tickData = LaneData[tick];
+        Hopo = (tickData.Flag == FiveFretNoteData.FlagType.hopo);
+        Tap = (tickData.Flag == FiveFretNoteData.FlagType.tap);
     }
     public float XCoordinate => Chart.instance.lanePositionReference.GetLaneWorldSpaceXCoordinate((int)laneIdentifier);
 
