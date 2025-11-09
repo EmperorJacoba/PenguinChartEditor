@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad87cec3f94810b4fb555591e33ab5b2, type: 3}
+  m_Name: FiveFretNoteColors
+  m_EditorClassIdentifier: 
+  noteColorMaterials:
+  - {fileID: 2100000, guid: 4581aea49d8bfdc4aa94d291864b50b3, type: 2}
+  - {fileID: 2100000, guid: 9b4b664a22f05924a8efae8be3a593a0, type: 2}
+  - {fileID: 2100000, guid: 6fdab26df1d6caf49a173a70a065805c, type: 2}
+  - {fileID: 2100000, guid: 563f86fbb2c654d4e8897110a5fcd0ca, type: 2}
+  - {fileID: 2100000, guid: 372a3af51381021449083e55ec60298b, type: 2}
+  - {fileID: 2100000, guid: cd2c0c338170b4c4fa22bce28883fb72, type: 2}

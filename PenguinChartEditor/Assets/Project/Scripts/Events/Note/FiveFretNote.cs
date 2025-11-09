@@ -14,34 +14,13 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public override SortedDictionary<int, FiveFretNoteData> LaneData => chartInstrument.Lanes.GetLane((int)laneIdentifier);
     public override SelectionSet<FiveFretNoteData> Selection => chartInstrument.Lanes.GetLaneSelection((int)laneIdentifier);
 
+    [SerializeField] Transform sustain;
+    [SerializeField] MeshRenderer sustainColor;
+    [SerializeField] MeshRenderer noteColor;
+    [SerializeField] NoteColors colors;
+
     public Coroutine destructionCoroutine { get; set; }
 
-    public override int Tick
-    {
-        get
-        {
-            return _tick;
-        }
-    }
-    int _tick;
-
-    public void InitializeEvent(int tick, float highwayLength, FiveFretInstrument.LaneOrientation lane)
-    {
-        _tick = tick;
-        Visible = true;
-        laneIdentifier = lane;
-
-        InitializeNote();
-
-        UpdatePosition(
-            Waveform.GetWaveformRatio(tick),
-            highwayLength,
-            XCoordinate);
-
-        UpdateSustain(highwayLength);
-    }
-
-    public float XCoordinate => Chart.instance.lanePositionReference.GetLaneWorldSpaceXCoordinate((int)laneIdentifier);
     public FiveFretInstrument.LaneOrientation laneIdentifier
     {
         get
@@ -50,20 +29,18 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
         set
         {
-            if (noteColorMaterials.Count > 0)
+            if (_li == value) return;
+            if (colors != null)
             {
-                noteColor.material = noteColorMaterials[(int)value];
-                sustainColor.material = noteColorMaterials[(int)value];
+                noteColor.material = colors.GetNoteMaterial((int)value);
+                sustainColor.material = colors.GetNoteMaterial((int)value);
             }
             _li = value;
         } 
     }
-    FiveFretInstrument.LaneOrientation _li;
 
-    [SerializeField] Transform sustain;
-    [SerializeField] MeshRenderer sustainColor;
-    [SerializeField] MeshRenderer noteColor;
-    [SerializeField] List<Material> noteColorMaterials = new();
+    // starts as -1 so the redundancy check in laneIdentifier.set does not return true when setting lane to 0
+    FiveFretInstrument.LaneOrientation _li = (FiveFretInstrument.LaneOrientation)(-1);
 
     public override IPreviewer EventPreviewer => lanePreviewer;
     public IPreviewer lanePreviewer; // define in pooler
@@ -78,10 +55,37 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             }
             return _lane;
         }
-    } // define in pooler
+    }
     FiveFretLane _lane;
 
     public override IInstrument parentInstrument => chartInstrument;
+
+    public override int Tick
+    {
+        get
+        {
+            return _tick;
+        }
+    }
+    int _tick;
+
+    public void InitializeEvent(int tick, float highwayLength, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer)
+    {
+        _tick = tick;
+        Visible = true;
+        laneIdentifier = lane;
+        lanePreviewer = previewer;
+
+        InitializeNote();
+
+        UpdatePosition(
+            Waveform.GetWaveformRatio(tick),
+            highwayLength,
+            XCoordinate);
+
+        UpdateSustain(highwayLength);
+    }
+    public float XCoordinate => Chart.instance.lanePositionReference.GetLaneWorldSpaceXCoordinate((int)laneIdentifier);
 
     public override void RefreshLane() => parentLane.UpdateEvents();
 

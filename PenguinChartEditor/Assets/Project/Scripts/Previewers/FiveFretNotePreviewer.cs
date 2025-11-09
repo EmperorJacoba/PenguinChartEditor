@@ -56,7 +56,7 @@ public class FiveFretNotePreviewer : Previewer
         List<RaycastResult> results = new();
         cameraHighwayRaycaster.Raycast(pointerData, results);
 
-        if (results.Count == 0) return Vector3.down;
+        if (results.Count == 0) return new Vector3(int.MinValue, int.MinValue, int.MinValue);
 
         return results[0].worldPosition;
     }

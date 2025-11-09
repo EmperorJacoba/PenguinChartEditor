@@ -733,7 +733,7 @@ MonoBehaviour:
   sustain: {fileID: 0}
   sustainColor: {fileID: 0}
   noteColor: {fileID: 0}
-  noteColorMaterials: []
+  colors: {fileID: 11400000, guid: cbab38d45eaa1464eb09b7dc05942ecc, type: 2}
 --- !u!4 &325951982
 Transform:
   m_ObjectHideFlags: 0
@@ -1000,7 +1000,7 @@ MonoBehaviour:
   sustain: {fileID: 0}
   sustainColor: {fileID: 0}
   noteColor: {fileID: 0}
-  noteColorMaterials: []
+  colors: {fileID: 11400000, guid: cbab38d45eaa1464eb09b7dc05942ecc, type: 2}
 --- !u!4 &550080833
 Transform:
   m_ObjectHideFlags: 0
@@ -1208,7 +1208,7 @@ MonoBehaviour:
   sustain: {fileID: 0}
   sustainColor: {fileID: 0}
   noteColor: {fileID: 0}
-  noteColorMaterials: []
+  colors: {fileID: 11400000, guid: cbab38d45eaa1464eb09b7dc05942ecc, type: 2}
 --- !u!4 &643972406
 Transform:
   m_ObjectHideFlags: 0
@@ -2852,7 +2852,7 @@ MonoBehaviour:
   sustain: {fileID: 0}
   sustainColor: {fileID: 0}
   noteColor: {fileID: 0}
-  noteColorMaterials: []
+  colors: {fileID: 11400000, guid: cbab38d45eaa1464eb09b7dc05942ecc, type: 2}
 --- !u!4 &1731475917
 Transform:
   m_ObjectHideFlags: 0
@@ -3738,7 +3738,7 @@ MonoBehaviour:
   sustain: {fileID: 0}
   sustainColor: {fileID: 0}
   noteColor: {fileID: 134929361}
-  noteColorMaterials: []
+  colors: {fileID: 11400000, guid: cbab38d45eaa1464eb09b7dc05942ecc, type: 2}
 --- !u!4 &2006768578
 Transform:
   m_ObjectHideFlags: 0
@@ -3892,7 +3892,7 @@ MonoBehaviour:
   sustain: {fileID: 0}
   sustainColor: {fileID: 0}
   noteColor: {fileID: 0}
-  noteColorMaterials: []
+  colors: {fileID: 11400000, guid: cbab38d45eaa1464eb09b7dc05942ecc, type: 2}
 --- !u!4 &2117541872
 Transform:
   m_ObjectHideFlags: 0

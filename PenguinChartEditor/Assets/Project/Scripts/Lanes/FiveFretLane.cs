@@ -10,7 +10,7 @@ public class FiveFretLane : Lane<FiveFretNote, FiveFretNoteData>
     [SerializeField] FiveFretNotePreviewer previewer;
 
     // notes rely on this for their lane's sustain data
-    public SustainData<FiveFretNoteData> sustainData;
+    public SustainData<FiveFretNoteData> sustainData = new();
 
     protected override IPooler<FiveFretNote> Pooler => (IPooler<FiveFretNote>)lanePooler;
     protected override IPreviewer Previewer => previewer;
@@ -31,5 +31,5 @@ public class FiveFretLane : Lane<FiveFretNote, FiveFretNoteData>
             Select(item => item.Key).ToList();
     }
 
-    protected override void InitializeEvent(FiveFretNote @event, int tick) => @event.InitializeEvent(tick, HighwayLength, laneIdentifier);
+    protected override void InitializeEvent(FiveFretNote @event, int tick) => @event.InitializeEvent(tick, HighwayLength, laneIdentifier, previewer);
 }
