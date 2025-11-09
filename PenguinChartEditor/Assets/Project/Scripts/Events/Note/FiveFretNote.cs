@@ -18,6 +18,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     [SerializeField] MeshRenderer sustainColor;
     [SerializeField] MeshRenderer noteColor;
     [SerializeField] NoteColors colors;
+    [SerializeField] GameObject hopoTopper;
+    [SerializeField] GameObject strumTopper;
 
     public Coroutine destructionCoroutine { get; set; }
 
@@ -58,6 +60,20 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
     FiveFretLane _lane;
 
+    public bool Hopo
+    {
+        get => _isHopo;
+        set
+        {
+            if (_isHopo == value) return;
+
+            strumTopper.SetActive(!value);
+            hopoTopper.SetActive(value);
+            _isHopo = value;
+        }
+    }
+    [SerializeField] bool _isHopo = false;
+
     public override IInstrument parentInstrument => chartInstrument;
 
     public override int Tick
@@ -84,6 +100,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             XCoordinate);
 
         UpdateSustain(highwayLength);
+
+        Hopo = (LaneData[tick].Flag == FiveFretNoteData.FlagType.hopo);
     }
     public float XCoordinate => Chart.instance.lanePositionReference.GetLaneWorldSpaceXCoordinate((int)laneIdentifier);
 
