@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -36,8 +37,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             if (_li == value) return;
             if (colors != null)
             {
-                noteColor.material = colors.GetNoteMaterial((int)value, Tap);
-                sustainColor.material = colors.GetNoteMaterial((int)value, Tap);
+                noteColor.material = colors.GetNoteMaterial((int)value, IsTap);
+                sustainColor.material = colors.GetNoteMaterial((int)value, IsTap);
             }
             _li = value;
         } 
@@ -62,7 +63,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
     FiveFretLane _lane;
 
-    public bool Hopo
+    public bool IsHopo
     {
         get => _isHopo;
         set
@@ -76,7 +77,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
     bool _isHopo = false;
 
-    public bool Tap
+    public bool IsTap
     {
         get => _isTap;
         set
@@ -102,7 +103,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             return _tick;
         }
-
     }
     int _tick;
 
@@ -123,8 +123,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         UpdateSustain(highwayLength);
 
         var tickData = LaneData[tick];
-        Hopo = (tickData.Flag == FiveFretNoteData.FlagType.hopo);
-        Tap = (tickData.Flag == FiveFretNoteData.FlagType.tap);
+        IsHopo = (tickData.Flag == FiveFretNoteData.FlagType.hopo);
+        IsTap = (tickData.Flag == FiveFretNoteData.FlagType.tap);
     }
     public float XCoordinate => Chart.instance.lanePositionReference.GetLaneWorldSpaceXCoordinate((int)laneIdentifier);
 
@@ -303,7 +303,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public override void CompleteSustain()
     {
-        Selection.Overwrite(parentLane.sustainData.sustainingTicks);
+        Selection.OverwriteWith(parentLane.sustainData.sustainingTicks);
 
         foreach (var item in chartInstrument.Lanes.TempSustainTicks)
         {

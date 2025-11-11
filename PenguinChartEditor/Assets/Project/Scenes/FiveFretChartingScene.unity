@@ -736,6 +736,8 @@ MonoBehaviour:
   colors: {fileID: 0}
   hopoTopper: {fileID: 0}
   strumTopper: {fileID: 0}
+  tapTopper: {fileID: 0}
+  headBorder: {fileID: 0}
 --- !u!4 &325951982
 Transform:
   m_ObjectHideFlags: 0
@@ -1005,6 +1007,8 @@ MonoBehaviour:
   colors: {fileID: 0}
   hopoTopper: {fileID: 0}
   strumTopper: {fileID: 0}
+  tapTopper: {fileID: 0}
+  headBorder: {fileID: 0}
 --- !u!4 &550080833
 Transform:
   m_ObjectHideFlags: 0
@@ -1215,6 +1219,8 @@ MonoBehaviour:
   colors: {fileID: 0}
   hopoTopper: {fileID: 0}
   strumTopper: {fileID: 0}
+  tapTopper: {fileID: 0}
+  headBorder: {fileID: 0}
 --- !u!4 &643972406
 Transform:
   m_ObjectHideFlags: 0
@@ -2879,6 +2885,8 @@ MonoBehaviour:
   colors: {fileID: 0}
   hopoTopper: {fileID: 0}
   strumTopper: {fileID: 0}
+  tapTopper: {fileID: 0}
+  headBorder: {fileID: 0}
 --- !u!4 &1731475917
 Transform:
   m_ObjectHideFlags: 0
@@ -3767,6 +3775,8 @@ MonoBehaviour:
   colors: {fileID: 0}
   hopoTopper: {fileID: 0}
   strumTopper: {fileID: 0}
+  tapTopper: {fileID: 0}
+  headBorder: {fileID: 0}
 --- !u!4 &2006768578
 Transform:
   m_ObjectHideFlags: 0
@@ -3923,6 +3933,8 @@ MonoBehaviour:
   colors: {fileID: 0}
   hopoTopper: {fileID: 0}
   strumTopper: {fileID: 0}
+  tapTopper: {fileID: 0}
+  headBorder: {fileID: 0}
 --- !u!4 &2117541872
 Transform:
   m_ObjectHideFlags: 0
@@ -3958,7 +3970,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 532864701870792285, guid: a0d861de1d10a6744b120be2a996b9bd, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3696191114692330603, guid: a0d861de1d10a6744b120be2a996b9bd, type: 3}
       propertyPath: m_LocalPosition.x

@@ -159,4 +159,12 @@ public class Chart : MonoBehaviour
                 break;
         }
     }
+    public static int hopoCutoff
+    {
+        get
+        {
+            return (int)Math.Floor(((float)65 / 192) * (float)Resolution);
+        }
+    }
+
 }

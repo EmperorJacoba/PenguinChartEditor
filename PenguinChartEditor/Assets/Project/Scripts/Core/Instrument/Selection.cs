@@ -128,7 +128,7 @@ public class SelectionSet<TValue> : IDictionary<int, TValue> where TValue : IEve
     public bool Remove(KeyValuePair<int, TValue> item) => selection.Remove(item.Key);
 
     public bool TryGetValue(int key, out TValue value) => selection.TryGetValue(key, out value);
-    public void Overwrite(IDictionary<int, TValue> newSelectionSet)
+    public void OverwriteWith(IDictionary<int, TValue> newSelectionSet)
     {
         selection = new(newSelectionSet);
     }

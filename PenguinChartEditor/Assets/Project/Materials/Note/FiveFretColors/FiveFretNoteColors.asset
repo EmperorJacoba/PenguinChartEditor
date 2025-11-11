@@ -25,3 +25,5 @@ MonoBehaviour:
     tapMat: {fileID: 2100000, guid: 60c8b4b839592a9439bb248fd377fe5d, type: 2}
   - normalMat: {fileID: 2100000, guid: cd2c0c338170b4c4fa22bce28883fb72, type: 2}
     tapMat: {fileID: 2100000, guid: 69cefc446831cb34bbcefd13d815b258, type: 2}
+  normalBorderColor: {fileID: 2100000, guid: b24a9a1e46735fe4b9ea9672d5632b93, type: 2}
+  tapBorderColor: {fileID: 2100000, guid: 79f68782faacc584eb653b44221fe7a1, type: 2}

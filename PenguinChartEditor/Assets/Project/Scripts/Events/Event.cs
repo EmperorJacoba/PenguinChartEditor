@@ -83,7 +83,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     #endregion
 
-    #region Static Set Access Points
+    #region Data Access
 
     // These functions point to each event type's static data members 
     // so they can be used in the broad "Event" class.
@@ -98,15 +98,21 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     // Stops tick 0 being erased and/or having invalid data when changing EventData.Events. 
     public abstract void SetEvents(SortedDictionary<int, T> newEvents);
 
-    public abstract void RefreshLane();
     public abstract IPreviewer EventPreviewer { get; }
+    public abstract IInstrument parentInstrument { get; }
+
+    /// <summary>
+    /// Update the events corresponding to this event's lane.
+    /// </summary>
+    public abstract void RefreshLane();
+
     public abstract void SustainSelection();
     public abstract void CompleteSustain();
-    public abstract IInstrument parentInstrument { get; }
+
     #endregion
 
     // Oops! All naming confusion!
-    #region Event Handlers
+    #region EditAction Handlers
 
     /// <summary>
     /// Used to prevent the TS and BPM events at tick 0 from being deleted.
@@ -151,6 +157,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         createAction.Execute(newTick, newData, Selection);
         Chart.Refresh();
     }
+
+    #endregion
+
+    #region Moving
 
     /// <summary>
     /// Runs every frame when Drag input action is active. 
@@ -288,7 +298,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         GetMoveData().moveInProgress = false;
 
         Selection.ApplyScaledSelection(
-            GetMoveData().MovingGhostSet, 
+            GetMoveData().MovingGhostSet,
             GetMoveData().lastTempGhostPasteStartTick);
 
         EventPreviewer.Show();
@@ -297,6 +307,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         Chart.Refresh();
     }
+
+    #endregion
+
+    #region Selections
 
     public virtual void CheckForSelectionClear()
     {
@@ -349,10 +363,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
         CalculateSelectionStatus(pointerEventData);
     }
-
-    #endregion
-
-    #region Selection Logic
 
     public bool CheckForSelection()
     {

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static UnityEngine.Rendering.DebugUI;
 
 public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 {

@@ -109,4 +109,9 @@ public class ClipboardSet<TValue> : IDictionary<int, TValue> where TValue : IEve
     {
         clipboard = new(newClipboardSet);
     }
+
+    public int GetLastClipboardKey()
+    {
+        return clipboard.Keys.ToList()[^1];
+    }
 }

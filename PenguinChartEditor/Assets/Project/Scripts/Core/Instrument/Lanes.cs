@@ -1,5 +1,8 @@
-using UnityEngine;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class Lanes<T> where T : IEventData
 {
@@ -27,6 +30,46 @@ public class Lanes<T> where T : IEventData
     public SelectionSet<T> GetLaneSelection(int lane) => selections[lane];
     public ClipboardSet<T> GetLaneClipboard(int lane) => clipboards[lane];
 
+    public bool IsTickChord(int tick)
+    {
+        int noteCount = 0;
+        for (int i = 0; i < Count; i++)
+        {
+            if (lanes[i].ContainsKey(tick)) noteCount++;
+            if (noteCount >= 2) return true;
+        }
+        return false;
+    }
+
+    public List<int> UniqueTicks
+    {
+        get
+        {
+            HashSet<int> receiver = new();
+            for (int i = 0; i < Count; i++)
+            {
+                receiver.UnionWith(lanes[i].Keys);
+            }
+            List<int> sortedTicks = new(receiver);
+            sortedTicks.Sort();
+            return sortedTicks;
+        }
+    }
+
+    public int GetPreviousTickInLane(int lane, int tick)
+    {
+        var laneSet = lanes[lane].Keys.ToList();
+        var index = laneSet.BinarySearch(tick);
+        if (index < 0) throw new ArgumentException($"Tick {tick} does not exist in lane {lane}.");
+        return laneSet[index - 1];
+    }
+    public int GetNextTickInLane(int lane, int tick)
+    {
+        var laneSet = lanes[lane].Keys.ToList();
+        var index = laneSet.BinarySearch(tick);
+        if (index < 0) throw new ArgumentException($"Tick {tick} does not exist in lane {lane}.");
+        return laneSet[index + 1];
+    }
 
     public int Count => lanes.Length;
 }

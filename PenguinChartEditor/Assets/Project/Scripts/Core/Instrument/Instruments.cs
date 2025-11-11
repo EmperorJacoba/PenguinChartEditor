@@ -179,6 +179,82 @@ public class FiveFretInstrument : IInstrument
         }
     }
 
+    const int DOES_NOT_EXIST = -1;
+    public void CheckForHopos(int changedTick)
+    {
+        // Check each lane for ticks within the hopo cutoff 
+        // If the lane contains the tick to check, look at all other lanes behind it and see if it has a tick within the hopo cutoff. Then modify hopo status as needed
+        // If the lane does not contain the tick to check, check the next tick ahead of the changed tick and check to see if it is within the hopo cutoff.
+        // Also check to see if every hopo note is a chord. If it is a chord, a forced marker is needed for it to be a hopo.
+
+        // Get all ticks before and after the hopo cutoff in each lane if it does not contain the tick. If it does, 
+
+        var tickSet = Lanes.UniqueTicks;
+
+        int eligibleTickBeforeHopo;
+        int eligibleTickAfterHopo;
+        bool changedTickExists;
+
+        int index = tickSet.BinarySearch(changedTick);
+        if (index < 0)
+        {
+            changedTickExists = false;
+            index = ~index; 
+
+            eligibleTickBeforeHopo = (index > 0 && changedTick - tickSet[index - 1] < Chart.hopoCutoff) ? tickSet[index - 1] : DOES_NOT_EXIST;
+            eligibleTickAfterHopo = (index < tickSet.Count - 1 && tickSet[index] - changedTick < Chart.hopoCutoff) ? tickSet[index] : DOES_NOT_EXIST;
+        }
+        else
+        {
+            changedTickExists = true;
+
+            eligibleTickBeforeHopo = (index > 0 && changedTick - tickSet[index - 1] < Chart.hopoCutoff) ? tickSet[index - 1] : DOES_NOT_EXIST;
+            eligibleTickAfterHopo = (index < tickSet.Count - 1 && tickSet[index + 1] - changedTick < Chart.hopoCutoff) ? tickSet[index + 1] : DOES_NOT_EXIST;
+        }
+
+        bool changedTickEligible = (changedTickExists && eligibleTickBeforeHopo != DOES_NOT_EXIST);
+
+        var isChangedTickChord = Lanes.IsTickChord(changedTick);
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var lane = Lanes.GetLane(i);
+
+            if (lane.TryGetValue(changedTick, out var laneTickData))
+            {
+                if (!laneTickData.Default)
+                {
+                    continue;
+                }
+
+                if (changedTickEligible && Lanes.GetPreviousTickInLane(i, changedTick) != eligibleTickBeforeHopo && !isChangedTickChord)
+                {
+                    lane[changedTick] = new(laneTickData.Sustain, FiveFretNoteData.FlagType.hopo);
+                }
+                else
+                {
+                    lane[changedTick] = new(laneTickData.Sustain, FiveFretNoteData.FlagType.strum);
+                }
+            }
+            else if (lane.TryGetValue(eligibleTickAfterHopo, out laneTickData))
+            {
+                if (!laneTickData.Default)
+                {
+                    continue;
+                }
+
+                if (Lanes.GetPreviousTickInLane(i, eligibleTickAfterHopo) != changedTick && !isChangedTickChord)
+                {
+                    lane[eligibleTickAfterHopo] = new(laneTickData.Sustain, FiveFretNoteData.FlagType.strum);
+                }
+                else
+                {
+                    lane[eligibleTickAfterHopo] = new(laneTickData.Sustain, FiveFretNoteData.FlagType.hopo);
+                }
+            }
+        }
+    }
+
     // currently only supports N events, need support for E and S
     // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)
     public List<string> ExportAllEvents()
