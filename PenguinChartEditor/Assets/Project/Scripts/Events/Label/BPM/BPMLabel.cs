@@ -11,8 +11,8 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
     public override ClipboardSet<BPMData> Clipboard => Chart.SyncTrackInstrument.bpmClipboard;
     public override SelectionSet<BPMData> Selection => Chart.SyncTrackInstrument.bpmSelection;
-    public override SortedDictionary<int, BPMData> LaneData => Tempo.Events;
-    public override void SetEvents(SortedDictionary<int, BPMData> newEvents) => Tempo.SetEvents(newEvents);
+    public override LaneSet<BPMData> LaneData => Tempo.Events;
+    public override void SetEvents(LaneSet<BPMData> newEvents) => Tempo.SetEvents(newEvents);
 
     public override MoveData<BPMData> GetMoveData() => Chart.SyncTrackInstrument.bpmMoveData;
     public override IInstrument parentInstrument => Chart.SyncTrackInstrument;

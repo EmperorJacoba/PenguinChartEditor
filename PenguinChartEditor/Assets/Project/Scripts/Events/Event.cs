@@ -13,12 +13,12 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
 
     SelectionSet<T> Selection { get; }
     ClipboardSet<T> Clipboard { get;  }
-    SortedDictionary<int, T> LaneData { get; }
+    LaneSet<T> LaneData { get; }
     MoveData<T> GetMoveData();
     IInstrument parentInstrument { get; }
     IPreviewer EventPreviewer { get; }
 
-    void SetEvents(SortedDictionary<int, T> newEvents);
+    void SetEvents(LaneSet<T> newEvents);
     void RefreshLane();
 
     // So that Lane<T> can access these easily
@@ -91,12 +91,12 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     // static members cannot be accessed directly without these functions.
     public abstract SelectionSet<T> Selection { get; }
     public abstract ClipboardSet<T> Clipboard { get; }
-    public abstract SortedDictionary<int, T> LaneData { get; }
+    public abstract LaneSet<T> LaneData { get; }
     public abstract MoveData<T> GetMoveData();
 
     // Used to clean up input data before actually committing event changes to dictionaries
     // Stops tick 0 being erased and/or having invalid data when changing EventData.Events. 
-    public abstract void SetEvents(SortedDictionary<int, T> newEvents);
+    public abstract void SetEvents(LaneSet<T> newEvents);
 
     public abstract IPreviewer EventPreviewer { get; }
     public abstract IInstrument parentInstrument { get; }
@@ -219,7 +219,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // tick 0 will not exist in the dictionary for TS & BPM events, which are needed
         // SetEvents() in BPM/TS cleans up data before actually applying the changes, which is required for BPM/TS
         // SetEvents() is already guaranteed by the interface so all event types will have it 
-        SortedDictionary<int, T> movingData = new(LaneData);
+        LaneSet<T> movingData = new(LaneData);
 
         // delete last move preview's data
         var deleteAction = new Delete<T>(movingData, tick0Immune);

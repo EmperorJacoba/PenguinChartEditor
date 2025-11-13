@@ -9,7 +9,7 @@ public class SustainData<T> where T : IEventData
     public Sustain<T> sustainEventAction;
     public SortedDictionary<int, T> sustainingTicks = new();
 
-    public SustainData(SortedDictionary<int, T> eventSet, SelectionSet<T> selection, int mouseTick)
+    public SustainData(LaneSet<T> eventSet, SelectionSet<T> selection, int mouseTick)
     {
         sustainEventAction = new(eventSet);
         sustainInProgress = true;

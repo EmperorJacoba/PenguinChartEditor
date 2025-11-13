@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 /// <summary>
@@ -13,9 +12,9 @@ public class SelectionSet<TValue> : IDictionary<int, TValue> where TValue : IEve
     public const int NONE_SELECTED = -1;
 
     SortedDictionary<int, TValue> selection = new();
-    SortedDictionary<int, TValue> parentLane;
+    LaneSet<TValue> parentLane;
 
-    public SelectionSet(SortedDictionary<int, TValue> parentLane)
+    public SelectionSet(LaneSet<TValue> parentLane)
     {
         this.parentLane = parentLane;
     }

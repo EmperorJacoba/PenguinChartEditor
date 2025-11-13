@@ -7,8 +7,8 @@ public static class TimeSignature
 {
     const string SEPARATOR = " = ";
     const string TS_IDENTIFIER = "TS";
-    public static SortedDictionary<int, TSData> Events { get; set; } = new();
-    public static void SetEvents(SortedDictionary<int, TSData> newEvents)
+    public static LaneSet<TSData> Events { get; set; } = new();
+    public static void SetEvents(LaneSet<TSData> newEvents)
     {
         if (!newEvents.ContainsKey(0))
         {

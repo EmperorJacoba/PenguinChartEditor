@@ -5,9 +5,9 @@ using System.Linq;
 public class ClipboardSet<TValue> : IDictionary<int, TValue> where TValue : IEventData
 {
     SortedDictionary<int, TValue> clipboard = new();
-    SortedDictionary<int, TValue> parentLane;
+    LaneSet<TValue> parentLane;
 
-    public ClipboardSet(SortedDictionary<int, TValue> parentLane)
+    public ClipboardSet(LaneSet<TValue> parentLane)
     {
         this.parentLane = parentLane;
     }

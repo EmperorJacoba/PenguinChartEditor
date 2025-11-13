@@ -2,18 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class Lanes<T> where T : IEventData
 {
-    SortedDictionary<int, T>[] lanes;
+    LaneSet<T>[] lanes;
     SelectionSet<T>[] selections;
     ClipboardSet<T>[] clipboards;
     public HashSet<int> TempSustainTicks = new();
 
     public Lanes(int laneCount)
     {
-        lanes = new SortedDictionary<int, T>[laneCount];
+        lanes = new LaneSet<T>[laneCount];
         selections = new SelectionSet<T>[laneCount];
         clipboards = new ClipboardSet<T>[laneCount];
 
@@ -25,8 +24,8 @@ public class Lanes<T> where T : IEventData
         }
     }
 
-    public SortedDictionary<int, T> GetLane(int lane) => lanes[lane];
-    public void SetLane(int lane, SortedDictionary<int, T> newData) => lanes[lane] = newData;
+    public LaneSet<T> GetLane(int lane) => lanes[lane];
+    public void SetLane(int lane, LaneSet<T> newData) => lanes[lane] = newData;
     public SelectionSet<T> GetLaneSelection(int lane) => selections[lane];
     public ClipboardSet<T> GetLaneClipboard(int lane) => clipboards[lane];
 

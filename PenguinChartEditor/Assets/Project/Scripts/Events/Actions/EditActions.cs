@@ -4,17 +4,17 @@ using Unity.Collections;
 using UnityEngine;
 
 // Based on https://refactoring.guru/design-patterns/command
-public interface IEditAction<T>
+public interface IEditAction<T> where T : IEventData
 {
     public void Undo();
-    public SortedDictionary<int, T> SaveData { get; set; }
+    public LaneSet<T> SaveData { get; set; }
 }
 
 public class Copy<T> : IEditAction<T> where T : IEventData
 {
-    public SortedDictionary<int, T> SaveData { get; set; } = new();
-    public SortedDictionary<int, T> eventSetReference;
-    public Copy(SortedDictionary<int, T> targetEventSet)
+    public LaneSet<T> SaveData { get; set; } = new();
+    public LaneSet<T> eventSetReference;
+    public Copy(LaneSet<T> targetEventSet)
     {
         eventSetReference = targetEventSet;
     }
@@ -57,11 +57,11 @@ public class Copy<T> : IEditAction<T> where T : IEventData
 
 public class Paste<T> : IEditAction<T> where T : IEventData
 {
-    public SortedDictionary<int, T> SaveData { get; set; } = new();
-    SortedDictionary<int, T> eventSetReference;
+    public LaneSet<T> SaveData { get; set; } = new();
+    LaneSet<T> eventSetReference;
     public Delete<T> deleteAction;
 
-    public Paste(SortedDictionary<int, T> targetEventSet, bool tick0Immune)
+    public Paste(LaneSet<T> targetEventSet, bool tick0Immune)
     {
         eventSetReference = targetEventSet;
         deleteAction = new(targetEventSet, tick0Immune);
@@ -100,9 +100,9 @@ public class Paste<T> : IEditAction<T> where T : IEventData
 
 public class Delete<T> : IEditAction<T> where T : IEventData
 {
-    public SortedDictionary<int, T> SaveData { get; set; } = new();
-    SortedDictionary<int, T> eventSetReference;
-    public Delete(SortedDictionary<int, T> targetEventSet, bool tick0Immune)
+    public LaneSet<T> SaveData { get; set; } = new();
+    LaneSet<T> eventSetReference;
+    public Delete(LaneSet<T> targetEventSet, bool tick0Immune)
     {
         eventSetReference = targetEventSet;
         this.tick0Immune = tick0Immune;
@@ -186,7 +186,7 @@ public class Delete<T> : IEditAction<T> where T : IEventData
         }
     }
     
-    HashSet<int> GetOverwritableDictEvents(SortedDictionary<int, T> eventSet, int startPasteTick, int endPasteTick)
+    HashSet<int> GetOverwritableDictEvents(LaneSet<T> eventSet, int startPasteTick, int endPasteTick)
     {
         return eventSet.Keys.ToList().Where(x => x >= startPasteTick && x <= endPasteTick).ToHashSet();
     }
@@ -194,10 +194,10 @@ public class Delete<T> : IEditAction<T> where T : IEventData
 
 public class Cut<T> : IEditAction<T> where T : IEventData
 {
-    public SortedDictionary<int, T> SaveData { get; set; } = new();
-    SortedDictionary<int, T> eventSetReference;
+    public LaneSet<T> SaveData { get; set; } = new();
+    LaneSet<T> eventSetReference;
     Delete<T> deleteAction;
-    public Cut(SortedDictionary<int, T> targetEventSet, bool tick0Immune)
+    public Cut(LaneSet<T> targetEventSet, bool tick0Immune)
     {
         eventSetReference = targetEventSet;
         deleteAction = new(eventSetReference, tick0Immune);
@@ -221,10 +221,10 @@ public class Cut<T> : IEditAction<T> where T : IEventData
 
 public class Create<T> : IEditAction<T> where T : IEventData
 {
-    public SortedDictionary<int, T> SaveData { get; set; } = new();
-    SortedDictionary<int, T> eventSetReference;
+    public LaneSet<T> SaveData { get; set; } = new();
+    LaneSet<T> eventSetReference;
 
-    public Create(SortedDictionary<int, T> targetEventSet)
+    public Create(LaneSet<T> targetEventSet)
     {
         eventSetReference = targetEventSet;
     }
@@ -257,13 +257,13 @@ public class Create<T> : IEditAction<T> where T : IEventData
     }
 }
 
-public class Move<T> : IEditAction<T>
+public class Move<T> : IEditAction<T> where T : IEventData
 {
-    public SortedDictionary<int, T> SaveData { get; set; } = new();
-    public SortedDictionary<int, T> poppedData = new();
-    SortedDictionary<int, T> eventSetReference;
+    public LaneSet<T> SaveData { get; set; } = new();
+    public LaneSet<T> poppedData = new();
+    LaneSet<T> eventSetReference;
 
-    public Move(SortedDictionary<int, T> targetEventSet, SortedDictionary<int, T> movingGhostSet, int offset)
+    public Move(LaneSet<T> targetEventSet, SortedDictionary<int, T> movingGhostSet, int offset)
     {
         eventSetReference = targetEventSet;
         SaveData = new(eventSetReference);
@@ -288,13 +288,13 @@ public class Move<T> : IEditAction<T>
     }
 }
 
-public class Sustain<T> : IEditAction<T>
+public class Sustain<T> : IEditAction<T> where T : IEventData
 {
-    public SortedDictionary<int, T> SaveData { get; set; } = new();
+    public LaneSet<T> SaveData { get; set; } = new();
 
-    SortedDictionary<int, T> eventSetReference;
+    LaneSet<T> eventSetReference;
 
-    public Sustain(SortedDictionary<int, T> targetEventSet)
+    public Sustain(LaneSet<T> targetEventSet)
     {
         eventSetReference = targetEventSet;
     }

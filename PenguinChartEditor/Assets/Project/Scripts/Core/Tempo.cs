@@ -13,7 +13,7 @@ public static class Tempo
     const float MINIMUM_BPM_VALUE = 0;
     const float MAXIMUM_BPM_VALUE = 1000;
 
-    public static SortedDictionary<int, BPMData> Events { get; set; } = new();
+    public static LaneSet<BPMData> Events { get; set; } = new();
 
     public static List<string> ExportAllEvents()
     {
@@ -145,7 +145,7 @@ public static class Tempo
 
     public static void RecalculateTempoEventDictionary(int modifiedTick, float timeChange)
     {
-        SortedDictionary<int, BPMData> outputTempoEventsDict = new();
+        LaneSet<BPMData> outputTempoEventsDict = new();
 
         var tickEvents = Events.Keys.ToList();
         var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick);
@@ -192,7 +192,7 @@ public static class Tempo
     /// <param name="modifiedTick">The last tick modified to update all future ticks from.</param>
     public static void RecalculateTempoEventDictionary(int modifiedTick = 0)
     {
-        SortedDictionary<int, BPMData> outputTempoEventsDict = new();
+        LaneSet<BPMData> outputTempoEventsDict = new();
 
         var tickEvents = Events.Keys.ToList();
         var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick);
@@ -305,7 +305,7 @@ public static class Tempo
         return ((ticktime - lastTickEvent) / (double)Chart.Resolution * SECONDS_PER_MINUTE / Events[lastTickEvent].BPMChange) + Events[lastTickEvent].Timestamp;
     }
     
-    public static void SetEvents(SortedDictionary<int, BPMData> newEvents)
+    public static void SetEvents(LaneSet<BPMData> newEvents)
     {
         var breakKey = GetFirstVariableEvent(newEvents);
         Events = newEvents;
@@ -330,7 +330,7 @@ public static class Tempo
         }
     }
 
-    public static int GetFirstVariableEvent(SortedDictionary<int, BPMData> newData)
+    public static int GetFirstVariableEvent(LaneSet<BPMData> newData)
     {
         var currentKeys = Events.Keys.ToHashSet();
         currentKeys.UnionWith(newData.Keys.ToHashSet());

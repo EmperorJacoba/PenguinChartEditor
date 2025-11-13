@@ -57,8 +57,8 @@ public class ChartParser
     #region Accessors 
     // Make accessing this more efficient
     // Possibly in another object or collection where you access dictionaries based on type requested?
-    public SortedDictionary<int, BPMData> bpmEvents;
-    public SortedDictionary<int, TSData> tsEvents;
+    public LaneSet<BPMData> bpmEvents;
+    public LaneSet<TSData> tsEvents;
     public int resolution;
     public Metadata metadata;
     public List<IInstrument> instruments = new();
@@ -290,13 +290,13 @@ public class ChartParser
     /// <param name="syncTrackEventGroup"></param>
     /// <returns>BPM event data, TS event data</returns>
     /// <exception cref="ArgumentException"></exception>
-    (SortedDictionary<int, BPMData>, SortedDictionary<int, TSData>) ParseSyncTrack(ChartEventGroup syncTrackEventGroup)
+    (LaneSet<BPMData>, LaneSet<TSData>) ParseSyncTrack(ChartEventGroup syncTrackEventGroup)
     {
         var events = syncTrackEventGroup.data;
 
         List<int> tempoTickTimeKeys = new();
         List<float> bpmVals = new();
-        SortedDictionary<int, TSData> tsEvents = new();
+        LaneSet<TSData> tsEvents = new();
         HashSet<int> anchoredTicks = new();
 
         foreach (var entry in events)
@@ -355,9 +355,9 @@ public class ChartParser
         return (bpmEvents, tsEvents);
     }
 
-    SortedDictionary<int, BPMData> FormatBPMDictionary(List<int> ticks, List<float> bpms, HashSet<int> anchors)
+    LaneSet<BPMData> FormatBPMDictionary(List<int> ticks, List<float> bpms, HashSet<int> anchors)
     {
-        SortedDictionary<int, BPMData> outputDict = new();
+        LaneSet<BPMData> outputDict = new();
 
         double currentSongTime = 0;
         for (int i = 0; i < ticks.Count; i++)
