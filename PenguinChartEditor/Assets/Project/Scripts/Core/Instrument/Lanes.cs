@@ -55,6 +55,32 @@ public class Lanes<T> where T : IEventData
         }
     }
 
+    public int GetPreviousTickEvent(int tick)
+    {
+        var ticks = UniqueTicks;
+
+        var index = ticks.BinarySearch(tick);
+        if (index < 0) index = ~index;
+
+        if (index == 0) return ticks[index];
+        return ticks[index - 1];
+    }
+
+    public int GetNextTickEvent(int tick)
+    {
+        var ticks = UniqueTicks;
+        var index = ticks.BinarySearch(tick);
+
+        if (index < 0)
+        {
+            index = ~index;
+            if (index == ticks.Count) return ticks[index - 1];
+            return (ticks[index]);
+        }
+
+        return ticks[index + 1];
+    }
+
     public int GetPreviousTickInLane(int lane, int tick)
     {
         var laneSet = lanes[lane].Keys.ToList();

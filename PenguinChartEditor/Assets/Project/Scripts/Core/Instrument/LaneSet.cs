@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventData
 {
@@ -75,6 +76,27 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
     public bool ContainsKey(int key)
     {
         return laneData.ContainsKey(key);
+    }
+    
+    public bool ContainsTickInRangeExclusive(int startRange, int endRange)
+    {
+        var keyList = Keys.ToList();
+
+        // startRange + 1 for an exclusive range
+        var index = keyList.BinarySearch(startRange + 1);
+
+        if (index > 0) index = ~index;
+
+        // Index will either be the index of startRange + 1 (extremely unlikely)
+        // or the next element larger than the start of the range.
+        if (keyList[index] < endRange) return true;
+        return false;
+    }
+
+    public bool ContainsTickInHopoRange(int startTick, bool positive)
+    {
+        if (positive) return ContainsTickInRangeExclusive(startTick, startTick + Chart.hopoCutoff);
+        return ContainsTickInRangeExclusive(startTick, startTick - Chart.hopoCutoff);
     }
 
     public void CopyTo(KeyValuePair<int, TValue>[] array, int arrayIndex)

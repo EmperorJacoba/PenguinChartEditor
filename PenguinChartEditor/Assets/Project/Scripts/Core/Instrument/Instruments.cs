@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -179,77 +180,67 @@ public class FiveFretInstrument : IInstrument
         }
     }
 
-    const int DOES_NOT_EXIST = -1;
-    public void CheckForHopos(int changedTick)
+    // after an add
+    // needs to update target tick if the last tick before current tick is within hopo range
+    // needs to update next tick if the tick after current tick is within hopo range
+    public void CheckForHopos(LaneOrientation lane, int changedTick)
     {
-        // Check each lane for ticks within the hopo cutoff 
-        // If the lane contains the tick to check, look at all other lanes behind it and see if it has a tick within the hopo cutoff. Then modify hopo status as needed
-        // If the lane does not contain the tick to check, check the next tick ahead of the changed tick and check to see if it is within the hopo cutoff.
-        // Also check to see if every hopo note is a chord. If it is a chord, a forced marker is needed for it to be a hopo.
-
-        // Get all ticks before and after the hopo cutoff in each lane if it does not contain the tick. If it does, 
-
-        var tickSet = Lanes.UniqueTicks;
-
-        int eligibleTickBeforeHopo;
-        int eligibleTickAfterHopo;
-        bool changedTickExists;
-
-        int index = tickSet.BinarySearch(changedTick);
-        if (index < 0)
+        if (Lanes.GetLane((int)lane).TryGetValue(changedTick, out var parameterLaneTickData))
         {
-            changedTickExists = false;
-            index = ~index; 
+            if (!parameterLaneTickData.Default || 
+                parameterLaneTickData.Flag == FiveFretNoteData.FlagType.tap) return;
+        }
 
-            eligibleTickBeforeHopo = (index > 0 && changedTick - tickSet[index - 1] < Chart.hopoCutoff) ? tickSet[index - 1] : DOES_NOT_EXIST;
-            eligibleTickAfterHopo = (index < tickSet.Count - 1 && tickSet[index] - changedTick < Chart.hopoCutoff) ? tickSet[index] : DOES_NOT_EXIST;
+        void SetThisNoteHopo(LaneSet<FiveFretNoteData> activeLane) => activeLane[changedTick] = new(parameterLaneTickData.Sustain, FiveFretNoteData.FlagType.hopo);
+        void SetThisNoteStrum(LaneSet<FiveFretNoteData> activeLane) => activeLane[changedTick] = new(parameterLaneTickData.Sustain, FiveFretNoteData.FlagType.strum);
+
+        bool nextTickHopo = false;
+        bool currentTickHopo = false;
+
+        int previousTick = Lanes.GetPreviousTickEvent(changedTick);
+        int nextTick = Lanes.GetNextTickEvent(changedTick);
+
+        if (nextTick - changedTick < Chart.hopoCutoff) nextTickHopo = true;
+        if (changedTick - previousTick < Chart.hopoCutoff) currentTickHopo = true;
+
+        var activeLane = Lanes.GetLane((int)lane);
+        if (currentTickHopo)
+        {
+            if (!Lanes.IsTickChord(changedTick) && !activeLane.Contains(previousTick))
+            {
+                SetThisNoteHopo(activeLane);
+            }
+            else
+            {
+                SetThisNoteStrum(activeLane);
+            }
         }
         else
         {
-            changedTickExists = true;
-
-            eligibleTickBeforeHopo = (index > 0 && changedTick - tickSet[index - 1] < Chart.hopoCutoff) ? tickSet[index - 1] : DOES_NOT_EXIST;
-            eligibleTickAfterHopo = (index < tickSet.Count - 1 && tickSet[index + 1] - changedTick < Chart.hopoCutoff) ? tickSet[index + 1] : DOES_NOT_EXIST;
+            SetThisNoteStrum(activeLane);
         }
 
-        bool changedTickEligible = (changedTickExists && eligibleTickBeforeHopo != DOES_NOT_EXIST);
-
-        var isChangedTickChord = Lanes.IsTickChord(changedTick);
-
-        for (int i = 0; i < Lanes.Count; i++)
+        if (nextTickHopo)
         {
-            var lane = Lanes.GetLane(i);
-
-            if (lane.TryGetValue(changedTick, out var laneTickData))
+            bool nextTickChord = Lanes.IsTickChord(nextTick);
+            for (int i = 0; i < Lanes.Count; i++)
             {
-                if (!laneTickData.Default)
-                {
-                    continue;
-                }
+                if (i == (int)lane) continue;
 
-                if (changedTickEligible && Lanes.GetPreviousTickInLane(i, changedTick) != eligibleTickBeforeHopo && !isChangedTickChord)
+                activeLane = Lanes.GetLane(i);
+                if (activeLane.TryGetValue(nextTick, out var iData))
                 {
-                    lane[changedTick] = new(laneTickData.Sustain, FiveFretNoteData.FlagType.hopo);
-                }
-                else
-                {
-                    lane[changedTick] = new(laneTickData.Sustain, FiveFretNoteData.FlagType.strum);
-                }
-            }
-            else if (lane.TryGetValue(eligibleTickAfterHopo, out laneTickData))
-            {
-                if (!laneTickData.Default)
-                {
-                    continue;
-                }
+                    if (!iData.Default) continue;
+                    if (iData.Flag == FiveFretNoteData.FlagType.tap) break;
 
-                if (Lanes.GetPreviousTickInLane(i, eligibleTickAfterHopo) != changedTick && !isChangedTickChord)
-                {
-                    lane[eligibleTickAfterHopo] = new(laneTickData.Sustain, FiveFretNoteData.FlagType.strum);
-                }
-                else
-                {
-                    lane[eligibleTickAfterHopo] = new(laneTickData.Sustain, FiveFretNoteData.FlagType.hopo);
+                    if (nextTickChord)
+                    {
+                        activeLane[nextTick] = new(iData.Sustain, FiveFretNoteData.FlagType.strum);
+                    }
+                    else
+                    {
+                        activeLane[nextTick] = new(iData.Sustain, FiveFretNoteData.FlagType.hopo);
+                    }
                 }
             }
         }
