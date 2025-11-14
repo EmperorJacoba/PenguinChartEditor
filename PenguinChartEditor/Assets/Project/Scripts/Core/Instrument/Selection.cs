@@ -14,6 +14,8 @@ public class SelectionSet<TValue> : IDictionary<int, TValue> where TValue : IEve
     SortedDictionary<int, TValue> selection = new();
     LaneSet<TValue> parentLane;
 
+    public SortedDictionary<int, TValue> ExportData() => new(selection);
+
     public SelectionSet(LaneSet<TValue> parentLane)
     {
         this.parentLane = parentLane;

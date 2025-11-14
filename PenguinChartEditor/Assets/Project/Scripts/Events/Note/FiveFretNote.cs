@@ -130,7 +130,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public override void RefreshLane() => parentLane.UpdateEvents();
 
-    public override void SetEvents(LaneSet<FiveFretNoteData> newEvents)
+    public override void SetEvents(SortedDictionary<int, FiveFretNoteData> newEvents)
     {
         chartInstrument.Lanes.SetLane((int)laneIdentifier, newEvents);
     }

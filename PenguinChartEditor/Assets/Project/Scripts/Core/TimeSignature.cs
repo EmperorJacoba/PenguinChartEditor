@@ -7,14 +7,14 @@ public static class TimeSignature
 {
     const string SEPARATOR = " = ";
     const string TS_IDENTIFIER = "TS";
-    public static LaneSet<TSData> Events { get; set; } = new();
-    public static void SetEvents(LaneSet<TSData> newEvents)
+    public static LaneSet<TSData> Events { get; set; } = new(protectedTicks: new(new HashSet<int>() { 0 }));
+    public static void SetEvents(SortedDictionary<int, TSData> newEvents)
     {
         if (!newEvents.ContainsKey(0))
         {
             newEvents.Add(0, Chart.SyncTrackInstrument.tsMoveData.currentMoveAction.poppedData[0]);
         }
-        Events = newEvents;
+        Events.Update(newEvents);
     }
 
     public static List<string> ExportAllEvents()

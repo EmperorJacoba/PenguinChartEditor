@@ -13,7 +13,7 @@ public static class Tempo
     const float MINIMUM_BPM_VALUE = 0;
     const float MAXIMUM_BPM_VALUE = 1000;
 
-    public static LaneSet<BPMData> Events { get; set; } = new();
+    public static LaneSet<BPMData> Events { get; set; } = new(protectedTicks: new HashSet<int>() { 0 });
 
     public static List<string> ExportAllEvents()
     {
@@ -104,7 +104,7 @@ public static class Tempo
         // else just get the index proper 
         else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before
 
-        return tickTimeKeys[index];
+        return index > 0 ? tickTimeKeys[index] : tickTimeKeys[0];
     }
 
     public static int GetNextAnchor(int currentTick)
@@ -145,7 +145,7 @@ public static class Tempo
 
     public static void RecalculateTempoEventDictionary(int modifiedTick, float timeChange)
     {
-        LaneSet<BPMData> outputTempoEventsDict = new();
+        SortedDictionary<int, BPMData> outputTempoEventsDict = new();
 
         var tickEvents = Events.Keys.ToList();
         var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick);
@@ -183,7 +183,7 @@ public static class Tempo
             outputTempoEventsDict.Add(tickEvents[i], new BPMData(bpmChange, Events[tickEvents[i]].Timestamp + timeChange, Events[tickEvents[i]].Anchor));
         }
 
-        Events = outputTempoEventsDict;
+        Events.Update(outputTempoEventsDict);
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ public static class Tempo
     /// <param name="modifiedTick">The last tick modified to update all future ticks from.</param>
     public static void RecalculateTempoEventDictionary(int modifiedTick = 0)
     {
-        LaneSet<BPMData> outputTempoEventsDict = new();
+        SortedDictionary<int, BPMData> outputTempoEventsDict = new();
 
         var tickEvents = Events.Keys.ToList();
         var positionOfTick = tickEvents.FindIndex(x => x == modifiedTick);
@@ -220,7 +220,7 @@ public static class Tempo
             outputTempoEventsDict.Add(tickEvents[i], new BPMData(Events[tickEvents[i]].BPMChange, (float)currentSongTime, Events[tickEvents[i]].Anchor));
         }
 
-        Events = outputTempoEventsDict;
+        Events.Update(outputTempoEventsDict);
     }
 
     /// <summary>
@@ -305,10 +305,10 @@ public static class Tempo
         return ((ticktime - lastTickEvent) / (double)Chart.Resolution * SECONDS_PER_MINUTE / Events[lastTickEvent].BPMChange) + Events[lastTickEvent].Timestamp;
     }
     
-    public static void SetEvents(LaneSet<BPMData> newEvents)
+    public static void SetEvents(SortedDictionary<int, BPMData> newEvents)
     {
         var breakKey = GetFirstVariableEvent(newEvents);
-        Events = newEvents;
+        Events.Update(newEvents);
 
         if (!Events.ContainsKey(0))
         {
@@ -330,7 +330,7 @@ public static class Tempo
         }
     }
 
-    public static int GetFirstVariableEvent(LaneSet<BPMData> newData)
+    public static int GetFirstVariableEvent(SortedDictionary<int, BPMData> newData)
     {
         var currentKeys = Events.Keys.ToHashSet();
         currentKeys.UnionWith(newData.Keys.ToHashSet());

@@ -25,7 +25,7 @@ public class Lanes<T> where T : IEventData
     }
 
     public LaneSet<T> GetLane(int lane) => lanes[lane];
-    public void SetLane(int lane, LaneSet<T> newData) => lanes[lane] = newData;
+    public void SetLane(int lane, SortedDictionary<int, T> newData) => lanes[lane].Update(newData);
     public SelectionSet<T> GetLaneSelection(int lane) => selections[lane];
     public ClipboardSet<T> GetLaneClipboard(int lane) => clipboards[lane];
 

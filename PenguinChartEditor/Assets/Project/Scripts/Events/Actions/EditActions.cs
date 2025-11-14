@@ -7,12 +7,12 @@ using UnityEngine;
 public interface IEditAction<T> where T : IEventData
 {
     public void Undo();
-    public LaneSet<T> SaveData { get; set; }
+    public SortedDictionary<int, T> SaveData { get; set; }
 }
 
 public class Copy<T> : IEditAction<T> where T : IEventData
 {
-    public LaneSet<T> SaveData { get; set; } = new();
+    public SortedDictionary<int, T> SaveData { get; set; } = new();
     public LaneSet<T> eventSetReference;
     public Copy(LaneSet<T> targetEventSet)
     {
@@ -57,7 +57,7 @@ public class Copy<T> : IEditAction<T> where T : IEventData
 
 public class Paste<T> : IEditAction<T> where T : IEventData
 {
-    public LaneSet<T> SaveData { get; set; } = new();
+    public SortedDictionary<int, T> SaveData { get; set; } = new();
     LaneSet<T> eventSetReference;
     public Delete<T> deleteAction;
 
@@ -100,16 +100,12 @@ public class Paste<T> : IEditAction<T> where T : IEventData
 
 public class Delete<T> : IEditAction<T> where T : IEventData
 {
-    public LaneSet<T> SaveData { get; set; } = new();
+    public SortedDictionary<int, T> SaveData { get; set; } = new();
     LaneSet<T> eventSetReference;
     public Delete(LaneSet<T> targetEventSet, bool tick0Immune)
     {
         eventSetReference = targetEventSet;
-        this.tick0Immune = tick0Immune;
     }
-    int startTick;
-    int endTick;
-    bool tick0Immune;
 
     /// <summary>
     /// Delete all events specified in a selection set.
@@ -120,15 +116,7 @@ public class Delete<T> : IEditAction<T> where T : IEventData
     {
         if (eventSetReference.Count == 0 || selection.Count == 0) return false;
 
-        foreach (var tick in selection)
-        {
-            if (tick.Key == 0 && tick0Immune) continue;
-            if (eventSetReference.ContainsKey(tick.Key))
-            {
-                eventSetReference.Remove(tick.Key, out T data);
-                SaveData.Add(tick.Key, data);
-            }
-        }
+        SaveData = eventSetReference.SubtractTicksFromSet(selection.ExportData());
 
         selection.Clear();
         return true;
@@ -144,57 +132,32 @@ public class Delete<T> : IEditAction<T> where T : IEventData
     {
         if (eventSetReference.Count == 0) return false;
 
-        var overwritableEvents = GetOverwritableDictEvents(eventSetReference, startDeleteTick, endDeleteTick);
-        if (overwritableEvents.Count == 0) return false;
+        SaveData = eventSetReference.SubtractTicksInRange(startDeleteTick, endDeleteTick);
 
-        foreach (var tick in overwritableEvents)
-        {
-            eventSetReference.Remove(tick, out T data);
-            SaveData.Add(tick, data);
-        }
-
-        startTick = startDeleteTick;
-        endTick = endDeleteTick;
         return true;
     }
 
     public bool Execute(int tick)
     {
         if (eventSetReference.Count == 0 || !eventSetReference.ContainsKey(tick)) return false;
-        if (tick0Immune && tick == 0) return false;
 
-        eventSetReference.Remove(tick, out T data);
-        SaveData.Add(tick, data);
+        var saveDataCandidate = eventSetReference.SubtractSingle(tick);
+        if (saveDataCandidate == null) return false; // if tried to delete immune tick
 
-        startTick = tick;
-        endTick = tick;
+        SaveData = saveDataCandidate;
+
         return true;
     }
 
     public void Undo()
     {
-        var ticksToClear = GetOverwritableDictEvents(eventSetReference, startTick, endTick);
 
-        foreach (var tick in ticksToClear)
-        {
-            eventSetReference.Remove(tick);
-        }
-
-        foreach (var tick in SaveData)
-        {
-            eventSetReference.Add(tick.Key, tick.Value);
-        }
-    }
-    
-    HashSet<int> GetOverwritableDictEvents(LaneSet<T> eventSet, int startPasteTick, int endPasteTick)
-    {
-        return eventSet.Keys.ToList().Where(x => x >= startPasteTick && x <= endPasteTick).ToHashSet();
     }
 }
 
 public class Cut<T> : IEditAction<T> where T : IEventData
 {
-    public LaneSet<T> SaveData { get; set; } = new();
+    public SortedDictionary<int, T> SaveData { get; set; } = new();
     LaneSet<T> eventSetReference;
     Delete<T> deleteAction;
     public Cut(LaneSet<T> targetEventSet, bool tick0Immune)
@@ -221,7 +184,7 @@ public class Cut<T> : IEditAction<T> where T : IEventData
 
 public class Create<T> : IEditAction<T> where T : IEventData
 {
-    public LaneSet<T> SaveData { get; set; } = new();
+    public SortedDictionary<int, T> SaveData { get; set; } = new();
     LaneSet<T> eventSetReference;
 
     public Create(LaneSet<T> targetEventSet)
@@ -259,7 +222,7 @@ public class Create<T> : IEditAction<T> where T : IEventData
 
 public class Move<T> : IEditAction<T> where T : IEventData
 {
-    public LaneSet<T> SaveData { get; set; } = new();
+    public SortedDictionary<int, T> SaveData { get; set; } = new();
     public LaneSet<T> poppedData = new();
     LaneSet<T> eventSetReference;
 
@@ -290,7 +253,7 @@ public class Move<T> : IEditAction<T> where T : IEventData
 
 public class Sustain<T> : IEditAction<T> where T : IEventData
 {
-    public LaneSet<T> SaveData { get; set; } = new();
+    public SortedDictionary<int, T> SaveData { get; set; } = new();
 
     LaneSet<T> eventSetReference;
 
