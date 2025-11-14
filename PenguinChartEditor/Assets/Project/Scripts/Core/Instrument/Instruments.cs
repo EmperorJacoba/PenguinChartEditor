@@ -37,6 +37,8 @@ public class SyncTrackInstrument : IInstrument
 
         bpmClipboard = new(Tempo.Events);
         tsClipboard = new(TimeSignature.Events);
+
+        Tempo.Events.UpdateNeededAtTick += modifiedTick => Tempo.RecalculateTempoEventDictionary(modifiedTick);
     }
 
 
@@ -129,6 +131,12 @@ public class FiveFretInstrument : IInstrument
         LocalEvents = localEvents;
         Instrument = instrument;
         Difficulty = difficulty;
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var laneIndex = i;
+            Lanes.GetLane(i).UpdateNeededAtTick += changedTick => CheckForHopos((LaneOrientation)laneIndex, changedTick);
+        }
     }
 
     public int TotalSelectionCount 
@@ -195,63 +203,92 @@ public class FiveFretInstrument : IInstrument
     // needs to update next tick if the tick after current tick is within hopo range
     public void CheckForHopos(LaneOrientation lane, int changedTick)
     {
-        if (Lanes.GetLane((int)lane).TryGetValue(changedTick, out var parameterLaneTickData))
-        {
-            if (!parameterLaneTickData.Default || 
-                parameterLaneTickData.Flag == FiveFretNoteData.FlagType.tap) return;
-        }
-
-        void SetThisNoteHopo(LaneSet<FiveFretNoteData> activeLane) => activeLane[changedTick] = new(parameterLaneTickData.Sustain, FiveFretNoteData.FlagType.hopo);
-        void SetThisNoteStrum(LaneSet<FiveFretNoteData> activeLane) => activeLane[changedTick] = new(parameterLaneTickData.Sustain, FiveFretNoteData.FlagType.strum);
+        Chart.Log("Running");
+        var activeLane = Lanes.GetLane((int)lane);
+        var allTicks = Lanes.UniqueTicks;
 
         bool nextTickHopo = false;
         bool currentTickHopo = false;
+        bool changedTickChord = Lanes.IsTickChord(changedTick);
 
         int previousTick = Lanes.GetPreviousTickEvent(changedTick);
         int nextTick = Lanes.GetNextTickEvent(changedTick);
 
-        if (nextTick - changedTick < Chart.hopoCutoff) nextTickHopo = true;
-        if (changedTick - previousTick < Chart.hopoCutoff) currentTickHopo = true;
+        if (nextTick != Lanes<FiveFretNoteData>.NO_TICK_EVENT && 
+            nextTick - changedTick < Chart.hopoCutoff) nextTickHopo = true;
 
-        var activeLane = Lanes.GetLane((int)lane);
-        if (currentTickHopo)
+        if (previousTick != Lanes<FiveFretNoteData>.NO_TICK_EVENT && 
+            changedTick - previousTick < Chart.hopoCutoff) currentTickHopo = true;
+
+        if (activeLane.Contains(changedTick))
         {
-            if (!Lanes.IsTickChord(changedTick) && !activeLane.Contains(previousTick))
+            var parameterLaneTickData = activeLane[changedTick];
+            if (!parameterLaneTickData.Default ||
+                parameterLaneTickData.Flag == FiveFretNoteData.FlagType.tap)
             {
-                SetThisNoteHopo(activeLane);
+                currentTickHopo = false;
+            }
+        }
+
+        void SetThisNote(FiveFretNoteData.FlagType flag)
+        {
+            for (int i = 0; i < Lanes.Count; i++)
+            {
+                var activeLane = Lanes.GetLane(i);
+                if (activeLane.Contains(changedTick))
+                {
+                    flag = activeLane.Contains(previousTick) ? FiveFretNoteData.FlagType.strum : flag;
+
+                    activeLane[changedTick] = activeLane[changedTick].ExportWithNewFlag(flag);
+                }
+            }
+        }
+
+        if (allTicks.Contains(changedTick))
+        {
+            if (currentTickHopo)
+            {
+                if (!changedTickChord)
+                {
+                    SetThisNote(FiveFretNoteData.FlagType.hopo);
+                }
+                else
+                {
+                    SetThisNote(FiveFretNoteData.FlagType.strum);
+                }
             }
             else
             {
-                SetThisNoteStrum(activeLane);
+                SetThisNote(FiveFretNoteData.FlagType.strum);
             }
-        }
-        else
-        {
-            SetThisNoteStrum(activeLane);
         }
 
         if (nextTickHopo)
         {
             bool nextTickChord = Lanes.IsTickChord(nextTick);
+            bool changedTickExists = allTicks.Contains(changedTick);
+
             for (int i = 0; i < Lanes.Count; i++)
             {
                 if (i == (int)lane) continue;
 
                 activeLane = Lanes.GetLane(i);
-                if (activeLane.TryGetValue(nextTick, out var iData))
+
+                if (activeLane.Contains(nextTick))
                 {
+                    var iData = activeLane[nextTick];
                     if (!iData.Default) continue;
                     if (iData.Flag == FiveFretNoteData.FlagType.tap) break;
 
-                    if (nextTickChord)
+                    if (nextTickChord || !changedTickExists || (activeLane.Contains(changedTick) && !Lanes.IsTickChord(changedTick)))
                     {
-                        activeLane[nextTick] = new(iData.Sustain, FiveFretNoteData.FlagType.strum);
+                        activeLane[nextTick] = iData.ExportWithNewFlag(FiveFretNoteData.FlagType.strum);
                     }
                     else
                     {
-                        activeLane[nextTick] = new(iData.Sustain, FiveFretNoteData.FlagType.hopo);
+                        activeLane[nextTick] = iData.ExportWithNewFlag(FiveFretNoteData.FlagType.hopo);
                     }
-                }
+                }    
             }
         }
     }

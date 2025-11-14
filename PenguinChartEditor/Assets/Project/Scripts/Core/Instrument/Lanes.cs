@@ -55,6 +55,7 @@ public class Lanes<T> where T : IEventData
         }
     }
 
+    public const int NO_TICK_EVENT = -1;
     public int GetPreviousTickEvent(int tick)
     {
         var ticks = UniqueTicks;
@@ -62,7 +63,7 @@ public class Lanes<T> where T : IEventData
         var index = ticks.BinarySearch(tick);
         if (index < 0) index = ~index;
 
-        if (index == 0) return ticks[index];
+        if (index == 0) return NO_TICK_EVENT;
         return ticks[index - 1];
     }
 
@@ -74,11 +75,11 @@ public class Lanes<T> where T : IEventData
         if (index < 0)
         {
             index = ~index;
-            if (index == ticks.Count) return ticks[index - 1];
-            return (ticks[index]);
+            if (index == ticks.Count) return NO_TICK_EVENT;
+            return ticks[index];
         }
 
-        return ticks[index + 1];
+        return ticks.Count > index + 1 ? ticks[index + 1] : NO_TICK_EVENT;
     }
 
     public int GetPreviousTickInLane(int lane, int tick)

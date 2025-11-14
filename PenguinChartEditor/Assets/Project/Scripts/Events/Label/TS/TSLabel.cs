@@ -43,9 +43,6 @@ public class TSLabel : Label<TSData>, IPoolable
         if (justDeleted) DeactivateManualInput(); // does not work properly
     }
 
-
-
-
     #region Event Handlers
     public override void HandleManualEndEdit(string newVal)
     {

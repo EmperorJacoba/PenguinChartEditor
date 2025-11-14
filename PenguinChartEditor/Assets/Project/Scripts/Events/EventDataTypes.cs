@@ -100,7 +100,12 @@ public struct FiveFretNoteData : IEventData
         Default = defaultOrientation;
     }
 
-    public override string ToString() => $"(FFN: {Flag}, hold = {Default}. {Sustain}T sustain)";
+    public override string ToString() => $"(FFN: {Flag}, defaultOrientation = {Default}. {Sustain}T sustain)";
+
+    public FiveFretNoteData ExportWithNewFlag(FlagType newFlag)
+    {
+        return new FiveFretNoteData(Sustain, newFlag, Default);
+    }
 }
 
 public struct FourLaneDrumNoteData : IEventData

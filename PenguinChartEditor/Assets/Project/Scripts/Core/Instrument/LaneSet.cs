@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEditor.Overlays;
 
@@ -8,6 +9,10 @@ using UnityEditor.Overlays;
 public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventData
 {
     protected SortedDictionary<int, TValue> laneData;
+
+    public delegate void UpdateNeededDelegate(int tick);
+
+    public event UpdateNeededDelegate UpdateNeededAtTick;
 
     /// <summary>
     /// Used to prevent the TS and BPM events at tick 0 from being deleted.
@@ -19,12 +24,6 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
     public readonly HashSet<int> protectedTicks = new();
 
     public SortedDictionary<int, TValue> ExportData() => new(laneData);
-
-    public LaneSet(LaneSet<TValue> copyData)
-    {
-        laneData = new(copyData.laneData);
-    }
-
     public LaneSet(HashSet<int> protectedTicks)
     {
         laneData = new();
@@ -38,12 +37,10 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
 
     public void Add(int key, TValue value)
     {
+        if (key < 0) key = 0;
+        laneData.Remove(key);
         laneData.Add(key, value);
-    }
-
-    public void Add(KeyValuePair<int, TValue> item)
-    {
-        Add(item.Key, item.Value);
+        UpdateNeededAtTick?.Invoke(key);
     }
 
     public void Clear()
@@ -66,6 +63,7 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
         return laneData.ContainsKey(key);
     }
 
+    // refactor this out - make redundant
     public void Update(SortedDictionary<int, TValue> newEvents)
     {
         laneData = newEvents;
@@ -94,24 +92,59 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
 
     public bool Remove(int tick)
     {
-        return laneData.Remove(tick);
+        if (protectedTicks.Contains(tick))
+        {
+            return false;
+        }
+
+        var returnVal = laneData.Remove(tick);
+        UpdateNeededAtTick?.Invoke(tick);
+        return returnVal;
     }
 
     public bool Remove(int tick, out TValue data)
     {
-        return laneData.Remove(tick, out data);
+        if (protectedTicks.Contains(tick))
+        {
+            data = default;
+            return false;
+        }
+
+        // remove must happen before update
+        var returnVal = laneData.Remove(tick, out data);
+        UpdateNeededAtTick?.Invoke(tick);
+        return returnVal;
     }
 
     public SortedDictionary<int, TValue> PopSingle(int tick)
     {
         if (protectedTicks.Contains(tick)) return null;
-        
+
         laneData.Remove(tick, out var data);
+
+        UpdateNeededAtTick?.Invoke(tick);
         return 
         new()
         {
             {tick, data}
         };
+    }
+
+    void InvokeForSetEnds(SortedDictionary<int, TValue> subtractedTicksSet)
+    {
+        if (subtractedTicksSet.Count == 0) return;
+
+        var keys = subtractedTicksSet.Keys;
+        UpdateNeededAtTick?.Invoke(keys.Min());
+        UpdateNeededAtTick?.Invoke(keys.Max());
+    }
+
+    void InvokeForSetEnds(HashSet<int> ticksAdded)
+    {
+        if (ticksAdded.Count == 0) return;
+
+        UpdateNeededAtTick?.Invoke(ticksAdded.Min());
+        UpdateNeededAtTick?.Invoke(ticksAdded.Max());
     }
 
     /// <summary>
@@ -132,6 +165,9 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
                 subtractedTicks.Add(tick.Key, data);
             }
         }
+
+        InvokeForSetEnds(subtractedTicks);
+
         return subtractedTicks;
     }
 
@@ -151,6 +187,8 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
             }
         }
 
+        InvokeForSetEnds(subtractedTicks);
+
         return subtractedTicks;
     }
 
@@ -164,6 +202,8 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
             }
             laneData.Add(tick, dataset[tick]);
         }
+
+        InvokeForSetEnds(ticks);
     }
 
     public void OverwriteDataWithOffset(SortedDictionary<int, TValue> data, int tickOffset)
@@ -177,6 +217,8 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
             }
             laneData.Add(targetPasteTick, tick.Value);
         }
+
+        InvokeForSetEnds(data);
     }
 
     HashSet<int> GetOverwritableDictEvents(int startPasteTick, int endPasteTick)
@@ -186,9 +228,14 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
 
     #region Unmodified IDictionary Implementations
 
+    public void Add(KeyValuePair<int, TValue> item)
+    {
+        Add(item.Key, item.Value);
+    }
+
     public bool Remove(KeyValuePair<int, TValue> item)
     {
-        return laneData.Remove(item.Key);
+        return Remove(item.Key);
     }
 
     public bool TryGetValue(int key, out TValue value)

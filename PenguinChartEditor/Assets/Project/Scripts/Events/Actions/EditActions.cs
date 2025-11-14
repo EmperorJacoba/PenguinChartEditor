@@ -205,7 +205,6 @@ public class Create<T> : IEditAction<T> where T : IEventData
             return false;
         }
 
-        eventSetReference.Remove(newTick);
         eventSetReference.Add(newTick, newData);
         SaveData.Add(newTick, newData);
         return true;

@@ -321,7 +321,7 @@ public static class Tempo
         // Tick 0's timestamp is always 0
         if (Events[0].Timestamp != 0)
         {
-            Events[0] = new BPMData(Events[0].BPMChange, 0, Tempo.Events[0].Anchor);
+            Events[0] = new BPMData(Events[0].BPMChange, 0, Events[0].Anchor);
         }
 
         if (breakKey != -1)
