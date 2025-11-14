@@ -1,12 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Overlays;
 
 // remember to set up TS/BPM
 // do not use LaneSet.Add/LaneSet.Delete when doing batch add/delete => only first and last ticks need update trigger
 public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventData
 {
     protected SortedDictionary<int, TValue> laneData;
+
+    /// <summary>
+    /// Used to prevent the TS and BPM events at tick 0 from being deleted.
+    /// If TS and BPM events at tick 0 are deleted, the chart has no place to start its beatline calculations from.
+    /// [SyncTrack] must ALWAYS have one BPM and one TS event at tick 0.
+    /// Users should edit tick 0 events for TS & BPM, not delete them.
+    /// Also allows future devs to protect other ticks from deletion if need be.
+    /// </summary>
     public readonly HashSet<int> protectedTicks = new();
 
     public SortedDictionary<int, TValue> ExportData() => new(laneData);
@@ -93,7 +102,7 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
         return laneData.Remove(tick, out data);
     }
 
-    public SortedDictionary<int, TValue> SubtractSingle(int tick)
+    public SortedDictionary<int, TValue> PopSingle(int tick)
     {
         if (protectedTicks.Contains(tick)) return null;
         
@@ -110,7 +119,7 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
     /// </summary>
     /// <param name="tickData"></param>
     /// <returns></returns>
-    public SortedDictionary<int, TValue> SubtractTicksFromSet(SortedDictionary<int, TValue> tickData)
+    public SortedDictionary<int, TValue> PopTicksFromSet(SortedDictionary<int, TValue> tickData)
     {
         SortedDictionary<int, TValue> subtractedTicks = new();
         foreach (var tick in tickData)
@@ -126,7 +135,7 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
         return subtractedTicks;
     }
 
-    public SortedDictionary<int, TValue> SubtractTicksInRange(int startTick, int endTick)
+    public SortedDictionary<int, TValue> PopTicksInRange(int startTick, int endTick)
     {
         SortedDictionary<int, TValue> subtractedTicks = new();
         var ticksToDelete = GetOverwritableDictEvents(startTick, endTick);
@@ -143,6 +152,31 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
         }
 
         return subtractedTicks;
+    }
+
+    public void OverwriteTicksFromSet(HashSet<int> ticks, SortedDictionary<int, TValue> dataset)
+    {
+        foreach (var tick in ticks)
+        {
+            if (laneData.ContainsKey(tick))
+            {
+                laneData.Remove(tick);
+            }
+            laneData.Add(tick, dataset[tick]);
+        }
+    }
+
+    public void OverwriteDataWithOffset(SortedDictionary<int, TValue> data, int tickOffset)
+    {
+        foreach (var tick in data)
+        {
+            var targetPasteTick = tickOffset + tick.Key;
+            if (laneData.ContainsKey(targetPasteTick))
+            {
+                laneData.Remove(targetPasteTick);
+            }
+            laneData.Add(targetPasteTick, tick.Value);
+        }
     }
 
     HashSet<int> GetOverwritableDictEvents(int startPasteTick, int endPasteTick)

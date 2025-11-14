@@ -16,7 +16,7 @@ public class Chart : MonoBehaviour
     public static Metadata Metadata { get; set; } = new();
     public static List<IInstrument> Instruments { get; set; }
     public static IInstrument LoadedInstrument { get; set; }
-    public static SyncTrackInstrument SyncTrackInstrument { get; set; } = new();
+    public static SyncTrackInstrument SyncTrackInstrument { get; set; }
 
     #endregion
 
@@ -61,6 +61,8 @@ public class Chart : MonoBehaviour
         {
             TimeSignature.Events.Add(0, new TSData(4, 4));
         }
+
+        SyncTrackInstrument = new();
     }
 
     #endregion

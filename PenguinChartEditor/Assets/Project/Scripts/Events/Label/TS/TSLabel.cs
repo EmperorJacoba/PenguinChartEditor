@@ -47,9 +47,6 @@ public class TSLabel : Label<TSData>, IPoolable
 
 
     #region Event Handlers
-    protected override bool tick0Immune => _localimmune;
-    bool _localimmune = true;
-
     public override void HandleManualEndEdit(string newVal)
     {
         TimeSignature.Events[Tick] = ProcessUnsafeTSString(newVal);

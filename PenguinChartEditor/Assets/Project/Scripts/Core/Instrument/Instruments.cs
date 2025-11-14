@@ -30,11 +30,21 @@ public class SyncTrackInstrument : IInstrument
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
 
-    public SelectionSet<BPMData> bpmSelection = new(Tempo.Events);
-    public SelectionSet<TSData> tsSelection = new(TimeSignature.Events);
+    public SyncTrackInstrument()
+    {
+        bpmSelection = new(Tempo.Events);
+        tsSelection = new(TimeSignature.Events);
 
-    public ClipboardSet<BPMData> bpmClipboard = new(Tempo.Events);
-    public ClipboardSet<TSData> tsClipboard = new(TimeSignature.Events);
+        bpmClipboard = new(Tempo.Events);
+        tsClipboard = new(TimeSignature.Events);
+    }
+
+
+    public SelectionSet<BPMData> bpmSelection;
+    public SelectionSet<TSData> tsSelection;
+
+    public ClipboardSet<BPMData> bpmClipboard;
+    public ClipboardSet<TSData> tsClipboard;
 
     public MoveData<BPMData> bpmMoveData = new();
     public MoveData<TSData> tsMoveData = new();

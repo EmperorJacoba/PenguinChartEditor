@@ -114,15 +114,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     // Oops! All naming confusion!
     #region EditAction Handlers
 
-    /// <summary>
-    /// Used to prevent the TS and BPM events at tick 0 from being deleted.
-    /// If TS and BPM events at tick 0 are deleted, the chart has no place to start its beatline calculations from.
-    /// [SyncTrack] must ALWAYS have one BPM and one TS event at tick 0.
-    /// Users should edit tick 0 events for TS & BPM, not delete them.
-    /// </summary>
-    protected virtual bool tick0Immune { get => _immune; }
-    bool _immune = false;
-
     public void CopySelection()
     {
         Clipboard.Clear();
@@ -132,21 +123,21 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     public virtual void PasteSelection()
     {
-        var pasteAction = new Paste<T>(LaneData, tick0Immune);
+        var pasteAction = new Paste<T>(LaneData);
         pasteAction.Execute(EventPreviewer.Tick, Clipboard);
         Chart.Refresh();
     }
 
     public virtual void CutSelection()
     {
-        var cutAction = new Cut<T>(LaneData, tick0Immune);
+        var cutAction = new Cut<T>(LaneData);
         cutAction.Execute(Clipboard, Selection);
         Chart.Refresh();
     }
 
     public virtual void DeleteSelection()
     {
-        var deleteAction = new Delete<T>(LaneData, tick0Immune);
+        var deleteAction = new Delete<T>(LaneData);
         deleteAction.Execute(Selection);
         Chart.Refresh();
     }
@@ -219,24 +210,16 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // tick 0 will not exist in the dictionary for TS & BPM events, which are needed
         // SetEvents() in BPM/TS cleans up data before actually applying the changes, which is required for BPM/TS
         // SetEvents() is already guaranteed by the interface so all event types will have it 
-        SortedDictionary<int, T> movingData = new(LaneData.ExportData());
+        //SortedDictionary<int, T> movingData = new(LaneData.ExportData());
 
-        // delete last move preview's data
-        var deleteAction = new Delete<T>(movingData, tick0Immune);
-        deleteAction.Execute(moveData.lastTempGhostPasteStartTick, moveData.lastTempGhostPasteEndTick);
+        // delete last preview's data
+        LaneData.PopTicksInRange(moveData.lastTempGhostPasteStartTick, moveData.lastTempGhostPasteEndTick);
 
         // re-add any data that was overwritten by last preview
         // SaveData holds state of dictionary before move action without the moving objects 
         // (moving objects themselves are stored in poppedData for needed uses)
         var keysToReAdd = moveData.currentMoveAction.SaveData.Keys.Where(x => x >= moveData.lastTempGhostPasteStartTick && x <= moveData.lastTempGhostPasteEndTick).ToHashSet();
-        foreach (var overwrittenTick in keysToReAdd)
-        {
-            if (movingData.ContainsKey(overwrittenTick))
-            {
-                movingData.Remove(overwrittenTick);
-            }
-            movingData.Add(overwrittenTick, moveData.currentMoveAction.SaveData[overwrittenTick]);
-        }
+        LaneData.OverwriteTicksFromSet(keysToReAdd, moveData.currentMoveAction.SaveData); // replace no longer overwritten data
 
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
 
@@ -244,17 +227,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // in parallel to the mouse (which is how moving should work intuitively)
         var pasteDestination = moveData.selectionOriginTick + cursorMoveDifference;
 
-        foreach (var movingTick in moveData.MovingGhostSet)
-        {
-            var targetPasteTick = pasteDestination + movingTick.Key;
-            if (movingData.ContainsKey(targetPasteTick))
-            {
-                movingData.Remove(targetPasteTick);
-            }
-            movingData.Add(targetPasteTick, movingTick.Value);
-        }
+        LaneData.OverwriteDataWithOffset(moveData.MovingGhostSet, pasteDestination);
 
-        SetEvents(movingData);
         Chart.Refresh();
 
         // set up variables for next loop
@@ -332,7 +306,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // used for right click + left click delete functionality
         if (Input.GetMouseButton(RMB_ID) && pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            var deleteAction = new Delete<T>(LaneData, tick0Immune);
+            var deleteAction = new Delete<T>(LaneData);
             justDeleted = deleteAction.Execute(Tick);
 
             Selection.Remove(Tick); // otherwise it will lay dorment and screw up anything to do with selections

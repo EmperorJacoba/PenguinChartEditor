@@ -61,10 +61,10 @@ public class Paste<T> : IEditAction<T> where T : IEventData
     LaneSet<T> eventSetReference;
     public Delete<T> deleteAction;
 
-    public Paste(LaneSet<T> targetEventSet, bool tick0Immune)
+    public Paste(LaneSet<T> targetEventSet)
     {
         eventSetReference = targetEventSet;
-        deleteAction = new(targetEventSet, tick0Immune);
+        deleteAction = new(targetEventSet);
     }
 
     public bool Execute(int startPasteTick, ClipboardSet<T> clipboard)
@@ -102,7 +102,7 @@ public class Delete<T> : IEditAction<T> where T : IEventData
 {
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     LaneSet<T> eventSetReference;
-    public Delete(LaneSet<T> targetEventSet, bool tick0Immune)
+    public Delete(LaneSet<T> targetEventSet)
     {
         eventSetReference = targetEventSet;
     }
@@ -116,7 +116,7 @@ public class Delete<T> : IEditAction<T> where T : IEventData
     {
         if (eventSetReference.Count == 0 || selection.Count == 0) return false;
 
-        SaveData = eventSetReference.SubtractTicksFromSet(selection.ExportData());
+        SaveData = eventSetReference.PopTicksFromSet(selection.ExportData());
 
         selection.Clear();
         return true;
@@ -132,7 +132,7 @@ public class Delete<T> : IEditAction<T> where T : IEventData
     {
         if (eventSetReference.Count == 0) return false;
 
-        SaveData = eventSetReference.SubtractTicksInRange(startDeleteTick, endDeleteTick);
+        SaveData = eventSetReference.PopTicksInRange(startDeleteTick, endDeleteTick);
 
         return true;
     }
@@ -141,7 +141,7 @@ public class Delete<T> : IEditAction<T> where T : IEventData
     {
         if (eventSetReference.Count == 0 || !eventSetReference.ContainsKey(tick)) return false;
 
-        var saveDataCandidate = eventSetReference.SubtractSingle(tick);
+        var saveDataCandidate = eventSetReference.PopSingle(tick);
         if (saveDataCandidate == null) return false; // if tried to delete immune tick
 
         SaveData = saveDataCandidate;
@@ -160,10 +160,10 @@ public class Cut<T> : IEditAction<T> where T : IEventData
     public SortedDictionary<int, T> SaveData { get; set; } = new();
     LaneSet<T> eventSetReference;
     Delete<T> deleteAction;
-    public Cut(LaneSet<T> targetEventSet, bool tick0Immune)
+    public Cut(LaneSet<T> targetEventSet)
     {
         eventSetReference = targetEventSet;
-        deleteAction = new(eventSetReference, tick0Immune);
+        deleteAction = new(eventSetReference);
     }
 
     public bool Execute(ClipboardSet<T> clipboard, SelectionSet<T> selection)
@@ -229,7 +229,7 @@ public class Move<T> : IEditAction<T> where T : IEventData
     public Move(LaneSet<T> targetEventSet, SortedDictionary<int, T> movingGhostSet, int offset)
     {
         eventSetReference = targetEventSet;
-        SaveData = new(eventSetReference);
+        SaveData = eventSetReference.ExportData();
 
         RemoveMovingData(movingGhostSet, offset);
     }

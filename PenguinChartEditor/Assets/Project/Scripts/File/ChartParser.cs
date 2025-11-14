@@ -296,7 +296,7 @@ public class ChartParser
 
         List<int> tempoTickTimeKeys = new();
         List<float> bpmVals = new();
-        LaneSet<TSData> tsEvents = new();
+        LaneSet<TSData> tsEvents = new(protectedTicks: new() { 0 });
         HashSet<int> anchoredTicks = new();
 
         foreach (var entry in events)
@@ -357,7 +357,7 @@ public class ChartParser
 
     LaneSet<BPMData> FormatBPMDictionary(List<int> ticks, List<float> bpms, HashSet<int> anchors)
     {
-        LaneSet<BPMData> outputDict = new();
+        LaneSet<BPMData> outputDict = new(protectedTicks: new() { 0 });
 
         double currentSongTime = 0;
         for (int i = 0; i < ticks.Count; i++)

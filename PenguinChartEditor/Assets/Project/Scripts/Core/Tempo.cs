@@ -13,7 +13,7 @@ public static class Tempo
     const float MINIMUM_BPM_VALUE = 0;
     const float MAXIMUM_BPM_VALUE = 1000;
 
-    public static LaneSet<BPMData> Events { get; set; } = new(protectedTicks: new HashSet<int>() { 0 });
+    public static LaneSet<BPMData> Events { get; set; }
 
     public static List<string> ExportAllEvents()
     {
