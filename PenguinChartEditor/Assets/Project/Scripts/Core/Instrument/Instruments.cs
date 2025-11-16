@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering.UI;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 // please please please do not add <T> to this
 // i have done this like 7 times and it makes chartparser really ugly
@@ -21,6 +23,8 @@ public interface IInstrument
     public void ShiftClickSelect(int tick, bool temporary);
     public void ReleaseTemporaryTicks();
     public void RemoveTickFromAllSelections(int tick);
+
+    void SetUpInputMap();
 }
 
 public class SyncTrackInstrument : IInstrument
@@ -80,17 +84,20 @@ public class SyncTrackInstrument : IInstrument
     public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
     public List<string> ExportAllEvents()
     {
-        throw new System.NotImplementedException("Use export functions in Tempo and TimeSignature libraries.");
+        throw new NotImplementedException("Use export functions in Tempo and TimeSignature libraries.");
         // maybe use this instead of individual libraries in future?
     }
 
     public void ShiftClickSelect(int tick, bool temporary) => ShiftClickSelect(tick);
     public void ReleaseTemporaryTicks() { } // unneeded - no sustains lol
+
     public void RemoveTickFromAllSelections(int tick) 
     {
         bpmSelection.Remove(tick);
         tsSelection.Remove(tick);
     } // unneeded
+
+    public void SetUpInputMap() { }
 
 }
 
@@ -104,6 +111,8 @@ public class FiveFretInstrument : IInstrument
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     public InstrumentType Instrument { get; set; }
     public DifficultyType Difficulty { get; set; }
+
+    InputMap inputMap;
 
     /// <summary>
     /// Corresponds to this lane's position in Lanes.
@@ -137,6 +146,14 @@ public class FiveFretInstrument : IInstrument
             var laneIndex = i;
             Lanes.GetLane(i).UpdateNeededAtTick += changedTick => CheckForHopos((LaneOrientation)laneIndex, changedTick);
         }
+    }
+
+    public void SetUpInputMap()
+    {
+        inputMap = new();
+        inputMap.Enable();
+
+        inputMap.Charting.ToggleTap.performed += x => ToggleTaps();
     }
 
     public int TotalSelectionCount 
@@ -203,22 +220,21 @@ public class FiveFretInstrument : IInstrument
     // needs to update next tick if the tick after current tick is within hopo range
     public void CheckForHopos(LaneOrientation lane, int changedTick)
     {
-        Chart.Log("Running");
+        var initTime = Time.realtimeSinceStartup;
         var activeLane = Lanes.GetLane((int)lane);
-        var allTicks = Lanes.UniqueTicks;
 
         bool nextTickHopo = false;
         bool currentTickHopo = false;
-        bool changedTickChord = Lanes.IsTickChord(changedTick);
+        bool changedTickExists = Lanes.AnyLaneContainsTick(changedTick);
+        bool changedTickChord = changedTickExists ? Lanes.IsTickChord(changedTick) : false; // optimize?
 
-        int previousTick = Lanes.GetPreviousTickEvent(changedTick);
-        int nextTick = Lanes.GetNextTickEvent(changedTick);
+        var ticks = Lanes.GetTickEventBounds(changedTick); // biggest bottleneck here btw
 
-        if (nextTick != Lanes<FiveFretNoteData>.NO_TICK_EVENT && 
-            nextTick - changedTick < Chart.hopoCutoff) nextTickHopo = true;
+        if (ticks.next != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
+            ticks.next - changedTick < Chart.hopoCutoff) nextTickHopo = true;
 
-        if (previousTick != Lanes<FiveFretNoteData>.NO_TICK_EVENT && 
-            changedTick - previousTick < Chart.hopoCutoff) currentTickHopo = true;
+        if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
+            changedTick - ticks.prev < Chart.hopoCutoff && !Lanes.IsTickChord(changedTick)) currentTickHopo = true;
 
         if (activeLane.Contains(changedTick))
         {
@@ -230,43 +246,12 @@ public class FiveFretInstrument : IInstrument
             }
         }
 
-        void SetThisNote(FiveFretNoteData.FlagType flag)
-        {
-            for (int i = 0; i < Lanes.Count; i++)
-            {
-                var activeLane = Lanes.GetLane(i);
-                if (activeLane.Contains(changedTick))
-                {
-                    flag = activeLane.Contains(previousTick) ? FiveFretNoteData.FlagType.strum : flag;
-
-                    activeLane[changedTick] = activeLane[changedTick].ExportWithNewFlag(flag);
-                }
-            }
-        }
-
-        if (allTicks.Contains(changedTick))
-        {
-            if (currentTickHopo)
-            {
-                if (!changedTickChord)
-                {
-                    SetThisNote(FiveFretNoteData.FlagType.hopo);
-                }
-                else
-                {
-                    SetThisNote(FiveFretNoteData.FlagType.strum);
-                }
-            }
-            else
-            {
-                SetThisNote(FiveFretNoteData.FlagType.strum);
-            }
-        }
+        var flag = currentTickHopo ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
+        SetAllTicksInLaneTo(changedTick, ticks.prev, flag);
 
         if (nextTickHopo)
         {
-            bool nextTickChord = Lanes.IsTickChord(nextTick);
-            bool changedTickExists = allTicks.Contains(changedTick);
+            bool nextTickChord = Lanes.IsTickChord(ticks.next);
 
             for (int i = 0; i < Lanes.Count; i++)
             {
@@ -274,23 +259,123 @@ public class FiveFretInstrument : IInstrument
 
                 activeLane = Lanes.GetLane(i);
 
-                if (activeLane.Contains(nextTick))
+                if (activeLane.Contains(ticks.next))
                 {
-                    var iData = activeLane[nextTick];
+                    var iData = activeLane[ticks.next];
                     if (!iData.Default) continue;
                     if (iData.Flag == FiveFretNoteData.FlagType.tap) break;
 
                     if (nextTickChord || !changedTickExists || (activeLane.Contains(changedTick) && !Lanes.IsTickChord(changedTick)))
                     {
-                        activeLane[nextTick] = iData.ExportWithNewFlag(FiveFretNoteData.FlagType.strum);
+                        if (activeLane[ticks.next].Flag == FiveFretNoteData.FlagType.strum) continue;
+                        activeLane[ticks.next] = iData.ExportWithNewFlag(FiveFretNoteData.FlagType.strum);
                     }
                     else
                     {
-                        activeLane[nextTick] = iData.ExportWithNewFlag(FiveFretNoteData.FlagType.hopo);
+                        if (activeLane[ticks.next].Flag == FiveFretNoteData.FlagType.hopo) continue;
+                        activeLane[ticks.next] = iData.ExportWithNewFlag(FiveFretNoteData.FlagType.hopo);
                     }
-                }    
+                }
             }
         }
+        Chart.Log($"{Time.realtimeSinceStartup - initTime}");
+    }
+
+    public void ToggleTaps()
+    {
+        if (Chart.LoadedInstrument != this) return;
+
+        var allTicksSelected = Lanes.GetTotalSelection();
+
+        bool toggleToTaps = true;
+        foreach (var tick in allTicksSelected)
+        {
+            for (int i = 0; i < Lanes.Count; i++)
+            {
+                var lane = Lanes.GetLane(i);
+                if (!lane.Contains(tick)) continue;
+
+                if (lane[tick].Flag == FiveFretNoteData.FlagType.tap)
+                {
+                    toggleToTaps = false;
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var lane = Lanes.GetLane(i);
+            foreach(var tick in allTicksSelected)
+            {
+                if (!lane.Contains(tick)) continue;
+
+                lane[tick] = toggleToTaps ? lane[tick].ExportWithNewFlag(FiveFretNoteData.FlagType.tap) : lane[tick].ExportWithNewFlag(FiveFretNoteData.FlagType.hopo);
+            }
+        }
+
+        if (!toggleToTaps) CheckForHoposInRange(allTicksSelected.Min(), allTicksSelected.Max());
+
+        Chart.Refresh();
+    }
+
+    public void CheckForHoposInRange(int startTick, int endTick)
+    {
+        var uniqueTicks = Lanes.UniqueTicks;
+
+        int startIndex = uniqueTicks.BinarySearch(startTick);
+
+        if (startIndex < 0)
+        {
+            startIndex = ~startIndex - 1;
+        }
+
+        int endIndex = uniqueTicks.BinarySearch(endTick);
+        if (endIndex < 0)
+        {
+            endIndex = ~endIndex + 1;
+        }
+        if (endIndex >= uniqueTicks.Count) endIndex = uniqueTicks.Count - 1;
+
+        for (int i = startIndex; i <= endIndex; i++)
+        {
+            var currentTick = uniqueTicks[i];
+
+            var prevTick = i != 0 ? uniqueTicks[i - 1] : -Chart.hopoCutoff;
+
+            var flag = (currentTick - prevTick < Chart.hopoCutoff) && !Lanes.IsTickChord(currentTick) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
+
+            SetAllTicksInLaneTo(currentTick, prevTick, flag);
+        }
+    }
+
+    void SetAllTicksInLaneTo(int tick, int previousTick, FiveFretNoteData.FlagType flag)
+    {
+        bool isLastTickChord = Lanes.IsTickChord(previousTick);
+        bool settingToTap = flag == FiveFretNoteData.FlagType.tap;
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var lane = Lanes.GetLane(i);
+            if (!lane.Contains(tick)) continue;
+            if (!lane[tick].Default) break;
+
+            if ((!isLastTickChord && lane.Contains(previousTick)) && !settingToTap) flag = FiveFretNoteData.FlagType.strum;
+
+            if (lane[tick].Flag != flag)
+            {
+                lane[tick] = lane[tick].ExportWithNewFlag(flag);
+            }
+        }
+    }
+
+    public void ForceFlag(FiveFretNoteData.FlagType flag)
+    {
+        if (Chart.LoadedInstrument != this) return;
+
+        var allTicksSelected = Lanes.GetTotalSelection();
+
+
     }
 
     // currently only supports N events, need support for E and S
@@ -369,6 +454,10 @@ public class FourLaneDrumInstrument : IInstrument
     {
         throw new System.NotImplementedException();
     }
+
+    public void ToggleTap() { }
+    public void ToggleForced() { }
+    public void SetUpInputMap() { }
 }
 
 public class GHLInstrument : IInstrument
@@ -428,6 +517,10 @@ public class GHLInstrument : IInstrument
     {
         throw new System.NotImplementedException();
     }
+
+    public void ToggleTap() { }
+    public void ToggleForced() { }
+    public void SetUpInputMap() { }
 }
 
 /*

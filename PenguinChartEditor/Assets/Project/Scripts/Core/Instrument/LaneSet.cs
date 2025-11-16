@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using UnityEditor.Overlays;
 
 // remember to set up TS/BPM
 // do not use LaneSet.Add/LaneSet.Delete when doing batch add/delete => only first and last ticks need update trigger
@@ -38,6 +36,7 @@ public class LaneSet<TValue> : IDictionary<int, TValue> where TValue : IEventDat
     public void Add(int key, TValue value)
     {
         if (key < 0) key = 0;
+
         laneData.Remove(key);
         laneData.Add(key, value);
         UpdateNeededAtTick?.Invoke(key);

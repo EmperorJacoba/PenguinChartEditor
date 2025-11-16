@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 {
     private const int SECONDS_PER_MINUTE = 60;
-    private const int BPM_DIGITS = 3;
+    private const int BPM_DIGIT_COUNT = 3;
     #region Event Sets
 
     public override ClipboardSet<BPMData> Clipboard => Chart.SyncTrackInstrument.bpmClipboard;
@@ -149,7 +149,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
         // Calculate the new BPM based on the time change
         float newBPS = ((Tick - lastBPMTick) / (float)Chart.Resolution) / (newTime - Tempo.Events[lastBPMTick].Timestamp);
-        float newBPM = (float)Math.Round((newBPS * SECONDS_PER_MINUTE), BPM_DIGITS);
+        float newBPM = (float)Math.Round((newBPS * SECONDS_PER_MINUTE), BPM_DIGIT_COUNT);
 
         var thisBPM = Tempo.Events[Tick].BPMChange;
 

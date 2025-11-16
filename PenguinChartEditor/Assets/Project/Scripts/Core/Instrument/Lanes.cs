@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering.UI;
 
 public class Lanes<T> where T : IEventData
 {
@@ -55,47 +56,65 @@ public class Lanes<T> where T : IEventData
         }
     }
 
-    public const int NO_TICK_EVENT = -1;
-    public int GetPreviousTickEvent(int tick)
+    public HashSet<int> GetUniqueTicksInRange(int startTick, int endTick)
     {
-        var ticks = UniqueTicks;
-
-        var index = ticks.BinarySearch(tick);
-        if (index < 0) index = ~index;
-
-        if (index == 0) return NO_TICK_EVENT;
-        return ticks[index - 1];
+        throw new NotImplementedException();
     }
 
-    public int GetNextTickEvent(int tick)
+    public bool AnyLaneContainsTick(int tick)
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            if (lanes[i].Contains(tick)) return true;
+        }
+        return false;
+    }
+
+    public const int NO_TICK_EVENT = -1;
+
+    public TickBounds GetTickEventBounds(int tick)
     {
         var ticks = UniqueTicks;
-        var index = ticks.BinarySearch(tick);
+        int prev;
+        int next;
 
+        var index = ticks.BinarySearch(tick);
         if (index < 0)
         {
             index = ~index;
-            if (index == ticks.Count) return NO_TICK_EVENT;
-            return ticks[index];
+
+            next = index == ticks.Count ? NO_TICK_EVENT : ticks[index];
+        }
+        else
+        {
+            next = ticks.Count > index + 1 ? ticks[index + 1] : NO_TICK_EVENT;
+        }
+        prev = index == 0 ? NO_TICK_EVENT : ticks[index - 1];
+
+        return new TickBounds(prev, next);
+    }
+
+    public HashSet<int> GetTotalSelection()
+    {
+        HashSet<int> ticks = new();
+        for (int i = 0; i < Count; i++)
+        {
+            ticks.UnionWith(selections[i].Keys.ToHashSet());
         }
 
-        return ticks.Count > index + 1 ? ticks[index + 1] : NO_TICK_EVENT;
+        return ticks;
     }
-
-    public int GetPreviousTickInLane(int lane, int tick)
-    {
-        var laneSet = lanes[lane].Keys.ToList();
-        var index = laneSet.BinarySearch(tick);
-        if (index < 0) throw new ArgumentException($"Tick {tick} does not exist in lane {lane}.");
-        return laneSet[index - 1];
-    }
-    public int GetNextTickInLane(int lane, int tick)
-    {
-        var laneSet = lanes[lane].Keys.ToList();
-        var index = laneSet.BinarySearch(tick);
-        if (index < 0) throw new ArgumentException($"Tick {tick} does not exist in lane {lane}.");
-        return laneSet[index + 1];
-    }
-
     public int Count => lanes.Length;
+}
+
+public struct TickBounds
+{
+    public readonly int prev;
+    public readonly int next;
+
+    public TickBounds(int prev, int next)
+    {
+        this.prev = prev;
+        this.next = next;
+    }
 }

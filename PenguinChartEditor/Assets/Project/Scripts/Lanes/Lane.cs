@@ -42,15 +42,19 @@ public abstract class Lane<TEvent, TEventData> : MonoBehaviour where TEvent : IP
         inputMap = new();
         inputMap.Enable();
 
+        /// Basic Actions
         inputMap.Charting.Delete.performed += x => eventAccessor.DeleteSelection();
         inputMap.Charting.Copy.performed += x => eventAccessor.CopySelection();
         inputMap.Charting.Paste.performed += x => eventAccessor.PasteSelection();
         inputMap.Charting.Cut.performed += x => eventAccessor.CutSelection();
+
+        inputMap.Charting.SelectAll.performed += x => eventAccessor.SelectAllEvents();
+
         inputMap.Charting.Drag.performed += x => eventAccessor.MoveSelection(); // runs every frame drag is active
         inputMap.Charting.LMB.canceled += x => eventAccessor.CompleteMove(); // runs ONLY when move action is completed; this wraps up the move action
+
         inputMap.Charting.LMB.performed += x => eventAccessor.CheckForSelectionClear();
         inputMap.Charting.RMB.canceled += x => eventAccessor.CompleteSustain();
-        inputMap.Charting.SelectAll.performed += x => eventAccessor.SelectAllEvents();
         inputMap.Charting.SustainDrag.performed += x => eventAccessor.SustainSelection();
     }
 

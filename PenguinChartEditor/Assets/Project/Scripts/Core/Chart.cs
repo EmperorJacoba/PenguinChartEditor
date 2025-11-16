@@ -52,6 +52,10 @@ public class Chart : MonoBehaviour
         TimeSignature.Events = chartParser.tsEvents;
 
         Instruments = chartParser.instruments;
+        foreach (var instrument in Instruments)
+        {
+            instrument.SetUpInputMap();
+        }
 
         if (Tempo.Events.Count == 0) // if there is no data to load in 
         {

@@ -217,6 +217,42 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleTap"",
+                    ""type"": ""Button"",
+                    ""id"": ""2855a36d-e9e8-4e33-bab6-2d348edf29fb"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ForceHopo"",
+                    ""type"": ""Button"",
+                    ""id"": ""1e9f5248-591b-4dc9-a14f-a8476a8d99ab"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ForceStrum"",
+                    ""type"": ""Button"",
+                    ""id"": ""b6b6c09f-b20b-441c-8cb1-ed2f5dcf5db7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ForceDefault"",
+                    ""type"": ""Button"",
+                    ""id"": ""3d3492a5-4e29-47e2-a119-286dfe3d24a9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -516,6 +552,61 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""action"": ""SustainDrag"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fc1e9dae-7836-4a6c-9822-9673b3685551"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleTap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b8cdf5ec-010b-4cd7-a341-54b29044ac2d"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForceHopo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""68112a52-e241-4ec5-8007-1525a7341106"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForceHopo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a0b8e71c-d4c7-4ff8-8687-dad4f8f39d6a"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForceStrum"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c27d3b8b-dc55-4a75-96e0-d8f7cf95b596"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForceDefault"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -1761,6 +1852,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_LMB = m_Charting.FindAction("LMB", throwIfNotFound: true);
         m_Charting_RMB = m_Charting.FindAction("RMB", throwIfNotFound: true);
         m_Charting_SustainDrag = m_Charting.FindAction("SustainDrag", throwIfNotFound: true);
+        m_Charting_ToggleTap = m_Charting.FindAction("ToggleTap", throwIfNotFound: true);
+        m_Charting_ForceHopo = m_Charting.FindAction("ForceHopo", throwIfNotFound: true);
+        m_Charting_ForceStrum = m_Charting.FindAction("ForceStrum", throwIfNotFound: true);
+        m_Charting_ForceDefault = m_Charting.FindAction("ForceDefault", throwIfNotFound: true);
         // ExternalCharting
         m_ExternalCharting = asset.FindActionMap("ExternalCharting", throwIfNotFound: true);
         m_ExternalCharting_IncreaseStep = m_ExternalCharting.FindAction("IncreaseStep", throwIfNotFound: true);
@@ -1889,6 +1984,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_LMB;
     private readonly InputAction m_Charting_RMB;
     private readonly InputAction m_Charting_SustainDrag;
+    private readonly InputAction m_Charting_ToggleTap;
+    private readonly InputAction m_Charting_ForceHopo;
+    private readonly InputAction m_Charting_ForceStrum;
+    private readonly InputAction m_Charting_ForceDefault;
     /// <summary>
     /// Provides access to input actions defined in input action map "Charting".
     /// </summary>
@@ -1957,6 +2056,22 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @SustainDrag => m_Wrapper.m_Charting_SustainDrag;
         /// <summary>
+        /// Provides access to the underlying input action "Charting/ToggleTap".
+        /// </summary>
+        public InputAction @ToggleTap => m_Wrapper.m_Charting_ToggleTap;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/ForceHopo".
+        /// </summary>
+        public InputAction @ForceHopo => m_Wrapper.m_Charting_ForceHopo;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/ForceStrum".
+        /// </summary>
+        public InputAction @ForceStrum => m_Wrapper.m_Charting_ForceStrum;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/ForceDefault".
+        /// </summary>
+        public InputAction @ForceDefault => m_Wrapper.m_Charting_ForceDefault;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Charting; }
@@ -2024,6 +2139,18 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SustainDrag.started += instance.OnSustainDrag;
             @SustainDrag.performed += instance.OnSustainDrag;
             @SustainDrag.canceled += instance.OnSustainDrag;
+            @ToggleTap.started += instance.OnToggleTap;
+            @ToggleTap.performed += instance.OnToggleTap;
+            @ToggleTap.canceled += instance.OnToggleTap;
+            @ForceHopo.started += instance.OnForceHopo;
+            @ForceHopo.performed += instance.OnForceHopo;
+            @ForceHopo.canceled += instance.OnForceHopo;
+            @ForceStrum.started += instance.OnForceStrum;
+            @ForceStrum.performed += instance.OnForceStrum;
+            @ForceStrum.canceled += instance.OnForceStrum;
+            @ForceDefault.started += instance.OnForceDefault;
+            @ForceDefault.performed += instance.OnForceDefault;
+            @ForceDefault.canceled += instance.OnForceDefault;
         }
 
         /// <summary>
@@ -2077,6 +2204,18 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SustainDrag.started -= instance.OnSustainDrag;
             @SustainDrag.performed -= instance.OnSustainDrag;
             @SustainDrag.canceled -= instance.OnSustainDrag;
+            @ToggleTap.started -= instance.OnToggleTap;
+            @ToggleTap.performed -= instance.OnToggleTap;
+            @ToggleTap.canceled -= instance.OnToggleTap;
+            @ForceHopo.started -= instance.OnForceHopo;
+            @ForceHopo.performed -= instance.OnForceHopo;
+            @ForceHopo.canceled -= instance.OnForceHopo;
+            @ForceStrum.started -= instance.OnForceStrum;
+            @ForceStrum.performed -= instance.OnForceStrum;
+            @ForceStrum.canceled -= instance.OnForceStrum;
+            @ForceDefault.started -= instance.OnForceDefault;
+            @ForceDefault.performed -= instance.OnForceDefault;
+            @ForceDefault.canceled -= instance.OnForceDefault;
         }
 
         /// <summary>
@@ -2810,6 +2949,34 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSustainDrag(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleTap" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleTap(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ForceHopo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnForceHopo(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ForceStrum" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnForceStrum(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ForceDefault" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnForceDefault(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ExternalCharting" which allows adding and removing callbacks.
