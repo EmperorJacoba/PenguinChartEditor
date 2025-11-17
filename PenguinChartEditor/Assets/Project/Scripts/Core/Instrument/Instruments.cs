@@ -233,7 +233,7 @@ public class FiveFretInstrument : IInstrument
             ticks.next - changedTick < Chart.hopoCutoff) nextTickHopo = true;
 
         if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
-            changedTick - ticks.prev < Chart.hopoCutoff && !Lanes.IsTickChord(changedTick)) currentTickHopo = true;
+            changedTick - ticks.prev < Chart.hopoCutoff) currentTickHopo = true;
 
         if (activeLane.Contains(changedTick))
         {
@@ -244,11 +244,13 @@ public class FiveFretInstrument : IInstrument
                 currentTickHopo = false;
             }
         }
-
+        
         var flag = currentTickHopo ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
         SetAllTicksInLaneTo(changedTick, ticks.prev, flag);
 
+        if (IsTickTap(ticks.next)) return;
         var nextFlag = nextTickHopo && changedTickExists ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
+
         SetAllTicksInLaneTo(ticks.next, changedTick, nextFlag);
     }
 
@@ -261,17 +263,7 @@ public class FiveFretInstrument : IInstrument
         bool toggleToTaps = true;
         foreach (var tick in allTicksSelected)
         {
-            for (int i = 0; i < Lanes.Count; i++)
-            {
-                var lane = Lanes.GetLane(i);
-                if (!lane.Contains(tick)) continue;
-
-                if (lane[tick].Flag == FiveFretNoteData.FlagType.tap)
-                {
-                    toggleToTaps = false;
-                    break;
-                }
-            }
+            if (IsTickTap(tick)) toggleToTaps = false;
         }
 
         for (int i = 0; i < Lanes.Count; i++)
@@ -288,6 +280,21 @@ public class FiveFretInstrument : IInstrument
         if (!toggleToTaps) CheckForHoposInRange(allTicksSelected.Min(), allTicksSelected.Max());
 
         Chart.Refresh();
+    }
+
+    public bool IsTickTap(int tick)
+    {
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var lane = Lanes.GetLane(i);
+            if (!lane.Contains(tick)) continue;
+
+            if (lane[tick].Flag == FiveFretNoteData.FlagType.tap)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void CheckForHoposInRange(int startTick, int endTick)
@@ -318,8 +325,6 @@ public class FiveFretInstrument : IInstrument
 
             SetAllTicksInLaneTo(currentTick, prevTick, flag);
         }
-
-
     }
 
     void SetAllTicksInLaneTo(int targetTick, int previousTick, FiveFretNoteData.FlagType flag)

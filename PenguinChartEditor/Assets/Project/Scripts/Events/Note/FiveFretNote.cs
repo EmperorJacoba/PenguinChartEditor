@@ -85,7 +85,13 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             if (_isTap == value) return;
 
             noteColor.material = colors.GetNoteMaterial((int)laneIdentifier, value);
-            headBorder.material = colors.GetHeadColor(value);
+
+            // this script is also on opens
+            // opens do not have head borders and thus borders will be null
+            if (headBorder != null)
+            {
+                headBorder.material = colors.GetHeadColor(value);
+            }
 
             strumTopper.SetActive(!value);
             tapTopper.SetActive(value);
