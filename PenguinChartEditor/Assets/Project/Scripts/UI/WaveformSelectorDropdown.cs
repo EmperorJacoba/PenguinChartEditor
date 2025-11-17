@@ -54,13 +54,15 @@ public class WaveformSelectorDropdown : MonoBehaviour
     {
         if (Enum.IsDefined(typeof(StemType), index)) // value can be zero, but zero is not in StemType
         {
+            waveformManager.Visible = true;
+
+            // dropdownIndexes is used instead of just the index because the dropdown only contains stems the user has defined
+            // so passed in index has to be converted to a StemType identifier 
             waveformManager.ChangeDisplayedWaveform(dropdownIndexes[index]);
-            // ^^ dropdownIndexes is used instead of just the index because the dropdown only contains stems the user has defined
-            // ^^ so passed in index has to be converted to a StemType identifier 
         }
         else // index = 0, so "none" was chosen, so "disable" waveform
         {
-            waveformManager.SetWaveformVisibility(false);
+            waveformManager.Visible = false;
         }
     }
 }

@@ -23,7 +23,7 @@ public class Waveform3D : Waveform
     protected override void GenerateWaveformPoints()
     {
         float[] waveformData;
-        if (WaveformData.ContainsKey(CurrentWaveform) && isVisible)
+        if (WaveformData.ContainsKey(CurrentWaveform))
         {
             waveformData = WaveformData[CurrentWaveform].volumeData;
         }
@@ -74,10 +74,4 @@ public class Waveform3D : Waveform
 
     protected override int samplesPerBoundary => (int)Mathf.Round(highway.localScale.z / (ShrinkFactor3D));
     protected override int strikeSamplePoint => (int)Math.Ceiling(samplesPerBoundary * Strikeline3D.instance.GetStrikelineProportion());
-
-    bool isVisible = true;
-    public override void SetWaveformVisibility(bool isVisible)
-    {
-        this.isVisible = isVisible;
-    }
 }

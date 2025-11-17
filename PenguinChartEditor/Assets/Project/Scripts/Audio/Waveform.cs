@@ -129,7 +129,7 @@ public class Waveform : MonoBehaviour
 
         // Invisible by default so that a bunch of dropdown defaulting logic isn't needed
         // Just have user select it
-        SetWaveformVisibility(true);
+        Visible = false;
 
         CurrentWaveform = Chart.Metadata.StemPaths.Keys.First(); // This doesn't matter much b/c waveform is invis by default
         // This is just so that the waveform has something to generate from (avoid bricking program from error)
@@ -239,7 +239,6 @@ public class Waveform : MonoBehaviour
     /// <param name="stem">The stem to set to the active waveform.</param>
     public void ChangeDisplayedWaveform(StemType stem)
     {
-        SetWaveformVisibility(true);
         CurrentWaveform = stem;
         GenerateWaveformPoints();
     }
@@ -296,11 +295,16 @@ public class Waveform : MonoBehaviour
         Chart.Refresh();
     }
 
-    public virtual void SetWaveformVisibility(bool isVisible)
+    public bool Visible
     {
-        if (isVisible) transform.position = boundaryReference.transform.position + Vector3.back;
-        // ^^ In order for the waveform to be visible the container game object has to be moved in front of the background panel & vice versa
-        else transform.position = boundaryReference.transform.position - 2 * Vector3.back; // 2* b/c this looks weird in the scene view otherwise
+        get
+        {
+            return gameObject.activeInHierarchy;
+        }
+        set
+        {
+            gameObject.SetActive(value);
+        }
     }
 
     public static double GetWaveformRatio(int tick)

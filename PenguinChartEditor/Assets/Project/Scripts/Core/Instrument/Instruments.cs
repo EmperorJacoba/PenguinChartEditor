@@ -42,7 +42,7 @@ public class SyncTrackInstrument : IInstrument
         bpmClipboard = new(Tempo.Events);
         tsClipboard = new(TimeSignature.Events);
 
-        Tempo.Events.UpdateNeededAtTick += modifiedTick => Tempo.RecalculateTempoEventDictionary(modifiedTick);
+       // Tempo.Events.UpdateNeededAtTick += modifiedTick => Tempo.RecalculateTempoEventDictionary(modifiedTick);
     }
 
 
