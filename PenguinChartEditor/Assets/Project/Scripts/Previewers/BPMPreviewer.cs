@@ -26,7 +26,7 @@ public class BPMPreviewer : Previewer
         if (percentOfScreenHorizontal > 0.5f)
         {
             bpmLabel.Visible = true;
-            bpmLabel.LabelText = Tempo.Events[Tempo.GetLastTempoEventTickInclusive(bpmLabel.Tick)].BPMChange.ToString();
+            bpmLabel.LabelText = Tempo.Events[Tempo.GetLastTempoEventTickInclusive(Tick)].BPMChange.ToString();
         }
         else bpmLabel.Visible = false;
     }
