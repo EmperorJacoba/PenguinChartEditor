@@ -11,8 +11,9 @@ public class LeftOptionsPanel : MonoBehaviour
     public List<PanelConnector> panels;
     public enum PanelType
     {
-        tempoMapMain = 0,
-        stemVolumeEditor = 1
+        tempoMapMain,
+        stemVolumeEditor,
+        noteOptionsFiveFret,
     }
 
     void Awake()
