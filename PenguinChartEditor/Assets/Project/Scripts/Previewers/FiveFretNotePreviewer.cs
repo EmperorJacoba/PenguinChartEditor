@@ -69,7 +69,7 @@ public class FiveFretNotePreviewer : Previewer
     {
         PointerEventData modifiedPointerData = new(EventSystem.current)
         {
-            position = new(Screen.width / 2, Input.mousePosition.y)
+            position = new(Input.mousePosition.x, Input.mousePosition.y)
         };
 
         List<RaycastResult> results = new();
