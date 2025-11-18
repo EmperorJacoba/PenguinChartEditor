@@ -581,6 +581,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SwitchNotePlacementMode",
+                    "type": "Button",
+                    "id": "42c29531-9e2d-4d79-ab3b-95cd3a3fedbd",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -693,6 +702,17 @@
                     "action": "DecreaseStepByOne",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "779d7618-a96e-45cb-9cac-b5b99b9fd138",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchNotePlacementMode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },

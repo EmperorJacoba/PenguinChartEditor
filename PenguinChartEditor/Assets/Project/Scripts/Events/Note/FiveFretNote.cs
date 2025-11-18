@@ -15,6 +15,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public override LaneSet<FiveFretNoteData> LaneData => chartInstrument.Lanes.GetLane((int)laneIdentifier);
     public override SelectionSet<FiveFretNoteData> Selection => chartInstrument.Lanes.GetLaneSelection((int)laneIdentifier);
 
+    [SerializeField] float defaultYPos = 0;
     [SerializeField] Transform sustain;
     [SerializeField] MeshRenderer sustainColor;
     [SerializeField] MeshRenderer noteColor;
@@ -41,7 +42,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
                 sustainColor.material = colors.GetNoteMaterial((int)value, IsTap);
             }
             _li = value;
-        } 
+        }
     }
 
     // starts as -1 so the redundancy check in laneIdentifier.set does not return true when setting lane to 0
@@ -95,7 +96,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
             strumTopper.SetActive(!value);
             tapTopper.SetActive(value);
-
             _isTap = value;
         }
     }
@@ -110,7 +110,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             return _tick;
         }
     }
-    int _tick;
+    [SerializeField] int _tick;
 
     public void InitializeEvent(int tick, float highwayLength, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer)
     {
@@ -149,7 +149,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public void UpdatePosition(double percentOfTrack, float trackLength, float xPosition)
     {
         var trackProportion = (float)percentOfTrack * trackLength;
-        transform.position = new Vector3(xPosition, 0, trackProportion);
+        transform.position = new Vector3(xPosition, defaultYPos, trackProportion);
     }
 
     public FiveFretInstrument chartInstrument => (FiveFretInstrument)Chart.LoadedInstrument;

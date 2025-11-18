@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4171817285086582581}
   - component: {fileID: 8659557552798088564}
   - component: {fileID: 6147291360617588559}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Color/Topper_Hopo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4546658109983516520}
   - component: {fileID: 3650015329358665938}
-  m_Layer: 0
+  - component: {fileID: 5105991374100904059}
+  m_Layer: 7
   m_Name: OpenFiveFretNote
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -221,7 +222,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.2, z: 8.47}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7807701326503604214}
@@ -242,6 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 1129377194858338633}
+  defaultYPos: 0.2
   sustain: {fileID: 6939271581842165778}
   sustainColor: {fileID: 6397297667777913142}
   noteColor: {fileID: 8180853849380158579}
@@ -250,6 +252,27 @@ MonoBehaviour:
   strumTopper: {fileID: 6465600504821105427}
   tapTopper: {fileID: 3608994770172177623}
   headBorder: {fileID: 0}
+--- !u!65 &5105991374100904059
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2653644340035125748}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 9.806252, y: 0.4703012, z: 0.70866585}
+  m_Center: {x: -0.006621361, y: 0.00000022351742, z: 0}
 --- !u!1 &3608994770172177623
 GameObject:
   m_ObjectHideFlags: 0
@@ -261,7 +284,7 @@ GameObject:
   - component: {fileID: 3841298029593723022}
   - component: {fileID: 3283421109003907883}
   - component: {fileID: 9183354149124472673}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Color/Topper_Tap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -530,6 +553,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8574959399360484712, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -543,6 +570,10 @@ PrefabInstance:
       value: Color/Topper
       objectReference: {fileID: 0}
     - target: {fileID: -5590564834978018546, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -5590564834978018546, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -550,6 +581,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 012df9cb33546f54b84753bf14a620de, type: 2}
+    - target: {fileID: -3133498875991405556, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: -2859109400176981367, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -565,6 +600,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
       propertyPath: m_Name
       value: Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
       propertyPath: m_IsActive

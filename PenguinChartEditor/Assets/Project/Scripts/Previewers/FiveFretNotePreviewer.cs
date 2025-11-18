@@ -11,6 +11,13 @@ public class FiveFretNotePreviewer : Previewer
     [SerializeField] FiveFretLane lane;
     [SerializeField] int laneCenterPosition;
 
+    public static bool openNoteEditing = false;
+    public bool OpenNoteEditing
+    {
+        get => openNoteEditing;
+        set => openNoteEditing = value;
+    }
+
     public override void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) return;
@@ -30,20 +37,21 @@ public class FiveFretNotePreviewer : Previewer
         }
         note.UpdatePosition(Waveform.GetWaveformRatio(Tick), highway.localScale.z, note.XCoordinate);
 
-        var lowerBound = laneCenterPosition - 1;
-        var upperBound = laneCenterPosition + 1;
-        
+        note.Visible = IsWithinRange(hitPosition);
+    }
 
-        // only call this function when cursor is within certain range?
-        // takes the functionality out of this function
-        if (hitPosition.x < lowerBound || hitPosition.x > upperBound) // needs update
+    bool IsWithinRange(Vector3 hitPosition)
+    {
+        if (lane.laneIdentifier == FiveFretInstrument.LaneOrientation.open)
         {
-            note.Visible = false;
+            if (!openNoteEditing) return false;
         }
-        else // optimize this
+        else
         {
-            note.Visible = true;
+            if (openNoteEditing) return false;
+            if (hitPosition.x < (laneCenterPosition - 1) || hitPosition.x > (laneCenterPosition + 1)) return false;
         }
+        return true;
     }
 
     private Vector3 GetCursorHighwayPosition()
@@ -112,5 +120,7 @@ public class FiveFretNotePreviewer : Previewer
         var fiveFretNote = GetComponent<FiveFretNote>();
         fiveFretNote.lanePreviewer = this;
         fiveFretNote.laneIdentifier = lane.laneIdentifier;
+
+        FiveFretNoteKeybindManager.UpdatePreviewer += UpdatePosition;
     }
 }

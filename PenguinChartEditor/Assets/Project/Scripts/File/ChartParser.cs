@@ -436,16 +436,19 @@ public class ChartParser
             bool tapModifier = false;
             bool forcedModifier = false;
 
-            if (eventsAtTick.Contains($"{FORCED_SUBSTRING}"))
+            foreach (var identifier in new List<string> (eventsAtTick))
             {
-                forcedModifier = true;
-                eventsAtTick.Remove($"{FORCED_SUBSTRING}");
-            }
+                if (identifier.Contains($"{FORCED_SUBSTRING}"))
+                {
+                    forcedModifier = true;
+                    eventsAtTick.Remove(identifier);
+                }
 
-            if (eventsAtTick.Contains($"{TAP_SUBSTRING}"))
-            {
-                tapModifier = true;
-                eventsAtTick.Remove($"{TAP_SUBSTRING}");
+                if (identifier.Contains($"{TAP_SUBSTRING}"))
+                {
+                    tapModifier = true;
+                    eventsAtTick.Remove(identifier);
+                }
             }
 
             var noteCount = 0;
