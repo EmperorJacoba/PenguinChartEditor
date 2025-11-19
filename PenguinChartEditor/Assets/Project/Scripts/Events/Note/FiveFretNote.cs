@@ -24,6 +24,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     [SerializeField] GameObject strumTopper;
     [SerializeField] GameObject tapTopper;
     [SerializeField] MeshRenderer headBorder;
+    [SerializeField] bool previewer;
 
     public Coroutine destructionCoroutine { get; set; }
 
@@ -38,8 +39,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             if (_li == value) return;
             if (colors != null)
             {
-                noteColor.material = colors.GetNoteMaterial((int)value, IsTap);
-                sustainColor.material = colors.GetNoteMaterial((int)value, IsTap);
+                noteColor.material = previewer ? colors.GetPreviewerMat(false) : colors.GetNoteMaterial((int)value, IsTap);
+                sustainColor.material = previewer ? colors.GetPreviewerMat(false) : colors.GetNoteMaterial((int)value, IsTap);
             }
             _li = value;
         }
@@ -85,7 +86,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             if (_isTap == value) return;
 
-            noteColor.material = colors.GetNoteMaterial((int)laneIdentifier, value);
+            noteColor.material = previewer ? colors.GetPreviewerMat(value) : colors.GetNoteMaterial((int)laneIdentifier, value);
 
             // this script is also on opens
             // opens do not have head borders and thus borders will be null

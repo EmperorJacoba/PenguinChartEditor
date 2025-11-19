@@ -36,6 +36,7 @@ public class FiveFretNotePreviewer : Previewer
             Hide(); return;
         }
         note.UpdatePosition(Waveform.GetWaveformRatio(Tick), highway.localScale.z, note.XCoordinate);
+        note.IsHopo = note.chartInstrument.PreviewTickHopo(lane.laneIdentifier, Tick);
 
         note.Visible = IsWithinRange(hitPosition);
     }

@@ -27,3 +27,5 @@ MonoBehaviour:
     tapMat: {fileID: 2100000, guid: 69cefc446831cb34bbcefd13d815b258, type: 2}
   normalBorderColor: {fileID: 2100000, guid: b24a9a1e46735fe4b9ea9672d5632b93, type: 2}
   tapBorderColor: {fileID: 2100000, guid: 79f68782faacc584eb653b44221fe7a1, type: 2}
+  previewerColor: {fileID: 2100000, guid: 1d18b3d80e7899f4397e7e216a468248, type: 2}
+  previewerTapColor: {fileID: 2100000, guid: 223f6f4ffc56d7643b985e941a22c37f, type: 2}

@@ -41,6 +41,16 @@ public class Lanes<T> where T : IEventData
         return false;
     }
 
+    public int GetTickCountAtTick(int tick)
+    {
+        int noteCount = 0;
+        for (int i = 0; i < Count; i++)
+        {
+            if (lanes[i].ContainsKey(tick)) noteCount++;
+        }
+        return noteCount;
+    }
+
     public List<int> UniqueTicks
     {
         get

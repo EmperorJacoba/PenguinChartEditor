@@ -24,11 +24,18 @@ public class NoteColors : ScriptableObject
 
     [SerializeField] Material normalBorderColor;
     [SerializeField] Material tapBorderColor;
+    [SerializeField] Material previewerColor;
+    [SerializeField] Material previewerTapColor;
 
     public Material GetHeadColor(bool tap)
     {
         if (tap) return tapBorderColor;
         return normalBorderColor;
+    }
+
+    public Material GetPreviewerMat(bool tap)
+    {
+        return tap ? previewerTapColor : previewerColor;
     }
 }
 

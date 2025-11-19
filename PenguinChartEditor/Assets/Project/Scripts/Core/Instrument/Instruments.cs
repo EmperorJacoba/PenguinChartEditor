@@ -254,6 +254,17 @@ public class FiveFretInstrument : IInstrument
         SetAllTicksInLaneTo(ticks.next, changedTick, nextFlag);
     }
 
+    public bool PreviewTickHopo(LaneOrientation lane, int tick)
+    {
+        var ticks = Lanes.GetTickEventBounds(tick);
+
+        if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
+            tick - ticks.prev < Chart.hopoCutoff &&
+            Lanes.GetTickCountAtTick(tick) + 1 < 2) return true;
+
+        return false;
+    }
+
     public void ToggleTaps()
     {
         if (Chart.LoadedInstrument != this) return;
