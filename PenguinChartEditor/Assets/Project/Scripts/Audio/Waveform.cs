@@ -7,7 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class Waveform : MonoBehaviour
 {
-    static Waveform instance;
+    public static Waveform instance;
 
     /// <summary>
     /// Dictionary that contains waveform point data for each song stem.
