@@ -14,6 +14,7 @@ public class SliderBoxLinker : MonoBehaviour
 
     [SerializeField] Slider slider;
     [SerializeField] TMP_InputField entryBox;
+    [SerializeField] Transform highway;
 
     /// <summary>
     /// The data type that this slider + input field combo changes.
@@ -27,7 +28,8 @@ public class SliderBoxLinker : MonoBehaviour
     {
         shrinkFactor = 0,
         amplitude = 1,
-        playSpeed = 2
+        playSpeed = 2,
+        highwayLength = 3
     }
 
     void Awake()
@@ -61,6 +63,11 @@ public class SliderBoxLinker : MonoBehaviour
 
         float entryBoxDisplay = newValue; // value put into variable will differ from what is displayed for hyperspeed/shrinkFactor
         entryBox.text = entryBoxDisplay.ToString();
+
+        if (dataType == WaveformProperties.highwayLength)
+        {
+            entryBox.text = Math.Round(entryBoxDisplay).ToString();
+        }
 
         // shrinkFactor is a decimal in the 0.001 to 0.01 range BUT that looks really ugly
         // so display a whole number and divide it to work with the code
@@ -132,6 +139,11 @@ public class SliderBoxLinker : MonoBehaviour
             case WaveformProperties.playSpeed:
                 AudioManager.ChangeAudioSpeed(newValue);
                 break;
+            case WaveformProperties.highwayLength:
+                highway.localScale = new(highway.localScale.x, highway.localScale.y, newValue);
+                Chart.Refresh();
+                break;
+
         } 
     }
 }

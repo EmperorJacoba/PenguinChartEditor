@@ -112,6 +112,9 @@ public class ChartParser
         // "[" begins a section header => begins a section of interest to parse (details are validated later)
         List<int> sectionHeaderCandidates = Enumerable.Range(0, chartAsLines.Length).Where(i => chartAsLines[i].Contains("[")).ToList();
 
+        if (sectionHeaderCandidates.Count == 0)
+            throw new ArgumentException("Invalid chart file. There are no event blocks within the file!");
+
         List<ChartEventGroup> identifiedSections = new();
 
         // song data is processed seperately (string, string) vs (int, string) with all other sections
@@ -274,6 +277,8 @@ public class ChartParser
         }
         var resolutionData = songEventGroup.data.Where(list => list.Key == "Resolution").ToList();
 
+        if (resolutionData.Count == 0)
+            throw new ArgumentException("No resolution data found within chart file. Please add the correct resolution and try again.");
         if (!int.TryParse(resolutionData[0].Value, out int resolutionValue))
             throw new ArgumentException($"Resolution data is not valid. {HELPFUL_REMINDER}");
 
