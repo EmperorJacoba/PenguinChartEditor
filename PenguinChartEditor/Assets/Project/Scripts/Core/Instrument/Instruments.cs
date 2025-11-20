@@ -260,7 +260,8 @@ public class FiveFretInstrument : IInstrument
 
         if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
             tick - ticks.prev < Chart.hopoCutoff &&
-            Lanes.GetTickCountAtTick(tick) + 1 < 2) return true;
+            (Lanes.GetTickCountAtTick(tick) == 0 && !Lanes.GetLane((int)lane).Contains(ticks.prev))
+            ) return true;
 
         return false;
     }

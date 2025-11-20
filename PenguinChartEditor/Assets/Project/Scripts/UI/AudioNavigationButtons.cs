@@ -10,6 +10,9 @@ public class AudioNavigationButtons : MonoBehaviour
 
     public bool RWButtonDown {get; set;}
     public bool FFWButtonDown {get; set;}
+    public void Play() => AudioManager.PlayAudio();
+    public void Pause() => AudioManager.PauseAudio();
+    public void Stop() => AudioManager.StopAudio();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

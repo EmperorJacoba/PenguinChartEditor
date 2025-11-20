@@ -43,6 +43,7 @@ public class FiveFretNotePreviewer : Previewer
 
     bool IsWithinRange(Vector3 hitPosition)
     {
+        // add code here to block open note from placing note if the cursor is above another note
         if (lane.laneIdentifier == FiveFretInstrument.LaneOrientation.open)
         {
             if (!openNoteEditing) return false;

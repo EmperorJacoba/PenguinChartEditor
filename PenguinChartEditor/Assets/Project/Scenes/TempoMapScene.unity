@@ -2631,17 +2631,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1124071522275352608, guid: 74daa2c11298dcd4c83bd3aacd660b10, type: 3}
   m_PrefabInstance: {fileID: 4393116793955752294}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1722031495 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1709731834999081215, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
-  m_PrefabInstance: {fileID: 1891414159487139702}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 689573f16dab4d74cb85604d9af73e01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1814809335
 GameObject:
   m_ObjectHideFlags: 0
@@ -3877,20 +3866,55 @@ PrefabInstance:
     - target: {fileID: 7026317558424560523, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1722031495}
+      objectReference: {fileID: 8305348129041661087}
+    - target: {fileID: 7026317558424560523, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Pause
+      objectReference: {fileID: 0}
+    - target: {fileID: 7026317558424560523, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AudioNavigationButtons, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 8387485752085900070, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1722031495}
+      objectReference: {fileID: 8305348129041661087}
+    - target: {fileID: 8387485752085900070, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Play
+      objectReference: {fileID: 0}
+    - target: {fileID: 8387485752085900070, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AudioNavigationButtons, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 8503521371517633361, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1722031495}
+      objectReference: {fileID: 8305348129041661087}
+    - target: {fileID: 8503521371517633361, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Stop
+      objectReference: {fileID: 0}
+    - target: {fileID: 8503521371517633361, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AudioNavigationButtons, Assembly-CSharp
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
+--- !u!114 &8305348129041661087 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 644845765123580727, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
+  m_PrefabInstance: {fileID: 8305348129041661086}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c46cb069dd953b7458bf78e6433939e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

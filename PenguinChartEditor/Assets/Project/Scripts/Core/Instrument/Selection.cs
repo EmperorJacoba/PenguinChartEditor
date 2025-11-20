@@ -83,7 +83,9 @@ public class SelectionSet<TValue> : IDictionary<int, TValue> where TValue : IEve
         {
             selection.Remove(tick);
         }
-        selection.Add(tick, parentLane[tick]);
+
+        if (parentLane.Contains(tick))
+            selection.Add(tick, parentLane[tick]);
     }
 
     public void AddInRange(int startTick, int endTick)
