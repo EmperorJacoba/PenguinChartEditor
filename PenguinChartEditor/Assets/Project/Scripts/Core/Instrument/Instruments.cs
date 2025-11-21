@@ -153,7 +153,7 @@ public class FiveFretInstrument : IInstrument
         inputMap = new();
         inputMap.Enable();
 
-        inputMap.Charting.ToggleTap.performed += x => ToggleTaps();
+        inputMap.Charting.ForceTap.performed += x => ToggleTaps();
     }
 
     public int TotalSelectionCount 

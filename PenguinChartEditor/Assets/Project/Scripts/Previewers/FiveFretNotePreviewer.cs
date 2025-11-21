@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(FiveFretNote))]
 public class FiveFretNotePreviewer : Previewer
 {
-    [SerializeField] FiveFretNote note;
+    [SerializeField] FiveFretNote note; // use Previewer.Tick, not note.tick for any tick related actions
     [SerializeField] Transform highway;
     [SerializeField] PhysicsRaycaster cameraHighwayRaycaster;
     [SerializeField] FiveFretLane lane;
@@ -17,6 +17,25 @@ public class FiveFretNotePreviewer : Previewer
         get => openNoteEditing;
         set => openNoteEditing = value;
     }
+
+    public enum NoteOption
+    {
+        dynamic,
+        strum,
+        hopo,
+        tap
+    }
+
+    public static NoteOption currentPlacementMode = NoteOption.dynamic;
+
+    // use as way to get dropdown to set mode
+    public int PlacementMode
+    {
+        get => (int)currentPlacementMode;
+        set => currentPlacementMode = (NoteOption)value;
+    }
+
+    public int defaultSustainPlacement = 0;
 
     public override void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
@@ -36,7 +55,17 @@ public class FiveFretNotePreviewer : Previewer
             Hide(); return;
         }
         note.UpdatePosition(Waveform.GetWaveformRatio(Tick), highway.localScale.z, note.XCoordinate);
-        note.IsHopo = note.chartInstrument.PreviewTickHopo(lane.laneIdentifier, Tick);
+
+        if (currentPlacementMode == NoteOption.dynamic)
+        {
+            note.IsHopo = note.chartInstrument.PreviewTickHopo(lane.laneIdentifier, Tick);
+            note.IsTap = false;
+        }
+        else
+        {
+            note.IsHopo = currentPlacementMode == NoteOption.hopo;
+            note.IsTap = currentPlacementMode == NoteOption.tap;
+        }
 
         note.Visible = IsWithinRange(hitPosition);
     }
@@ -93,9 +122,17 @@ public class FiveFretNotePreviewer : Previewer
     {
         if (IsOverlayUIHit()) return;
 
-        if (note.Visible && !note.LaneData.ContainsKey(note.Tick))
+        if (note.Visible && !note.LaneData.ContainsKey(Tick))
         {
-            note.CreateEvent(Tick, new FiveFretNoteData(0, FiveFretNoteData.FlagType.strum)); // strum flag needs to be changed
+            note.CreateEvent(
+                Tick, 
+                new FiveFretNoteData(
+                    0, 
+                    MapPlacementModeToFlag(),
+                    currentPlacementMode == NoteOption.dynamic
+                    )
+                );
+            // make sure to update other events in the lane so that they are all the same type (hopo/strum/tap)
 
             // please actually find the root cause of this issue
             // this is a fix for the event randomly being selected when the event is created (? - I mean, obviously not ACTUALLY random, but it doesn't always happen?)
@@ -124,5 +161,17 @@ public class FiveFretNotePreviewer : Previewer
         fiveFretNote.laneIdentifier = lane.laneIdentifier;
 
         FiveFretNoteKeybindManager.UpdatePreviewer += UpdatePosition;
+    }
+
+    FiveFretNoteData.FlagType MapPlacementModeToFlag()
+    {
+        return currentPlacementMode switch
+        {
+            NoteOption.hopo => FiveFretNoteData.FlagType.hopo,
+            NoteOption.strum => FiveFretNoteData.FlagType.strum,
+            NoteOption.tap => FiveFretNoteData.FlagType.tap,
+            NoteOption.dynamic => FiveFretNoteData.FlagType.strum, // if dynamic, future algorithms will calculate the current type. Don't worry too much about it
+            _ => throw new System.ArgumentException("If you got this error, you don't know how dropdowns work. Congratulations!"),
+        };
     }
 }

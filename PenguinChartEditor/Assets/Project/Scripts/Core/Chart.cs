@@ -29,7 +29,9 @@ public class Chart : MonoBehaviour
 
     public void LoadFile()
     {
-        ChartPath = StandaloneFileBrowser.OpenFilePanel($"Open .chart file to load from.", "", new[] { new ExtensionFilter(".chart files ", "chart") }, false)[0];
+        var pathCandidates = StandaloneFileBrowser.OpenFilePanel($"Open .chart file to load from.", "", new[] { new ExtensionFilter(".chart files ", "chart") }, false);
+
+        ChartPath = pathCandidates[0];
         FolderPath = ChartPath[..ChartPath.LastIndexOf("\\")];
 
         ChartParser chartParser = new(ChartPath);

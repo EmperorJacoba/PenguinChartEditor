@@ -133,7 +133,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ToggleTap",
+                    "name": "ForceTap",
                     "type": "Button",
                     "id": "2855a36d-e9e8-4e33-bab6-2d348edf29fb",
                     "expectedControlType": "",
@@ -474,7 +474,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleTap",
+                    "action": "ForceTap",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "255dad87-c490-4516-8fe0-90b8bb6ffeef",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ForceTap",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

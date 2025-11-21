@@ -219,7 +219,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ToggleTap"",
+                    ""name"": ""ForceTap"",
                     ""type"": ""Button"",
                     ""id"": ""2855a36d-e9e8-4e33-bab6-2d348edf29fb"",
                     ""expectedControlType"": """",
@@ -560,7 +560,18 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ToggleTap"",
+                    ""action"": ""ForceTap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""255dad87-c490-4516-8fe0-90b8bb6ffeef"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForceTap"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1872,7 +1883,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_LMB = m_Charting.FindAction("LMB", throwIfNotFound: true);
         m_Charting_RMB = m_Charting.FindAction("RMB", throwIfNotFound: true);
         m_Charting_SustainDrag = m_Charting.FindAction("SustainDrag", throwIfNotFound: true);
-        m_Charting_ToggleTap = m_Charting.FindAction("ToggleTap", throwIfNotFound: true);
+        m_Charting_ForceTap = m_Charting.FindAction("ForceTap", throwIfNotFound: true);
         m_Charting_ForceHopo = m_Charting.FindAction("ForceHopo", throwIfNotFound: true);
         m_Charting_ForceStrum = m_Charting.FindAction("ForceStrum", throwIfNotFound: true);
         m_Charting_ForceDefault = m_Charting.FindAction("ForceDefault", throwIfNotFound: true);
@@ -2005,7 +2016,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_LMB;
     private readonly InputAction m_Charting_RMB;
     private readonly InputAction m_Charting_SustainDrag;
-    private readonly InputAction m_Charting_ToggleTap;
+    private readonly InputAction m_Charting_ForceTap;
     private readonly InputAction m_Charting_ForceHopo;
     private readonly InputAction m_Charting_ForceStrum;
     private readonly InputAction m_Charting_ForceDefault;
@@ -2077,9 +2088,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @SustainDrag => m_Wrapper.m_Charting_SustainDrag;
         /// <summary>
-        /// Provides access to the underlying input action "Charting/ToggleTap".
+        /// Provides access to the underlying input action "Charting/ForceTap".
         /// </summary>
-        public InputAction @ToggleTap => m_Wrapper.m_Charting_ToggleTap;
+        public InputAction @ForceTap => m_Wrapper.m_Charting_ForceTap;
         /// <summary>
         /// Provides access to the underlying input action "Charting/ForceHopo".
         /// </summary>
@@ -2160,9 +2171,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SustainDrag.started += instance.OnSustainDrag;
             @SustainDrag.performed += instance.OnSustainDrag;
             @SustainDrag.canceled += instance.OnSustainDrag;
-            @ToggleTap.started += instance.OnToggleTap;
-            @ToggleTap.performed += instance.OnToggleTap;
-            @ToggleTap.canceled += instance.OnToggleTap;
+            @ForceTap.started += instance.OnForceTap;
+            @ForceTap.performed += instance.OnForceTap;
+            @ForceTap.canceled += instance.OnForceTap;
             @ForceHopo.started += instance.OnForceHopo;
             @ForceHopo.performed += instance.OnForceHopo;
             @ForceHopo.canceled += instance.OnForceHopo;
@@ -2225,9 +2236,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SustainDrag.started -= instance.OnSustainDrag;
             @SustainDrag.performed -= instance.OnSustainDrag;
             @SustainDrag.canceled -= instance.OnSustainDrag;
-            @ToggleTap.started -= instance.OnToggleTap;
-            @ToggleTap.performed -= instance.OnToggleTap;
-            @ToggleTap.canceled -= instance.OnToggleTap;
+            @ForceTap.started -= instance.OnForceTap;
+            @ForceTap.performed -= instance.OnForceTap;
+            @ForceTap.canceled -= instance.OnForceTap;
             @ForceHopo.started -= instance.OnForceHopo;
             @ForceHopo.performed -= instance.OnForceHopo;
             @ForceHopo.canceled -= instance.OnForceHopo;
@@ -2982,12 +2993,12 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSustainDrag(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "ToggleTap" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "ForceTap" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnToggleTap(InputAction.CallbackContext context);
+        void OnForceTap(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "ForceHopo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

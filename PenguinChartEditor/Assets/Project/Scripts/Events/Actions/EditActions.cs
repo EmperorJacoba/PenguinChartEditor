@@ -204,7 +204,6 @@ public class Create<T> : IEditAction<T> where T : IEventData
             selection.Clear();
             return false;
         }
-
         eventSetReference.Add(newTick, newData);
         SaveData.Add(newTick, newData);
         return true;
