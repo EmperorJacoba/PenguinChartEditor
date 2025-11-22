@@ -31,18 +31,6 @@ public class BPMPreviewer : Previewer
         else bpmLabel.Visible = false;
     }
 
-    public override void CreateEvent()
-    {
-        if (MiscTools.IsRaycasterHit(overlayUIRaycaster)) return;
-
-        if (bpmLabel.Visible && !Tempo.Events.ContainsKey(Tick))
-        {
-            bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
-            Chart.Refresh();
-            disableNextSelectionCheck = true;
-        }
-    }
-
     public override void Hide()
     {
         if (bpmLabel.Visible) bpmLabel.Visible = false;
@@ -56,5 +44,11 @@ public class BPMPreviewer : Previewer
     public override float GetCursorHighwayProportion()
     {
         throw new System.NotImplementedException();
+    }
+
+    public override void AddCurrentEventDataToLaneSet()
+    {
+        bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
+        bpmLabel.Selection.Remove(Tick);
     }
 }

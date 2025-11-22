@@ -6,19 +6,19 @@ using UnityEngine.EventSystems;
 
 #region Interface
 
-public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IEventData
+public interface IEvent
 {
     int Tick { get; }
     bool Visible { get; set; }
 
-    SelectionSet<T> Selection { get; }
-    ClipboardSet<T> Clipboard { get;  }
-    LaneSet<T> LaneData { get; }
-    MoveData<T> GetMoveData();
-    IInstrument parentInstrument { get; }
+    // Used in previewer to check placement conditions
+    ISelection GetSelection();
+    IClipboard GetClipboard();
+    ILaneData GetLaneData();
+
+    IInstrument ParentInstrument { get; }
     IPreviewer EventPreviewer { get; }
 
-    void SetEvents(SortedDictionary<int, T> newEvents);
     void RefreshLane();
 
     // So that Lane<T> can access these easily
@@ -47,7 +47,7 @@ public interface IEvent<T> : IPointerDownHandler, IPointerUpHandler where T : IE
 
 // Each event (including one tasked with event handler) has an assigned lane 
 // Lane assignment happens through GetEventSet() and GetEventData(), which is just a reference to its "instrument" lane data.
-public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
+public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPointerUpHandler where T : IEventData
 {
     #region Properties
     public virtual int Tick { get; }
@@ -85,21 +85,24 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     #region Data Access
 
-    // These functions point to each event type's static data members 
+    // These properties point to each event type's instrument data
     // so they can be used in the broad "Event" class.
-    // For all event and move data, only one exists for each set, but
-    // static members cannot be accessed directly without these functions.
+    // Data is always stored in an instrument, or in the BPM/TS case, in the Tempo/TimeSignature classes.
     public abstract SelectionSet<T> Selection { get; }
+    public ISelection GetSelection() => Selection;
+
     public abstract ClipboardSet<T> Clipboard { get; }
+    public IClipboard GetClipboard() => Clipboard;
+
     public abstract LaneSet<T> LaneData { get; }
+    public ILaneData GetLaneData() => LaneData;
+
     public abstract MoveData<T> GetMoveData();
 
-    // Used to clean up input data before actually committing event changes to dictionaries
-    // Stops tick 0 being erased and/or having invalid data when changing EventData.Events. 
     public abstract void SetEvents(SortedDictionary<int, T> newEvents);
 
     public abstract IPreviewer EventPreviewer { get; }
-    public abstract IInstrument parentInstrument { get; }
+    public abstract IInstrument ParentInstrument { get; }
 
     /// <summary>
     /// Update the events corresponding to this event's lane.
@@ -111,7 +114,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
 
     #endregion
 
-    // Oops! All naming confusion!
     #region EditAction Handlers
 
     public void CopySelection()
@@ -352,13 +354,13 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
     public void CalculateSelectionStatus(PointerEventData clickData) // refactor this pls
     {
         // Goal is to follow standard selection functionality of most productivity programs
-        if (clickData.button != PointerEventData.InputButton.Left) return;
+        if (clickData.button != PointerEventData.InputButton.Left || !Chart.IsSelectionAllowed()) return;
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
             var minNum = Math.Min(lastTickSelection, Tick);
             var maxNum = Math.Max(lastTickSelection, Tick);
-            parentInstrument.ShiftClickSelect(minNum, maxNum);
+            ParentInstrument.ShiftClickSelect(minNum, maxNum);
             Chart.Refresh();
         }
         else if (Input.GetKey(KeyCode.LeftControl))
@@ -376,7 +378,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent<T> where T : IEventData
         // Regular click, no extra significant keybinds
         else
         {
-            parentInstrument.ClearAllSelections();
+            ParentInstrument.ClearAllSelections();
             if (LaneData.ContainsKey(Tick)) Selection.Add(Tick);
             Chart.Refresh();
         }

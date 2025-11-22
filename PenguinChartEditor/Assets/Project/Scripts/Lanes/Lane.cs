@@ -31,13 +31,13 @@ public abstract class Lane<TEvent, TEventData> : MonoBehaviour where TEvent : IP
     // WITHOUT needing a selections flag to make sure
     // only one label manages event actions at a time
     // this variable references the Event script on the previewer
-    protected IEvent<TEventData> eventAccessor;
+    protected IEvent eventAccessor;
 
     protected InputMap inputMap;
 
     protected virtual void Awake()
     {
-        eventAccessor = gameObject.GetComponentInChildren<IEvent<TEventData>>();
+        eventAccessor = gameObject.GetComponentInChildren<IEvent>();
 
         inputMap = new();
         inputMap.Enable();

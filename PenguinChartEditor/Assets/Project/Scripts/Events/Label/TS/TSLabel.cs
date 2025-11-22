@@ -13,7 +13,7 @@ public class TSLabel : Label<TSData>, IPoolable
     public override MoveData<TSData> GetMoveData() => Chart.SyncTrackInstrument.tsMoveData;
     public override void RefreshLane() => TSLane.instance.UpdateEvents();
     public override IPreviewer EventPreviewer => TSPreviewer.instance;
-    public override IInstrument parentInstrument => Chart.SyncTrackInstrument;
+    public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
     public Coroutine destructionCoroutine { get; set; }
     [SerializeField] Warning tsWarningAlert;
 

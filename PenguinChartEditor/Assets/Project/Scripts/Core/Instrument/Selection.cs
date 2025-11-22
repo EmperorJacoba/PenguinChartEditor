@@ -2,12 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+public interface ISelection
+{
+    bool Remove(int key);
+}
+
 /// <summary>
 /// Wrapper for a SortedDictionary (key = tick, value = IEventData) that contains selection data.
 /// Contains various QoL features for working with PCE selections.
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
-public class SelectionSet<TValue> : IDictionary<int, TValue> where TValue : IEventData
+public class SelectionSet<TValue> : ISelection, IDictionary<int, TValue> where TValue : IEventData
 {
     public const int NONE_SELECTED = -1;
 
@@ -21,16 +26,16 @@ public class SelectionSet<TValue> : IDictionary<int, TValue> where TValue : IEve
         this.parentLane = parentLane;
     }
 
-    public TValue this[int key] 
-    { 
-        get 
+    public TValue this[int key]
+    {
+        get
         {
             return selection[key];
         }
-        set 
+        set
         {
             selection[key] = value;
-        } 
+        }
     }
 
     /// <summary>

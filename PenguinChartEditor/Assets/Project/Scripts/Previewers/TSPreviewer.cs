@@ -36,17 +36,6 @@ public class TSPreviewer : Previewer
             tsLabel.Visible = false;
         }
     }
-
-    public override void CreateEvent()
-    {
-        if (IsOverlayUIHit()) return;
-        if (tsLabel.Visible && !TimeSignature.Events.ContainsKey(Tick))
-        {
-            tsLabel.CreateEvent(Tick, displayedTS);
-            Chart.Refresh();
-            disableNextSelectionCheck = true;
-        }
-    }
     public override void Hide()
     {
         if (tsLabel.Visible) tsLabel.Visible = false;
@@ -58,5 +47,11 @@ public class TSPreviewer : Previewer
     public override float GetCursorHighwayProportion()
     {
         throw new System.NotImplementedException();
+    }
+
+    public override void AddCurrentEventDataToLaneSet()
+    {
+        tsLabel.CreateEvent(Tick, displayedTS);
+        tsLabel.Selection.Remove(Tick);
     }
 }

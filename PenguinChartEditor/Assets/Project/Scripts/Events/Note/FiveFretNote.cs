@@ -102,7 +102,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
     bool _isTap = false;
 
-    public override IInstrument parentInstrument => chartInstrument;
+    public override IInstrument ParentInstrument => chartInstrument;
 
     public override int Tick
     {
@@ -174,8 +174,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             if (chartInstrument.Lanes.TempSustainTicks.Contains(Tick) && Selection.Contains(Tick))
             {
-                parentInstrument.RemoveTickFromAllSelections(Tick);
-                parentInstrument.ReleaseTemporaryTicks();
+                ParentInstrument.RemoveTickFromAllSelections(Tick);
+                ParentInstrument.ReleaseTemporaryTicks();
             }
             chartInstrument.Lanes.TempSustainTicks.Clear();
             RefreshLane();
@@ -197,7 +197,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                parentInstrument.ShiftClickSelect(Tick, true);
+                ParentInstrument.ShiftClickSelect(Tick, true);
                 return;
             }
             chartInstrument.Lanes.TempSustainTicks.Add(Tick);
@@ -231,6 +231,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public static bool resetSustains = true;
     public override void SustainSelection()
     {
+        if (!Chart.IsPlacementAllowed()) return;
         var sustainData = parentLane.sustainData;
 
         // Early return if attempting to start an edit while over an overlay element

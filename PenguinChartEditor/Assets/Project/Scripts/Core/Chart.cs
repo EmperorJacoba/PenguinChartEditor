@@ -39,6 +39,7 @@ public class Chart : MonoBehaviour
         Resolution = chartParser.resolution;
         Metadata = chartParser.metadata;
 
+        // testing: please add audio selection in future if excess audio files are found
         foreach (StemType key in Enum.GetValues(typeof(StemType)))
         {
             string targetFilePath = $"{FolderPath}/{key}.opus";
@@ -128,7 +129,7 @@ public class Chart : MonoBehaviour
 
     void Awake()
     {
-        // Only ever one chart game object active
+        // Only ever one chart game object active, prioritize first loaded
         if (instance != null)
         {
             Destroy(gameObject);
@@ -175,4 +176,35 @@ public class Chart : MonoBehaviour
         }
     }
 
+    public enum SelectionMode
+    {
+        dynamic,
+        select,
+        edit,
+        view
+    }
+    public static SelectionMode currentSelectionMode = SelectionMode.dynamic;
+    public static bool IsSelectionAllowed()
+    {
+        return currentSelectionMode switch
+        {
+            SelectionMode.dynamic => true,
+            SelectionMode.select => true,
+            SelectionMode.edit => false,
+            SelectionMode.view => false,
+            _ => throw new ArgumentException("Invalid assigned selection mode."),
+        };
+    }
+
+    public static bool IsPlacementAllowed()
+    {
+        return currentSelectionMode switch
+        {
+            SelectionMode.dynamic => true,
+            SelectionMode.select => false,
+            SelectionMode.edit => true,
+            SelectionMode.view => false,
+            _ => throw new ArgumentException("Invalid assigned selection mode.")
+        };
+    }
 }

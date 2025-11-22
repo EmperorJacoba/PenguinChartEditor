@@ -15,7 +15,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     public override void SetEvents(SortedDictionary<int, BPMData> newEvents) => Tempo.SetEvents(newEvents);
 
     public override MoveData<BPMData> GetMoveData() => Chart.SyncTrackInstrument.bpmMoveData;
-    public override IInstrument parentInstrument => Chart.SyncTrackInstrument;
+    public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
 
     #endregion
 

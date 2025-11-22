@@ -2,7 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class ClipboardSet<TValue> : IDictionary<int, TValue> where TValue : IEventData
+public interface IClipboard
+{
+
+}
+public class ClipboardSet<TValue> : IClipboard, IDictionary<int, TValue> where TValue : IEventData
 {
     SortedDictionary<int, TValue> clipboard = new();
     LaneSet<TValue> parentLane;

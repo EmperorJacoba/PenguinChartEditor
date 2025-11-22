@@ -117,33 +117,6 @@ public class FiveFretNotePreviewer : Previewer
         if (results.Count == 0) return 0;
         return results[0].worldPosition.z / highway.localScale.z;
     }
-
-    public override void CreateEvent()
-    {
-        if (IsOverlayUIHit()) return;
-
-        if (note.Visible && !note.LaneData.ContainsKey(Tick))
-        {
-            note.CreateEvent(
-                Tick, 
-                new FiveFretNoteData(
-                    0, 
-                    MapPlacementModeToFlag(),
-                    currentPlacementMode == NoteOption.dynamic
-                    )
-                );
-            // make sure to update other events in the lane so that they are all the same type (hopo/strum/tap)
-
-            // please actually find the root cause of this issue
-            // this is a fix for the event randomly being selected when the event is created (? - I mean, obviously not ACTUALLY random, but it doesn't always happen?)
-            // I put checks everywhere I can think of to stop this and it will not obey me in the way in which I intend
-            // so nip it in the bud by putting a check right at the source (even though this functionality is better suited elsewhere)
-            note.Selection.Remove(Tick);
-
-            disableNextSelectionCheck = true;
-            Chart.Refresh();
-        }
-    }
     public override void Hide()
     {
         if (note.Visible) note.Visible = false;
@@ -173,5 +146,19 @@ public class FiveFretNotePreviewer : Previewer
             NoteOption.dynamic => FiveFretNoteData.FlagType.strum, // if dynamic, future algorithms will calculate the current type. Don't worry too much about it
             _ => throw new System.ArgumentException("If you got this error, you don't know how dropdowns work. Congratulations!"),
         };
+    }
+
+    public override void AddCurrentEventDataToLaneSet()
+    {
+        note.CreateEvent(
+            Tick,
+            new FiveFretNoteData(
+                0,
+                MapPlacementModeToFlag(),
+                currentPlacementMode == NoteOption.dynamic
+                )
+            );
+        // make sure to update other events in the lane so that they are all the same type (hopo/strum/tap)
+        note.Selection.Remove(Tick);
     }
 }

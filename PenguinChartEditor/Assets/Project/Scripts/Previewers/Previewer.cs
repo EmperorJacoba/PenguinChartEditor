@@ -16,6 +16,7 @@ public interface IPreviewer
     float GetCursorHighwayProportion();
 }
 
+[RequireComponent(typeof(IEvent))]
 /// <summary>
 /// Each previewer is the child of a Lane object, that it is attached to.
 /// </summary>
@@ -28,7 +29,21 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected InputMap inputMap;
 
-    public abstract void CreateEvent();
+    IEvent previewerEventReference;
+
+    public virtual void CreateEvent()
+    {
+        if (IsOverlayUIHit() || !Chart.IsPlacementAllowed()) return;
+        if (!previewerEventReference.Visible || previewerEventReference.GetLaneData().Contains(Tick)) return;
+
+        AddCurrentEventDataToLaneSet(); // implemented locally
+
+        previewerEventReference.GetSelection().Remove(Tick);
+        disableNextSelectionCheck = true;
+        Chart.Refresh();
+    }
+
+    public abstract void AddCurrentEventDataToLaneSet();
     public abstract void Hide();
     public abstract void Show();
     public bool IsOverlayUIHit() => MiscTools.IsRaycasterHit(overlayUIRaycaster);
@@ -43,7 +58,10 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     public bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
-        if (!Chart.editMode || IsOverlayUIHit() || Input.GetMouseButton(RIGHT_MOUSE_ID) || // right mouse = sustaining
+        if (!Chart.editMode || 
+            IsOverlayUIHit() || 
+            Input.GetMouseButton(RIGHT_MOUSE_ID) || // right mouse = sustaining
+            !Chart.IsPlacementAllowed() ||
             percentOfScreenVertical < 0 ||
             percentOfScreenHorizontal < 0 ||
             percentOfScreenVertical > 1 ||
@@ -60,6 +78,8 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     {
         inputMap = new();
         inputMap.Enable();
+
+        previewerEventReference = GetComponent<IEvent>();
 
         inputMap.Charting.PreviewMousePos.performed += position => 
             UpdatePosition(position.ReadValue<Vector2>().y / Screen.height, position.ReadValue<Vector2>().x / Screen.width);

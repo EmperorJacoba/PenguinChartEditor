@@ -11,7 +11,7 @@ public class FiveFretNoteSustainTrail : MonoBehaviour, IPointerDownHandler, IPoi
         if (pointerEventData.button == PointerEventData.InputButton.Right && 
             parentNote.chartInstrument.Lanes.TempSustainTicks.Contains(parentNote.Tick))
         {
-            parentNote.parentInstrument.RemoveTickFromAllSelections(parentNote.Tick);
+            parentNote.ParentInstrument.RemoveTickFromAllSelections(parentNote.Tick);
             parentNote.RemoveFromSelection();
         }
         parentNote.chartInstrument.Lanes.TempSustainTicks.Clear();
