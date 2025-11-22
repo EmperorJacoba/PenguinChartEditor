@@ -33,7 +33,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     public virtual void CreateEvent()
     {
-        if (IsOverlayUIHit() || !Chart.IsPlacementAllowed()) return;
+        if (IsOverlayUIHit() || !Chart.IsEditAllowed()) return;
         if (!previewerEventReference.Visible || previewerEventReference.GetLaneData().Contains(Tick)) return;
 
         AddCurrentEventDataToLaneSet(); // implemented locally
@@ -61,7 +61,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         if (!Chart.editMode || 
             IsOverlayUIHit() || 
             Input.GetMouseButton(RIGHT_MOUSE_ID) || // right mouse = sustaining
-            !Chart.IsPlacementAllowed() ||
+            !Chart.IsEditAllowed() ||
             percentOfScreenVertical < 0 ||
             percentOfScreenHorizontal < 0 ||
             percentOfScreenVertical > 1 ||

@@ -94,10 +94,14 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         base.OnPointerDown(pointerEventData);
 
         if (pointerEventData.button == PointerEventData.InputButton.Left) clickCount++;
+
         // Double click functionality for manual entry of beatline number
         // eventData.clickCount does not work here - pointerDown and pointerUp do not trigger click count for some reason
         // so manual coroutine solution is here to circumvent that issue
-        if (!Input.GetKey(KeyCode.LeftControl) && pointerEventData.button == PointerEventData.InputButton.Left && clickCount == 2)
+        if (!Input.GetKey(KeyCode.LeftControl) &&
+            Chart.IsEditAllowed() && 
+            pointerEventData.button == PointerEventData.InputButton.Left && 
+            clickCount == 2)
         {
             ActivateManualInput();
             RefreshLane();

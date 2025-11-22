@@ -10,8 +10,17 @@ using UnityEngine.UI;
 public class SelectionController : MonoBehaviour
 {
     [SerializeField] TMP_Dropdown dropdown;
+    InputMap inputMap;
     private void Awake()
     {
+        inputMap = new();
+        inputMap.Enable();
+
+        inputMap.Charting.SelectionView.performed += x => SetSelectionMode(Chart.SelectionMode.view);
+        inputMap.Charting.SelectionDynamic.performed += x => SetSelectionMode(Chart.SelectionMode.dynamic);
+        inputMap.Charting.SelectionEdit.performed += x => SetSelectionMode(Chart.SelectionMode.edit);
+        inputMap.Charting.SelectionSelect.performed += x => SetSelectionMode(Chart.SelectionMode.select);
+
         dropdown.value = (int)Chart.currentSelectionMode;
         dropdown.onValueChanged.AddListener(OnValueChanged);
     }
@@ -19,5 +28,11 @@ public class SelectionController : MonoBehaviour
     void OnValueChanged(int index)
     {
         Chart.currentSelectionMode = (Chart.SelectionMode)index;
+    }
+
+    void SetSelectionMode(Chart.SelectionMode mode)
+    {
+        dropdown.value = (int)mode;
+        Chart.currentSelectionMode = mode;
     }
 }

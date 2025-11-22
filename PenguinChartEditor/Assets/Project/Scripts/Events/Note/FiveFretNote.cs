@@ -231,7 +231,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public static bool resetSustains = true;
     public override void SustainSelection()
     {
-        if (!Chart.IsPlacementAllowed()) return;
+        if (!Chart.IsEditAllowed()) return;
         var sustainData = parentLane.sustainData;
 
         // Early return if attempting to start an edit while over an overlay element

@@ -253,6 +253,42 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectionView"",
+                    ""type"": ""Button"",
+                    ""id"": ""0e5e0a7f-9556-48b1-9e4b-a3ba8c09cb4d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectionEdit"",
+                    ""type"": ""Button"",
+                    ""id"": ""2920b52c-d0c4-4d6b-90de-1be64e5ab7aa"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectionSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""8ffa1688-3c79-4c07-aa18-d26b5b85c27e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectionDynamic"",
+                    ""type"": ""Button"",
+                    ""id"": ""1df2f85f-c158-4c0b-b42e-acb4a0563709"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -616,6 +652,72 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ForceDefault"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8a807f07-348b-4008-b189-9fa7e924a09c"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionView"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a6473ece-e608-4f20-bddd-942e837e1460"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionEdit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1499ffd4-ce6c-4281-b190-5185b346c552"",
+                    ""path"": ""<Mouse>/forwardButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionEdit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""011db5cd-b392-44a5-9448-8b3afc79fcde"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""521221b7-eb41-4f5f-9dbd-f85a89418f12"",
+                    ""path"": ""<Mouse>/backButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3aa4d095-26ac-4d9e-b0bc-528641380ddc"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionDynamic"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1887,6 +1989,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_ForceHopo = m_Charting.FindAction("ForceHopo", throwIfNotFound: true);
         m_Charting_ForceStrum = m_Charting.FindAction("ForceStrum", throwIfNotFound: true);
         m_Charting_ForceDefault = m_Charting.FindAction("ForceDefault", throwIfNotFound: true);
+        m_Charting_SelectionView = m_Charting.FindAction("SelectionView", throwIfNotFound: true);
+        m_Charting_SelectionEdit = m_Charting.FindAction("SelectionEdit", throwIfNotFound: true);
+        m_Charting_SelectionSelect = m_Charting.FindAction("SelectionSelect", throwIfNotFound: true);
+        m_Charting_SelectionDynamic = m_Charting.FindAction("SelectionDynamic", throwIfNotFound: true);
         // ExternalCharting
         m_ExternalCharting = asset.FindActionMap("ExternalCharting", throwIfNotFound: true);
         m_ExternalCharting_IncreaseStep = m_ExternalCharting.FindAction("IncreaseStep", throwIfNotFound: true);
@@ -2020,6 +2126,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_ForceHopo;
     private readonly InputAction m_Charting_ForceStrum;
     private readonly InputAction m_Charting_ForceDefault;
+    private readonly InputAction m_Charting_SelectionView;
+    private readonly InputAction m_Charting_SelectionEdit;
+    private readonly InputAction m_Charting_SelectionSelect;
+    private readonly InputAction m_Charting_SelectionDynamic;
     /// <summary>
     /// Provides access to input actions defined in input action map "Charting".
     /// </summary>
@@ -2104,6 +2214,22 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ForceDefault => m_Wrapper.m_Charting_ForceDefault;
         /// <summary>
+        /// Provides access to the underlying input action "Charting/SelectionView".
+        /// </summary>
+        public InputAction @SelectionView => m_Wrapper.m_Charting_SelectionView;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SelectionEdit".
+        /// </summary>
+        public InputAction @SelectionEdit => m_Wrapper.m_Charting_SelectionEdit;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SelectionSelect".
+        /// </summary>
+        public InputAction @SelectionSelect => m_Wrapper.m_Charting_SelectionSelect;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SelectionDynamic".
+        /// </summary>
+        public InputAction @SelectionDynamic => m_Wrapper.m_Charting_SelectionDynamic;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Charting; }
@@ -2183,6 +2309,18 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @ForceDefault.started += instance.OnForceDefault;
             @ForceDefault.performed += instance.OnForceDefault;
             @ForceDefault.canceled += instance.OnForceDefault;
+            @SelectionView.started += instance.OnSelectionView;
+            @SelectionView.performed += instance.OnSelectionView;
+            @SelectionView.canceled += instance.OnSelectionView;
+            @SelectionEdit.started += instance.OnSelectionEdit;
+            @SelectionEdit.performed += instance.OnSelectionEdit;
+            @SelectionEdit.canceled += instance.OnSelectionEdit;
+            @SelectionSelect.started += instance.OnSelectionSelect;
+            @SelectionSelect.performed += instance.OnSelectionSelect;
+            @SelectionSelect.canceled += instance.OnSelectionSelect;
+            @SelectionDynamic.started += instance.OnSelectionDynamic;
+            @SelectionDynamic.performed += instance.OnSelectionDynamic;
+            @SelectionDynamic.canceled += instance.OnSelectionDynamic;
         }
 
         /// <summary>
@@ -2248,6 +2386,18 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @ForceDefault.started -= instance.OnForceDefault;
             @ForceDefault.performed -= instance.OnForceDefault;
             @ForceDefault.canceled -= instance.OnForceDefault;
+            @SelectionView.started -= instance.OnSelectionView;
+            @SelectionView.performed -= instance.OnSelectionView;
+            @SelectionView.canceled -= instance.OnSelectionView;
+            @SelectionEdit.started -= instance.OnSelectionEdit;
+            @SelectionEdit.performed -= instance.OnSelectionEdit;
+            @SelectionEdit.canceled -= instance.OnSelectionEdit;
+            @SelectionSelect.started -= instance.OnSelectionSelect;
+            @SelectionSelect.performed -= instance.OnSelectionSelect;
+            @SelectionSelect.canceled -= instance.OnSelectionSelect;
+            @SelectionDynamic.started -= instance.OnSelectionDynamic;
+            @SelectionDynamic.performed -= instance.OnSelectionDynamic;
+            @SelectionDynamic.canceled -= instance.OnSelectionDynamic;
         }
 
         /// <summary>
@@ -3020,6 +3170,34 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnForceDefault(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectionView" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectionView(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectionEdit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectionEdit(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectionSelect" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectionSelect(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectionDynamic" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectionDynamic(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ExternalCharting" which allows adding and removing callbacks.

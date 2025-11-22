@@ -196,7 +196,7 @@ public class Chart : MonoBehaviour
         };
     }
 
-    public static bool IsPlacementAllowed()
+    public static bool IsEditAllowed()
     {
         return currentSelectionMode switch
         {
