@@ -229,7 +229,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     }
 
     /// <summary>
-    /// Find the last event before a specified tick. WILL NOT return the passed in tick if an event exists at that position, and will instead return the true last event.
+    /// Get the tick event before a specified tick. Returns -1 (LaneSet.NO_TICK_EVENT) if there is none.
     /// </summary>
     /// <param name="currentTick"></param>
     /// <returns></returns>
@@ -257,7 +257,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         if (~index == tickTimeKeys.Count) return NO_TICK_EVENT;
 
         // bitwise complement is negative
-        if (index > 0) return tickTimeKeys[index + 1];
+        if (index >= 0) return tickTimeKeys[index + 1];
         else index = ~index;
 
         return tickTimeKeys[index];

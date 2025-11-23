@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -246,12 +246,12 @@ public class FiveFretInstrument : IInstrument
         }
         
         var flag = currentTickHopo ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-        SetAllEventsAtTickTo(changedTick, ticks.prev, flag);
+        ChangeTickFlag(changedTick, ticks.prev, flag);
 
         if (IsTickTap(ticks.next)) return;
         var nextFlag = nextTickHopo && changedTickExists ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
 
-        SetAllEventsAtTickTo(ticks.next, changedTick, nextFlag);
+        ChangeTickFlag(ticks.next, changedTick, nextFlag);
     }
 
     public bool PreviewTickHopo(LaneOrientation lane, int tick)
@@ -335,11 +335,11 @@ public class FiveFretInstrument : IInstrument
 
             var flag = (currentTick - prevTick < Chart.hopoCutoff) && !Lanes.IsTickChord(currentTick) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
 
-            SetAllEventsAtTickTo(currentTick, prevTick, flag);
+            ChangeTickFlag(currentTick, prevTick, flag);
         }
     }
 
-    void SetAllEventsAtTickTo(int targetTick, int previousTick, FiveFretNoteData.FlagType flag)
+    void ChangeTickFlag(int targetTick, int previousTick, FiveFretNoteData.FlagType flag)
     {
         bool isLastTickChord = Lanes.IsTickChord(previousTick);
         bool isCurrentTickChord = Lanes.IsTickChord(targetTick);
@@ -363,6 +363,99 @@ public class FiveFretInstrument : IInstrument
         }
     }
 
+    public void UpdateSustain(int tick, LaneOrientation lane, int newSustain)
+    {
+        // absolute next tick
+        var ticks = Lanes.GetTickEventBounds(tick);
+
+        // clamp based on this lane only (ignore other lane overlap)
+        if (UserSettings.ExtSustains)
+        {
+            var currentLane = Lanes.GetLane((int)lane);
+            currentLane[tick] = currentLane[tick].ExportWithNewSustain(
+                CalculateSustainClamp(newSustain, tick, currentLane.GetNextTickEventInLane(tick))
+                );
+
+            var prevTickInLane = currentLane.GetPreviousTickEventInLane(tick);
+            if (prevTickInLane == LaneSet<FiveFretNoteData>.NO_TICK_EVENT) return;
+
+            currentLane[prevTickInLane] = currentLane[prevTickInLane].ExportWithNewSustain(
+                CalculateSustainClamp(currentLane[prevTickInLane].Sustain, prevTickInLane, tick)
+                );
+        }
+        // clamp based on ALL lanes
+        else
+        {
+            var calculatedCurrentSustain = -1;
+            var calculatedPrevSustain = -1;
+            for (int i = 0; i < Lanes.Count; i++)
+            {
+                var currentLane = Lanes.GetLane((int)lane);
+
+                if (currentLane.Contains(tick))
+                {
+                    if (calculatedCurrentSustain == -1) calculatedCurrentSustain = CalculateSustainClamp(newSustain, tick, ticks.next);
+
+                    currentLane[tick] = currentLane[tick].ExportWithNewSustain(calculatedCurrentSustain);
+                }
+                if (currentLane.Contains(ticks.prev))
+                {
+                    var currentData = currentLane[ticks.prev];
+                    if (calculatedPrevSustain == -1) calculatedPrevSustain = CalculateSustainClamp(currentData.Sustain, ticks.prev, tick);
+
+                    currentLane[ticks.prev] = currentData.ExportWithNewSustain(calculatedPrevSustain);
+                }
+            }
+        }
+    }
+
+    public void ClampSustainsBefore(int tick)
+    {
+        if (UserSettings.ExtSustains) return;
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var currentLane = Lanes.GetLane(i);
+
+            var clampTargetTick = currentLane.GetPreviousTickEventInLane(tick);
+            if (clampTargetTick == LaneSet<FiveFretNoteData>.NO_TICK_EVENT) continue;
+
+            var data = currentLane[clampTargetTick];
+            currentLane[clampTargetTick] = data.ExportWithNewSustain(
+                CalculateSustainClamp(data.Sustain, clampTargetTick, tick)
+                );
+        }
+    }
+
+    public int CalculateSustainClamp(int sustainLength, int tick, LaneOrientation lane)
+    {
+        if (!UserSettings.ExtSustains)
+        {
+            return CalculateSustainClamp(sustainLength, tick, Lanes.GetTickEventBounds(tick).next);
+        }
+        else
+        {
+            return CalculateSustainClamp(sustainLength, tick, Lanes.GetLane((int)lane).GetNextTickEventInLane(tick));
+        }
+    }
+    public int CalculateSustainClamp(int sustainLength, int tick, int nextTick)
+    {
+        if (nextTick != LaneSet<FiveFretNoteData>.NO_TICK_EVENT)
+        {
+            if (sustainLength + tick >= nextTick - UserSettings.SustainGapTicks)
+            {
+                return (nextTick - tick) - UserSettings.SustainGapTicks;
+            }
+        }
+        else
+        {
+            if (sustainLength + tick >= SongTime.SongLengthTicks)
+            {
+                return (SongTime.SongLengthTicks - tick); // does sustain gap apply to end of song? 🤔
+            }
+        }
+        return sustainLength;
+    }
 
     // currently only supports N events, need support for E and S
     // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)

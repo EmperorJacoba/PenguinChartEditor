@@ -21,7 +21,7 @@ public static class UserSettings
     /// <summary>
     /// Is the chart mode currently using extended sustains?
     /// </summary>
-    public static bool ExtSustains { get; set; }   // Note: must be able to switch readily
+    public static bool ExtSustains { get; set; } = true;  // Note: must be able to switch readily
                                                    // Why? -> No ExtSus means that sustain gap applies automatically even if not cleanly terminated
 
     /// <summary>

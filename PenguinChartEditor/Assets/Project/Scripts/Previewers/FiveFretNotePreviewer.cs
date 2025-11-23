@@ -14,7 +14,7 @@ public class FiveFretNotePreviewer : Previewer
 
     public static int defaultSustain = 0;
 
-    int AppliedSustain => FiveFretNote.CalculateSustainClamp(defaultSustain, Tick, note.LaneData.Keys.ToList());
+    int AppliedSustain => note.chartInstrument.CalculateSustainClamp(defaultSustain, Tick, lane.laneIdentifier);
 
     public static bool openNoteEditing = false;
     public bool OpenNoteEditing
@@ -165,15 +165,12 @@ public class FiveFretNotePreviewer : Previewer
                 currentPlacementMode == NoteOption.dynamic
                 )
             );
-        var lastTick = note.LaneData.GetPreviousTickEventInLane(Tick);
-        if (lastTick != LaneSet<FiveFretNoteData>.NO_TICK_EVENT)
-        {
-            var currentData = note.LaneData[lastTick];
-            note.LaneData[lastTick] = currentData.ExportWithNewSustain(FiveFretNote.CalculateSustainClamp(currentData.Sustain, lastTick, Tick));
-        }
+
+        // this takes care of non-extended sustain calculations 
+        note.chartInstrument.ClampSustainsBefore(Tick);
 
         // make sure to update other events in the lane so that they are all the same type (hopo/strum/tap)
-        // clamp previous sustain
+
         note.Selection.Remove(Tick);
     }
 }

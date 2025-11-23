@@ -277,47 +277,14 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             // SongLengthTicks will get clamped to max sustain length
             if (newSustain < -DivisionChanger.CurrentDivision) newSustain = SongTime.SongLengthTicks;
 
-            newSustain = CalculateSustainClamp(newSustain, tick, ticks);
-
             if (workingEventSet.ContainsKey(tick))
             {
-                workingEventSet[tick] = new(newSustain, workingEventSet[tick].Flag, workingEventSet[tick].Default);
+                chartInstrument.UpdateSustain(tick, laneIdentifier, newSustain);
             }
         }
 
         RefreshLane();
         sustainData.lastMouseTick = currentMouseTick;
-    }
-
-    public static int CalculateSustainClamp(int sustainLength, int tick, List<int> ticks)
-    {
-        var index = ticks.BinarySearch(tick);
-
-        if (index < 0) index = ~index;
-        else index++;
-
-        if (ticks.Count > index)
-        {
-            return CalculateSustainClamp(sustainLength, tick, ticks[index]);
-        }
-        else
-        {
-            if (sustainLength + tick >= SongTime.SongLengthTicks)
-            {
-                return (SongTime.SongLengthTicks - tick); // does sustain gap apply to end of song? 🤔
-            }
-        }
-
-        return sustainLength;
-    }
-
-    public static int CalculateSustainClamp(int sustainLength, int tick, int nextTick)
-    {
-        if (sustainLength + tick >= nextTick - UserSettings.SustainGapTicks)
-        {
-            return (nextTick - tick) - UserSettings.SustainGapTicks;
-        }
-        return sustainLength;
     }
 
     public override void CompleteSustain()
@@ -348,6 +315,5 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     // used on sustain trail itself when click happens on trail
     // click on sustain trail + drag activates SustainSelection() within the previewer object
-    public void ClampSustain(int tickLength) =>
-        LaneData[Tick] = new(tickLength, LaneData[Tick].Flag, LaneData[Tick].Default);
+    public void ClampSustain(int tickLength) => chartInstrument.UpdateSustain(Tick, laneIdentifier, tickLength);
 } 
