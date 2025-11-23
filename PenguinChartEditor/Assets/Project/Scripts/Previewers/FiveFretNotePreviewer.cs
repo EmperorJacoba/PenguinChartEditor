@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,6 +11,10 @@ public class FiveFretNotePreviewer : Previewer
     [SerializeField] PhysicsRaycaster cameraHighwayRaycaster;
     [SerializeField] FiveFretLane lane;
     [SerializeField] int laneCenterPosition;
+
+    public static int defaultSustain = 0;
+
+    int AppliedSustain => FiveFretNote.CalculateSustainClamp(defaultSustain, Tick, note.LaneData.Keys.ToList());
 
     public static bool openNoteEditing = false;
     public bool OpenNoteEditing
@@ -54,7 +59,9 @@ public class FiveFretNotePreviewer : Previewer
         {
             Hide(); return;
         }
+
         note.UpdatePosition(Waveform.GetWaveformRatio(Tick), highway.localScale.z, note.XCoordinate);
+        note.UpdateSustain(Tick, AppliedSustain, highway.localScale.z);
 
         if (currentPlacementMode == NoteOption.dynamic)
         {
@@ -153,12 +160,20 @@ public class FiveFretNotePreviewer : Previewer
         note.CreateEvent(
             Tick,
             new FiveFretNoteData(
-                0,
+                AppliedSustain,
                 MapPlacementModeToFlag(),
                 currentPlacementMode == NoteOption.dynamic
                 )
             );
+        var lastTick = note.LaneData.GetPreviousTickEventInLane(Tick);
+        if (lastTick != LaneSet<FiveFretNoteData>.NO_TICK_EVENT)
+        {
+            var currentData = note.LaneData[lastTick];
+            note.LaneData[lastTick] = currentData.ExportWithNewSustain(FiveFretNote.CalculateSustainClamp(currentData.Sustain, lastTick, Tick));
+        }
+
         // make sure to update other events in the lane so that they are all the same type (hopo/strum/tap)
+        // clamp previous sustain
         note.Selection.Remove(Tick);
     }
 }

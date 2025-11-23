@@ -205,14 +205,16 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
     }
 
-    public void UpdateSustain(float trackLength)
-    {
-        var sustainEndPointTicks = Tick + LaneData[Tick].Sustain;
+    void UpdateSustain(float trackLength) => UpdateSustain(Tick, LaneData[Tick].Sustain, trackLength);
 
-        var trackProportion = (Tempo.ConvertTickTimeToSeconds(sustainEndPointTicks) - Waveform.startTime) / Waveform.timeShown;
+    public void UpdateSustain(int tick, int sustainLength, float trackLength)
+    {
+        var sustainEndPointTicks = tick + sustainLength;
+
+        var trackProportion = Waveform.GetWaveformRatio(sustainEndPointTicks);
         var trackPosition = trackProportion * trackLength;
 
-        var noteProportion = (Tempo.ConvertTickTimeToSeconds(Tick) - Waveform.startTime) / Waveform.timeShown;
+        var noteProportion = Waveform.GetWaveformRatio(tick);
         var notePosition = noteProportion * trackLength;
 
         var localScaleZ = (float)(trackPosition - notePosition);
@@ -287,26 +289,32 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         sustainData.lastMouseTick = currentMouseTick;
     }
 
-    int CalculateSustainClamp(int sustain, int tick, List<int> ticks)
+    public static int CalculateSustainClamp(int sustainLength, int tick, List<int> ticks)
     {
         int nextTickEventIndex = ticks.IndexOf(tick) + 1;
 
         if (ticks.Count > nextTickEventIndex)
         {
-            if (sustain + tick >= ticks[nextTickEventIndex] - UserSettings.SustainGapTicks)
-            {
-                sustain = (ticks[nextTickEventIndex] - tick) - UserSettings.SustainGapTicks;
-            }
+            return CalculateSustainClamp(sustainLength, tick, ticks[nextTickEventIndex]);
         }
         else
         {
-            if (sustain + tick >= SongTime.SongLengthTicks)
+            if (sustainLength + tick >= SongTime.SongLengthTicks)
             {
-                sustain = (SongTime.SongLengthTicks - tick); // does sustain gap apply to end of song? 🤔
+                return (SongTime.SongLengthTicks - tick); // does sustain gap apply to end of song? 🤔
             }
         }
 
-        return sustain;
+        return sustainLength;
+    }
+
+    public static int CalculateSustainClamp(int sustainLength, int tick, int nextTick)
+    {
+        if (sustainLength + tick >= nextTick - UserSettings.SustainGapTicks)
+        {
+            return (nextTick - tick) - UserSettings.SustainGapTicks;
+        }
+        return sustainLength;
     }
 
     public override void CompleteSustain()

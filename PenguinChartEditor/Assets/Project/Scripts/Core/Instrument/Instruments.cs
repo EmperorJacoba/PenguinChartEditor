@@ -246,12 +246,12 @@ public class FiveFretInstrument : IInstrument
         }
         
         var flag = currentTickHopo ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-        SetAllTicksInLaneTo(changedTick, ticks.prev, flag);
+        SetAllEventsAtTickTo(changedTick, ticks.prev, flag);
 
         if (IsTickTap(ticks.next)) return;
         var nextFlag = nextTickHopo && changedTickExists ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
 
-        SetAllTicksInLaneTo(ticks.next, changedTick, nextFlag);
+        SetAllEventsAtTickTo(ticks.next, changedTick, nextFlag);
     }
 
     public bool PreviewTickHopo(LaneOrientation lane, int tick)
@@ -335,11 +335,11 @@ public class FiveFretInstrument : IInstrument
 
             var flag = (currentTick - prevTick < Chart.hopoCutoff) && !Lanes.IsTickChord(currentTick) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
 
-            SetAllTicksInLaneTo(currentTick, prevTick, flag);
+            SetAllEventsAtTickTo(currentTick, prevTick, flag);
         }
     }
 
-    void SetAllTicksInLaneTo(int targetTick, int previousTick, FiveFretNoteData.FlagType flag)
+    void SetAllEventsAtTickTo(int targetTick, int previousTick, FiveFretNoteData.FlagType flag)
     {
         bool isLastTickChord = Lanes.IsTickChord(previousTick);
         bool isCurrentTickChord = Lanes.IsTickChord(targetTick);
@@ -363,14 +363,6 @@ public class FiveFretInstrument : IInstrument
         }
     }
 
-    public void ForceFlag(FiveFretNoteData.FlagType flag)
-    {
-        if (Chart.LoadedInstrument != this) return;
-
-        var allTicksSelected = Lanes.GetTotalSelection();
-
-
-    }
 
     // currently only supports N events, need support for E and S
     // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)

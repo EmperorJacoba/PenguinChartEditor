@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.PackageManager;
 
 public interface ILaneData
 {
@@ -12,6 +13,7 @@ public interface ILaneData
 // do not use LaneSet.Add/LaneSet.Delete when doing batch add/delete => only first and last ticks need update trigger
 public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue : IEventData
 {
+    public const int NO_TICK_EVENT = -1;
     protected SortedDictionary<int, TValue> laneData;
 
     public delegate void UpdateNeededDelegate(int tick);
@@ -224,6 +226,41 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         }
 
         InvokeForSetEnds(data);
+    }
+
+    /// <summary>
+    /// Find the last event before a specified tick. WILL NOT return the passed in tick if an event exists at that position, and will instead return the true last event.
+    /// </summary>
+    /// <param name="currentTick"></param>
+    /// <returns></returns>
+    public int GetPreviousTickEventInLane(int currentTick)
+    {
+        var tickTimeKeys = Keys.ToList();
+
+        var index = tickTimeKeys.BinarySearch(currentTick);
+
+        // bitwise complement is negative
+        if (index > 0) return tickTimeKeys[index - 1];
+
+        if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
+        else index = ~index - 1;
+
+        if (index < 0) return NO_TICK_EVENT;
+        return tickTimeKeys[index];
+    }
+    public int GetNextTickEventInLane(int currentTick)
+    {
+        var tickTimeKeys = Keys.ToList();
+
+        var index = tickTimeKeys.BinarySearch(currentTick);
+
+        if (~index == tickTimeKeys.Count) return NO_TICK_EVENT;
+
+        // bitwise complement is negative
+        if (index > 0) return tickTimeKeys[index + 1];
+        else index = ~index;
+
+        return tickTimeKeys[index];
     }
 
     HashSet<int> GetOverwritableDictEvents(int startPasteTick, int endPasteTick)

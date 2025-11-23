@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class FiveFretLane : Lane<FiveFretNote, FiveFretNoteData>
+public class FiveFretLane : Lane<FiveFretNote>
 {
     public FiveFretInstrument.LaneOrientation laneIdentifier;
 

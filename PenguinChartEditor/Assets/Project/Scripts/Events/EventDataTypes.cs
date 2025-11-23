@@ -106,6 +106,11 @@ public struct FiveFretNoteData : IEventData
     {
         return new FiveFretNoteData(Sustain, newFlag, Default);
     }
+
+    public FiveFretNoteData ExportWithNewSustain(int sustain)
+    {
+        return new FiveFretNoteData(sustain, Flag, Default);
+    }
 }
 
 public struct FourLaneDrumNoteData : IEventData
