@@ -388,14 +388,16 @@ public class FiveFretInstrument : IInstrument
         {
             var calculatedCurrentSustain = -1;
             var calculatedPrevSustain = -1;
+
+            calculatedCurrentSustain = CalculateSustainClamp(newSustain, tick, ticks.next);
+            Debug.Log(calculatedCurrentSustain);
+
             for (int i = 0; i < Lanes.Count; i++)
             {
                 var currentLane = Lanes.GetLane((int)lane);
 
                 if (currentLane.Contains(tick))
                 {
-                    if (calculatedCurrentSustain == -1) calculatedCurrentSustain = CalculateSustainClamp(newSustain, tick, ticks.next);
-
                     currentLane[tick] = currentLane[tick].ExportWithNewSustain(calculatedCurrentSustain);
                 }
                 if (currentLane.Contains(ticks.prev))
@@ -409,22 +411,31 @@ public class FiveFretInstrument : IInstrument
         }
     }
 
-    public void ClampSustainsBefore(int tick)
+    public void ClampSustainsBefore(int tick, LaneOrientation lane)
     {
-        if (UserSettings.ExtSustains) return;
+        if (UserSettings.ExtSustains)
+        {
+            ClampLaneEvents(tick, lane);
+            return;
+        }
 
         for (int i = 0; i < Lanes.Count; i++)
         {
-            var currentLane = Lanes.GetLane(i);
-
-            var clampTargetTick = currentLane.GetPreviousTickEventInLane(tick);
-            if (clampTargetTick == LaneSet<FiveFretNoteData>.NO_TICK_EVENT) continue;
-
-            var data = currentLane[clampTargetTick];
-            currentLane[clampTargetTick] = data.ExportWithNewSustain(
-                CalculateSustainClamp(data.Sustain, clampTargetTick, tick)
-                );
+            ClampLaneEvents(tick, (LaneOrientation)i);
         }
+    }
+
+    void ClampLaneEvents(int tick, LaneOrientation lane)
+    {
+        var currentLane = Lanes.GetLane((int)lane);
+
+        var clampTargetTick = currentLane.GetPreviousTickEventInLane(tick);
+        if (clampTargetTick == LaneSet<FiveFretNoteData>.NO_TICK_EVENT) return;
+
+        var data = currentLane[clampTargetTick];
+        currentLane[clampTargetTick] = data.ExportWithNewSustain(
+            CalculateSustainClamp(data.Sustain, clampTargetTick, tick)
+            );
     }
 
     public int CalculateSustainClamp(int sustainLength, int tick, LaneOrientation lane)

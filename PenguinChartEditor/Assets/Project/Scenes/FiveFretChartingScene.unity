@@ -3576,6 +3576,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modifierDropdown: {fileID: 1485619529}
+  esc: {fileID: 1601505626}
+  ffsc: {fileID: 933821452}
 --- !u!1 &727998514
 GameObject:
   m_ObjectHideFlags: 0

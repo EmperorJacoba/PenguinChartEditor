@@ -12,4 +12,9 @@ public class ExtendedSustainController : MonoBehaviour
     }
 
     void UpdateExtendedSustain(bool mode) => UserSettings.ExtSustains = mode;
+    public void SetExtendedSustains(bool mode)
+    {
+        UserSettings.ExtSustains = mode;
+        toggle.isOn = mode;
+    }
 }

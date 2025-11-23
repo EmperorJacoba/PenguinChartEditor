@@ -195,7 +195,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKey(KeyCode.LeftShift) || !UserSettings.ExtSustains)
             {
                 ParentInstrument.ShiftClickSelect(Tick, true);
                 return;
@@ -264,7 +264,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         var ticks = workingEventSet.Keys.ToList();
 
         var cursorMoveDifference = currentMouseTick - sustainData.firstMouseTick;
-
         foreach (var tick in sustainData.sustainingTicks.Keys)
         {
             int sustainOffset = 0;

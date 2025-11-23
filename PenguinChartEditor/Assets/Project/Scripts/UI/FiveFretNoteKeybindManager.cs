@@ -5,6 +5,8 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
 {
     InputMap inputMap;
     [SerializeField] TMP_Dropdown modifierDropdown;
+    [SerializeField] ExtendedSustainController esc;
+    [SerializeField] FiveFretSustainController ffsc;
     private void Awake()
     {
         inputMap = new();
@@ -19,6 +21,11 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
         inputMap.Charting.ForceStrum.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.strum);
         inputMap.Charting.ForceHopo.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.hopo);
         inputMap.Charting.ForceDefault.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.dynamic);
+
+        inputMap.Charting.SustainMax.performed += x => SetPreviewerSustain(SongTime.SongLengthTicks);
+        inputMap.Charting.SustainZero.performed += x => SetPreviewerSustain(0);
+        inputMap.Charting.SustainExtended.performed += x => esc.SetExtendedSustains(!UserSettings.ExtSustains);
+        inputMap.Charting.SustainCustom.performed += x => ffsc.ActivateCustomInput();
     }
 
     public delegate void UpdatePreviewerDelegate();
@@ -29,6 +36,13 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
         if (newMode == FiveFretNotePreviewer.currentPlacementMode) return;
         modifierDropdown.value = (int)newMode;
         FiveFretNotePreviewer.currentPlacementMode = newMode;
+        UpdatePreviewer?.Invoke();
+    }
+
+    public void SetPreviewerSustain(int ticks)
+    {
+        FiveFretNotePreviewer.defaultSustain = ticks;
+        ffsc.ClearInput();
         UpdatePreviewer?.Invoke();
     }
 }

@@ -23,7 +23,7 @@ public class FiveFretNoteSustainTrail : MonoBehaviour, IPointerDownHandler, IPoi
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
             var sustainClamp = parentNote.GetCurrentMouseTick() - parentNote.Tick;
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKey(KeyCode.LeftShift) || !UserSettings.ExtSustains)
             {
                 parentNote.chartInstrument.ShiftClickSelect(parentNote.Tick, true);
                 parentNote.chartInstrument.ShiftClickSustainClamp(parentNote.Tick, sustainClamp);

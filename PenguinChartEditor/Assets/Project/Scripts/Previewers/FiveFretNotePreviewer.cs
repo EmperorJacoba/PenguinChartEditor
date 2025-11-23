@@ -166,8 +166,8 @@ public class FiveFretNotePreviewer : Previewer
                 )
             );
 
-        // this takes care of non-extended sustain calculations 
-        note.chartInstrument.ClampSustainsBefore(Tick);
+        // this takes care of non-extended sustain calculations too
+        note.chartInstrument.ClampSustainsBefore(Tick, lane.laneIdentifier);
 
         // make sure to update other events in the lane so that they are all the same type (hopo/strum/tap)
 

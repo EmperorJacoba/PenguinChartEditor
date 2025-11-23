@@ -14,14 +14,16 @@ public class FiveFretSustainController : MonoBehaviour
     public void SetZero()
     {
         FiveFretNotePreviewer.defaultSustain = 0;
-        customSustainInput.text = "";
+        ClearInput();
     }
 
     public void SetMax()
     {
         FiveFretNotePreviewer.defaultSustain = SongTime.SongLengthTicks;
-        customSustainInput.text = "";
+        ClearInput();
     }
+
+    public void ClearInput() => customSustainInput.text = "";
 
     public void SetCustom(string value)
     {
@@ -29,4 +31,6 @@ public class FiveFretSustainController : MonoBehaviour
 
         FiveFretNotePreviewer.defaultSustain = (int)Math.Floor(beatsAsFloat * Chart.Resolution);
     }
+
+    public void ActivateCustomInput() => customSustainInput.ActivateInputField();
 }
