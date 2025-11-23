@@ -291,11 +291,14 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public static int CalculateSustainClamp(int sustainLength, int tick, List<int> ticks)
     {
-        int nextTickEventIndex = ticks.IndexOf(tick) + 1;
+        var index = ticks.BinarySearch(tick);
 
-        if (ticks.Count > nextTickEventIndex)
+        if (index < 0) index = ~index;
+        else index++;
+
+        if (ticks.Count > index)
         {
-            return CalculateSustainClamp(sustainLength, tick, ticks[nextTickEventIndex]);
+            return CalculateSustainClamp(sustainLength, tick, ticks[index]);
         }
         else
         {
