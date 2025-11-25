@@ -378,6 +378,17 @@ public class AudioManager : MonoBehaviour
     }
 
     #endregion
+
+    // This function will return the fft output array
+    public static float[] GetSpectrogramData(int FFTStartTime)
+    {
+        // TODO: Check for errors when running BASS_StreamCreateFile and BASS_ChannelGetData
+        int FFTHandle = Bass.BASS_StreamCreateFile(Chart.Metadata.StemPaths[StemType.song], 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_SAMPLE_FLOAT);
+        float[] FFTOutput = new float[128];
+        Bass.BASS_ChannelSetPosition(FFTHandle, FFTStartTime);
+        Bass.BASS_ChannelGetData(FFTHandle, FFTOutput, (int)BASSData.BASS_DATA_FLOAT | (int)BASSData.BASS_DATA_FFT256);
+        return FFTOutput;
+    }
 }
 
 public struct StemVolumeData
