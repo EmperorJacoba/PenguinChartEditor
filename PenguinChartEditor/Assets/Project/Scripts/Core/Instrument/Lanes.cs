@@ -114,6 +114,14 @@ public class Lanes<T> where T : IEventData
 
         return ticks;
     }
+
+    public void ClearAllSelections()
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            selections[i].Clear();
+        }
+    }
     public int Count => lanes.Length;
 }
 

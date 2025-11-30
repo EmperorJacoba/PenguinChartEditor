@@ -169,13 +169,7 @@ public class FiveFretInstrument : IInstrument
         } 
     }
 
-    public void ClearAllSelections()
-    {
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            Lanes.GetLaneSelection(i).Clear();
-        }
-    }
+    public void ClearAllSelections() => Lanes.ClearAllSelections();
 
     public void ShiftClickSelect(int start, int end)
     {

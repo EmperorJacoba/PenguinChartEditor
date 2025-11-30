@@ -171,6 +171,6 @@ public class FiveFretNotePreviewer : Previewer
 
         // make sure to update other events in the lane so that they are all the same type (hopo/strum/tap)
 
-        note.Selection.Remove(Tick);
+        note.chartInstrument.Lanes.ClearAllSelections();
     }
 }
