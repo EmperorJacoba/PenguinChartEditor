@@ -157,10 +157,14 @@ public class FiveFretNotePreviewer : Previewer
 
     public override void AddCurrentEventDataToLaneSet()
     {
+        int sustain =
+            Tempo.ConvertTickTimeToSeconds(Tick + AppliedSustain) - Tempo.ConvertTickTimeToSeconds(Tick) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
+            0 : AppliedSustain;
+
         note.CreateEvent(
             Tick,
             new FiveFretNoteData(
-                AppliedSustain,
+                sustain,
                 MapPlacementModeToFlag(),
                 currentPlacementMode == NoteOption.dynamic
                 )

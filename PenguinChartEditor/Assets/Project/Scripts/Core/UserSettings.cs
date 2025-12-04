@@ -2,6 +2,8 @@ using UnityEngine;
 
 public static class UserSettings
 {
+    public const float MINIMUM_SUSTAIN_LENGTH_SECONDS = 0.2f;
+
     /// <summary>
     /// The offset at which audio should be played in relation to video in milliseconds.
     /// <para>Example: Calibration = 50 means that audio will be offset 50 milliseconds late in-editor.</para>

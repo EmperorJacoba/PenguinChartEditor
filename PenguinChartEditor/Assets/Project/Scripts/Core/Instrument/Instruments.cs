@@ -443,27 +443,31 @@ public class FiveFretInstrument : IInstrument
             return CalculateSustainClamp(sustainLength, tick, Lanes.GetLane((int)lane).GetNextTickEventInLane(tick));
         }
     }
+
     public int CalculateSustainClamp(int sustainLength, int tick, int nextTick)
     {
+        int clampedSustain = sustainLength;
         if (nextTick != LaneSet<FiveFretNoteData>.NO_TICK_EVENT)
         {
             if (sustainLength + tick >= nextTick - UserSettings.SustainGapTicks)
             {
-                return (nextTick - tick) - UserSettings.SustainGapTicks;
+                clampedSustain = (nextTick - tick) - UserSettings.SustainGapTicks;
             }
         }
         else
         {
             if (sustainLength + tick >= SongTime.SongLengthTicks)
             {
-                return (SongTime.SongLengthTicks - tick); // does sustain gap apply to end of song? 🤔
+                clampedSustain = (SongTime.SongLengthTicks - tick); // does sustain gap apply to end of song? 🤔
             }
         }
-        return sustainLength;
+        var sustainLengthMS = Tempo.ConvertTickTimeToSeconds(tick + clampedSustain) - Tempo.ConvertTickTimeToSeconds(tick);
+        return sustainLengthMS < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ? 0 : clampedSustain;
     }
 
     // currently only supports N events, need support for E and S
     // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)
+    // throw away sustains that are too small (ms < user settings constant) (add setting to do extra validation, or do this when validators fail)
     public List<string> ExportAllEvents()
     {
         List<string> notes = new();
