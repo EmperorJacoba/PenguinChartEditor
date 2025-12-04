@@ -23,7 +23,7 @@ public struct BPMData : IEquatable<BPMData>, IEventData
 
     public bool Equals(BPMData other) => BPMChange == other.BPMChange && Timestamp == other.Timestamp;
 
-    public override string ToString() => $"({BPMChange}, {Timestamp})";
+    public override string ToString() => $"B {BPMChange} @ {Timestamp}";
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {
@@ -35,7 +35,6 @@ public struct BPMData : IEquatable<BPMData>, IEventData
             return hash;
         }
     }
-
 }
 
 public struct TSData : IEquatable<TSData>, IEventData
@@ -52,7 +51,7 @@ public struct TSData : IEquatable<TSData>, IEventData
     public override bool Equals(object obj) => obj is TSData other && Equals(other);
     public bool Equals(TSData other) => Numerator == other.Numerator && Denominator == other.Denominator;
 
-    public override string ToString() => $"({Numerator} / {Denominator})";
+    public override string ToString() => $"TS {Numerator} / {Denominator})";
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {

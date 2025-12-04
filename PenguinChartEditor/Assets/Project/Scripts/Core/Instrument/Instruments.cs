@@ -25,6 +25,8 @@ public interface IInstrument
     List<int> UniqueTicks { get; }
 
     void SetUpInputMap();
+
+    string ConvertSelectionToString();
 }
 
 public class SyncTrackInstrument : IInstrument
@@ -111,6 +113,10 @@ public class SyncTrackInstrument : IInstrument
 
     public void SetUpInputMap() { }
 
+    public string ConvertSelectionToString()
+    {
+
+    }
 }
 
 public class FiveFretInstrument : IInstrument
