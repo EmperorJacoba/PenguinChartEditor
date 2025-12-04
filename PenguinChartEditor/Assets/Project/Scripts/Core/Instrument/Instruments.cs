@@ -115,7 +115,7 @@ public class SyncTrackInstrument : IInstrument
 
     public string ConvertSelectionToString()
     {
-
+        throw new NotImplementedException();
     }
 }
 
@@ -505,6 +505,11 @@ public class FiveFretInstrument : IInstrument
         var orderedStrings = notes.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
         return orderedStrings;
     }
+
+    public string ConvertSelectionToString()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class FourLaneDrumInstrument : IInstrument
@@ -568,6 +573,11 @@ public class FourLaneDrumInstrument : IInstrument
     public void ToggleTap() { }
     public void ToggleForced() { }
     public void SetUpInputMap() { }
+
+    public string ConvertSelectionToString()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class GHLInstrument : IInstrument
@@ -633,6 +643,11 @@ public class GHLInstrument : IInstrument
     public void ToggleTap() { }
     public void ToggleForced() { }
     public void SetUpInputMap() { }
+
+    public string ConvertSelectionToString()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 /*

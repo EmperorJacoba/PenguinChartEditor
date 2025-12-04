@@ -33,19 +33,6 @@ public class Copy<T> : IEditAction<T> where T : IEventData
         int lowestTick = 0;
         if (selection.Count > 0) lowestTick = selection.GetFirstSelectedTick();
 
-        // optimize this with new ClipboardSet<T> class methods!
-        // add relevant data for each tick into clipboard
-        foreach (var selectedTick in selection)
-        {
-            try
-            {
-                clipboard.Add(selectedTick.Key - lowestTick, selection[selectedTick.Key]);
-            }
-            catch
-            {
-                continue;
-            }
-        }
         return false; // method is NOT undoable
     }
 

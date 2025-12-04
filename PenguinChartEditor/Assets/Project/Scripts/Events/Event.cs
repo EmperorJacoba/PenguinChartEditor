@@ -250,7 +250,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
 
         moveData.selectionOriginTick = lowestTick;
 
-        moveData.MovingGhostSet = Selection.GetNormalizedSelection();
+        moveData.MovingGhostSet = Selection.ExportNormalizedData();
 
         moveData.firstMouseTick = currentMouseTick;
         moveData.lastMouseTick = currentMouseTick;
@@ -298,7 +298,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
 
     public void SelectAllEvents()
     {
-        Selection.SelectAll();
+        Selection.SelectAllInLane();
         RefreshLane();
     }
 
@@ -371,7 +371,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
             }
             else
             {
-                Selection.Add(Tick, LaneData[Tick]);
+                Selection.Add(Tick);
             }
             RefreshLane();
         }

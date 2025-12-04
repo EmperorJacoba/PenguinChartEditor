@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public interface ISelection
 {
@@ -12,93 +13,77 @@ public interface ISelection
 /// Contains various QoL features for working with PCE selections.
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
-public class SelectionSet<TValue> : ISelection, IDictionary<int, TValue> where TValue : IEventData
+public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventData
 {
     public const int NONE_SELECTED = -1;
 
-    SortedDictionary<int, TValue> selection = new();
+    HashSet<int> selection= new();
+    public int Count => selection.Count;
+
+
     LaneSet<TValue> parentLane;
 
-    public SortedDictionary<int, TValue> ExportData() => new(selection);
+    public SortedDictionary<int, TValue> ExportData()
+    {
+        SortedDictionary<int, TValue> receiver = new();
+        foreach (var tick in selection)
+        {
+            if (parentLane.Contains(tick))
+            {
+                receiver.Add(tick, parentLane[tick]);
+            }
+            else
+            {
+                selection.Remove(tick);
+            }
+        }
+        return receiver;
+    }
+
+    public SortedDictionary<int, TValue> ExportNormalizedData()
+    {
+        var receiver = new SortedDictionary<int, TValue>();
+        var firstTick = GetFirstSelectedTick();
+
+        foreach (var selectedTick in selection)
+        {
+            if (parentLane.Contains(selectedTick))
+            {
+                receiver.Add(selectedTick - firstTick, parentLane[selectedTick]);
+            }
+            else
+            {
+                selection.Remove(selectedTick);
+            }
+        }
+        return receiver;
+    }
+
+    public HashSet<int> GetSelectedTicks()
+    {
+        foreach (var tick in selection)
+        {
+            if (!parentLane.Contains(tick))
+            {
+                selection.Remove(tick);
+            }
+        }
+        return selection;
+    }
 
     public SelectionSet(LaneSet<TValue> parentLane)
     {
         this.parentLane = parentLane;
     }
 
-    public TValue this[int key]
-    {
-        get
-        {
-            return selection[key];
-        }
-        set
-        {
-            selection[key] = value;
-        }
-    }
-
-    /// <summary>
-    /// Set: Add all ints in collection to selection
-    /// </summary>
-    public ICollection<int> Keys
-    {
-        get
-        {
-            return selection.Keys;
-        }
-        set
-        {
-            SortedDictionary<int, TValue> receiver = new();
-            foreach (var item in value)
-            {
-                receiver.Add(item, parentLane[item]);
-            }
-            selection = receiver;
-        }
-    }
-
-    public void SetSelection(List<int> ticks)
-    {
-        Keys = ticks;
-    }
-
-    public ICollection<TValue> Values => selection.Values;
-
-    public int Count => selection.Count;
-
-    public bool IsReadOnly => false;
-
-    /// <summary>
-    /// Adds tick
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
-    public void Add(int key, TValue value)
-    {
-        if (selection.ContainsKey(key)) selection.Remove(key);
-        selection.Add(key, value);
-    }
-
-    public void Add(KeyValuePair<int, TValue> item) => Add(item.Key, item.Value);
-
-    public void Add(int tick)
-    {
-        if (parentLane.ContainsKey(tick))
-        {
-            selection.Remove(tick);
-        }
-
-        if (parentLane.Contains(tick))
-            selection.Add(tick, parentLane[tick]);
-    }
+    public bool Add(int tick) => selection.Add(tick);
 
     public void AddInRange(int startTick, int endTick)
     {
         var targetTicks = parentLane.Keys.ToList().Where(x => x >= startTick && x <= endTick);
         foreach (var tick in targetTicks)
         {
-            selection.Add(tick, parentLane[tick]);
+            selection.Add(tick);
         }
     }
 
@@ -109,34 +94,18 @@ public class SelectionSet<TValue> : ISelection, IDictionary<int, TValue> where T
         AddInRange(startTick, endTick);
     }
 
-    public void Clear() 
+    public void Clear() => selection.Clear();
+
+    public bool Contains(int key) => selection.Contains(key);
+
+    public bool Remove(int key) => selection.Remove(key);
+
+    public void OverwriteWith(HashSet<int> newSelectionSet)
     {
-        if (selection.Count > 0) selection.Clear();
+        selection = new(newSelectionSet);
     }
 
-    public bool Contains(KeyValuePair<int, TValue> item) => selection.ContainsKey(item.Key);
-    public bool Contains(int key) => selection.ContainsKey(key);
-
-    public bool ContainsKey(int key) => selection.ContainsKey(key);
-
-    public void CopyTo(KeyValuePair<int, TValue>[] array, int arrayIndex) => selection.CopyTo(array, arrayIndex);
-
-    public IEnumerator<KeyValuePair<int, TValue>> GetEnumerator() => selection.GetEnumerator();
-
-    public bool Remove(int key) 
-    {
-        if (selection.ContainsKey(key))
-        {
-            selection.Remove(key);
-            return true;
-        }
-        return false;
-    }
-
-    public bool Remove(KeyValuePair<int, TValue> item) => selection.Remove(item.Key);
-
-    public bool TryGetValue(int key, out TValue value) => selection.TryGetValue(key, out value);
-    public void OverwriteWith(IDictionary<int, TValue> newSelectionSet)
+    public void OverwriteWith(List<int> newSelectionSet)
     {
         selection = new(newSelectionSet);
     }
@@ -145,36 +114,62 @@ public class SelectionSet<TValue> : ISelection, IDictionary<int, TValue> where T
     {
         if (selection.Count > 0)
         {
-            return selection.Keys.Min();
+            return selection.Min();
         }
         return NONE_SELECTED;
     }
 
-    public SortedDictionary<int, TValue> GetNormalizedSelection()
+    public HashSet<int> GetNormalizedSelection()
     {
-        SortedDictionary<int, TValue> receiver = new();
+        HashSet<int> receiver = new();
         var firstTick = GetFirstSelectedTick();
+
         foreach (var selectedTick in selection)
         {
-            receiver.Add(selectedTick.Key - firstTick, selectedTick.Value);
+            receiver.Add(selectedTick - firstTick);
         }
         return receiver;
     }
 
-    public void ApplyScaledSelection(SortedDictionary<int, TValue> normalizedSelection, int scalar)
+    public void ApplyScaledSelection(HashSet<int> normalizedSelection, int scalar)
     {
-        SortedDictionary<int, TValue> receiver = new();
+        HashSet<int> receiver = new();
         foreach (var item in normalizedSelection)
         {
-            receiver.Add(item.Key + scalar, item.Value);
+            receiver.Add(item + scalar);
         }
         selection = new(receiver);
     }
 
-    public void SelectAll()
+    public void ApplyScaledSelection(SortedDictionary<int, TValue> normalizedSelection, int scalar) => ApplyScaledSelection(normalizedSelection.Keys.ToHashSet(), scalar);
+
+    public void SelectAllInLane()
     {
-        selection = new(parentLane);
+        selection = new(parentLane.Keys);
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public void UnionWith(IEnumerable<int> other) => selection.UnionWith(other);
+
+    #region Unused Interface Implementations
+
+    void ICollection<int>.Add(int tick) => Add(tick);
+
+    IEnumerator IEnumerable.GetEnumerator() => selection.GetEnumerator();
+    IEnumerator<int> IEnumerable<int>.GetEnumerator() => selection.GetEnumerator();
+
+    public bool IsReadOnly => false;
+
+    public void ExceptWith(IEnumerable<int> other) => selection.ExceptWith(other);
+    public void IntersectWith(IEnumerable<int> other) => selection.IntersectWith(other);
+    public bool IsProperSubsetOf(IEnumerable<int> other) => selection.IsProperSubsetOf(other);
+    public bool IsProperSupersetOf(IEnumerable<int> other) => selection.IsProperSupersetOf(other);
+    public bool IsSubsetOf(IEnumerable<int> other) => selection.IsSubsetOf(other);
+    public bool IsSupersetOf(IEnumerable<int> other) => selection.IsSupersetOf(other);
+    public bool Overlaps(IEnumerable<int> other) => selection.Overlaps(other);
+    public bool SetEquals(IEnumerable<int> other) => selection.SetEquals(other);
+    public void SymmetricExceptWith(IEnumerable<int> other) => selection.SymmetricExceptWith(other);
+    public void CopyTo(int[] array, int arrayIndex) => selection.CopyTo(array, arrayIndex);
+
+
+    #endregion
 }

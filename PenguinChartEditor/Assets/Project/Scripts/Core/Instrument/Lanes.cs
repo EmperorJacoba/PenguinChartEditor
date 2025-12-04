@@ -109,7 +109,7 @@ public class Lanes<T> where T : IEventData
         HashSet<int> ticks = new();
         for (int i = 0; i < Count; i++)
         {
-            ticks.UnionWith(selections[i].Keys.ToHashSet());
+            ticks.UnionWith(selections[i]);
         }
 
         return ticks;
