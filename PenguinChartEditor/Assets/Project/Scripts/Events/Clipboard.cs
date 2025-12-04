@@ -8,7 +8,7 @@ public class Clipboard : MonoBehaviour
     public void Copy()
     {
         // get loaded instrument
-        // convert data to .chart format string
+        // convert instrument data to .chart format string
         // set clipboard text to that, separated by \n and \t
 
 

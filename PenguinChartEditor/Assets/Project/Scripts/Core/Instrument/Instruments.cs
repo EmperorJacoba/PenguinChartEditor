@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 // please please please do not add <T> to this
@@ -72,8 +74,9 @@ public class SyncTrackInstrument : IInstrument
     {
         get
         {
-            var list = Tempo.Events.ExportData().Keys.ToList();
-            list.AddRange(TimeSignature.Events.ExportData().Keys.ToList());
+            var hashSet = Tempo.Events.ExportData().Keys.ToHashSet();
+            hashSet.UnionWith(TimeSignature.Events.ExportData().Keys.ToHashSet());
+            List<int> list = new(hashSet);
             list.Sort();
             return list;
         }
@@ -115,7 +118,32 @@ public class SyncTrackInstrument : IInstrument
 
     public string ConvertSelectionToString()
     {
-        throw new NotImplementedException();
+        var bpmSelectionData = bpmSelection.ExportNormalizedData();
+        var tsSelectionData = tsSelection.ExportNormalizedData();
+        var stringIDs = new List<KeyValuePair<int, string>>();
+
+        foreach (var item in bpmSelectionData)
+        {
+            stringIDs.Add(
+                new(item.Key, item.Value.ToString())
+                );
+        }
+        foreach (var item in tsSelectionData)
+        {
+            stringIDs.Add(
+                new(item.Key, item.Value.ToString())
+                );
+        }
+
+        stringIDs.Sort((a, b) => a.Key.CompareTo(b.Key));
+
+        StringBuilder combinedIDs = new();
+
+        foreach (var id in stringIDs)
+        {
+            combinedIDs.AppendLine($"\t{id.Key} = {id.Value}");
+        }
+        return combinedIDs.ToString();
     }
 }
 
@@ -493,11 +521,9 @@ public class FiveFretInstrument : IInstrument
         List<string> notes = new();
         for (int i = 0; i < Lanes.Count; i++)
         {
-            int laneIdentifier = i != 5 ? i : 7;
-
             foreach (var note in Lanes.GetLane(i))
             {
-                string value = $"\t{note.Key} = N {laneIdentifier} {note.Value.Sustain}";
+                string value = $"\t{note.Key} = {note.Value.ToChartFormat((LaneOrientation)i)}";
                 notes.Add(value);
             }
         }
@@ -508,7 +534,26 @@ public class FiveFretInstrument : IInstrument
 
     public string ConvertSelectionToString()
     {
-        throw new NotImplementedException();
+        var stringIDs = new List<KeyValuePair<int, string>>();
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var selectionData = Lanes.GetLaneSelection(i).ExportNormalizedData();
+            foreach (var note in selectionData)
+            {
+                stringIDs.Add(
+                    new(note.Key, note.Value.ToChartFormat((LaneOrientation)i))
+                    );
+            }
+        }
+
+        stringIDs.Sort((a, b) => a.Key.CompareTo(b.Key));
+
+        StringBuilder combinedIDs = new();
+        foreach (var id in stringIDs)
+        {
+            combinedIDs.AppendLine($"\t{id.Key} = {id.Value}");
+        }
+        return combinedIDs.ToString();
     }
 }
 

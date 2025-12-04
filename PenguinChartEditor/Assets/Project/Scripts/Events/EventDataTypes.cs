@@ -5,6 +5,9 @@ using UnityEngine;
 public interface IEventData { }
 public struct BPMData : IEquatable<BPMData>, IEventData
 {
+    public const int BPM_CONVERSION = 1000;
+    const string BPM_IDENTIFIER = "B";
+
     public float BPMChange;
     public float Timestamp;
     public bool Anchor;
@@ -23,7 +26,7 @@ public struct BPMData : IEquatable<BPMData>, IEventData
 
     public bool Equals(BPMData other) => BPMChange == other.BPMChange && Timestamp == other.Timestamp;
 
-    public override string ToString() => $"B {BPMChange} @ {Timestamp}";
+    public override string ToString() => $"{BPM_IDENTIFIER} {BPMChange * BPM_CONVERSION}";
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {
@@ -39,6 +42,8 @@ public struct BPMData : IEquatable<BPMData>, IEventData
 
 public struct TSData : IEquatable<TSData>, IEventData
 {
+    const string TS_IDENTIFIER = "TS";
+
     public int Numerator;
     public int Denominator;
 
@@ -51,7 +56,15 @@ public struct TSData : IEquatable<TSData>, IEventData
     public override bool Equals(object obj) => obj is TSData other && Equals(other);
     public bool Equals(TSData other) => Numerator == other.Numerator && Denominator == other.Denominator;
 
-    public override string ToString() => $"TS {Numerator} / {Denominator})";
+    public override string ToString() 
+    {
+        string denom;
+
+        if (Denominator == 4) denom = "";
+        else denom = $" {Math.Log(Denominator, 2)}";
+
+        return $"{TS_IDENTIFIER} {Numerator}{denom}"; // denom will contain leading space if needed
+    }
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {
@@ -100,6 +113,11 @@ public struct FiveFretNoteData : IEventData
     }
 
     public override string ToString() => $"(FFN: {Flag}, defaultOrientation = {Default}. {Sustain}T sustain)";
+    public string ToChartFormat(FiveFretInstrument.LaneOrientation lane)
+    {
+        int laneIdentifier = (int)lane != 5 ? (int)lane : 7;
+        return $"N {laneIdentifier} {Sustain}";
+    }
 
     public FiveFretNoteData ExportWithNewFlag(FlagType newFlag)
     {

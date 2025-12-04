@@ -6,9 +6,7 @@ using UnityEngine;
 public static class Tempo
 {
     const int SECONDS_PER_MINUTE = 60;
-    const string BPM_IDENTIFIER = "B";
     const string ANCHOR_IDENTIFIER = "A";
-    const int BPM_CONVERSION = 1000;
     const int MICROSECOND_CONVERSION = 1000000;
     const float MINIMUM_BPM_VALUE = 0;
     const float MAXIMUM_BPM_VALUE = 1000;
@@ -20,14 +18,14 @@ public static class Tempo
         List<string> eventContainer = new(Events.Count);
         foreach (var @event in Events)
         {
-            string tick = $"{@event.Key}";
-            string value = $"{BPM_IDENTIFIER} {@event.Value.BPMChange * BPM_CONVERSION}";
-            string output = $"\t{tick} = {value}";
-            eventContainer.Add(output);
+            eventContainer.Add
+                (
+                    $"\t{@event.Key} = {@event.Value}" // .Value's ToString() method takes care of the conversion
+                );
 
             if (@event.Value.Anchor)
             {
-                eventContainer.Add($"{tick} = {ANCHOR_IDENTIFIER} {@event.Value.Timestamp * MICROSECOND_CONVERSION}");
+                eventContainer.Add($"{@event.Key} = {ANCHOR_IDENTIFIER} {@event.Value.Timestamp * MICROSECOND_CONVERSION}");
             }
         }
         return eventContainer;
