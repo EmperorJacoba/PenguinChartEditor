@@ -29,10 +29,22 @@ public interface IInstrument
     void SetUpInputMap();
 
     string ConvertSelectionToString();
+    void AddChartFormattedEventsToInstrument(string lines, int offset);
+    void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines);
 }
 
 public class SyncTrackInstrument : IInstrument
 {
+    const int DEFAULT_TS_DENOMINATOR = 4;
+    const string TEMPO_EVENT_INDICATOR = "B";
+    const string TIME_SIGNATURE_EVENT_INDICATOR = "TS";
+    const string ANCHOR_INDICATOR = "A";
+    const string SYNC_TRACK_ERROR = "[SyncTrack] has invalid tempo event:";
+    const float BPM_FORMAT_CONVERSION = 1000.0f;
+    const int TS_POWER_CONVERSION_NUMBER = 2;
+    const float SECONDS_PER_MINUTE = 60;
+
+
     // Lanes located in respective libraries
     // This class is pretty much for shift click and clearing both TS and BPMData selections when needed
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
@@ -46,7 +58,7 @@ public class SyncTrackInstrument : IInstrument
         bpmClipboard = new(Tempo.Events);
         tsClipboard = new(TimeSignature.Events);
 
-       // Tempo.Events.UpdateNeededAtTick += modifiedTick => Tempo.RecalculateTempoEventDictionary(modifiedTick);
+        // Tempo.Events.UpdateNeededAtTick += modifiedTick => Tempo.RecalculateTempoEventDictionary(modifiedTick);
     }
 
 
@@ -108,7 +120,7 @@ public class SyncTrackInstrument : IInstrument
     public void ShiftClickSelect(int tick, bool temporary) => ShiftClickSelect(tick);
     public void ReleaseTemporaryTicks() { } // unneeded - no sustains lol
 
-    public void RemoveTickFromAllSelections(int tick) 
+    public void RemoveTickFromAllSelections(int tick)
     {
         bpmSelection.Remove(tick);
         tsSelection.Remove(tick);
@@ -145,10 +157,113 @@ public class SyncTrackInstrument : IInstrument
         }
         return combinedIDs.ToString();
     }
+
+    public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
+    {
+        HashSet<int> anchoredTicks = new(); // allows for versitility if A event comes before or after tempo event proper
+        int recalcTick = -1;
+
+        foreach (var entry in lines)
+        {
+            if (entry.Value.Contains(TEMPO_EVENT_INDICATOR))
+            {
+                var eventData = entry.Value;
+                eventData = eventData.Replace($"{TEMPO_EVENT_INDICATOR} ", ""); // SPACE IS VERY IMPORTANT HERE
+
+                if (!int.TryParse(eventData, out int bpmNoDecimal))
+                {
+                    Chart.Log($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid tempo entry.");
+                    continue;
+                }
+
+                float bpmWithDecimal = bpmNoDecimal / BPM_FORMAT_CONVERSION;
+
+                Tempo.Events[entry.Key] = new((float)Math.Round(bpmWithDecimal, 3), 0, anchoredTicks.Contains(entry.Key));
+                if (recalcTick > entry.Key) recalcTick = entry.Key;
+            }
+            else if (entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
+            {
+                var eventData = entry.Value;
+                eventData = eventData.Replace($"{TIME_SIGNATURE_EVENT_INDICATOR} ", "");
+
+                string[] tsParts = eventData.Split(" ");
+
+                if (!int.TryParse(tsParts[0], out int numerator))
+                {
+                    Chart.Log($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature numerator.");
+                    continue;
+                }
+
+                int denominator = DEFAULT_TS_DENOMINATOR;
+                if (tsParts.Length == 2) // There is no space in the event value (only one number)
+                {
+                    if (!int.TryParse(tsParts[1], out int denominatorLog2))
+                    {
+                        Chart.Log($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature denominator.");
+                        continue;
+                    }
+                    denominator = (int)Math.Pow(TS_POWER_CONVERSION_NUMBER, denominatorLog2);
+                }
+
+                TimeSignature.Events[entry.Key] = new TSData(numerator, denominator);
+            }
+            else if (entry.Value.Contains(ANCHOR_INDICATOR))
+            {
+                if (Tempo.Events.Contains(entry.Key))
+                {
+                    Tempo.Events[entry.Key] = new(Tempo.Events[entry.Key].BPMChange, Tempo.Events[entry.Key].Timestamp, true);
+                }
+                else
+                {
+                    anchoredTicks.Add(entry.Key);
+                }
+
+                // if for some reason you need to add parsing for the microsecond value do it here
+                // that is not here because a) penguin already works with and calculates the timestamps of every event
+                // and b) if the microsecond value is parsed and it's not aligned with the Format calculations,
+                // then what is penguin supposed to do? change the incoming BPM data? no
+                // I think it has the microsecond value for programs that choose not to work with timestamps
+                // (timestamps are easier to deal with in my opinion, even if an extra (minor) step is needed after every edit)
+            }
+        }
+
+        Tempo.RecalculateTempoEventDictionary(recalcTick);
+    }
+
+    public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    {
+        var lines = new List<KeyValuePair<int, string>>();
+        var clipboardAsLines = clipboardData.Split("\n");
+        foreach (var line in clipboardAsLines)
+        {
+            var parts = line.Split(" = ", 2);
+            if (!int.TryParse(parts[0].Trim(), out int tick))
+            {
+                Chart.Log($"Problem parsing tick {parts[0].Trim()}");
+            }
+
+            lines.Add(new(tick + offset, parts[1]));
+        }
+        AddChartFormattedEventsToInstrument(lines);
+    }
 }
 
 public class FiveFretInstrument : IInstrument
 {
+    const string NOTE_INDICATOR = "N";
+    const string SPECIAL_INDICATOR = "S";
+    const string EVENT_INDICATOR = "E";
+    const string DEPRECATED_HAND_INDICATOR = "H";
+    const int IDENTIFIER_INDEX = 0;
+    const int NOTE_IDENTIFIER_INDEX = 1;
+    const int SUSTAIN_INDEX = 2;
+    const string FORCED_SUBSTRING = "N 5 0";
+    const string TAP_SUBSTRING = "N 6 0";
+    const int EVENT_DATA_INDEX = 1;
+    const int LAST_VALID_IDENTIFIER = 7;
+    const int OPEN_IDENTIFIER = 7;
+    const int STARPOWER_INDICATOR = 2;
+
     public Lanes<FiveFretNoteData> Lanes { get; set; }
     public MoveData<FiveFretNoteData>[] InstrumentMoveData { get; set; } =
         new MoveData<FiveFretNoteData>[6] { new(), new(), new(), new(), new(), new() };
@@ -204,8 +319,8 @@ public class FiveFretInstrument : IInstrument
         inputMap.Charting.ForceTap.performed += x => ToggleTaps();
     }
 
-    public int TotalSelectionCount 
-    { 
+    public int TotalSelectionCount
+    {
         get
         {
             var sum = 0;
@@ -214,7 +329,7 @@ public class FiveFretInstrument : IInstrument
                 sum += Lanes.GetLaneSelection(i).Count;
             }
             return sum;
-        } 
+        }
     }
 
     public void ClearAllSelections() => Lanes.ClearAllSelections();
@@ -286,7 +401,7 @@ public class FiveFretInstrument : IInstrument
                 currentTickHopo = false;
             }
         }
-        
+
         var flag = currentTickHopo ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
         ChangeTickFlag(changedTick, ticks.prev, flag);
 
@@ -323,7 +438,7 @@ public class FiveFretInstrument : IInstrument
         for (int i = 0; i < Lanes.Count; i++)
         {
             var lane = Lanes.GetLane(i);
-            foreach(var tick in allTicksSelected)
+            foreach (var tick in allTicksSelected)
             {
                 if (!lane.Contains(tick)) continue;
 
@@ -555,6 +670,143 @@ public class FiveFretInstrument : IInstrument
         }
         return combinedIDs.ToString();
     }
+
+    public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
+    {
+        HashSet<int> uniqueTicks = lines.Select(item => item.Key).ToHashSet();
+
+        foreach (var uniqueTick in uniqueTicks)
+        {
+            var eventsAtTick = lines.Where(item => item.Key == uniqueTick).Select(item => item.Value).ToList();
+            bool tapModifier = false;
+            bool forcedModifier = false;
+
+            foreach (var identifier in new List<string>(eventsAtTick))
+            {
+                if (identifier.Contains($"{FORCED_SUBSTRING}"))
+                {
+                    forcedModifier = true;
+                    eventsAtTick.Remove(identifier);
+                }
+
+                if (identifier.Contains($"{TAP_SUBSTRING}"))
+                {
+                    tapModifier = true;
+                    eventsAtTick.Remove(identifier);
+                }
+            }
+
+            var noteCount = 0;
+            for (int i = 0; i < eventsAtTick.Count; i++)
+            {
+                if (eventsAtTick[i].Contains("N")) noteCount++;
+            }
+
+            int noteIdentifier;
+            int sustain;
+            foreach (var @event in eventsAtTick)
+            {
+                var values = @event.Split(' ');
+                switch (values[IDENTIFIER_INDEX])
+                {
+                    case NOTE_INDICATOR:
+
+                        if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
+                        {
+                            Chart.Log($"Invalid note identifier for {Instrument} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
+                            continue;
+                        }
+
+                        if (noteIdentifier > LAST_VALID_IDENTIFIER) continue;
+
+                        if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
+                        {
+                            Chart.Log($"Invalid sustain for {Instrument} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
+                            continue;
+                        }
+
+                        LaneOrientation lane;
+                        if (noteIdentifier != OPEN_IDENTIFIER)
+                            lane = (LaneOrientation)noteIdentifier;
+                        else lane = LaneOrientation.open; // open identifier is not the same as lane orientation (index of lane dictionary)
+
+                        bool defaultOrientation = true; // equivilent to forced
+                        FiveFretNoteData.FlagType flagType = FiveFretNoteData.FlagType.strum;
+                        if (tapModifier)
+                        {
+                            flagType = FiveFretNoteData.FlagType.tap; // tap overrides any hopo/forcing logic
+                        }
+                        else
+                        {
+                            bool hopoEligible = false;
+
+                            if (forcedModifier)
+                            {
+                                hopoEligible = !hopoEligible;
+                                defaultOrientation = false;
+                            }
+                        }
+
+                        // default to strum, will be recalculated later
+                        var noteData = new FiveFretNoteData(sustain, flagType, defaultOrientation);
+
+                        Lanes.GetLane((int)lane).Add(uniqueTick, noteData);
+
+                        break;
+                    case SPECIAL_INDICATOR:
+
+                        if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
+                        {
+                            Chart.Log($"Invalid special identifier for {Instrument} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
+                            break;
+                        }
+
+                        if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
+                        {
+                            Chart.Log($"Invalid sustain for {Instrument} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
+                            break;
+                        }
+
+                        if (noteIdentifier != STARPOWER_INDICATOR) break; // should only have starpower indicator, no fills or anything
+
+                        SpecialEvents.Add(uniqueTick, new SpecialData(sustain, SpecialData.EventType.starpower));
+
+                        break;
+                    case EVENT_INDICATOR:
+                        if (!Enum.TryParse(typeof(LocalEventData.EventType), values[EVENT_DATA_INDEX], true, out var localEvent))
+                        {
+                            Chart.Log($"Error at {uniqueTick}: Unsupported event type: {values[EVENT_DATA_INDEX]}");
+                            break;
+                        }
+
+                        LocalEvents.Add(uniqueTick, new LocalEventData((LocalEventData.EventType)localEvent));
+
+                        break;
+                    case DEPRECATED_HAND_INDICATOR:
+                        continue;
+                }
+            }
+        }
+
+        CheckForHoposInRange(uniqueTicks.Min(), uniqueTicks.Max());
+    }
+
+    public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    {
+        var lines = new List<KeyValuePair<int, string>>();
+        var clipboardAsLines = clipboardData.Split("\n");
+        foreach (var line in clipboardAsLines)
+        {
+            var parts = line.Split(" = ", 2);
+            if (!int.TryParse(parts[0].Trim(), out int tick))
+            {
+                Chart.Log($"Problem parsing tick {parts[0].Trim()}");
+            }
+
+            lines.Add(new(tick + offset, parts[1]));
+        }
+        AddChartFormattedEventsToInstrument(lines);
+    }
 }
 
 public class FourLaneDrumInstrument : IInstrument
@@ -613,6 +865,16 @@ public class FourLaneDrumInstrument : IInstrument
     public void RemoveTickFromAllSelections(int tick)
     {
         throw new System.NotImplementedException();
+    }
+
+    public void AddChartFormattedEventsToInstrument(string lines, int offset)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
+    {
+        throw new NotImplementedException();
     }
 
     public void ToggleTap() { }
@@ -683,6 +945,16 @@ public class GHLInstrument : IInstrument
     public void RemoveTickFromAllSelections(int tick)
     {
         throw new System.NotImplementedException();
+    }
+
+    public void AddChartFormattedEventsToInstrument(string lines, int offset)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
+    {
+        throw new NotImplementedException();
     }
 
     public void ToggleTap() { }
