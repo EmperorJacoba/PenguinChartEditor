@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IEventData { }
+public interface IEventData 
+{
+    string ToChartFormat(int lane);
+}
 public struct BPMData : IEquatable<BPMData>, IEventData
 {
     public const int BPM_CONVERSION = 1000;
@@ -26,7 +29,9 @@ public struct BPMData : IEquatable<BPMData>, IEventData
 
     public bool Equals(BPMData other) => BPMChange == other.BPMChange && Timestamp == other.Timestamp;
 
-    public override string ToString() => $"{BPM_IDENTIFIER} {BPMChange * BPM_CONVERSION}";
+    public override string ToString() => $"{BPMChange} @ {Timestamp}s, Anchor = {Anchor}";
+
+    public string ToChartFormat(int lane) => $"{BPM_IDENTIFIER} {BPMChange * BPM_CONVERSION}";
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {
@@ -56,7 +61,9 @@ public struct TSData : IEquatable<TSData>, IEventData
     public override bool Equals(object obj) => obj is TSData other && Equals(other);
     public bool Equals(TSData other) => Numerator == other.Numerator && Denominator == other.Denominator;
 
-    public override string ToString() 
+    public override string ToString() => $"{Numerator} / {Denominator}";
+
+    public string ToChartFormat(int lane) 
     {
         string denom;
 
@@ -85,6 +92,11 @@ public struct BookmarkData : IEventData
     public BookmarkData(string name)
     {
         Name = name;
+    }
+
+    public string ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
     }
 }
 
@@ -152,6 +164,11 @@ public struct FourLaneDrumNoteData : IEventData
     {
         Flags = flags;
     }
+
+    public string ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public struct GHLNoteData : IEventData
@@ -169,8 +186,14 @@ public struct GHLNoteData : IEventData
     {
         Flag = flag;
     }
+    public string ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
+    }
+
 }
 
+/*
 public struct TrueDrumNoteData : IEventData
 {
     // implement when the time comes
@@ -179,7 +202,7 @@ public struct TrueDrumNoteData : IEventData
 public struct VoxData : IEventData
 {
 
-}
+} */
 
 public struct SpecialData
 {
@@ -199,6 +222,11 @@ public struct SpecialData
         this.eventType = eventType;
         Sustain = sustain;
     }
+
+    public string ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public struct LocalEventData
@@ -215,4 +243,9 @@ public struct LocalEventData
     {
         this.eventType = eventType;
     }
-}
+    public string ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
+    }
+
+} 

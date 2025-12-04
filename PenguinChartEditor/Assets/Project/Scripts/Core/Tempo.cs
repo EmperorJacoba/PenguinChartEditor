@@ -20,7 +20,7 @@ public static class Tempo
         {
             eventContainer.Add
                 (
-                    $"\t{@event.Key} = {@event.Value}" // .Value's ToString() method takes care of the conversion
+                    $"\t{@event.Key} = {@event.Value.ToChartFormat(0)}"
                 );
 
             if (@event.Value.Anchor)

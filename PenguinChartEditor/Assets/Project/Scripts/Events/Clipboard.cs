@@ -3,7 +3,7 @@ using TextCopy;
 
 // this will need to have extended support for star power down the line
 // star power is its own instrument entirely????? instead of embedded within classes
-public class Clipboard : MonoBehaviour
+public static class Clipboard
 {
     public void Copy()
     {

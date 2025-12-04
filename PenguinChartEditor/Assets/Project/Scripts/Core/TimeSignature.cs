@@ -21,7 +21,7 @@ public static class TimeSignature
         List<string> eventContainer = new(Events.Count);
         foreach (var @event in Events)
         {
-            string output = $"\t{@event.Key} = {@event.Value}";
+            string output = $"\t{@event.Key} = {@event.Value.ToChartFormat(0)}";
             eventContainer.Add(output);
         }
         return eventContainer;
