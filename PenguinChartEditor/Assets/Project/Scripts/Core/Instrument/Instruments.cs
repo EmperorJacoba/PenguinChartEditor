@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering.UI;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 // please please please do not add <T> to this
 // i have done this like 7 times and it makes chartparser really ugly
@@ -23,6 +21,8 @@ public interface IInstrument
     public void ShiftClickSelect(int tick, bool temporary);
     public void ReleaseTemporaryTicks();
     public void RemoveTickFromAllSelections(int tick);
+
+    List<int> UniqueTicks { get; }
 
     void SetUpInputMap();
 }
@@ -65,6 +65,18 @@ public class SyncTrackInstrument : IInstrument
             return bpmSelection.Count + tsSelection.Count;
         }
     }
+
+    public List<int> UniqueTicks
+    {
+        get
+        {
+            var list = Tempo.Events.ExportData().Keys.ToList();
+            list.AddRange(TimeSignature.Events.ExportData().Keys.ToList());
+            list.Sort();
+            return list;
+        }
+    }
+
 
     public void ClearAllSelections()
     {
@@ -147,6 +159,8 @@ public class FiveFretInstrument : IInstrument
             Lanes.GetLane(i).UpdateNeededAtTick += changedTick => CheckForHopos((LaneOrientation)laneIndex, changedTick);
         }
     }
+
+    public List<int> UniqueTicks => Lanes.UniqueTicks;
 
     public void SetUpInputMap()
     {
@@ -499,6 +513,8 @@ public class FourLaneDrumInstrument : IInstrument
     public DifficultyType Difficulty { get; set; }
 
     public int TotalSelectionCount => throw new System.NotImplementedException();
+    public List<int> UniqueTicks => Lanes.UniqueTicks;
+
 
     public enum LaneOrientation
     {
@@ -558,6 +574,8 @@ public class GHLInstrument : IInstrument
         new MoveData<GHLNoteData>[6] { new(), new(), new(), new(), new(), new() };
     public InstrumentType Instrument { get; set; }
     public DifficultyType Difficulty { get; set; }
+    public List<int> UniqueTicks => Lanes.UniqueTicks;
+
 
     public int TotalSelectionCount => throw new System.NotImplementedException();
 
