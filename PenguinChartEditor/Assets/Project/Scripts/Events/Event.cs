@@ -13,7 +13,6 @@ public interface IEvent
 
     // Used in previewer to check placement conditions
     ISelection GetSelection();
-    IClipboard GetClipboard();
     ILaneData GetLaneData();
 
     IInstrument ParentInstrument { get; }
@@ -87,9 +86,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
     // Data is always stored in an instrument, or in the BPM/TS case, in the Tempo/TimeSignature classes.
     public abstract SelectionSet<T> Selection { get; }
     public ISelection GetSelection() => Selection;
-
-    public abstract ClipboardSet<T> Clipboard { get; }
-    public IClipboard GetClipboard() => Clipboard;
 
     public abstract LaneSet<T> LaneData { get; }
     public ILaneData GetLaneData() => LaneData;

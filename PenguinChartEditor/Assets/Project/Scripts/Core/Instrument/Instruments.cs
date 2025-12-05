@@ -57,18 +57,12 @@ public class SyncTrackInstrument : IInstrument
         bpmSelection = new(Tempo.Events);
         tsSelection = new(TimeSignature.Events);
 
-        bpmClipboard = new(Tempo.Events);
-        tsClipboard = new(TimeSignature.Events);
-
         // Tempo.Events.UpdateNeededAtTick += modifiedTick => Tempo.RecalculateTempoEventDictionary(modifiedTick);
     }
 
 
     public SelectionSet<BPMData> bpmSelection;
     public SelectionSet<TSData> tsSelection;
-
-    public ClipboardSet<BPMData> bpmClipboard;
-    public ClipboardSet<TSData> tsClipboard;
 
     public MoveData<BPMData> bpmMoveData = new();
     public MoveData<TSData> tsMoveData = new();

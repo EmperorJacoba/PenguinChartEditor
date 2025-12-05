@@ -4,7 +4,6 @@ using UnityEngine;
 public class TSLabel : Label<TSData>, IPoolable
 {
     #region Event Sets
-    public override ClipboardSet<TSData> Clipboard => Chart.SyncTrackInstrument.tsClipboard;
     public override SelectionSet<TSData> Selection => Chart.SyncTrackInstrument.tsSelection;
     public override LaneSet<TSData> LaneData => TimeSignature.Events;
 

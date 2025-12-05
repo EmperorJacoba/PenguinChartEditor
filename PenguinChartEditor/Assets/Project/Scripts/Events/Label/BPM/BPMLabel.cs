@@ -8,8 +8,6 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     private const int SECONDS_PER_MINUTE = 60;
     private const int BPM_DIGIT_COUNT = 3;
     #region Event Sets
-
-    public override ClipboardSet<BPMData> Clipboard => Chart.SyncTrackInstrument.bpmClipboard;
     public override SelectionSet<BPMData> Selection => Chart.SyncTrackInstrument.bpmSelection;
     public override LaneSet<BPMData> LaneData => Tempo.Events;
     public override void SetEvents(SortedDictionary<int, BPMData> newEvents) => Tempo.SetEvents(newEvents);

@@ -8,27 +8,23 @@ public class Lanes<T> where T : IEventData
 {
     LaneSet<T>[] lanes;
     SelectionSet<T>[] selections;
-    ClipboardSet<T>[] clipboards;
     public HashSet<int> TempSustainTicks = new();
 
     public Lanes(int laneCount)
     {
         lanes = new LaneSet<T>[laneCount];
         selections = new SelectionSet<T>[laneCount];
-        clipboards = new ClipboardSet<T>[laneCount];
 
         for (int i = 0; i < laneCount; i++)
         {
             lanes[i] = new();
             selections[i] = new(lanes[i]);
-            clipboards[i] = new(lanes[i]);
         }
     }
 
     public LaneSet<T> GetLane(int lane) => lanes[lane];
     public void SetLane(int lane, SortedDictionary<int, T> newData) => lanes[lane].Update(newData);
     public SelectionSet<T> GetLaneSelection(int lane) => selections[lane];
-    public ClipboardSet<T> GetLaneClipboard(int lane) => clipboards[lane];
 
     public bool IsTickChord(int tick)
     {

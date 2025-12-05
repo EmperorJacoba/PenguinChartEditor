@@ -2,7 +2,7 @@
 using TextCopy;
 
 // this will need to have extended support for star power down the line
-// star power is its own instrument entirely????? instead of embedded within classes
+// star power could be its own instrument entirely????? instead of embedded within classes
 public static class Clipboard
 {
     public static void Copy()
