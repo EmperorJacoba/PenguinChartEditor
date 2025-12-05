@@ -142,6 +142,14 @@ public class Lanes<T> where T : IEventData
             selections[i].Clear();
         }
     }
+
+    public void DeleteAllTicksInSelection()
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            selections[i].PopSelectedTicksFromLane();
+        }
+    }
     public int Count => lanes.Length;
 }
 

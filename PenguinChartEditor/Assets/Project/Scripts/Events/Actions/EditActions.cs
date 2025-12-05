@@ -156,12 +156,13 @@ public class Cut<T> : IEditAction<T> where T : IEventData
 
     public bool Execute(ClipboardSet<T> clipboard, SelectionSet<T> selection)
     {
+        /*
         var copyAction = new Copy<T>(eventSetReference);
         copyAction.Execute(clipboard, selection);
 
         if (deleteAction.Execute(selection)) return true;
-
-        return false;
+        */
+        return false; 
     }
 
     public void Undo()

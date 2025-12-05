@@ -156,6 +156,13 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
 
     public void UnionWith(IEnumerable<int> other) => selection.UnionWith(other);
 
+    public SortedDictionary<int, TValue> PopSelectedTicksFromLane()
+    {
+        var subtractedData = parentLane.PopTicksFromSet(selection);
+        selection.Clear();
+        return subtractedData;
+    }
+
     #region Unused Interface Implementations
 
     void ICollection<int>.Add(int tick) => Add(tick);

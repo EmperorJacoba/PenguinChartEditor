@@ -31,6 +31,8 @@ public interface IInstrument
     string ConvertSelectionToString();
     void AddChartFormattedEventsToInstrument(string lines, int offset);
     void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines);
+
+    void DeleteTicksInSelection();
 }
 
 public class SyncTrackInstrument : IInstrument
@@ -251,6 +253,12 @@ public class SyncTrackInstrument : IInstrument
             lines.Add(new(tick + offset, parts[1]));
         }
         AddChartFormattedEventsToInstrument(lines);
+    }
+
+    public void DeleteTicksInSelection()
+    {
+        bpmSelection.PopSelectedTicksFromLane();
+        tsSelection.PopSelectedTicksFromLane();
     }
 }
 
@@ -899,6 +907,11 @@ public class FiveFretInstrument : IInstrument
         }
         AddChartFormattedEventsToInstrument(lines);
     }
+
+    public void DeleteTicksInSelection()
+    {
+        Lanes.DeleteAllTicksInSelection();
+    }
 }
 
 public class FourLaneDrumInstrument : IInstrument
@@ -974,6 +987,11 @@ public class FourLaneDrumInstrument : IInstrument
     public void SetUpInputMap() { }
 
     public string ConvertSelectionToString()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteTicksInSelection()
     {
         throw new NotImplementedException();
     }
@@ -1054,6 +1072,11 @@ public class GHLInstrument : IInstrument
     public void SetUpInputMap() { }
 
     public string ConvertSelectionToString()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteTicksInSelection()
     {
         throw new NotImplementedException();
     }

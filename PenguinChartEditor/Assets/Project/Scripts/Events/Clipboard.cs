@@ -17,4 +17,10 @@ public static class Clipboard
 
         Chart.LoadedInstrument.AddChartFormattedEventsToInstrument(userText, offset);
     }
+
+    public static void Cut()
+    {
+        Copy();
+        Chart.LoadedInstrument.DeleteTicksInSelection();
+    }
 }
