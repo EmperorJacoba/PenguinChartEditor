@@ -114,6 +114,16 @@ public class Lanes<T> where T : IEventData
         return new TickBounds(prev, next);
     }
 
+    public SortedDictionary<int, T>[] PopDataInRange(int startTick, int endTick)
+    {
+        SortedDictionary<int, T>[] subtractedData = new SortedDictionary<int,T>[lanes.Length];
+        for (int i = 0; i < Count; i++)
+        {
+            subtractedData[i] = lanes[i].PopTicksInRange(startTick, endTick);
+        }
+        return subtractedData;
+    }
+
     public HashSet<int> GetTotalSelection()
     {
         HashSet<int> ticks = new();

@@ -16,7 +16,5 @@ public static class Clipboard
         var offset = Previewer.previewTick;
 
         Chart.LoadedInstrument.AddChartFormattedEventsToInstrument(userText, offset);
-        // attempt to convert data into event data
-        // set events within instruments
     }
 }

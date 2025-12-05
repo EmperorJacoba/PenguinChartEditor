@@ -728,6 +728,11 @@ public class FiveFretInstrument : IInstrument
     {
         HashSet<int> uniqueTicks = lines.Select(item => item.Key).ToHashSet();
 
+        if (uniqueTicks.Count > 0)
+        {
+            Lanes.PopDataInRange(uniqueTicks.Min(), uniqueTicks.Max());
+        }
+
         foreach (var uniqueTick in uniqueTicks)
         {
             var eventsAtTick = lines.Where(item => item.Key == uniqueTick).Select(item => item.Value).ToList();
