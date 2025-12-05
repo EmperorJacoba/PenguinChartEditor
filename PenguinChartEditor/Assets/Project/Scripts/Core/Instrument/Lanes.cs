@@ -66,6 +66,16 @@ public class Lanes<T> where T : IEventData
         }
     }
 
+    public int GetFirstSelectionTick()
+    {
+        HashSet<int> minSelectionTicks = new();
+        for (int i = 0; i < Count; i++)
+        {
+            if (selections[i].Count > 0) minSelectionTicks.Add(selections[i].Min());
+        }
+        return minSelectionTicks.Min();
+    }
+
     public HashSet<int> GetUniqueTicksInRange(int startTick, int endTick)
     {
         throw new NotImplementedException();

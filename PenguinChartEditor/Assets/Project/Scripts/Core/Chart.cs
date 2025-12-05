@@ -127,6 +127,8 @@ public class Chart : MonoBehaviour
 
     public static bool editMode = true; // for previewers
 
+    InputMap inputMap;
+
     void Awake()
     {
         // Only ever one chart game object active, prioritize first loaded
@@ -145,6 +147,10 @@ public class Chart : MonoBehaviour
             ToList()[0];
 
         AudioManager.PlaybackStateChanged += x => { editMode = !AudioManager.AudioPlaying; };
+
+        inputMap = new();
+        inputMap.Enable();
+        inputMap.Charting.Copy.performed += x => Clipboard.Copy();
     }
 
     public delegate void ChartUpdatedDelegate();

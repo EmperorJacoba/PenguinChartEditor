@@ -5,16 +5,12 @@ using TextCopy;
 // star power is its own instrument entirely????? instead of embedded within classes
 public static class Clipboard
 {
-    public void Copy()
+    public static void Copy()
     {
-        // get loaded instrument
-        // convert instrument data to .chart format string
-        // set clipboard text to that, separated by \n and \t
-
-
+        ClipboardService.SetText(Chart.LoadedInstrument.ConvertSelectionToString());
     }
 
-    public void Paste()
+    public static void Paste()
     {
         // get loaded instrument
         // get clipboard text

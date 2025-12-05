@@ -40,16 +40,17 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
         return receiver;
     }
 
-    public SortedDictionary<int, TValue> ExportNormalizedData()
+    public SortedDictionary<int, TValue> ExportNormalizedData() => ExportNormalizedData(GetFirstSelectedTick());
+
+    public SortedDictionary<int, TValue> ExportNormalizedData(int zeroTick)
     {
         var receiver = new SortedDictionary<int, TValue>();
-        var firstTick = GetFirstSelectedTick();
 
         foreach (var selectedTick in selection)
         {
             if (parentLane.Contains(selectedTick))
             {
-                receiver.Add(selectedTick - firstTick, parentLane[selectedTick]);
+                receiver.Add(selectedTick - zeroTick, parentLane[selectedTick]);
             }
             else
             {

@@ -137,13 +137,19 @@ public class SyncTrackInstrument : IInstrument
         foreach (var item in bpmSelectionData)
         {
             stringIDs.Add(
-                new(item.Key, item.Value.ToString())
+                new(item.Key, item.Value.ToChartFormat(0))
                 );
+            if (item.Value.Anchor)
+            {
+                stringIDs.Add(
+                    new(item.Key, $"A {item.Value.Timestamp * Tempo.MICROSECOND_CONVERSION}")
+                    );
+            }
         }
         foreach (var item in tsSelectionData)
         {
             stringIDs.Add(
-                new(item.Key, item.Value.ToString())
+                new(item.Key, item.Value.ToChartFormat(0))
                 );
         }
 
@@ -263,6 +269,9 @@ public class FiveFretInstrument : IInstrument
     const int LAST_VALID_IDENTIFIER = 7;
     const int OPEN_IDENTIFIER = 7;
     const int STARPOWER_INDICATOR = 2;
+    const string TAP_ID = "N 6 0";
+    const string EXPLICIT_STRUM_ID = "N FS 0";
+    const string EXPLICIT_HOPO_ID = "N FH 0";
 
     public Lanes<FiveFretNoteData> Lanes { get; set; }
     public MoveData<FiveFretNoteData>[] InstrumentMoveData { get; set; } =
@@ -638,7 +647,7 @@ public class FiveFretInstrument : IInstrument
         {
             foreach (var note in Lanes.GetLane(i))
             {
-                string value = $"\t{note.Key} = {note.Value.ToChartFormat((LaneOrientation)i)}";
+                string value = $"\t{note.Key} = {note.Value.ToChartFormat(i)}";
                 notes.Add(value);
             }
         }
@@ -646,19 +655,62 @@ public class FiveFretInstrument : IInstrument
         var orderedStrings = notes.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
         return orderedStrings;
     }
-
+    
+    // add forced ids
     public string ConvertSelectionToString()
     {
         var stringIDs = new List<KeyValuePair<int, string>>();
+        var zeroTick = Lanes.GetFirstSelectionTick();
+
+        HashSet<int> tapTicks = new();
+        HashSet<int> strumTicks = new();
+        HashSet<int> hopoTicks = new();
+
+        // add functionality here to allow N 5 forced pasting instead
         for (int i = 0; i < Lanes.Count; i++)
         {
-            var selectionData = Lanes.GetLaneSelection(i).ExportNormalizedData();
+            var selectionData = Lanes.GetLaneSelection(i).ExportNormalizedData(zeroTick);
             foreach (var note in selectionData)
             {
                 stringIDs.Add(
-                    new(note.Key, note.Value.ToChartFormat((LaneOrientation)i))
+                    new(note.Key, note.Value.ToChartFormat(i))
                     );
+
+                if (!note.Value.Default)
+                {
+                    switch (note.Value.Flag)
+                    {
+                        case FiveFretNoteData.FlagType.hopo:
+                            hopoTicks.Add(note.Key);
+                            break;
+                        case FiveFretNoteData.FlagType.strum:
+                            strumTicks.Add(note.Key);
+                            break;
+                    }
+                }
+                if (note.Value.Flag == FiveFretNoteData.FlagType.tap) tapTicks.Add(note.Key);
             }
+        }
+
+        foreach (var tick in tapTicks)
+        {
+            stringIDs.Add(
+                new(tick, TAP_ID)
+                );
+        }
+
+        foreach(var tick in strumTicks)
+        {
+            stringIDs.Add(
+                new(tick, EXPLICIT_STRUM_ID)
+                );
+        }
+
+        foreach(var tick in hopoTicks)
+        {
+            stringIDs.Add(
+                new(tick, EXPLICIT_HOPO_ID)
+                );
         }
 
         stringIDs.Sort((a, b) => a.Key.CompareTo(b.Key));
@@ -680,6 +732,8 @@ public class FiveFretInstrument : IInstrument
             var eventsAtTick = lines.Where(item => item.Key == uniqueTick).Select(item => item.Value).ToList();
             bool tapModifier = false;
             bool forcedModifier = false;
+            bool penguinHopo = false;
+            bool penguinStrum = false;
 
             foreach (var identifier in new List<string>(eventsAtTick))
             {
@@ -692,6 +746,18 @@ public class FiveFretInstrument : IInstrument
                 if (identifier.Contains($"{TAP_SUBSTRING}"))
                 {
                     tapModifier = true;
+                    eventsAtTick.Remove(identifier);
+                }
+
+                if (identifier.Contains($"{EXPLICIT_HOPO_ID}"))
+                {
+                    penguinHopo = true;
+                    eventsAtTick.Remove(identifier);
+                }
+
+                if (identifier.Contains($"{EXPLICIT_STRUM_ID}"))
+                {
+                    penguinStrum = true;
                     eventsAtTick.Remove(identifier);
                 }
             }
@@ -740,9 +806,21 @@ public class FiveFretInstrument : IInstrument
                         {
                             bool hopoEligible = false;
 
+                            if (penguinHopo)
+                            {
+                                flagType = FiveFretNoteData.FlagType.hopo;
+                                defaultOrientation = false;
+                            }
+
+                            if (penguinStrum)
+                            {
+                                flagType = FiveFretNoteData.FlagType.strum;
+                                defaultOrientation = false;
+                            }
+
                             if (forcedModifier)
                             {
-                                hopoEligible = !hopoEligible;
+                                flagType = PreviewTickHopo(lane, uniqueTick) ? FiveFretNoteData.FlagType.strum : FiveFretNoteData.FlagType.hopo;
                                 defaultOrientation = false;
                             }
                         }

@@ -7,7 +7,7 @@ public static class Tempo
 {
     const int SECONDS_PER_MINUTE = 60;
     const string ANCHOR_IDENTIFIER = "A";
-    const int MICROSECOND_CONVERSION = 1000000;
+    public const int MICROSECOND_CONVERSION = 1000000;
     const float MINIMUM_BPM_VALUE = 0;
     const float MAXIMUM_BPM_VALUE = 1000;
 
