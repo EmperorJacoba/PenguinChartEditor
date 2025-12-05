@@ -97,7 +97,12 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
 
     public void Clear() => selection.Clear();
 
-    public bool Contains(int key) => selection.Contains(key);
+    public bool Contains(int key)
+    {
+        if (!parentLane.Contains(key)) selection.Remove(key);
+
+        return selection.Contains(key);
+    }
 
     public bool Remove(int key) => selection.Remove(key);
 

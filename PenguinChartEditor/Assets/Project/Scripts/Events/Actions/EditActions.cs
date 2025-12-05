@@ -39,7 +39,7 @@ public class Copy<T> : IEditAction<T> where T : IEventData
     public void Undo()
     {
         return;
-    }
+    } 
 }
 
 public class Paste<T> : IEditAction<T> where T : IEventData
@@ -56,6 +56,7 @@ public class Paste<T> : IEditAction<T> where T : IEventData
 
     public bool Execute(int startPasteTick, ClipboardSet<T> clipboard)
     {
+        /*
         if (clipboard.Count == 0) return false;
     
         SaveData = new(eventSetReference);
@@ -71,7 +72,7 @@ public class Paste<T> : IEditAction<T> where T : IEventData
         {
             eventSetReference.Add(clippedTick.Key + startPasteTick, clipboard[clippedTick.Key]);
         }
-
+        */
         return true;
     }
 

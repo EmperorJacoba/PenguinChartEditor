@@ -12,8 +12,10 @@ public static class Clipboard
 
     public static void Paste()
     {
-        // get loaded instrument
-        // get clipboard text
+        var userText = ClipboardService.GetText();
+        var offset = Previewer.previewTick;
+
+        Chart.LoadedInstrument.AddChartFormattedEventsToInstrument(userText, offset);
         // attempt to convert data into event data
         // set events within instruments
     }

@@ -723,6 +723,7 @@ public class FiveFretInstrument : IInstrument
         return combinedIDs.ToString();
     }
 
+    // needs to clear out zone between start & end point of added events
     public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
     {
         HashSet<int> uniqueTicks = lines.Select(item => item.Key).ToHashSet();
@@ -730,6 +731,14 @@ public class FiveFretInstrument : IInstrument
         foreach (var uniqueTick in uniqueTicks)
         {
             var eventsAtTick = lines.Where(item => item.Key == uniqueTick).Select(item => item.Value).ToList();
+
+            // we accept both data ripped straight from a .chart file
+            // or special penguin modifiers
+            // penguinHopo and penguinStrum correspond to FH (forced hopo) and FS (forced strum) events
+            // this is because Penguin does not treat notes as forced/unforced
+            // they are nondefault or default
+            // meaning they either stay the way they are no matter what happens to the chart or don't
+            // (except in some cases, like if it is the first tick in a track)
             bool tapModifier = false;
             bool forcedModifier = false;
             bool penguinHopo = false;
@@ -804,8 +813,6 @@ public class FiveFretInstrument : IInstrument
                         }
                         else
                         {
-                            bool hopoEligible = false;
-
                             if (penguinHopo)
                             {
                                 flagType = FiveFretNoteData.FlagType.hopo;
@@ -875,10 +882,12 @@ public class FiveFretInstrument : IInstrument
         var clipboardAsLines = clipboardData.Split("\n");
         foreach (var line in clipboardAsLines)
         {
+            if (line.Trim() == "") continue;
             var parts = line.Split(" = ", 2);
             if (!int.TryParse(parts[0].Trim(), out int tick))
             {
-                Chart.Log($"Problem parsing tick {parts[0].Trim()}");
+                Chart.Log(@$"Problem parsing event {line}");
+                continue;
             }
 
             lines.Add(new(tick + offset, parts[1]));

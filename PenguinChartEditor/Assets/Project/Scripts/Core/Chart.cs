@@ -151,6 +151,7 @@ public class Chart : MonoBehaviour
         inputMap = new();
         inputMap.Enable();
         inputMap.Charting.Copy.performed += x => Clipboard.Copy();
+        inputMap.Charting.Paste.performed += x => Clipboard.Paste();
     }
 
     public delegate void ChartUpdatedDelegate();
