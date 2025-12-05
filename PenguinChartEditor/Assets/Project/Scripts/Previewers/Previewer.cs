@@ -22,6 +22,7 @@ public interface IPreviewer
 /// </summary>
 public abstract class Previewer : MonoBehaviour, IPreviewer
 {
+    public static int previewTick = 0;
     private const int RIGHT_MOUSE_ID = 1;
 
     [SerializeField] protected GraphicRaycaster overlayUIRaycaster;
@@ -47,7 +48,19 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     public abstract void Hide();
     public abstract void Show();
     public bool IsOverlayUIHit() => MiscTools.IsRaycasterHit(overlayUIRaycaster);
-    public int Tick { get; set; }
+
+    // this is done because there will never be a scenario where
+    // two previewers have different ticks (at least not jn any meaningful way)
+    // previewers do not update this unless they are active, and since there is only ever one active,
+    // then this can be a property for the broad previewTick, while also making sense & being consistent
+    // in the child classes. previewTick is used for clipboard calculations without needing
+    // to find the previewer in any given scene
+    public int Tick
+    {
+        get => previewTick;
+        set => previewTick = value;
+    }
+
     public bool disableNextSelectionCheck { get; set; } = false;
 
     /// <summary>

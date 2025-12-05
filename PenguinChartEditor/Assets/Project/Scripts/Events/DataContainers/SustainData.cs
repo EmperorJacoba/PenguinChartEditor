@@ -7,7 +7,7 @@ public class SustainData<T> where T : IEventData
     public int lastMouseTick;
     public int firstMouseTick;
     public Sustain<T> sustainEventAction;
-    public SortedDictionary<int, T> sustainingTicks = new();
+    public HashSet<int> sustainingTicks = new();
 
     public SustainData(LaneSet<T> eventSet, SelectionSet<T> selection, int mouseTick)
     {
@@ -20,7 +20,7 @@ public class SustainData<T> where T : IEventData
         sustainingTicks = new(selection);
 
         selection.Clear();
-        sustainEventAction.CaptureOriginalSustain(sustainingTicks.Keys.ToList());
+        sustainEventAction.CaptureOriginalSustain(sustainingTicks.ToList());
     }
 
     // use only in Lane<T> class/end of user sustain --

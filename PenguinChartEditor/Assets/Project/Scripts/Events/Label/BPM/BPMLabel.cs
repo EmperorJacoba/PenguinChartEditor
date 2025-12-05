@@ -8,8 +8,6 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     private const int SECONDS_PER_MINUTE = 60;
     private const int BPM_DIGIT_COUNT = 3;
     #region Event Sets
-
-    public override ClipboardSet<BPMData> Clipboard => Chart.SyncTrackInstrument.bpmClipboard;
     public override SelectionSet<BPMData> Selection => Chart.SyncTrackInstrument.bpmSelection;
     public override LaneSet<BPMData> LaneData => Tempo.Events;
     public override void SetEvents(SortedDictionary<int, BPMData> newEvents) => Tempo.SetEvents(newEvents);
@@ -45,10 +43,8 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     #region Event Handlers
 
     // Overriden to make sure faulty/inaccurate data is not in Tempo dict after any large modifications
-    public override void PasteSelection() => ExecuteWithRecalculate(base.PasteSelection);
     public override void DeleteSelection() => ExecuteWithRecalculate(base.DeleteSelection);
     public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
-    public override void CutSelection() => ExecuteWithRecalculate(base.CutSelection);
     public override void MoveSelection() => ExecuteWithRecalculate(() => base.MoveSelection());
     public override void RefreshLane() => BPMLane.instance.UpdateEvents();
     public override void SustainSelection() { return; }

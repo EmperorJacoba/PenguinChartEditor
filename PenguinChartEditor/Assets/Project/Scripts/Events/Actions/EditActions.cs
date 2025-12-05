@@ -10,94 +10,6 @@ public interface IEditAction<T> where T : IEventData
     public SortedDictionary<int, T> SaveData { get; set; }
 }
 
-public class Copy<T> : IEditAction<T> where T : IEventData
-{
-    public SortedDictionary<int, T> SaveData { get; set; } = new();
-    public LaneSet<T> eventSetReference;
-    public Copy(LaneSet<T> targetEventSet)
-    {
-        eventSetReference = targetEventSet;
-    }
-    public bool Execute(ClipboardSet<T> clipboard, SelectionSet<T> selection)
-    {
-        // Note: to make up for separate selection sets and clipboards,
-        // make a hashset<int> property that when referenced, combines
-        // all other selection sets into one so that the clipboard accurately
-        // reflects the relative displacement of events on the clipboard
-        // so clipboard will not always start at zero for each event
-
-        clipboard.Clear(); // prep dictionary for new copy data
-
-        // copy data is shifted to zero for relative pasting 
-        // (ex. an event sequence 100, 200, 300 is converted to 0, 100, 200)
-        int lowestTick = 0;
-        if (selection.Count > 0) lowestTick = selection.GetFirstSelectedTick();
-
-        // optimize this with new ClipboardSet<T> class methods!
-        // add relevant data for each tick into clipboard
-        foreach (var selectedTick in selection)
-        {
-            try
-            {
-                clipboard.Add(selectedTick.Key - lowestTick, selection[selectedTick.Key]);
-            }
-            catch
-            {
-                continue;
-            }
-        }
-        return false; // method is NOT undoable
-    }
-
-    public void Undo()
-    {
-        return;
-    }
-}
-
-public class Paste<T> : IEditAction<T> where T : IEventData
-{
-    public SortedDictionary<int, T> SaveData { get; set; } = new();
-    LaneSet<T> eventSetReference;
-    public Delete<T> deleteAction;
-
-    public Paste(LaneSet<T> targetEventSet)
-    {
-        eventSetReference = targetEventSet;
-        deleteAction = new(targetEventSet);
-    }
-
-    public bool Execute(int startPasteTick, ClipboardSet<T> clipboard)
-    {
-        if (clipboard.Count == 0) return false;
-    
-        SaveData = new(eventSetReference);
-
-        // Create a temp dictionary without events within the size of the clipboard from the origin of the paste 
-        // (ex. clipboard with 0, 100, 400 has a zone of 400, paste starts at tick 700, all events tick 700-1100 are wiped)
-        var endPasteTick = clipboard.Keys.Max() + startPasteTick;
-
-        deleteAction.Execute(startPasteTick, endPasteTick);
-
-        // Add clipboard data to dict, now cleaned of obstructing events
-        foreach (var clippedTick in clipboard)
-        {
-            eventSetReference.Add(clippedTick.Key + startPasteTick, clipboard[clippedTick.Key]);
-        }
-
-        return true;
-    }
-
-    public void Undo()
-    {
-        eventSetReference.Clear();
-        foreach (var tick in SaveData)
-        {
-            eventSetReference.Add(tick.Key, tick.Value);
-        }
-    }
-}
-
 public class Delete<T> : IEditAction<T> where T : IEventData
 {
     public SortedDictionary<int, T> SaveData { get; set; } = new();
@@ -152,33 +64,6 @@ public class Delete<T> : IEditAction<T> where T : IEventData
     public void Undo()
     {
 
-    }
-}
-
-public class Cut<T> : IEditAction<T> where T : IEventData
-{
-    public SortedDictionary<int, T> SaveData { get; set; } = new();
-    LaneSet<T> eventSetReference;
-    Delete<T> deleteAction;
-    public Cut(LaneSet<T> targetEventSet)
-    {
-        eventSetReference = targetEventSet;
-        deleteAction = new(eventSetReference);
-    }
-
-    public bool Execute(ClipboardSet<T> clipboard, SelectionSet<T> selection)
-    {
-        var copyAction = new Copy<T>(eventSetReference);
-        copyAction.Execute(clipboard, selection);
-
-        if (deleteAction.Execute(selection)) return true;
-
-        return false;
-    }
-
-    public void Undo()
-    {
-        deleteAction.Undo();
     }
 }
 

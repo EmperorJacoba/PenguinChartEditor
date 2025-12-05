@@ -2,9 +2,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IEventData { }
+public interface IEventData 
+{
+    string ToChartFormat(int lane);
+}
 public struct BPMData : IEquatable<BPMData>, IEventData
 {
+    public const int BPM_CONVERSION = 1000;
+    const string BPM_IDENTIFIER = "B";
+
     public float BPMChange;
     public float Timestamp;
     public bool Anchor;
@@ -23,7 +29,9 @@ public struct BPMData : IEquatable<BPMData>, IEventData
 
     public bool Equals(BPMData other) => BPMChange == other.BPMChange && Timestamp == other.Timestamp;
 
-    public override string ToString() => $"({BPMChange}, {Timestamp})";
+    public override string ToString() => $"{BPMChange} @ {Timestamp}s, Anchor = {Anchor}";
+
+    public string ToChartFormat(int lane) => $"{BPM_IDENTIFIER} {BPMChange * BPM_CONVERSION}";
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {
@@ -35,11 +43,12 @@ public struct BPMData : IEquatable<BPMData>, IEventData
             return hash;
         }
     }
-
 }
 
 public struct TSData : IEquatable<TSData>, IEventData
 {
+    const string TS_IDENTIFIER = "TS";
+
     public int Numerator;
     public int Denominator;
 
@@ -52,7 +61,17 @@ public struct TSData : IEquatable<TSData>, IEventData
     public override bool Equals(object obj) => obj is TSData other && Equals(other);
     public bool Equals(TSData other) => Numerator == other.Numerator && Denominator == other.Denominator;
 
-    public override string ToString() => $"({Numerator} / {Denominator})";
+    public override string ToString() => $"{Numerator} / {Denominator}";
+
+    public string ToChartFormat(int lane) 
+    {
+        string denom;
+
+        if (Denominator == 4) denom = "";
+        else denom = $" {Math.Log(Denominator, 2)}";
+
+        return $"{TS_IDENTIFIER} {Numerator}{denom}"; // denom will contain leading space if needed
+    }
 
     public override int GetHashCode() // literally just doing this because VSCode is yelling at me
     {
@@ -73,6 +92,11 @@ public struct BookmarkData : IEventData
     public BookmarkData(string name)
     {
         Name = name;
+    }
+
+    public string ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
     }
 }
 
@@ -101,6 +125,11 @@ public struct FiveFretNoteData : IEventData
     }
 
     public override string ToString() => $"(FFN: {Flag}, defaultOrientation = {Default}. {Sustain}T sustain)";
+    public string ToChartFormat(int lane)
+    {
+        int laneIdentifier = lane != 5 ? lane : 7;
+        return $"N {laneIdentifier} {Sustain}";
+    }
 
     public FiveFretNoteData ExportWithNewFlag(FlagType newFlag)
     {
@@ -135,6 +164,11 @@ public struct FourLaneDrumNoteData : IEventData
     {
         Flags = flags;
     }
+
+    public string ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public struct GHLNoteData : IEventData
@@ -152,8 +186,14 @@ public struct GHLNoteData : IEventData
     {
         Flag = flag;
     }
+    public string ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
+    }
+
 }
 
+/*
 public struct TrueDrumNoteData : IEventData
 {
     // implement when the time comes
@@ -162,7 +202,7 @@ public struct TrueDrumNoteData : IEventData
 public struct VoxData : IEventData
 {
 
-}
+} */
 
 public struct SpecialData
 {
@@ -182,6 +222,11 @@ public struct SpecialData
         this.eventType = eventType;
         Sustain = sustain;
     }
+
+    public string ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public struct LocalEventData
@@ -198,4 +243,9 @@ public struct LocalEventData
     {
         this.eventType = eventType;
     }
-}
+    public string ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
+    }
+
+} 

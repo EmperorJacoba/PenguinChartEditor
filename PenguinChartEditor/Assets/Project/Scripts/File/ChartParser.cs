@@ -306,9 +306,6 @@ public class ChartParser
 
         foreach (var entry in events)
         {
-            if (!entry.Value.Contains(TEMPO_EVENT_INDICATOR) && !entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR) && !entry.Value.Contains(ANCHOR_INDICATOR))
-                continue;
-
             if (entry.Value.Contains(TEMPO_EVENT_INDICATOR))
             {
                 tempoTickTimeKeys.Add(entry.Key);

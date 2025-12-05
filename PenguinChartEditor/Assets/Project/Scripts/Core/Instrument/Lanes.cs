@@ -8,27 +8,23 @@ public class Lanes<T> where T : IEventData
 {
     LaneSet<T>[] lanes;
     SelectionSet<T>[] selections;
-    ClipboardSet<T>[] clipboards;
     public HashSet<int> TempSustainTicks = new();
 
     public Lanes(int laneCount)
     {
         lanes = new LaneSet<T>[laneCount];
         selections = new SelectionSet<T>[laneCount];
-        clipboards = new ClipboardSet<T>[laneCount];
 
         for (int i = 0; i < laneCount; i++)
         {
             lanes[i] = new();
             selections[i] = new(lanes[i]);
-            clipboards[i] = new(lanes[i]);
         }
     }
 
     public LaneSet<T> GetLane(int lane) => lanes[lane];
     public void SetLane(int lane, SortedDictionary<int, T> newData) => lanes[lane].Update(newData);
     public SelectionSet<T> GetLaneSelection(int lane) => selections[lane];
-    public ClipboardSet<T> GetLaneClipboard(int lane) => clipboards[lane];
 
     public bool IsTickChord(int tick)
     {
@@ -64,6 +60,16 @@ public class Lanes<T> where T : IEventData
             sortedTicks.Sort();
             return sortedTicks;
         }
+    }
+
+    public int GetFirstSelectionTick()
+    {
+        HashSet<int> minSelectionTicks = new();
+        for (int i = 0; i < Count; i++)
+        {
+            if (selections[i].Count > 0) minSelectionTicks.Add(selections[i].Min());
+        }
+        return minSelectionTicks.Min();
     }
 
     public HashSet<int> GetUniqueTicksInRange(int startTick, int endTick)
@@ -104,12 +110,22 @@ public class Lanes<T> where T : IEventData
         return new TickBounds(prev, next);
     }
 
+    public SortedDictionary<int, T>[] PopDataInRange(int startTick, int endTick)
+    {
+        SortedDictionary<int, T>[] subtractedData = new SortedDictionary<int,T>[lanes.Length];
+        for (int i = 0; i < Count; i++)
+        {
+            subtractedData[i] = lanes[i].PopTicksInRange(startTick, endTick);
+        }
+        return subtractedData;
+    }
+
     public HashSet<int> GetTotalSelection()
     {
         HashSet<int> ticks = new();
         for (int i = 0; i < Count; i++)
         {
-            ticks.UnionWith(selections[i].Keys.ToHashSet());
+            ticks.UnionWith(selections[i]);
         }
 
         return ticks;
@@ -120,6 +136,14 @@ public class Lanes<T> where T : IEventData
         for (int i = 0; i < Count; i++)
         {
             selections[i].Clear();
+        }
+    }
+
+    public void DeleteAllTicksInSelection()
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            selections[i].PopSelectedTicksFromLane();
         }
     }
     public int Count => lanes.Length;

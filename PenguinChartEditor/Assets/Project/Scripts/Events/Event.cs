@@ -13,7 +13,6 @@ public interface IEvent
 
     // Used in previewer to check placement conditions
     ISelection GetSelection();
-    IClipboard GetClipboard();
     ILaneData GetLaneData();
 
     IInstrument ParentInstrument { get; }
@@ -23,9 +22,6 @@ public interface IEvent
 
     // So that Lane<T> can access these easily
     void DeleteSelection();
-    void CopySelection();
-    void PasteSelection();
-    void CutSelection();
     void MoveSelection();
     void SustainSelection();
     void CompleteSustain();
@@ -91,9 +87,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
     public abstract SelectionSet<T> Selection { get; }
     public ISelection GetSelection() => Selection;
 
-    public abstract ClipboardSet<T> Clipboard { get; }
-    public IClipboard GetClipboard() => Clipboard;
-
     public abstract LaneSet<T> LaneData { get; }
     public ILaneData GetLaneData() => LaneData;
 
@@ -115,27 +108,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
     #endregion
 
     #region EditAction Handlers
-
-    public void CopySelection()
-    {
-        Clipboard.Clear();
-        var copyAction = new Copy<T>(LaneData);
-        copyAction.Execute(Clipboard, Selection);
-    }
-
-    public virtual void PasteSelection()
-    {
-        var pasteAction = new Paste<T>(LaneData);
-        pasteAction.Execute(EventPreviewer.Tick, Clipboard);
-        Chart.Refresh();
-    }
-
-    public virtual void CutSelection()
-    {
-        var cutAction = new Cut<T>(LaneData);
-        cutAction.Execute(Clipboard, Selection);
-        Chart.Refresh();
-    }
 
     public virtual void DeleteSelection()
     {
@@ -250,7 +222,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
 
         moveData.selectionOriginTick = lowestTick;
 
-        moveData.MovingGhostSet = Selection.GetNormalizedSelection();
+        moveData.MovingGhostSet = Selection.ExportNormalizedData();
 
         moveData.firstMouseTick = currentMouseTick;
         moveData.lastMouseTick = currentMouseTick;
@@ -298,7 +270,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
 
     public void SelectAllEvents()
     {
-        Selection.SelectAll();
+        Selection.SelectAllInLane();
         RefreshLane();
     }
 
@@ -371,7 +343,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
             }
             else
             {
-                Selection.Add(Tick, LaneData[Tick]);
+                Selection.Add(Tick);
             }
             RefreshLane();
         }

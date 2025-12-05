@@ -159,17 +159,19 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     /// </summary>
     /// <param name="tickData"></param>
     /// <returns></returns>
-    public SortedDictionary<int, TValue> PopTicksFromSet(SortedDictionary<int, TValue> tickData)
+    public SortedDictionary<int, TValue> PopTicksFromSet(SortedDictionary<int, TValue> tickData) => PopTicksFromSet(tickData.Select(kvp => kvp.Key).ToHashSet());
+
+    public SortedDictionary<int, TValue> PopTicksFromSet(HashSet<int> tickData)
     {
         SortedDictionary<int, TValue> subtractedTicks = new();
         foreach (var tick in tickData)
         {
-            if (protectedTicks.Contains(tick.Key)) continue;
+            if (protectedTicks.Contains(tick)) continue;
 
-            if (Contains(tick.Key))
+            if (Contains(tick))
             {
-                laneData.Remove(tick.Key, out TValue data);
-                subtractedTicks.Add(tick.Key, data);
+                laneData.Remove(tick, out TValue data);
+                subtractedTicks.Add(tick, data);
             }
         }
 

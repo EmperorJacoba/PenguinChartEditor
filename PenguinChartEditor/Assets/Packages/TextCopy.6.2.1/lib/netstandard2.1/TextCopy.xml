@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TextCopy</name>
+    </assembly>
+    <members>
+        <member name="T:TextCopy.Clipboard">
+            <inheritdoc />
+        </member>
+        <member name="M:TextCopy.Clipboard.GetTextAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TextCopy.Clipboard.GetText">
+            <inheritdoc />
+        </member>
+        <member name="M:TextCopy.Clipboard.SetTextAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TextCopy.Clipboard.SetText(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:TextCopy.ClipboardService">
+            <summary>
+            Provides methods to place text on and retrieve text from the system Clipboard.
+            </summary>
+        </member>
+        <member name="M:TextCopy.ClipboardService.GetTextAsync(System.Threading.CancellationToken)">
+            <summary>
+            Retrieves text data from the Clipboard.
+            </summary>
+        </member>
+        <member name="M:TextCopy.ClipboardService.GetText">
+            <summary>
+            Retrieves text data from the Clipboard.
+            </summary>
+        </member>
+        <member name="M:TextCopy.ClipboardService.SetTextAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Clears the Clipboard and then adds text data to it.
+            </summary>
+        </member>
+        <member name="M:TextCopy.ClipboardService.SetText(System.String)">
+            <summary>
+            Clears the Clipboard and then adds text data to it.
+            </summary>
+        </member>
+        <member name="T:TextCopy.IClipboard">
+            <summary>
+            Provides methods to place text on and retrieve text from the system Clipboard.
+            </summary>
+        </member>
+        <member name="M:TextCopy.IClipboard.GetTextAsync(System.Threading.CancellationToken)">
+            <summary>
+            Retrieves text data from the Clipboard.
+            </summary>
+        </member>
+        <member name="M:TextCopy.IClipboard.GetText">
+            <summary>
+            Retrieves text data from the Clipboard.
+            </summary>
+        </member>
+        <member name="M:TextCopy.IClipboard.SetTextAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Clears the Clipboard and then adds text data to it.
+            </summary>
+        </member>
+        <member name="M:TextCopy.IClipboard.SetText(System.String)">
+            <summary>
+            Clears the Clipboard and then adds text data to it.
+            </summary>
+        </member>
+        <member name="T:TextCopy.MockClipboard">
+            <inheritdoc />
+        </member>
+        <member name="M:TextCopy.MockClipboard.GetTextAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TextCopy.MockClipboard.GetText">
+            <inheritdoc />
+        </member>
+        <member name="M:TextCopy.MockClipboard.SetTextAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TextCopy.MockClipboard.SetText(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:TextCopy.ServiceExtensions">
+            <summary>
+            Extensions to <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+        </member>
+        <member name="M:TextCopy.ServiceExtensions.InjectMockClipboard(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds a singleton instance of <see cref="T:TextCopy.MockClipboard"/> as an
+            <see cref="T:TextCopy.IClipboard"/> to <paramref name="services"/>.
+            </summary>
+        </member>
+        <member name="M:TextCopy.ServiceExtensions.InjectClipboard(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds a singleton instance of <see cref="T:TextCopy.Clipboard"/> as an
+            <see cref="T:TextCopy.IClipboard"/> to <paramref name="services"/>.
+            </summary>
+        </member>
+    </members>
+</doc>
