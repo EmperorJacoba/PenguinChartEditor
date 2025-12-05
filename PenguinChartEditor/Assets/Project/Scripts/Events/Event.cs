@@ -23,9 +23,6 @@ public interface IEvent
 
     // So that Lane<T> can access these easily
     void DeleteSelection();
-    void CopySelection();
-    void PasteSelection();
-    void CutSelection();
     void MoveSelection();
     void SustainSelection();
     void CompleteSustain();
@@ -115,27 +112,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
     #endregion
 
     #region EditAction Handlers
-
-    public void CopySelection()
-    {
-        Clipboard.Clear();
-        var copyAction = new Copy<T>(LaneData);
-        copyAction.Execute(Clipboard, Selection);
-    }
-
-    public virtual void PasteSelection()
-    {
-        var pasteAction = new Paste<T>(LaneData);
-        pasteAction.Execute(EventPreviewer.Tick, Clipboard);
-        Chart.Refresh();
-    }
-
-    public virtual void CutSelection()
-    {
-        var cutAction = new Cut<T>(LaneData);
-        cutAction.Execute(Clipboard, Selection);
-        Chart.Refresh();
-    }
 
     public virtual void DeleteSelection()
     {

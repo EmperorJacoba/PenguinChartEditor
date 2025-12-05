@@ -44,9 +44,6 @@ public abstract class Lane<TEvent> : MonoBehaviour where TEvent : IPoolable
 
         /// Basic Actions
         inputMap.Charting.Delete.performed += x => eventAccessor.DeleteSelection();
-        inputMap.Charting.Copy.performed += x => eventAccessor.CopySelection();
-        inputMap.Charting.Paste.performed += x => eventAccessor.PasteSelection();
-        inputMap.Charting.Cut.performed += x => eventAccessor.CutSelection();
 
         inputMap.Charting.SelectAll.performed += x => eventAccessor.SelectAllEvents();
 

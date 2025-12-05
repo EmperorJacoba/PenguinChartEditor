@@ -259,6 +259,8 @@ public class SyncTrackInstrument : IInstrument
     {
         bpmSelection.PopSelectedTicksFromLane();
         tsSelection.PopSelectedTicksFromLane();
+
+        Tempo.RecalculateTempoEventDictionary();
     }
 }
 
