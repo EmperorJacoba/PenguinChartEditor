@@ -507,6 +507,7 @@ public class FiveFretInstrument : IInstrument
 
         for (int i = startIndex; i <= endIndex; i++)
         {
+            if (!uniqueTicks.Contains(i)) continue;
             var currentTick = uniqueTicks[i];
 
             var prevTick = i != 0 ? uniqueTicks[i - 1] : -Chart.hopoCutoff;
@@ -741,10 +742,8 @@ public class FiveFretInstrument : IInstrument
     {
         HashSet<int> uniqueTicks = lines.Select(item => item.Key).ToHashSet();
 
-        if (uniqueTicks.Count > 0)
-        {
-            Lanes.PopDataInRange(uniqueTicks.Min(), uniqueTicks.Max());
-        }
+        if (uniqueTicks.Count == 0) return;
+        Lanes.PopDataInRange(uniqueTicks.Min(), uniqueTicks.Max());
 
         foreach (var uniqueTick in uniqueTicks)
         {
@@ -853,7 +852,7 @@ public class FiveFretInstrument : IInstrument
                         // default to strum, will be recalculated later
                         var noteData = new FiveFretNoteData(sustain, flagType, defaultOrientation);
 
-                        Lanes.GetLane((int)lane).Add(uniqueTick, noteData);
+                        Lanes.GetLane((int)lane)[uniqueTick] = noteData;
 
                         break;
                     case SPECIAL_INDICATOR:
@@ -872,7 +871,7 @@ public class FiveFretInstrument : IInstrument
 
                         if (noteIdentifier != STARPOWER_INDICATOR) break; // should only have starpower indicator, no fills or anything
 
-                        SpecialEvents.Add(uniqueTick, new SpecialData(sustain, SpecialData.EventType.starpower));
+                        SpecialEvents[uniqueTick] = new SpecialData(sustain, SpecialData.EventType.starpower);
 
                         break;
                     case EVENT_INDICATOR:
@@ -882,7 +881,7 @@ public class FiveFretInstrument : IInstrument
                             break;
                         }
 
-                        LocalEvents.Add(uniqueTick, new LocalEventData((LocalEventData.EventType)localEvent));
+                        LocalEvents[uniqueTick] = new LocalEventData((LocalEventData.EventType)localEvent);
 
                         break;
                     case DEPRECATED_HAND_INDICATOR:
