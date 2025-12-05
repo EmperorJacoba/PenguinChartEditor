@@ -169,7 +169,7 @@ public class SyncTrackInstrument : IInstrument
     public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
     {
         HashSet<int> anchoredTicks = new(); // allows for versitility if A event comes before or after tempo event proper
-        int recalcTick = -1;
+        int recalcTick = int.MaxValue;
 
         foreach (var entry in lines)
         {
@@ -235,7 +235,8 @@ public class SyncTrackInstrument : IInstrument
             }
         }
 
-        Tempo.RecalculateTempoEventDictionary(recalcTick);
+        Tempo.RecalculateTempoEventDictionary();
+        Chart.Refresh();
     }
 
     public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
@@ -248,6 +249,7 @@ public class SyncTrackInstrument : IInstrument
             if (!int.TryParse(parts[0].Trim(), out int tick))
             {
                 Chart.Log($"Problem parsing tick {parts[0].Trim()}");
+                continue;
             }
 
             lines.Add(new(tick + offset, parts[1]));
@@ -669,6 +671,7 @@ public class FiveFretInstrument : IInstrument
     // add forced ids
     public string ConvertSelectionToString()
     {
+        if (Lanes.GetTotalSelection().Count == 0) return "";
         var stringIDs = new List<KeyValuePair<int, string>>();
         var zeroTick = Lanes.GetFirstSelectionTick();
 

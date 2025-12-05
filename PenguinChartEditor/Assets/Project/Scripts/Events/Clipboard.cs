@@ -17,7 +17,6 @@ public static class Clipboard
 
         Chart.LoadedInstrument.AddChartFormattedEventsToInstrument(userText, offset);
         Chart.Refresh();
-
     }
 
     public static void Cut()
@@ -25,6 +24,5 @@ public static class Clipboard
         Copy();
         Chart.LoadedInstrument.DeleteTicksInSelection();
         Chart.Refresh();
-
     }
 }
