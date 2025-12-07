@@ -84,6 +84,7 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
 
     public void InitializeEvent(int tick, float highwayLength)
     {
+        if (tick < 0) return;
         UpdateBeatlinePosition(Waveform.GetWaveformRatio(tick), highwayLength);
         Type = TimeSignature.CalculateBeatlineType(tick);
     }

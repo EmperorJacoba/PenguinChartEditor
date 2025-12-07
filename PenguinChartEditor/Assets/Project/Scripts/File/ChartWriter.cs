@@ -151,12 +151,9 @@ public static class ChartWriter
     static List<string> WriteSyncTrack()
     {
         List<string> syncTrackEvents = WriteHeader(HeaderType.SyncTrack);
-        var tempoStrings = Tempo.ExportAllEvents();
-        var tsStrings = TimeSignature.ExportAllEvents();
+        var syncTrackStrings = Chart.SyncTrackInstrument.ExportAllEvents();
 
-        tempoStrings.AddRange(tsStrings);
-
-        var orderedEvents = tempoStrings.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
+        var orderedEvents = syncTrackStrings.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
 
         syncTrackEvents.AddRange(orderedEvents);
 

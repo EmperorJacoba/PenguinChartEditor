@@ -17,7 +17,7 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
 {
     public const int NONE_SELECTED = -1;
 
-    HashSet<int> selection= new();
+    HashSet<int> selection = new();
     public int Count => selection.Count;
 
 
@@ -99,7 +99,10 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
 
     public bool Contains(int key)
     {
-        if (!parentLane.Contains(key)) selection.Remove(key);
+        if (!parentLane.Contains(key))
+        {
+            selection.Remove(key);
+        }
 
         return selection.Contains(key);
     }

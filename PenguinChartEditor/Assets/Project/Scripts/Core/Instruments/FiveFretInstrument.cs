@@ -384,7 +384,7 @@ public class FiveFretInstrument : IInstrument
                 clampedSustain = (SongTime.SongLengthTicks - tick); // does sustain gap apply to end of song? 🤔
             }
         }
-        var sustainLengthMS = Tempo.ConvertTickTimeToSeconds(tick + clampedSustain) - Tempo.ConvertTickTimeToSeconds(tick);
+        var sustainLengthMS = Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick + clampedSustain) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick);
         return sustainLengthMS < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ? 0 : clampedSustain;
     }
 

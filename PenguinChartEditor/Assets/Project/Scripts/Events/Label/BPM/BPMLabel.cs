@@ -9,9 +9,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     private const int BPM_DIGIT_COUNT = 3;
     #region Event Sets
     public override SelectionSet<BPMData> Selection => Chart.SyncTrackInstrument.bpmSelection;
-    public override LaneSet<BPMData> LaneData => Tempo.Events;
-    public override void SetEvents(SortedDictionary<int, BPMData> newEvents) => Tempo.SetEvents(newEvents);
-
+    public override LaneSet<BPMData> LaneData => Chart.SyncTrackInstrument.TempoEvents;
     public override MoveData<BPMData> GetMoveData() => Chart.SyncTrackInstrument.bpmMoveData;
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
 
@@ -60,7 +58,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     void ExecuteWithRecalculate(Action action)
     {
         action();
-        Tempo.RecalculateTempoEventDictionary();
+        Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
         Chart.Refresh();
     }
 
@@ -68,14 +66,14 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     {
         try
         {
-            Tempo.Events[Tick] = new BPMData(ProcessUnsafeBPMString(newVal), Tempo.Events[Tick].Timestamp, Tempo.Events[Tick].Anchor);
+            Chart.SyncTrackInstrument.TempoEvents[Tick] = new BPMData(ProcessUnsafeBPMString(newVal), Chart.SyncTrackInstrument.TempoEvents[Tick].Timestamp, Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor);
         }
         catch
         {
             return;
         }
 
-        Tempo.RecalculateTempoEventDictionary(Tick);
+        Chart.SyncTrackInstrument.RecalculateTempoEventDictionary(Tick);
 
         ConcludeManualEdit();
     }
@@ -109,7 +107,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         var bpmAsFloat = float.Parse(newBPM);
         if (bpmAsFloat == 0 || bpmAsFloat > 1000.0f)
         {
-            return Tempo.Events[Tick].BPMChange;
+            return Chart.SyncTrackInstrument.TempoEvents[Tick].BPMChange;
         }
         bpmAsFloat = (float)Math.Round(bpmAsFloat, 3);
         return bpmAsFloat;
@@ -117,7 +115,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
     public override string ConvertDataToPreviewString()
     {
-        return $"{Tempo.Events[Tick].BPMChange}";
+        return $"{Chart.SyncTrackInstrument.TempoEvents[Tick].BPMChange}";
     }
 
     #endregion
@@ -135,52 +133,46 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
         // Use exclusive function because this needs to find the tempo event before this beatline's tempo event.
         // Inclusive would always return the same event, which causes 0/0 and thus NaN.
-        var lastBPMTick = Tempo.GetLastTempoEventTickExclusive(Tick);
+        var lastBPMTick = Chart.SyncTrackInstrument.TempoEvents.GetPreviousTickEventInLane(Tick);
+
+        if (lastBPMTick == LaneSet<BPMData>.NO_TICK_EVENT) return;
 
         // anchored bpms are locked - do not edit with dragging
-        if (Tempo.Events[lastBPMTick].Anchor || Tempo.Events[Tick].Anchor) return;
+        if (Chart.SyncTrackInstrument.TempoEvents[lastBPMTick].Anchor || Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor) return;
 
-        var newTime = Tempo.Events[Tick].Timestamp + (float)timeChange;
+        var newTime = Chart.SyncTrackInstrument.TempoEvents[Tick].Timestamp + (float)timeChange;
 
         // time is measured in seconds so this is beats per second, multiply by 60 to convert to BPM
         // Calculate the new BPM based on the time change
-        float newBPS = ((Tick - lastBPMTick) / (float)Chart.Resolution) / (newTime - Tempo.Events[lastBPMTick].Timestamp);
+        float newBPS = ((Tick - lastBPMTick) / (float)Chart.Resolution) / (newTime - Chart.SyncTrackInstrument.TempoEvents[lastBPMTick].Timestamp);
         float newBPM = (float)Math.Round((newBPS * SECONDS_PER_MINUTE), BPM_DIGIT_COUNT);
 
-        var thisBPM = Tempo.Events[Tick].BPMChange;
+        var thisBPM = Chart.SyncTrackInstrument.TempoEvents[Tick].BPMChange;
 
-        int nextBPMTick;
-        try
-        {
-            nextBPMTick = Tempo.GetNextTempoEventExclusive(Tick);
-        }
-        catch
-        {
-            nextBPMTick = Tick;
-        }
+        int nextBPMTick = Chart.SyncTrackInstrument.TempoEvents.GetNextTickEventInLane(Tick);
 
-        if (!anchorNextEvent)
+        if (!anchorNextEvent && nextBPMTick != LaneSet<BPMData>.NO_TICK_EVENT)
         {
-            if (Tempo.Events[nextBPMTick].Anchor)
+            if (Chart.SyncTrackInstrument.TempoEvents[nextBPMTick].Anchor)
             {
                 anchorNextEvent = true;
             }
         }
 
-        if (anchorNextEvent && nextBPMTick != Tick)
+        if (anchorNextEvent)
         {
-            thisBPM = Tempo.CalculateLastBPMBeforeAnchor(Tick, newTime, nextBPMTick);
+            thisBPM = Chart.SyncTrackInstrument.CalculateLastBPMBeforeAnchor(Tick, newTime, nextBPMTick);
         }
 
-        if (!Tempo.IsTickInBounds(newBPM)) return;
-        if (!Tempo.IsTickInBounds(thisBPM)) return;
+        if (!Chart.SyncTrackInstrument.IsTickInBounds(newBPM)) return;
+        if (!Chart.SyncTrackInstrument.IsTickInBounds(thisBPM)) return;
 
         // Write new data: time changes for this beatline's tick, BPM changes for the last tick event.
-        Tempo.Events[Tick] = new BPMData(thisBPM, newTime, Tempo.Events[Tick].Anchor);
-        Tempo.Events[lastBPMTick] = new BPMData(newBPM, Tempo.Events[lastBPMTick].Timestamp, Tempo.Events[Tick].Anchor);
+        Chart.SyncTrackInstrument.TempoEvents[Tick] = new BPMData(thisBPM, newTime, Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor);
+        Chart.SyncTrackInstrument.TempoEvents[lastBPMTick] = new BPMData(newBPM, Chart.SyncTrackInstrument.TempoEvents[lastBPMTick].Timestamp, Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor);
 
         // Update rest of dictionary to account for the time change. Anchors are not moved, so no need to update.
-        if (!anchorNextEvent) Tempo.RecalculateTempoEventDictionary(Tick, (float)timeChange);
+        if (!anchorNextEvent) Chart.SyncTrackInstrument.RecalculateTempoEventDictionary(Tick, (float)timeChange);
 
         // Update waveform to reflect changes (needed before full refresh)
         SongTime.InvokeTimeChanged();
@@ -192,7 +184,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     public override void InitializeLabel()
     {
         base.InitializeLabel();
-        if (Tempo.Events[Tick].Anchor) anchorIcon.Opacity = 1f;
+        if (Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor) anchorIcon.Opacity = 1f;
         else anchorIcon.Opacity = 0f;
     }
 

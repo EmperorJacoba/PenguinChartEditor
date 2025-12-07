@@ -235,14 +235,12 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     /// </summary>
     /// <param name="currentTick"></param>
     /// <returns></returns>
-    public int GetPreviousTickEventInLane(int currentTick)
+    public int GetPreviousTickEventInLane(int currentTick, bool inclusive = false)
     {
-        var tickTimeKeys = Keys.ToList();
-
-        var index = tickTimeKeys.BinarySearch(currentTick);
+        int index = BinarySearchForTick(currentTick, out var tickTimeKeys);
 
         // bitwise complement is negative
-        if (index > 0) return tickTimeKeys[index - 1];
+        if (index > 0) return inclusive ? tickTimeKeys[index] : tickTimeKeys[index - 1];
 
         if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
         else index = ~index - 1;
@@ -250,11 +248,10 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         if (index < 0) return NO_TICK_EVENT;
         return tickTimeKeys[index];
     }
+
     public int GetNextTickEventInLane(int currentTick)
     {
-        var tickTimeKeys = Keys.ToList();
-
-        var index = tickTimeKeys.BinarySearch(currentTick);
+        int index = BinarySearchForTick(currentTick, out var tickTimeKeys);
 
         if (~index == tickTimeKeys.Count) return NO_TICK_EVENT;
 
@@ -265,10 +262,17 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         return tickTimeKeys[index];
     }
 
+    int BinarySearchForTick(int currentTick, out List<int> tickTimeKeys)
+    {
+        tickTimeKeys = Keys.ToList();
+        return tickTimeKeys.BinarySearch(currentTick);
+    }
+
     HashSet<int> GetOverwritableDictEvents(int startPasteTick, int endPasteTick)
     {
         return Keys.ToList().Where(x => x >= startPasteTick && x <= endPasteTick).ToHashSet();
     }
+
 
     #region Unmodified IDictionary Implementations
 

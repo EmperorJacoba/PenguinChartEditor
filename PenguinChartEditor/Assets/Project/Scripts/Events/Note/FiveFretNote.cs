@@ -135,12 +135,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public float XCoordinate => Chart.instance.lanePositionReference.GetLaneWorldSpaceXCoordinate((int)laneIdentifier);
 
     public override void RefreshLane() => parentLane.UpdateEvents();
-
-    public override void SetEvents(SortedDictionary<int, FiveFretNoteData> newEvents)
-    {
-        chartInstrument.Lanes.SetLane((int)laneIdentifier, newEvents);
-    }
-
     void InitializeNote()
     {
         if (SelectionOverlay != null) Selected = CheckForSelection();

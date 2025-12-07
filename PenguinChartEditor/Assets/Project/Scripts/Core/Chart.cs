@@ -51,8 +51,8 @@ public class Chart : MonoBehaviour
 
         AudioManager.InitializeAudio();
 
-        Tempo.Events = chartParser.bpmEvents;
         TimeSignature.Events = chartParser.tsEvents;
+        SyncTrackInstrument = new(chartParser.bpmEvents, chartParser.tsEvents);
 
         Instruments = chartParser.instruments;
         foreach (var instrument in Instruments)
@@ -60,16 +60,14 @@ public class Chart : MonoBehaviour
             instrument.SetUpInputMap();
         }
 
-        if (Tempo.Events.Count == 0) // if there is no data to load in 
+        if (SyncTrackInstrument.TempoEvents.Count == 0) // if there is no data to load in 
         {
-            Tempo.Events.Add(0, new BPMData(120.0f, 0, false)); // add placeholder bpm
+            SyncTrackInstrument.TempoEvents.Add(0, new BPMData(120.0f, 0, false)); // add placeholder bpm
         }
         if (TimeSignature.Events.Count == 0)
         {
             TimeSignature.Events.Add(0, new TSData(4, 4));
         }
-
-        SyncTrackInstrument = new();
     }
 
     #endregion
@@ -145,6 +143,7 @@ public class Chart : MonoBehaviour
             Where(
             item => item.Instrument == InstrumentType.guitar). // for testing only
             ToList()[0];
+        //LoadedInstrument = SyncTrackInstrument;
 
         AudioManager.PlaybackStateChanged += x => { editMode = !AudioManager.AudioPlaying; };
 

@@ -266,8 +266,8 @@ public class Waveform : MonoBehaviour
     public void GetCurrentDisplayedWaveformInfo(out int startTick, out int endTick, out double timeShown, out double startTime, out double endTime, out int ticksShown)
     {
         (startTime, endTime) = GetDisplayedAudio();
-        startTick = Tempo.ConvertSecondsToTickTime((float)startTime);
-        endTick = Tempo.ConvertSecondsToTickTime((float)endTime);
+        startTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)startTime);
+        endTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)endTime);
         timeShown = endTime - startTime;
         ticksShown = endTick - startTick;
         
@@ -309,7 +309,7 @@ public class Waveform : MonoBehaviour
 
     public static double GetWaveformRatio(int tick)
     {
-        return (Tempo.ConvertTickTimeToSeconds(tick) - startTime) / timeShown;
+        return (Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick) - startTime) / timeShown;
     }
 
     #endregion
