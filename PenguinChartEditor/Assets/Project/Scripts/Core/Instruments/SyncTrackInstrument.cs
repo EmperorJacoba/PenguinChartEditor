@@ -275,41 +275,36 @@ public class SyncTrackInstrument : IInstrument
     /// <param name="beatlineTickTimePos"></param>
     /// <param name="inclusive">Use only if you want to calculate a predicted TS beatline, like when checking if the position of a TS event is on a barline based on its prior TS event.</param>
     /// <returns>The type of beatline at this tick.</returns>
-    public BaseBeatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos, bool inclusive = true)
+    public BaseBeatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos, bool ignoreValidity = true)
     {
-        if (beatlineTickTimePos == 0) return BaseBeatline.BeatlineType.barline;
+        // includes 0 at all times
+        if (ignoreValidity && TimeSignatureEvents.Contains(beatlineTickTimePos)) return BaseBeatline.BeatlineType.barline;
 
-        int lastTSTickTimePos;
-        if (inclusive)
-        {
-            lastTSTickTimePos = TimeSignatureEvents.GetPreviousTickEventInLane(beatlineTickTimePos);
-        }
-        else
-        {
-            lastTSTickTimePos = TimeSignatureEvents.GetPreviousTickEventInLane(beatlineTickTimePos - 1);
-        }
+        int lastTSTickTimePos = TimeSignatureEvents.GetPreviousTickEventInLane(beatlineTickTimePos);
         if (lastTSTickTimePos < 0) lastTSTickTimePos = 0;
-
-
 
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
 
         // if the difference is divisible by the # of first-division notes in a bar, it's a barline
-        if (tsDiff % (Chart.Resolution * (float)TimeSignatureEvents[lastTSTickTimePos].Numerator / (float)(TimeSignatureEvents[lastTSTickTimePos].Denominator / 4.0f)) == 0)
+        if (tsDiff % GetBarlineStep(lastTSTickTimePos) == 0)
         {
             return BaseBeatline.BeatlineType.barline;
         }
         // if it's divisible by the first-division, it's a division line
-        else if (tsDiff % (Chart.Resolution / (float)TimeSignatureEvents[lastTSTickTimePos].Denominator * 4) == 0)
+        else if (tsDiff % GetDivisionStep(lastTSTickTimePos) == 0)
         {
             return BaseBeatline.BeatlineType.divisionLine;
         }
-        else if (tsDiff % (Chart.Resolution / ((float)TimeSignatureEvents[lastTSTickTimePos].Denominator * 2)) == 0)
+        else if (tsDiff % GetHalfDivisionStep(lastTSTickTimePos) == 0)
         {
             return BaseBeatline.BeatlineType.halfDivisionLine;
         }
         return BaseBeatline.BeatlineType.none;
     }
+
+    float GetBarlineStep(int tsPos) => Chart.Resolution * (float)TimeSignatureEvents[tsPos].Numerator / (float)(TimeSignatureEvents[tsPos].Denominator / 4.0f);
+    float GetDivisionStep(int tsPos) => Chart.Resolution / (float)TimeSignatureEvents[tsPos].Denominator * 4;
+    float GetHalfDivisionStep(int tsPos) => Chart.Resolution / ((float)TimeSignatureEvents[tsPos].Denominator * 2);
 
     /// <summary>
     /// Calculate the last "1" of a bar from a tick-time timestamp.
@@ -398,7 +393,7 @@ public class SyncTrackInstrument : IInstrument
     // Call in CheckForEvents
     public bool IsEventValid(int tick)
     {
-        if (CalculateBeatlineType(tick, false) != BaseBeatline.BeatlineType.barline)
+        if (CalculateBeatlineType(tick, ignoreValidity: false) != BaseBeatline.BeatlineType.barline)
         {
             return false;
         }
