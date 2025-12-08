@@ -26,8 +26,14 @@ public class TSPreviewer : Previewer
         if (percentOfScreenHorizontal < 0.5f)
         {
             tsLabel.Visible = true;
-            var num = TimeSignature.Events[TimeSignature.GetLastTSEventTick(Tick)].Numerator;
-            var denom = TimeSignature.Events[TimeSignature.GetLastTSEventTick(Tick)].Denominator;
+            var prevTick = Chart.SyncTrackInstrument.TimeSignatureEvents.GetPreviousTickEventInLane(Tick);
+            if (prevTick < 0)
+            {
+                tsLabel.Visible = false;
+                return;
+            }
+            var num = Chart.SyncTrackInstrument.TimeSignatureEvents[prevTick].Numerator;
+            var denom = Chart.SyncTrackInstrument.TimeSignatureEvents[prevTick].Denominator;
             tsLabel.LabelText = $"{num} / {denom}";
             displayedTS = new(num, denom);
         }

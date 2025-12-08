@@ -9,12 +9,12 @@ public abstract class BaseBeatlineLane<T> : Lane<T> where T : IPoolable // BPMDa
     protected override List<int> GetEventsToDisplay()
     {
         List<int> beatlineEvents = new();
-        var firstTick = TimeSignature.GetNextBeatlineEvent(Waveform.startTick);
+        var firstTick = Chart.SyncTrackInstrument.GetNextBeatlineEvent(Waveform.startTick);
         var waveformEndBound = Mathf.Min(Waveform.endTick, SongTime.SongLengthTicks);
 
         for (int currentTick = firstTick;
             currentTick < waveformEndBound;
-            currentTick = TimeSignature.GetNextBeatlineEventExclusive(currentTick)
+            currentTick = Chart.SyncTrackInstrument.GetNextBeatlineEventExclusive(currentTick)
             )
         {
             beatlineEvents.Add(currentTick);

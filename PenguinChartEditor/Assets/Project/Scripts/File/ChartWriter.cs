@@ -153,9 +153,7 @@ public static class ChartWriter
         List<string> syncTrackEvents = WriteHeader(HeaderType.SyncTrack);
         var syncTrackStrings = Chart.SyncTrackInstrument.ExportAllEvents();
 
-        var orderedEvents = syncTrackStrings.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
-
-        syncTrackEvents.AddRange(orderedEvents);
+        syncTrackEvents.AddRange(syncTrackStrings);
 
         syncTrackEvents.Add(CLOSING_GROUP_CHAR);
         return syncTrackEvents;

@@ -17,8 +17,8 @@ public class TSLane : Lane<TSLabel>
         instance = this;
     }
 
-    protected override List<int> GetEventsToDisplay() => 
-        TimeSignature.Events.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
+    protected override List<int> GetEventsToDisplay() =>
+        Chart.SyncTrackInstrument.TimeSignatureEvents.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
 
     protected override void InitializeEvent(TSLabel @event, int tick) => @event.InitializeEvent(tick, HighwayLength);
 }

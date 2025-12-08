@@ -86,7 +86,7 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
     {
         if (tick < 0) return;
         UpdateBeatlinePosition(Waveform.GetWaveformRatio(tick), highwayLength);
-        Type = TimeSignature.CalculateBeatlineType(tick);
+        Type = Chart.SyncTrackInstrument.CalculateBeatlineType(tick);
     }
 
     #endregion

@@ -5,7 +5,7 @@ public class TSLabel : Label<TSData>, IPoolable
 {
     #region Event Sets
     public override SelectionSet<TSData> Selection => Chart.SyncTrackInstrument.tsSelection;
-    public override LaneSet<TSData> LaneData => TimeSignature.Events;
+    public override LaneSet<TSData> LaneData => Chart.SyncTrackInstrument.TimeSignatureEvents;
 
     public override MoveData<TSData> GetMoveData() => Chart.SyncTrackInstrument.tsMoveData;
     public override void RefreshLane() => TSLane.instance.UpdateEvents();
@@ -32,7 +32,7 @@ public class TSLabel : Label<TSData>, IPoolable
         InitializeLabel();
         UpdatePosition(Waveform.GetWaveformRatio(_tick), highwayLength);
 
-        tsWarningAlert.Visible = !TimeSignature.IsEventValid(tick);
+        tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsEventValid(tick);
 
         // w/o this the input field will stay on if you delete it while editing
         // leading to jank where the input field for the next event is visible
@@ -43,7 +43,7 @@ public class TSLabel : Label<TSData>, IPoolable
     #region Event Handlers
     public override void HandleManualEndEdit(string newVal)
     {
-        TimeSignature.Events[Tick] = ProcessUnsafeTSString(newVal);
+        Chart.SyncTrackInstrument.TimeSignatureEvents[Tick] = ProcessUnsafeTSString(newVal);
 
         ConcludeManualEdit();
     }
@@ -65,7 +65,7 @@ public class TSLabel : Label<TSData>, IPoolable
     /// <returns></returns>
     TSData ProcessUnsafeTSString(string newTS)
     {
-        var currentTS = TimeSignature.Events[Tick];
+        var currentTS = Chart.SyncTrackInstrument.TimeSignatureEvents[Tick];
         var seperatedTS = newTS.Split("/");
         if (seperatedTS.Length == 1) return currentTS;
 
@@ -80,7 +80,7 @@ public class TSLabel : Label<TSData>, IPoolable
 
     public override string ConvertDataToPreviewString()
     {
-        return $"{TimeSignature.Events[Tick].Numerator} / {TimeSignature.Events[Tick].Denominator}";
+        return $"{Chart.SyncTrackInstrument.TimeSignatureEvents[Tick].Numerator} / {Chart.SyncTrackInstrument.TimeSignatureEvents[Tick].Denominator}";
     }
 
     #endregion

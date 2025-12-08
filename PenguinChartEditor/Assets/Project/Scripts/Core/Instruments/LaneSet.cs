@@ -307,6 +307,10 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     {
         get
         {
+            if (key < 0)
+            {
+                throw new System.ArgumentException($"Tried to get a negative tick from a lane dictionary. Tick: {key}. If the key is -1, the most likely reason was because the method tried to get the previous event in a lane when there was none.");
+            }
             return laneData[key];
         }
         set

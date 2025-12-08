@@ -51,7 +51,6 @@ public class Chart : MonoBehaviour
 
         AudioManager.InitializeAudio();
 
-        TimeSignature.Events = chartParser.tsEvents;
         SyncTrackInstrument = new(chartParser.bpmEvents, chartParser.tsEvents);
 
         Instruments = chartParser.instruments;
@@ -64,9 +63,9 @@ public class Chart : MonoBehaviour
         {
             SyncTrackInstrument.TempoEvents.Add(0, new BPMData(120.0f, 0, false)); // add placeholder bpm
         }
-        if (TimeSignature.Events.Count == 0)
+        if (SyncTrackInstrument.TimeSignatureEvents.Count == 0)
         {
-            TimeSignature.Events.Add(0, new TSData(4, 4));
+            SyncTrackInstrument.TimeSignatureEvents.Add(0, new TSData(4, 4));
         }
     }
 
