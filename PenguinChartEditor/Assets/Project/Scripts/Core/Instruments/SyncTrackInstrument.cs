@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class SyncTrackInstrument : IInstrument
@@ -285,26 +284,15 @@ public class SyncTrackInstrument : IInstrument
 
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
 
-        // if the difference is divisible by the # of first-division notes in a bar, it's a barline
-        if (tsDiff % GetBarlineStep(lastTSTickTimePos) == 0)
-        {
-            return BaseBeatline.BeatlineType.barline;
-        }
-        // if it's divisible by the first-division, it's a division line
-        else if (tsDiff % GetDivisionStep(lastTSTickTimePos) == 0)
-        {
-            return BaseBeatline.BeatlineType.divisionLine;
-        }
-        else if (tsDiff % GetHalfDivisionStep(lastTSTickTimePos) == 0)
-        {
-            return BaseBeatline.BeatlineType.halfDivisionLine;
-        }
+        if (tsDiff % GetBarlineStep(lastTSTickTimePos) == 0) return BaseBeatline.BeatlineType.barline;
+        else if (tsDiff % GetDivisionStep(lastTSTickTimePos) == 0) return BaseBeatline.BeatlineType.divisionLine;
+        else if (tsDiff % GetHalfDivisionStep(lastTSTickTimePos) == 0) return BaseBeatline.BeatlineType.halfDivisionLine;
         return BaseBeatline.BeatlineType.none;
     }
 
     float GetBarlineStep(int tsPos) => Chart.Resolution * (float)TimeSignatureEvents[tsPos].Numerator / (float)(TimeSignatureEvents[tsPos].Denominator / 4.0f);
     float GetDivisionStep(int tsPos) => Chart.Resolution / (float)TimeSignatureEvents[tsPos].Denominator * 4;
-    float GetHalfDivisionStep(int tsPos) => Chart.Resolution / ((float)TimeSignatureEvents[tsPos].Denominator * 2);
+    float GetHalfDivisionStep(int tsPos) => Chart.Resolution / ((float)TimeSignatureEvents[tsPos].Denominator / 2);
 
     /// <summary>
     /// Calculate the last "1" of a bar from a tick-time timestamp.
@@ -317,24 +305,8 @@ public class SyncTrackInstrument : IInstrument
         if (ts < 0) ts = 0;
 
         var tickDiff = currentTick - ts;
-        var tickInterval = (Chart.Resolution * (float)TimeSignatureEvents[ts].Numerator) / ((float)TimeSignatureEvents[ts].Denominator / 4);
+        var tickInterval = GetBarlineStep(ts);
         int numIntervals = (int)Math.Floor(tickDiff / tickInterval); // floor is to snap it back to the minimum interval (get LAST barline, not closest)
-
-        return (int)(ts + numIntervals * tickInterval);
-    }
-
-    /// <summary>
-    /// Calculate the next "1" of a bar from a tick-time timestamp.
-    /// </summary>
-    /// <param name="currentTick">The tick-time timestamp to evaluate from.</param>
-    /// <returns>The tick-time timestamp of the nextd barline.</returns>
-    public int GetNextBarline(int currentTick)
-    {
-        var ts = TimeSignatureEvents.GetPreviousTickEventInLane(currentTick);
-        if (ts < 0) ts = 0;
-        var tickDiff = currentTick - ts;
-        var tickInterval = (Chart.Resolution * (float)TimeSignatureEvents[ts].Numerator) / ((float)TimeSignatureEvents[ts].Denominator / 4);
-        int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
 
         return (int)(ts + numIntervals * tickInterval);
     }
@@ -348,8 +320,9 @@ public class SyncTrackInstrument : IInstrument
     {
         var ts = TimeSignatureEvents.GetPreviousTickEventInLane(currentTick);
         if (ts < 0) ts = 0;
+
         var tickDiff = currentTick - ts;
-        var tickInterval = Chart.Resolution / ((float)TimeSignatureEvents[ts].Denominator / 2);
+        var tickInterval = GetHalfDivisionStep(ts);
         int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
 
         return (int)(ts + numIntervals * tickInterval);
@@ -358,36 +331,18 @@ public class SyncTrackInstrument : IInstrument
     public int GetNextBeatlineEventExclusive(int currentTick)
     {
         currentTick++;
-        var ts = TimeSignatureEvents.GetPreviousTickEventInLane(currentTick);
-        if (ts < 0) ts = 0;
+        var proposedNext = GetNextBeatlineEvent(currentTick);
 
-        var tickDiff = (currentTick - ts);
-        var tickInterval = Chart.Resolution / ((float)TimeSignatureEvents[ts].Denominator / 2);
-        int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
-
-        var proposedNext = (int)(ts + numIntervals * tickInterval);
         var middleTSEvent = TimeSignatureEvents.GetPreviousTickEventInLane(proposedNext);
 
         // edge case where a new TS event falls within the calculated next event and current tick
         // happens if a TS event is placed on a non-beatline - that new TS has to be the next barline
-        // this is only something that applies during testing stage - this is important tho
+        // this is only something that applies during testing stage for a charter - still important tho
         if (middleTSEvent != TimeSignatureEvents.GetPreviousTickEventInLane(currentTick))
         {
             return middleTSEvent;
         }
         return proposedNext;
-    }
-
-    public int GetNextDivisionEvent(int currentTick)
-    {
-        var ts = TimeSignatureEvents.GetPreviousTickEventInLane(currentTick);
-        if (ts < 0) ts = 0;
-
-        var tickDiff = currentTick - ts;
-        var tickInterval = Chart.Resolution / ((float)TimeSignatureEvents[ts].Denominator / 4);
-        int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
-
-        return (int)(ts + numIntervals * tickInterval);
     }
 
     // Call in CheckForEvents
@@ -399,27 +354,6 @@ public class SyncTrackInstrument : IInstrument
         }
         else return true;
         // Every time event is placed run this check for all future events and put alert on scrubber
-    }
-
-    /// <summary>
-    /// Calculate the amount of divisions are needed from the chart resolution for each first-division event.
-    /// <para>Example: TS = 4/4 -> Returns 1, because chart resolution will need to be divided by 1 to reach the number of ticks between first-division (in this case quarter note) events.</para>
-    /// <para>Example: TS = 3/8 -> Returns 2, because res will need to be div by 2 to reach eighth note events.</para>
-    /// <para>Example: TS = 2/2 -> Returns 0.5</para>
-    /// </summary>
-    /// <param name="tick"></param>
-    /// <returns>The factor to multiply the chart resolution by to get the first-division tick-time.</returns>
-    public float CalculateDivision(int tick)
-    {
-        int ts = TimeSignatureEvents.GetPreviousTickEventInLane(tick);
-        if (ts < 0) ts = 0;
-
-        return (float)TimeSignatureEvents[ts].Denominator / 4;
-    }
-
-    public int IncreaseByHalfDivision(int tick)
-    {
-        return (int)(Chart.Resolution / CalculateDivision(tick) / 2);
     }
 
     #endregion
@@ -601,8 +535,10 @@ public class SyncTrackInstrument : IInstrument
     #endregion
 
     #region Unused
+
     public void SetUpInputMap() { }
     public void ReleaseTemporaryTicks() { } // unneeded - no sustains lol
+
     #endregion
 
     public List<string> ExportAllEvents()
