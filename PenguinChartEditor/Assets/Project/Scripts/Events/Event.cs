@@ -92,8 +92,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
 
     public abstract MoveData<T> GetMoveData();
 
-    public abstract void SetEvents(SortedDictionary<int, T> newEvents);
-
     public abstract IPreviewer EventPreviewer { get; }
     public abstract IInstrument ParentInstrument { get; }
 

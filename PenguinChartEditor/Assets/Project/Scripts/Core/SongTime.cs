@@ -39,12 +39,12 @@ public class SongTime : MonoBehaviour
     }
     private static double _songPos = 0;
 
-    public static int SongPositionTicks => Tempo.ConvertSecondsToTickTime((float)_songPos);
+    public static int SongPositionTicks => Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)_songPos);
 
     /// <summary>
     /// The length of the song in tick time.
     /// </summary>
-    public static int SongLengthTicks => Tempo.ConvertSecondsToTickTime(AudioManager.SongLength);
+    public static int SongLengthTicks => Chart.SyncTrackInstrument.ConvertSecondsToTickTime(AudioManager.SongLength);
 
     public delegate void TimeChangedDelegate();
 
@@ -171,7 +171,7 @@ public class SongTime : MonoBehaviour
     public static int CalculateGridSnappedTick(float percentOfHighway)
     {
         var cursorTimestamp = (percentOfHighway * Waveform.timeShown) + Waveform.startTime;
-        var cursorTickTime = Tempo.ConvertSecondsToTickTime((float)cursorTimestamp);
+        var cursorTickTime = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)cursorTimestamp);
 
         if (cursorTickTime < 0) return 0;
 
