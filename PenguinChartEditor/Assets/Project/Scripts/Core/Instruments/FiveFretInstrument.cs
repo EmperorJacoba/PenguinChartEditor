@@ -84,16 +84,56 @@ public class FiveFretInstrument : IInstrument
         inputMap.Charting.LMB.canceled += x => CompleteMove();
     }
 
+    MoveDataPackage<FiveFretNoteData> moveData = new();
+    public bool justMoved { get; set; } = false;
+
     void MoveSelection()
     {
-        // check if overlay UI has been hit (EventPreviewer.IsOverlayUIHit)
+        Debug.Log("Running FFI.cs move function.");
 
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress) return;
+        bool tickMovement = false;
+        bool laneMovement = false;
 
+        var currentMouseTick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
+
+        if (currentMouseTick == moveData.lastMouseTick) return;
+
+        if (!moveData.inProgress)
+        {
+            // optimize call
+            moveData = new(currentMouseTick, Lanes.ExportCurrentData(), Lanes.GetNormalizedSelectionData(), Lanes.GetFirstSelectionTick());
+            Chart.editMode = false;
+            return;
+        }
+
+        Lanes.ClearAllSelections();
+
+        Lanes.SetLaneData(moveData.preMoveData);
+
+        var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
+
+        var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
+
+        Lanes.OverwriteLaneDataWithOffset(moveData.movingData, pasteDestination);
+
+        Chart.Refresh();
+
+        moveData.lastMouseTick = currentMouseTick;
+        moveData.lastGhostStartTick = pasteDestination;
     }
 
     void CompleteMove()
     {
+        if (!moveData.inProgress) return;
 
+        Lanes.ApplyScaledSelection(moveData.movingData, moveData.lastGhostStartTick);
+
+        moveData = new();
+        justMoved = true;
+
+        Chart.editMode = true;
+        Chart.Refresh();
     }
 
     public int TotalSelectionCount

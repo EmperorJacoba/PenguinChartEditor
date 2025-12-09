@@ -28,4 +28,6 @@ public interface IInstrument
     void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines);
 
     void DeleteTicksInSelection();
+
+    bool justMoved { get; set; }
 }

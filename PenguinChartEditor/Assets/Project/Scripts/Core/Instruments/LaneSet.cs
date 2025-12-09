@@ -137,7 +137,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         };
     }
 
-    void InvokeForSetEnds(SortedDictionary<int, TValue> subtractedTicksSet)
+    public void InvokeForSetEnds(SortedDictionary<int, TValue> subtractedTicksSet)
     {
         if (subtractedTicksSet.Count == 0) return;
 
@@ -209,10 +209,17 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
             {
                 laneData.Remove(tick);
             }
+            if (!dataset.ContainsKey(tick)) continue;
             laneData.Add(tick, dataset[tick]);
         }
 
         InvokeForSetEnds(ticks);
+    }
+
+    public void OverwriteLaneDataWith(SortedDictionary<int, TValue> data)
+    {
+        laneData = new(data);
+        InvokeForSetEnds(data.Keys.ToHashSet());
     }
 
     public void OverwriteDataWithOffset(SortedDictionary<int, TValue> data, int tickOffset)

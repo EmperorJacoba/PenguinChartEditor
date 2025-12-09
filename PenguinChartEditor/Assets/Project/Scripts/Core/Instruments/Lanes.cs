@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.Rendering.UI;
+using UnityEngine.UIElements;
 
 public class Lanes<T> where T : IEventData
 {
@@ -69,7 +68,18 @@ public class Lanes<T> where T : IEventData
         {
             if (selections[i].Count > 0) minSelectionTicks.Add(selections[i].Min());
         }
-        return minSelectionTicks.Min();
+        return minSelectionTicks.Count > 0 ? minSelectionTicks.Min() : SelectionSet<T>.NONE_SELECTED;
+    }
+
+    public SortedDictionary<int, T>[] GetNormalizedSelectionData()
+    {
+        SortedDictionary<int, T>[] normalizedData = new SortedDictionary<int, T>[Count];
+        for (int i = 0; i < Count; i++)
+        {
+            normalizedData[i] = selections[i].ExportNormalizedData(GetFirstSelectionTick());
+        }
+        // need code here to add relative lane-by-lane offset to preserve lane-by-lane spacing
+        return normalizedData;
     }
 
     public HashSet<int> GetUniqueTicksInRange(int startTick, int endTick)
@@ -108,6 +118,56 @@ public class Lanes<T> where T : IEventData
         prev = index == 0 ? NO_TICK_EVENT : ticks[index - 1];
 
         return new TickBounds(prev, next);
+    }
+
+    public SortedDictionary<int, T>[] ExportCurrentData()
+    {
+        SortedDictionary<int, T>[] saveData = new SortedDictionary<int, T>[lanes.Length];
+        for (int i = 0; i < Count; i++)
+        {
+            saveData[i] = lanes[i].ExportData();
+        }
+        return saveData;
+    }
+
+    public void SetLaneData(SortedDictionary<int, T>[] newData)
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            lanes[i].OverwriteLaneDataWith(newData[i]);
+        }    
+    }
+
+    public void OverwriteLaneDataWithOffset(SortedDictionary<int, T>[] newData, int offset)
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            lanes[i].OverwriteDataWithOffset(newData[i], offset);
+        }
+        
+        // need to do this separately because the invoke within the method above will not take into account
+        // new data from lanes not yet added
+        // maybe add a check to disable doing this if not needed?
+        for (int i = 0; i < Count; i++)
+        {
+            lanes[i].InvokeForSetEnds(newData[i]);
+        }
+    }
+
+    public void OverwriteTicksFromSet(SortedDictionary<int, T>[] newData, HashSet<int>[] ticks)
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            lanes[i].OverwriteTicksFromSet(ticks[i], newData[i]);
+        }
+    }
+
+    public void ApplyScaledSelection(SortedDictionary<int, T>[] movingData, int lastPasteStartTick)
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            selections[i].ApplyScaledSelection(movingData[i], lastPasteStartTick);
+        }
     }
 
     public SortedDictionary<int, T>[] PopDataInRange(int startTick, int endTick)

@@ -131,6 +131,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
     /// </summary>
     public virtual void MoveSelection()
     {
+        return;
+        Debug.Log("Running event.cs move function.");
         if (Input.GetKey(KeyCode.LeftControl)) return; // Let BPM labels do their thing undisturbed if applicable
 
         var moveData = GetMoveData();
@@ -287,9 +289,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
         // move action's selection logic is very particular
         // needs to reinstate old selection after move completes, and that happens BEFORE the CalculateSelectionStatus() call,
         // so the reinstated selection immediately gets overwritten as a result
-        if (justMoved)
+        if (justMoved || ParentInstrument.justMoved)
         {
             justMoved = false;
+            ParentInstrument.justMoved = false;
             return;
         }
 

@@ -16,6 +16,8 @@ public class GHLInstrument : IInstrument
 
     public int TotalSelectionCount => throw new System.NotImplementedException();
 
+    public bool justMoved { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
     public enum LaneOrientation
     {
         white1 = 0,
@@ -84,4 +86,6 @@ public class GHLInstrument : IInstrument
     {
         throw new NotImplementedException();
     }
+
+
 }

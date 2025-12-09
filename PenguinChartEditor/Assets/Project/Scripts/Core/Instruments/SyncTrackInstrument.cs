@@ -577,4 +577,6 @@ public class SyncTrackInstrument : IInstrument
         }
         return eventContainer;
     }
+
+    public bool justMoved { get; set; }
 }
