@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEditor.PackageManager;
 
@@ -137,13 +139,15 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         };
     }
 
-    public void InvokeForSetEnds(SortedDictionary<int, TValue> subtractedTicksSet)
+    public void InvokeForSetEnds(SortedDictionary<int, TValue> subtractedTicksSet) => InvokeForSetEnds(subtractedTicksSet, offset: 0);
+
+    public void InvokeForSetEnds(SortedDictionary<int, TValue> subtractedTicksSet, int offset)
     {
         if (subtractedTicksSet.Count == 0) return;
 
         var keys = subtractedTicksSet.Keys;
-        UpdateNeededAtTick?.Invoke(keys.Min());
-        UpdateNeededAtTick?.Invoke(keys.Max());
+        UpdateNeededAtTick?.Invoke(keys.Min() + offset);
+        UpdateNeededAtTick?.Invoke(keys.Max() + offset);
     }
 
     void InvokeForSetEnds(HashSet<int> ticksAdded)

@@ -82,11 +82,6 @@ public class Lanes<T> where T : IEventData
         return normalizedData;
     }
 
-    public HashSet<int> GetUniqueTicksInRange(int startTick, int endTick)
-    {
-        throw new NotImplementedException();
-    }
-
     public bool AnyLaneContainsTick(int tick)
     {
         for (int i = 0; i < Count; i++)
@@ -150,7 +145,7 @@ public class Lanes<T> where T : IEventData
         // maybe add a check to disable doing this if not needed?
         for (int i = 0; i < Count; i++)
         {
-            lanes[i].InvokeForSetEnds(newData[i]);
+            lanes[i].InvokeForSetEnds(newData[i], offset);
         }
     }
 
