@@ -54,6 +54,10 @@ public class TSPreviewer : Previewer
     {
         throw new System.NotImplementedException();
     }
+    public override Vector3 GetCursorHighwayPosition()
+    {
+        throw new System.NotImplementedException();
+    }
 
     public override void AddCurrentEventDataToLaneSet()
     {

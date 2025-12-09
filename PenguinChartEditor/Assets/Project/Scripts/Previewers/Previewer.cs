@@ -14,6 +14,7 @@ public interface IPreviewer
     int Tick { get; set; }
     bool disableNextSelectionCheck { get; set; }
     float GetCursorHighwayProportion();
+    Vector3 GetCursorHighwayPosition();
 }
 
 [RequireComponent(typeof(IEvent))]
@@ -103,4 +104,5 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     // with 3D physics raycaster, make sure lane objects are castable by the raycaster
     public bool AreLaneObjectsHit() => MiscTools.IsRaycasterHit(eventRaycaster);
     public abstract float GetCursorHighwayProportion();
+    public abstract Vector3 GetCursorHighwayPosition();
 }

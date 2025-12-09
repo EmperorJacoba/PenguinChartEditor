@@ -92,7 +92,7 @@ public class FiveFretNotePreviewer : Previewer
         return true;
     }
 
-    private Vector3 GetCursorHighwayPosition()
+    public override Vector3 GetCursorHighwayPosition()
     {
         PointerEventData pointerData = new(EventSystem.current)
         {

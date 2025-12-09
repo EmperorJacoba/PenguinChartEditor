@@ -49,6 +49,11 @@ public class BPMPreviewer : Previewer
         throw new System.NotImplementedException();
     }
 
+    public override Vector3 GetCursorHighwayPosition()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public override void AddCurrentEventDataToLaneSet()
     {
         bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class LanePositions : ScriptableObject
 {
     public List<float> lanePositions;
+    public bool openAsNormalLane;
 
     public float GetLaneWorldSpaceXCoordinate(int lanePosition)
     {

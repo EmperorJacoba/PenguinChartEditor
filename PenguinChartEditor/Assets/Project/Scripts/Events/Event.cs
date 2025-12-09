@@ -23,6 +23,7 @@ public interface IEvent
     // So that Lane<T> can access these easily
     void DeleteSelection();
     void MoveSelection();
+    void MoveSelectionByLane();
     void SustainSelection();
     void CompleteSustain();
     void CompleteMove();
@@ -178,12 +179,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
         // selection gets restored upon drag ending
         Selection.Clear();
 
-        // Write everything to a temporary dictionary because otherwise when moving from t=0
-        // tick 0 will not exist in the dictionary for TS & BPM events, which are needed
-        // SetEvents() in BPM/TS cleans up data before actually applying the changes, which is required for BPM/TS
-        // SetEvents() is already guaranteed by the interface so all event types will have it 
-        //SortedDictionary<int, T> movingData = new(LaneData.ExportData());
-
         // delete last preview's data
         LaneData.PopTicksInRange(moveData.lastTempGhostPasteStartTick, moveData.lastTempGhostPasteEndTick);
 
@@ -208,7 +203,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
         moveData.lastTempGhostPasteStartTick = pasteDestination;
     }
 
-    void InitializeMoveAction(int currentMouseTick)
+    protected void InitializeMoveAction(int currentMouseTick)
     {
         var moveData = GetMoveData();
         moveData.MovingGhostSet.Clear();
@@ -253,6 +248,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
 
         Chart.Refresh();
     }
+
+    public virtual void MoveSelectionByLane() { }
 
     #endregion
 

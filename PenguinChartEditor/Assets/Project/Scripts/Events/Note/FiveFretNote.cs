@@ -308,4 +308,38 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     // used on sustain trail itself when click happens on trail
     // click on sustain trail + drag activates SustainSelection() within the previewer object
     public void ClampSustain(int tickLength) => chartInstrument.UpdateSustain(Tick, laneIdentifier, tickLength);
+
+    public override void MoveSelectionByLane()
+    {
+        var moveData = GetMoveData();
+
+        if (EventPreviewer.IsOverlayUIHit() && !moveData.moveInProgress)
+        {
+            return;
+        }
+
+        float cursorXPos = EventPreviewer.GetCursorHighwayPosition().x;
+
+        var mouseLane = MatchXPositionToLane(cursorXPos);
+    }
+
+    public FiveFretInstrument.LaneOrientation MatchXPositionToLane(float xPosition)
+    {
+        LanePositions lanePositions = Chart.instance.lanePositionReference;
+        if (lanePositions.openAsNormalLane)
+        {
+            for (int i = 0; i < lanePositions.lanePositions.Count; i++)
+            {
+                if (lanePositions.lanePositions[i] < xPosition)
+                {
+                    return (FiveFretInstrument.LaneOrientation)i;
+                }
+            }
+        }
+        else
+        {
+            return FiveFretInstrument.LaneOrientation.green;
+        }
+        throw new ArgumentException("Bad xPosition passed into match function.");
+    }
 } 
