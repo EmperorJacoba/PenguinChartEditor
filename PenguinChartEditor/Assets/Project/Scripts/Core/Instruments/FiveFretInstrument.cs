@@ -125,6 +125,7 @@ public class FiveFretInstrument : IInstrument
 
     void CompleteMove()
     {
+        Chart.editMode = true;
         if (!moveData.inProgress) return;
 
         Lanes.ApplyScaledSelection(moveData.movingData, moveData.lastGhostStartTick);
@@ -132,7 +133,6 @@ public class FiveFretInstrument : IInstrument
         moveData = new();
         justMoved = true;
 
-        Chart.editMode = true;
         Chart.Refresh();
     }
 
