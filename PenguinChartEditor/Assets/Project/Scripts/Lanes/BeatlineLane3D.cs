@@ -14,5 +14,5 @@ public class BeatlineLane3D : BaseBeatlineLane<Beatline3D>
         instance = this;
     }
 
-    protected override void InitializeEvent(Beatline3D @event, int tick) => @event.InitializeEvent(tick, HighwayLength);
+    protected override void InitializeEvent(Beatline3D @event, int tick) => @event.InitializeEvent(tick);
 }

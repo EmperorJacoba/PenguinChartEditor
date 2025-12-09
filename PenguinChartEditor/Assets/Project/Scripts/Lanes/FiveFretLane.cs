@@ -31,5 +31,5 @@ public class FiveFretLane : Lane<FiveFretNote>
             Select(item => item.Key).ToList();
     }
 
-    protected override void InitializeEvent(FiveFretNote @event, int tick) => @event.InitializeEvent(tick, HighwayLength, laneIdentifier, previewer);
+    protected override void InitializeEvent(FiveFretNote @event, int tick) => @event.InitializeEvent(tick, laneIdentifier, previewer);
 }

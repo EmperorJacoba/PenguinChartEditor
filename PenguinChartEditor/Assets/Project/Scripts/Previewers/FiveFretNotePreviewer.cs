@@ -1,14 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(FiveFretNote))]
 public class FiveFretNotePreviewer : Previewer
 {
     [SerializeField] FiveFretNote note; // use Previewer.Tick, not note.tick for any tick related actions
-    [SerializeField] Transform highway;
-    [SerializeField] PhysicsRaycaster cameraHighwayRaycaster;
     [SerializeField] FiveFretLane lane;
     [SerializeField] int laneCenterPosition;
 
@@ -46,8 +41,8 @@ public class FiveFretNotePreviewer : Previewer
     {
         if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) return;
 
-        var hitPosition = GetCursorHighwayPosition();
-        var highwayProportion = GetCursorHighwayProportion();
+        var hitPosition = Chart.instance.SceneDetails.GetCursorHighwayPosition();
+        var highwayProportion = Chart.instance.SceneDetails.GetCursorHighwayProportion();
         if (highwayProportion == 0)
         {
             Hide(); return;
@@ -60,8 +55,8 @@ public class FiveFretNotePreviewer : Previewer
             Hide(); return;
         }
 
-        note.UpdatePosition(Waveform.GetWaveformRatio(Tick), highway.localScale.z, note.XCoordinate);
-        note.UpdateSustain(Tick, AppliedSustain, highway.localScale.z);
+        note.UpdatePosition(Waveform.GetWaveformRatio(Tick), note.XCoordinate);
+        note.UpdateSustain(Tick, AppliedSustain);
 
         if (currentPlacementMode == NoteOption.dynamic)
         {
@@ -92,38 +87,6 @@ public class FiveFretNotePreviewer : Previewer
         return true;
     }
 
-    public override Vector3 GetCursorHighwayPosition()
-    {
-        PointerEventData pointerData = new(EventSystem.current)
-        {
-            position = Input.mousePosition
-        };
-
-        List<RaycastResult> results = new();
-        cameraHighwayRaycaster.Raycast(pointerData, results);
-
-        if (results.Count == 0) return new Vector3(int.MinValue, int.MinValue, int.MinValue);
-
-        return results[0].worldPosition;
-    }
-
-    /// <summary>
-    /// Get the highway proportion but set the X value of the raycast to the center of the screen.
-    /// </summary>
-    /// <returns></returns>
-    public override float GetCursorHighwayProportion()
-    {
-        PointerEventData modifiedPointerData = new(EventSystem.current)
-        {
-            position = new(Input.mousePosition.x, Input.mousePosition.y)
-        };
-
-        List<RaycastResult> results = new();
-        cameraHighwayRaycaster.Raycast(modifiedPointerData, results);
-
-        if (results.Count == 0) return 0;
-        return results[0].worldPosition.z / highway.localScale.z;
-    }
     public override void Hide()
     {
         if (note.Visible) note.Visible = false;

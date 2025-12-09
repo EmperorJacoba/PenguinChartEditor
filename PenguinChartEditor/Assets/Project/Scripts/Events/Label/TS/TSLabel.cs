@@ -25,12 +25,12 @@ public class TSLabel : Label<TSData>, IPoolable
     }
     int _tick;
 
-    public void InitializeEvent(int tick, float highwayLength)
+    public void InitializeEvent(int tick)
     {
         _tick = tick;
         Visible = true;
         InitializeLabel();
-        UpdatePosition(Waveform.GetWaveformRatio(_tick), highwayLength);
+        UpdatePosition(Waveform.GetWaveformRatio(_tick), Chart.instance.SceneDetails.HighwayLength);
 
         tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsEventValid(tick);
 

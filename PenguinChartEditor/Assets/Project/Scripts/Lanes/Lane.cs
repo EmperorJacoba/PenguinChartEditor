@@ -14,19 +14,6 @@ public abstract class Lane<TEvent> : MonoBehaviour where TEvent : IPoolable
     protected abstract IPooler<TEvent> Pooler { get; }
     protected abstract IPreviewer Previewer { get; }
 
-    protected float HighwayLength
-    {
-        get
-        {
-            if (properties.is3D)
-            {
-                return eventBoundary.localScale.z;
-            }
-            var screenRef = (RectTransform)eventBoundary;
-            return screenRef.rect.height;
-        }
-    }
-
     // Leverages scene structure to access event actions
     // WITHOUT needing a selections flag to make sure
     // only one label manages event actions at a time

@@ -82,10 +82,10 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
         line.endWidth = thickness;
     }
 
-    public void InitializeEvent(int tick, float highwayLength)
+    public void InitializeEvent(int tick)
     {
         if (tick < 0) return;
-        UpdateBeatlinePosition(Waveform.GetWaveformRatio(tick), highwayLength);
+        UpdateBeatlinePosition(Waveform.GetWaveformRatio(tick), Chart.instance.SceneDetails.HighwayLength);
         Type = Chart.SyncTrackInstrument.CalculateBeatlineType(tick);
     }
 

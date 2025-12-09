@@ -334,6 +334,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""XYDrag"",
+                    ""type"": ""Button"",
+                    ""id"": ""08597ac9-518a-4c1a-95e4-0209b4c34511"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -950,6 +959,39 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""XDrag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""20b4120d-3093-475d-a158-f9b5824c32af"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XYDrag"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""f5d2021d-0434-41c5-9715-fed7d7b98e25"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XYDrag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""555fe3fe-f3df-401f-843d-998230af332e"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XYDrag"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 }
@@ -2230,6 +2272,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_SustainCustom = m_Charting.FindAction("SustainCustom", throwIfNotFound: true);
         m_Charting_SustainExtended = m_Charting.FindAction("SustainExtended", throwIfNotFound: true);
         m_Charting_XDrag = m_Charting.FindAction("XDrag", throwIfNotFound: true);
+        m_Charting_XYDrag = m_Charting.FindAction("XYDrag", throwIfNotFound: true);
         // ExternalCharting
         m_ExternalCharting = asset.FindActionMap("ExternalCharting", throwIfNotFound: true);
         m_ExternalCharting_IncreaseStep = m_ExternalCharting.FindAction("IncreaseStep", throwIfNotFound: true);
@@ -2372,6 +2415,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_SustainCustom;
     private readonly InputAction m_Charting_SustainExtended;
     private readonly InputAction m_Charting_XDrag;
+    private readonly InputAction m_Charting_XYDrag;
     /// <summary>
     /// Provides access to input actions defined in input action map "Charting".
     /// </summary>
@@ -2492,6 +2536,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @XDrag => m_Wrapper.m_Charting_XDrag;
         /// <summary>
+        /// Provides access to the underlying input action "Charting/XYDrag".
+        /// </summary>
+        public InputAction @XYDrag => m_Wrapper.m_Charting_XYDrag;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Charting; }
@@ -2598,6 +2646,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @XDrag.started += instance.OnXDrag;
             @XDrag.performed += instance.OnXDrag;
             @XDrag.canceled += instance.OnXDrag;
+            @XYDrag.started += instance.OnXYDrag;
+            @XYDrag.performed += instance.OnXYDrag;
+            @XYDrag.canceled += instance.OnXYDrag;
         }
 
         /// <summary>
@@ -2690,6 +2741,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @XDrag.started -= instance.OnXDrag;
             @XDrag.performed -= instance.OnXDrag;
             @XDrag.canceled -= instance.OnXDrag;
+            @XYDrag.started -= instance.OnXYDrag;
+            @XYDrag.performed -= instance.OnXYDrag;
+            @XYDrag.canceled -= instance.OnXYDrag;
         }
 
         /// <summary>
@@ -3525,6 +3579,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnXDrag(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XYDrag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXYDrag(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ExternalCharting" which allows adding and removing callbacks.

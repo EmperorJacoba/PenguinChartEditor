@@ -142,18 +142,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
             return;
         }
 
-        float highwayPercent;
-        if (Chart.currentTab == Chart.TabType.TempoMap)
-        {
-            highwayPercent = Input.mousePosition.y / Screen.height;
-        }
-        else
-        {
-            // this throws a not implemented exception if this is called on a previewer not on a 3D scene
-            highwayPercent = EventPreviewer.GetCursorHighwayProportion();
-        }
-
-        var currentMouseTick = SongTime.CalculateGridSnappedTick(highwayPercent);
+        var currentMouseTick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
 
         // early return if no changes to mouse's grid snap
         if (currentMouseTick == moveData.lastMouseTick)

@@ -9,6 +9,23 @@ public class Chart : MonoBehaviour
 {
     public static Chart instance;
 
+    // Use this for scene-related generic calculations
+    // Add code to reassign this variable upon scene change
+    public SceneDetails SceneDetails
+    {
+        get
+        {
+            if (sceneDetails == null)
+            {
+                throw new ArgumentException(
+                    "Please create and assign a SceneDetails object in this scene. A SceneDetails object is required for selections and moving."
+                    );
+            }
+            return sceneDetails;
+        }
+    }
+    [SerializeField] SceneDetails sceneDetails;
+
     public static void Log(string x) => Debug.Log(x); // debug shortcut for static classes like parsers
 
     #region Chart Data
@@ -117,8 +134,6 @@ public class Chart : MonoBehaviour
         Chart
     }
     public static TabType currentTab;
-
-    public LanePositions lanePositionReference;
 
     #endregion
 

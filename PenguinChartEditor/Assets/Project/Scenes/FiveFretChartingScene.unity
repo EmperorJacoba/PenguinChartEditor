@@ -1961,8 +1961,6 @@ MonoBehaviour:
   overlayUIRaycaster: {fileID: 1387491380}
   eventRaycaster: {fileID: 732549082}
   note: {fileID: 325951981}
-  highway: {fileID: 2069553715}
-  cameraHighwayRaycaster: {fileID: 732549082}
   lane: {fileID: 1933190197}
   laneCenterPosition: 0
   defaultSustainPlacement: 0
@@ -2777,8 +2775,6 @@ MonoBehaviour:
   overlayUIRaycaster: {fileID: 1387491380}
   eventRaycaster: {fileID: 732549082}
   note: {fileID: 550080832}
-  highway: {fileID: 2069553715}
-  cameraHighwayRaycaster: {fileID: 732549082}
   lane: {fileID: 1292801093}
   laneCenterPosition: 0
   defaultSustainPlacement: 0
@@ -3045,8 +3041,6 @@ MonoBehaviour:
   overlayUIRaycaster: {fileID: 1387491380}
   eventRaycaster: {fileID: 732549082}
   note: {fileID: 643972405}
-  highway: {fileID: 2069553715}
-  cameraHighwayRaycaster: {fileID: 732549082}
   lane: {fileID: 536290878}
   laneCenterPosition: 4
   defaultSustainPlacement: 0
@@ -7704,6 +7698,57 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &1455365662
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1455365664}
+  - component: {fileID: 1455365663}
+  m_Layer: 0
+  m_Name: SceneDetails
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1455365663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455365662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b2ae9a6fc9379e4e8cb243a14592c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentScene: 2
+  is2D: 0
+  highway: {fileID: 2069553715}
+  overlayUIRaycaster: {fileID: 1387491380}
+  eventRaycaster: {fileID: 732549082}
+  cameraHighwayRaycaster: {fileID: 732549082}
+  lanePositionReference: {fileID: 11400000, guid: 60cf2b79c86187446b4b64e0ef96ffcb, type: 2}
+--- !u!4 &1455365664
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455365662}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &1475291738 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 654223331871004247, guid: eaf6f856c66df5b4e83131cd9d018df0, type: 3}
@@ -9734,8 +9779,6 @@ MonoBehaviour:
   overlayUIRaycaster: {fileID: 1387491380}
   eventRaycaster: {fileID: 732549082}
   note: {fileID: 1731475916}
-  highway: {fileID: 2069553715}
-  cameraHighwayRaycaster: {fileID: 732549082}
   lane: {fileID: 1158524636}
   laneCenterPosition: -2
   defaultSustainPlacement: 0
@@ -11286,6 +11329,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 55859144864384448, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
+      propertyPath: sceneDetails
+      value: 
+      objectReference: {fileID: 1455365663}
+    - target: {fileID: 55859144864384448, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
       propertyPath: lanePositionReference
       value: 
       objectReference: {fileID: 11400000, guid: 60cf2b79c86187446b4b64e0ef96ffcb, type: 2}
@@ -11375,8 +11422,6 @@ MonoBehaviour:
   overlayUIRaycaster: {fileID: 1387491380}
   eventRaycaster: {fileID: 732549082}
   note: {fileID: 2006768577}
-  highway: {fileID: 2069553715}
-  cameraHighwayRaycaster: {fileID: 732549082}
   lane: {fileID: 143122575}
   laneCenterPosition: -4
   defaultSustainPlacement: 0
@@ -12153,8 +12198,6 @@ MonoBehaviour:
   overlayUIRaycaster: {fileID: 1387491380}
   eventRaycaster: {fileID: 732549082}
   note: {fileID: 2117541871}
-  highway: {fileID: 2069553715}
-  cameraHighwayRaycaster: {fileID: 732549082}
   lane: {fileID: 1482099733}
   laneCenterPosition: 2
   defaultSustainPlacement: 0
@@ -18849,6 +18892,7 @@ RectTransform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1455365664}
   - {fileID: 732549080}
   - {fileID: 1818674093}
   - {fileID: 29604111}

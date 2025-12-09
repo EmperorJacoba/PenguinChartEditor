@@ -50,14 +50,6 @@ public class TSPreviewer : Previewer
     {
         if (!tsLabel.Visible) tsLabel.Visible = true;
     }
-    public override float GetCursorHighwayProportion()
-    {
-        throw new System.NotImplementedException();
-    }
-    public override Vector3 GetCursorHighwayPosition()
-    {
-        throw new System.NotImplementedException();
-    }
 
     public override void AddCurrentEventDataToLaneSet()
     {

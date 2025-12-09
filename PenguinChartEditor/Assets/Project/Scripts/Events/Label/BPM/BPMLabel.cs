@@ -24,12 +24,12 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     }
     int _tick;
 
-    public void InitializeEvent(int tick, float highwayLength)
+    public void InitializeEvent(int tick)
     {
         _tick = tick;
         Visible = true;
         InitializeLabel();
-        UpdatePosition(Waveform.GetWaveformRatio(_tick), highwayLength);
+        UpdatePosition(Waveform.GetWaveformRatio(_tick), Chart.instance.SceneDetails.HighwayLength);
 
         // w/o this the input field will stay on if you delete it while editing
         // leading to jank where the input field for the next event is visible

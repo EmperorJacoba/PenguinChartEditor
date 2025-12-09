@@ -22,5 +22,5 @@ public class BPMLane : Lane<BPMLabel>
         return Chart.SyncTrackInstrument.TempoEvents.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
     }
 
-    protected override void InitializeEvent(BPMLabel @event, int tick) => @event.InitializeEvent(tick, HighwayLength);
+    protected override void InitializeEvent(BPMLabel @event, int tick) => @event.InitializeEvent(tick);
 }

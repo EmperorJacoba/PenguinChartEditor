@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class FiveFretInstrument : IInstrument
 {
+    #region Constants 
+
     const string NOTE_INDICATOR = "N";
     const string SPECIAL_INDICATOR = "S";
     const string EVENT_INDICATOR = "E";
@@ -22,6 +24,8 @@ public class FiveFretInstrument : IInstrument
     const string TAP_ID = "N 6 0";
     const string EXPLICIT_STRUM_ID = "N FS 0";
     const string EXPLICIT_HOPO_ID = "N FH 0";
+
+    #endregion
 
     public Lanes<FiveFretNoteData> Lanes { get; set; }
     public MoveData<FiveFretNoteData>[] InstrumentMoveData { get; set; } =
@@ -76,6 +80,20 @@ public class FiveFretInstrument : IInstrument
         inputMap.Enable();
 
         inputMap.Charting.ForceTap.performed += x => ToggleTaps();
+        inputMap.Charting.XYDrag.performed += x => MoveSelection();
+        inputMap.Charting.LMB.canceled += x => CompleteMove();
+    }
+
+    void MoveSelection()
+    {
+        // check if overlay UI has been hit (EventPreviewer.IsOverlayUIHit)
+
+
+    }
+
+    void CompleteMove()
+    {
+
     }
 
     public int TotalSelectionCount

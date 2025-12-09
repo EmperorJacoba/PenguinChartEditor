@@ -115,3 +115,10 @@ public enum HeaderType
 
     Vox = 10000, // no difficulties
 }
+
+public enum SceneType
+{
+    setup,
+    tempoMap,
+    fiveFretChart
+}

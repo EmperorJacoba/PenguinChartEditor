@@ -14,5 +14,5 @@ public class BeatlineLane : BaseBeatlineLane<Beatline> // BPMData is not acted u
         Chart.currentTab = Chart.TabType.TempoMap;
     }
 
-    protected override void InitializeEvent(Beatline @event, int tick) => @event.InitializeEvent(tick, HighwayLength);
+    protected override void InitializeEvent(Beatline @event, int tick) => @event.InitializeEvent(tick);
 }

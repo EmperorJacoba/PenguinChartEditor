@@ -112,7 +112,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
     [SerializeField] int _tick;
 
-    public void InitializeEvent(int tick, float highwayLength, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer)
+    public void InitializeEvent(int tick, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer)
     {
         _tick = tick;
         Visible = true;
@@ -123,16 +123,15 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
         UpdatePosition(
             Waveform.GetWaveformRatio(tick),
-            highwayLength,
             XCoordinate);
 
-        UpdateSustain(highwayLength);
+        UpdateSustain();
 
         var tickData = LaneData[tick];
         IsHopo = (tickData.Flag == FiveFretNoteData.FlagType.hopo);
         IsTap = (tickData.Flag == FiveFretNoteData.FlagType.tap);
     }
-    public float XCoordinate => Chart.instance.lanePositionReference.GetLaneWorldSpaceXCoordinate((int)laneIdentifier);
+    public float XCoordinate => Chart.instance.SceneDetails.lanePositionReference.GetLaneWorldSpaceXCoordinate((int)laneIdentifier);
 
     public override void RefreshLane() => parentLane.UpdateEvents();
     void InitializeNote()
@@ -140,9 +139,9 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         if (SelectionOverlay != null) Selected = CheckForSelection();
     }
 
-    public void UpdatePosition(double percentOfTrack, float trackLength, float xPosition)
+    public void UpdatePosition(double percentOfTrack, float xPosition)
     {
-        var trackProportion = (float)percentOfTrack * trackLength;
+        var trackProportion = (float)percentOfTrack * Chart.instance.SceneDetails.HighwayLength;
         transform.position = new Vector3(xPosition, defaultYPos, trackProportion);
     }
 
@@ -198,22 +197,24 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
     }
 
-    void UpdateSustain(float trackLength) => UpdateSustain(Tick, LaneData[Tick].Sustain, trackLength);
+    void UpdateSustain() => UpdateSustain(Tick, LaneData[Tick].Sustain);
 
-    public void UpdateSustain(int tick, int sustainLength, float trackLength)
+    public void UpdateSustain(int tick, int sustainLength)
     {
         var sustainEndPointTicks = tick + sustainLength;
 
         var trackProportion = Waveform.GetWaveformRatio(sustainEndPointTicks);
-        var trackPosition = trackProportion * trackLength;
+        var trackPosition = trackProportion * Chart.instance.SceneDetails.HighwayLength;
 
         var noteProportion = Waveform.GetWaveformRatio(tick);
-        var notePosition = noteProportion * trackLength;
+        var notePosition = noteProportion * Chart.instance.SceneDetails.HighwayLength;
 
         var localScaleZ = (float)(trackPosition - notePosition);
 
         // stop it from appearing past the end of the highway
-        if (localScaleZ + transform.localPosition.z > trackLength) localScaleZ = trackLength - transform.localPosition.z; 
+        if (localScaleZ + transform.localPosition.z > Chart.instance.SceneDetails.HighwayLength) 
+            localScaleZ = Chart.instance.SceneDetails.HighwayLength - transform.localPosition.z; 
+
         if (localScaleZ < 0) localScaleZ = 0; // box collider negative size issues??
 
         sustain.localScale = new Vector3(sustain.localScale.x, sustain.localScale.y, localScaleZ);
@@ -295,7 +296,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public int GetCurrentMouseTick()
     {
-        var newHighwayPercent = EventPreviewer.GetCursorHighwayProportion();
+        var newHighwayPercent = Chart.instance.SceneDetails.GetCursorHighwayProportion();
 
         // 0 is very unlikely as an actual position (as 0 is at the very bottom of the TRACK, which should be outside the screen in most cases)
         // but is returned if cursor is outside track
@@ -318,14 +319,14 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             return;
         }
 
-        float cursorXPos = EventPreviewer.GetCursorHighwayPosition().x;
+        float cursorXPos = Chart.instance.SceneDetails.GetCursorHighwayPosition().x;
 
         var mouseLane = MatchXPositionToLane(cursorXPos);
     }
 
     public FiveFretInstrument.LaneOrientation MatchXPositionToLane(float xPosition)
     {
-        LanePositions lanePositions = Chart.instance.lanePositionReference;
+        LanePositions lanePositions = Chart.instance.SceneDetails.lanePositionReference;
         if (lanePositions.openAsNormalLane)
         {
             for (int i = 0; i < lanePositions.lanePositions.Count; i++)

@@ -44,16 +44,6 @@ public class BPMPreviewer : Previewer
         if (!bpmLabel.Visible) bpmLabel.Visible = true;
     }
 
-    public override float GetCursorHighwayProportion()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public override Vector3 GetCursorHighwayPosition()
-    {
-        throw new System.NotImplementedException();
-    }
-
     public override void AddCurrentEventDataToLaneSet()
     {
         bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
