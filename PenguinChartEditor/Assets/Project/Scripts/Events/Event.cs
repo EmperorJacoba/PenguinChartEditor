@@ -137,7 +137,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
 
         // Early return if attempting to start a move while over an overlay element
         // Allows moves to start only if interacting with main content
-        if (EventPreviewer.IsOverlayUIHit() && !moveData.moveInProgress)
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.moveInProgress)
         {
             return;
         }
@@ -246,7 +246,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
 
     public virtual void CheckForSelectionClear()
     {
-        if (EventPreviewer.IsOverlayUIHit() || EventPreviewer.AreLaneObjectsHit()) return;
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
 
         Selection.Clear();
         RefreshLane();

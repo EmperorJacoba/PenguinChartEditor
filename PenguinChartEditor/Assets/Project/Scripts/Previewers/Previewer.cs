@@ -9,8 +9,6 @@ public interface IPreviewer
     void UpdatePosition();
     void Hide();
     void Show();
-    bool IsOverlayUIHit();
-    bool AreLaneObjectsHit();
     int Tick { get; set; }
     bool disableNextSelectionCheck { get; set; }
 }
@@ -33,7 +31,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     public virtual void CreateEvent()
     {
-        if (IsOverlayUIHit() || !Chart.IsEditAllowed()) return;
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || !Chart.IsEditAllowed()) return;
         if (!previewerEventReference.Visible || previewerEventReference.GetLaneData().Contains(Tick)) return;
 
         AddCurrentEventDataToLaneSet(); // implemented locally
@@ -46,7 +44,6 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     public abstract void AddCurrentEventDataToLaneSet();
     public abstract void Hide();
     public abstract void Show();
-    public bool IsOverlayUIHit() => MiscTools.IsRaycasterHit(overlayUIRaycaster);
 
     // this is done because there will never be a scenario where
     // two previewers have different ticks (at least not jn any meaningful way)
@@ -71,7 +68,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     public bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!Chart.editMode || 
-            IsOverlayUIHit() || 
+            Chart.instance.SceneDetails.IsSceneOverlayUIHit() || 
             Input.GetMouseButton(RIGHT_MOUSE_ID) || // right mouse = sustaining
             !Chart.IsEditAllowed() ||
             percentOfScreenVertical < 0 ||
@@ -99,6 +96,4 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
     }
 
-    // with 3D physics raycaster, make sure lane objects are castable by the raycaster
-    public bool AreLaneObjectsHit() => MiscTools.IsRaycasterHit(eventRaycaster);
 }

@@ -232,7 +232,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
         // Early return if attempting to start an edit while over an overlay element
         // Allows edit to start only if interacting with main content
-        if (EventPreviewer.IsOverlayUIHit() && !sustainData.sustainInProgress)
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !sustainData.sustainInProgress)
         {
             return;
         }
@@ -314,7 +314,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     {
         var moveData = GetMoveData();
 
-        if (EventPreviewer.IsOverlayUIHit() && !moveData.moveInProgress)
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.moveInProgress)
         {
             return;
         }

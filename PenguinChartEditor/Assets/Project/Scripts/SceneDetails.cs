@@ -32,6 +32,8 @@ public class SceneDetails : MonoBehaviour
 
 
     public bool IsSceneOverlayUIHit() => IsRaycasterHit(overlayUIRaycaster);
+
+    // with 3D physics raycaster, make sure lane objects are castable by the raycaster
     public bool IsEventDataHit() => IsRaycasterHit(eventRaycaster);
 
     bool IsRaycasterHit(BaseRaycaster targetRaycaster)
