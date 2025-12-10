@@ -11,6 +11,8 @@ public class SceneDetails : MonoBehaviour
     // Use ScreenReference in TempoMap, use highway GameObject in Chart tab.
     public Transform highway;
 
+    public int laneWidth;
+
     public float HighwayLength
     {
         get
@@ -28,8 +30,58 @@ public class SceneDetails : MonoBehaviour
     public BaseRaycaster eventRaycaster;
     public PhysicsRaycaster cameraHighwayRaycaster;
 
-    public LanePositions lanePositionReference;
+    const float DEFAULT_HIGHWAY_WIDTH = 10;
+    const float HIGHWAY_WIDTH_SIX_FRET = 12;
+    
+    // Assume the center is 0.
+    float highwayLeftEndCoordinate => -(highway.localScale.x / 2);
+    float highwayRightEndCoordinate => highway.localScale.x / 2;
 
+    public float GetCenterXCoordinateFromLane(int lane)
+    {
+        // add code to differentiate from open as sixth fret versus open as open note in this function
+
+        if (laneWidth == 0) throw new System.NullReferenceException("Lane width cannot be zero. Please set the lane width of this scene in this scene's SceneDetails game object.");
+ 
+        if (currentScene == SceneType.fiveFretChart)
+        {
+            var laneZeroCenterCoordinate = highwayLeftEndCoordinate + (laneWidth / 2);
+
+            // open notes are weird...
+            // if structured like 6-fret, open note is actually
+            // the lowest note (what should be lane 0), but
+            // open is lane 6 (lanes go from 0-6, green to open)
+            // so lanes need to be shifted when this mode is active
+            if (UserSettings.OpenNoteAsFret)
+            {
+                if (lane == (int)FiveFretInstrument.LaneOrientation.open) return laneZeroCenterCoordinate;
+                lane = lane + 1;
+            }
+            else // center is 0 for the bar note
+            {
+                if (lane == (int)FiveFretInstrument.LaneOrientation.open) return 0;
+            }
+
+            return laneZeroCenterCoordinate + (laneWidth * lane);
+        }
+
+        throw new System.ArgumentException(
+            "You trying to get the center coordinate of a lane with a scene that has either a) not been set up properly or b) " +
+            "does not use traditional lanes (like TempoMap). Refer to SceneDetails.GetCenterXCoordinateFromLane() for more info."
+            );
+    }
+
+    const int NOT_IN_LANE = -1;
+
+    public int MatchXCoordinateToLane(float xCoordinate)
+    {
+        if (currentScene == SceneType.fiveFretChart)
+        {
+            // Isolated algebraically & through testing. Works for any x coordinate.
+            return (int)Mathf.Floor((xCoordinate - highwayLeftEndCoordinate) / laneWidth);
+        }
+        throw new System.Exception("Error when matching X coordinate to a lane. Cursor is within highway bounds but not within a lane.");
+    }
 
     public bool IsSceneOverlayUIHit() => IsRaycasterHit(overlayUIRaycaster);
 
@@ -64,7 +116,7 @@ public class SceneDetails : MonoBehaviour
         };
 
         List<RaycastResult> results = new();
-        Chart.instance.SceneDetails.cameraHighwayRaycaster.Raycast(pointerData, results);
+        cameraHighwayRaycaster.Raycast(pointerData, results);
 
         if (results.Count == 0) return new Vector3(int.MinValue, int.MinValue, int.MinValue);
 

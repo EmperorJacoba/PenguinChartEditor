@@ -131,7 +131,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         IsHopo = (tickData.Flag == FiveFretNoteData.FlagType.hopo);
         IsTap = (tickData.Flag == FiveFretNoteData.FlagType.tap);
     }
-    public float XCoordinate => Chart.instance.SceneDetails.lanePositionReference.GetLaneWorldSpaceXCoordinate((int)laneIdentifier);
+    public float XCoordinate => Chart.instance.SceneDetails.GetCenterXCoordinateFromLane((int)laneIdentifier);
 
     public override void RefreshLane() => parentLane.UpdateEvents();
     void InitializeNote()
@@ -309,38 +309,4 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     // used on sustain trail itself when click happens on trail
     // click on sustain trail + drag activates SustainSelection() within the previewer object
     public void ClampSustain(int tickLength) => chartInstrument.UpdateSustain(Tick, laneIdentifier, tickLength);
-
-    public override void MoveSelectionByLane()
-    {
-        var moveData = GetMoveData();
-
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.moveInProgress)
-        {
-            return;
-        }
-
-        float cursorXPos = Chart.instance.SceneDetails.GetCursorHighwayPosition().x;
-
-        var mouseLane = MatchXPositionToLane(cursorXPos);
-    }
-
-    public FiveFretInstrument.LaneOrientation MatchXPositionToLane(float xPosition)
-    {
-        LanePositions lanePositions = Chart.instance.SceneDetails.lanePositionReference;
-        if (lanePositions.openAsNormalLane)
-        {
-            for (int i = 0; i < lanePositions.lanePositions.Count; i++)
-            {
-                if (lanePositions.lanePositions[i] < xPosition)
-                {
-                    return (FiveFretInstrument.LaneOrientation)i;
-                }
-            }
-        }
-        else
-        {
-            return FiveFretInstrument.LaneOrientation.green;
-        }
-        throw new ArgumentException("Bad xPosition passed into match function.");
-    }
 } 

@@ -342,7 +342,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -964,7 +964,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""One Modifier"",
-                    ""id"": ""20b4120d-3093-475d-a158-f9b5824c32af"",
+                    ""id"": ""e354073b-991d-4c98-b0ed-0d88c2e1d729"",
                     ""path"": ""OneModifier"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -975,7 +975,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""modifier"",
-                    ""id"": ""f5d2021d-0434-41c5-9715-fed7d7b98e25"",
+                    ""id"": ""67ee6179-6b6e-4fbb-b7d6-b72706b0735c"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -986,7 +986,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""binding"",
-                    ""id"": ""555fe3fe-f3df-401f-843d-998230af332e"",
+                    ""id"": ""4a170098-c85d-4834-8974-5defea68fc3c"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
                     ""processors"": """",

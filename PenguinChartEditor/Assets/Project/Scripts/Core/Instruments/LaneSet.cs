@@ -20,6 +20,11 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
     public delegate void UpdateNeededDelegate(int tick);
 
+
+    /// <summary>
+    /// Invoked whenever a hopo check needs to happen at a certain tick. 
+    /// When invoked, the tick from the delegate should be checked to see if it or its surrounding ticks have changed hopo status.
+    /// </summary>
     public event UpdateNeededDelegate UpdateNeededAtTick;
 
     /// <summary>

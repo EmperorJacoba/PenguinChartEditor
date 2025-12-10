@@ -48,4 +48,6 @@ public static class UserSettings
     // used only for .chart [Song] headers, no bearing on .ini files
     // in milliseconds!!
     public static float DefaultPreviewLength { get; set; } = 3000.0f;
+
+    public static bool OpenNoteAsFret { get; set; } = false;
 }

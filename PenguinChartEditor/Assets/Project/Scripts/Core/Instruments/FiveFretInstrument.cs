@@ -89,46 +89,55 @@ public class FiveFretInstrument : IInstrument
 
     void MoveSelection()
     {
-        Debug.Log("Running FFI.cs move function.");
+        if (this != Chart.LoadedInstrument) return;
 
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress) return;
         bool tickMovement = false;
         bool laneMovement = false;
 
         var currentMouseTick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
+        var currentMouseLane = Chart.instance.SceneDetails.MatchXCoordinateToLane(Chart.instance.SceneDetails.GetCursorHighwayPosition().x);
 
-        if (currentMouseTick == moveData.lastMouseTick) return;
+        if (currentMouseTick != moveData.lastMouseTick) tickMovement = true;
+        if (currentMouseLane != moveData.lastLane) laneMovement = true;
 
-        if (!moveData.inProgress)
+        if (!moveData.inProgress && (tickMovement || laneMovement))
         {
             // optimize call
-            moveData = new(currentMouseTick, Lanes.ExportCurrentData(), Lanes.GetNormalizedSelectionData(), Lanes.GetFirstSelectionTick());
+            moveData = new(
+                currentMouseTick,
+                firstLane: currentMouseLane,
+                Lanes.ExportCurrentData(),
+                Lanes.GetNormalizedSelectionData(),
+                Lanes.GetFirstSelectionTick()
+                );
             Chart.editMode = false;
             return;
         }
+        if (!(tickMovement || laneMovement)) return;
 
         Lanes.ClearAllSelections();
-
         Lanes.SetLaneData(moveData.preMoveData);
 
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
 
         var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
-
-        Lanes.OverwriteLaneDataWithOffset(moveData.movingData, pasteDestination);
+        Lanes.OverwriteLaneDataWithOffset(moveData.GetMoveData(currentMouseLane - moveData.firstLane), pasteDestination);
 
         Chart.Refresh();
 
         moveData.lastMouseTick = currentMouseTick;
         moveData.lastGhostStartTick = pasteDestination;
+        moveData.lastLane = currentMouseLane;
     }
 
     void CompleteMove()
     {
+        Chart.Log("Move completed");
         Chart.editMode = true;
         if (!moveData.inProgress) return;
 
-        Lanes.ApplyScaledSelection(moveData.movingData, moveData.lastGhostStartTick);
+        Lanes.ApplyScaledSelection(moveData.GetMoveData(moveData.lastLane - moveData.firstLane), moveData.lastGhostStartTick);
 
         moveData = new();
         justMoved = true;
