@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Overlays;
+using UnityEngine;
 
 public class MoveDataPackage<T> where T : IEventData
 {
@@ -35,12 +36,13 @@ public class MoveDataPackage<T> where T : IEventData
         else sequentialMoveData = originalMovingDataSet;
 
         SortedDictionary<int, T>[] output = new SortedDictionary<int, T>[originalMovingDataSet.Length];
-        for (int i = 0; i < originalMovingDataSet.Length; i++)
+        for (int i = 0; i < sequentialMoveData.Length; i++)
         {
             // this is here because when shifting lane data left/right, a (n = laneShift) number of dictionaries
             // will be null upon a move, which throws errors later down the line.
             // this makes it clear that they are genuinely just empty dictionaries
             output[i] = new();
+
             if (i - laneShift < 0 || i - laneShift > originalMovingDataSet.Length-1) continue;
 
             output[i] = sequentialMoveData[i - laneShift];

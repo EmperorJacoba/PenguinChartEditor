@@ -328,6 +328,18 @@ public class SyncTrackInstrument : IInstrument
         return (int)(ts + numIntervals * tickInterval);
     }
 
+    public int GetNextDivisionEvent(int currentTick)
+    {
+        var ts = TimeSignatureEvents.GetPreviousTickEventInLane(currentTick);
+        if (ts < 0) ts = 0;
+
+        var tickDiff = currentTick - ts;
+        var tickInterval = GetDivisionStep(ts);
+        int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
+
+        return (int)(ts + numIntervals * tickInterval);
+    }
+
     public int GetNextBeatlineEventExclusive(int currentTick)
     {
         currentTick++;

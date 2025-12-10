@@ -344,7 +344,6 @@ public class AudioManager : MonoBehaviour
             metronomeStreamHandle = Bass.BASS_StreamCreateFile($"{Application.streamingAssetsPath}/metronomeclick.mp3", 0, 0, BASSFlag.BASS_DEFAULT);
         }
         bool success = Bass.BASS_ChannelPlay(metronomeStreamHandle, false);
-        Debug.Log(success);
     }
 
     static int clapStreamHandle = -1;
@@ -356,8 +355,6 @@ public class AudioManager : MonoBehaviour
             clapStreamHandle = Bass.BASS_StreamCreateFile($"{Application.streamingAssetsPath}/clap.mp3", 0, 0, BASSFlag.BASS_DEFAULT);
         }
         bool success = Bass.BASS_ChannelPlay(clapStreamHandle, false);
-        Debug.Log(success);
-
     }
 
     /// <summary>
