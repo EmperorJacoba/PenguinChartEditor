@@ -14,22 +14,9 @@ public class TSLabel : Label<TSData>, IPoolable
 
     #endregion
 
-    public override int Tick
-    {
-        get
-        {
-            return _tick;
-        }
-    }
-    int _tick;
-
     public void InitializeEvent(int tick)
     {
-        _tick = tick;
-        Visible = true;
-        InitializeLabel();
-        UpdatePosition(Waveform.GetWaveformRatio(_tick), Chart.instance.SceneDetails.HighwayLength);
-
+        base.InitializeLabel(tick);
         tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsEventValid(tick);
     }
 
@@ -43,11 +30,8 @@ public class TSLabel : Label<TSData>, IPoolable
 
     #endregion
 
-    public override void SustainSelection() { return; }
-    public override void CompleteSustain()
-    {
-        return;
-    }
+    public override void SustainSelection() { }
+    public override void CompleteSustain() { }
 
     #region Conversions
 

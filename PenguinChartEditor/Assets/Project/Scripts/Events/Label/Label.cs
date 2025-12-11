@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public interface ILabel
 {
@@ -42,7 +43,23 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         }
     }
 
+    public override int Tick
+    {
+        get
+        {
+            return _tick;
+        }
+    }
+    protected int _tick;
+
     public abstract void HandleManualEndEdit(string newVal);
+
+    /// <summary>
+    /// This prevents label entry boxes from appearing on unrequested labels.
+    /// When initializing a label, this tick is set to the current tick of the label,
+    /// and when refreshing labels, if the ticks of the labels do not match, then the entry box should be hidden.
+    /// </summary>
+    protected static int editTick = -1;
 
     public void ActivateManualInput()
     {
@@ -50,6 +67,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         LabelEntryBox.gameObject.SetActive(true);
         
         if (!LabelObject.activeInHierarchy || !LaneData.ContainsKey(Tick)) return;
+        editTick = Tick;
 
         LabelEntryBox.gameObject.SetActive(true);
         LabelEntryBox.ActivateInputField();
@@ -80,10 +98,16 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         ConcludeManualEdit();
     }
 
-    public virtual void InitializeLabel()
+    public virtual void InitializeLabel(int tick)
     {
+        _tick = tick;
+        Visible = true;
+        UpdatePosition(Waveform.GetWaveformRatio(_tick), Chart.instance.SceneDetails.HighwayLength);
+
         LabelText = ConvertDataToPreviewString();
         Selected = CheckForSelection();
+
+        if (editTick != _tick) DeactivateManualInput();
     }
 
     public virtual void SetLabelInactive()
