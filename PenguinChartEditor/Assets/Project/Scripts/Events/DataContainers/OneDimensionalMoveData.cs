@@ -25,7 +25,7 @@ public class OneDimensionalMoveData<T> where T : IEventData
 
     public OneDimensionalMoveData(
         int currentMouseTick, 
-        SortedDictionary<int, T> laneData, 
+        LaneSet<T> lane, 
         SortedDictionary<int, T> selectionData, 
         int firstSelectionTick
         )
@@ -34,15 +34,24 @@ public class OneDimensionalMoveData<T> where T : IEventData
         lastMouseTick = currentMouseTick;
 
         this.firstSelectionTick = firstSelectionTick;
-        if (firstSelectionTick == SelectionSet<T>.NONE_SELECTED) return;
+        if (firstSelectionTick == SelectionSet<T>.NONE_SELECTED || selectionData.Count == 0) return;
 
         lastGhostStartTick = firstSelectionTick;
 
-        preMoveData = laneData;
+        preMoveData = lane.ExportData();
         originalMovingDataSet = selectionData;
 
-        foreach(var tick in originalMovingDataSet.Keys)
+        foreach (var tick in lane.protectedTicks)
         {
+            if (originalMovingDataSet.ContainsKey(tick - firstSelectionTick))
+            {
+                originalMovingDataSet.Remove(tick - firstSelectionTick);
+            }
+        }
+
+        foreach (var tick in originalMovingDataSet.Keys)
+        {
+            Chart.Log($"{tick}");
             preMoveData.Remove(tick + firstSelectionTick, out T data);
         }
 

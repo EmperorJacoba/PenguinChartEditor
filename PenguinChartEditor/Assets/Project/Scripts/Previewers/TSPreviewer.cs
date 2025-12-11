@@ -16,7 +16,7 @@ public class TSPreviewer : Previewer
 
     public override void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
-        if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) return;
+        if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) { Hide(); return; }
 
         Tick = SongTime.CalculateGridSnappedTick(percentOfScreenVertical);
         tsLabel.UpdatePosition(Waveform.GetWaveformRatio(Tick), boundaryReference.rect.height);

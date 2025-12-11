@@ -8166,6 +8166,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1676468542}
   m_CullTransparentMesh: 1
+--- !u!1 &1677505268
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1677505270}
+  - component: {fileID: 1677505269}
+  m_Layer: 0
+  m_Name: SceneDetails
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1677505269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1677505268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b2ae9a6fc9379e4e8cb243a14592c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentScene: 1
+  is2D: 1
+  highway: {fileID: 1489170079}
+  laneWidth: 0
+  overlayUIRaycaster: {fileID: 1606916091}
+  eventRaycaster: {fileID: 1814809336}
+  cameraHighwayRaycaster: {fileID: 0}
+--- !u!4 &1677505270
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1677505268}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1703950541 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1124071522275352608, guid: 74daa2c11298dcd4c83bd3aacd660b10, type: 3}
@@ -10411,6 +10462,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 55859144864384448, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
+      propertyPath: sceneDetails
+      value: 
+      objectReference: {fileID: 1677505269}
     - target: {fileID: 2408800730247674004, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -10975,6 +11030,7 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1677505270}
   - {fileID: 988807913}
   - {fileID: 1466467684}
   - {fileID: 783114567}

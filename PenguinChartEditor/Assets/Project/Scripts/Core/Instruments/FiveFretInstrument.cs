@@ -133,6 +133,8 @@ public class FiveFretInstrument : IInstrument
 
     void CompleteMove()
     {
+        if (this != Chart.LoadedInstrument) return;
+
         Chart.Log("Move completed");
         Chart.editMode = true;
         if (!moveData.inProgress) return;

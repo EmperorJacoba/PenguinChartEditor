@@ -56,6 +56,7 @@ public class SyncTrackInstrument : IInstrument
         TimeSignatureEvents = tsEvents;
         bpmSelection = new(TempoEvents);
         tsSelection = new(TimeSignatureEvents);
+        SetUpInputMap();
 
         // Tempo.Events.UpdateNeededAtTick += modifiedTick => Tempo.RecalculateTempoEventDictionary(modifiedTick);
     }
@@ -65,7 +66,7 @@ public class SyncTrackInstrument : IInstrument
     {
         inputMap = new();
         inputMap.Enable();
-        inputMap.Charting.Drag.performed += x => 
+        inputMap.Charting.YDrag.performed += x => 
         {
             // Let BPM labels do their thing undisturbed if applicable
             if (!Input.GetKey(KeyCode.LeftControl)) 
@@ -87,30 +88,37 @@ public class SyncTrackInstrument : IInstrument
     /// </summary>
     public virtual void MoveSelection()
     {
-        // Early return if attempting to start a move while over an overlay element
-        // Allows moves to start only if interacting with main content
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !(bpmMoveData.inProgress || tsMoveData.inProgress)) return;
-
-        var currentMouseTick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
+        var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
         MoveLane(currentMouseTick, ref bpmMoveData, bpmSelection, TempoEvents);
         MoveLane(currentMouseTick, ref tsMoveData, tsSelection, TimeSignatureEvents);
     }
 
     void MoveLane<T>(int currentMouseTick, ref OneDimensionalMoveData<T> moveData, SelectionSet<T> selection, LaneSet<T> lane) where T : IEventData
     {
-        if (currentMouseTick == moveData.lastMouseTick) return;
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress)
+        {
+            // Chart.Log($"Returned 1. {typeof(T)}, {Chart.instance.SceneDetails.IsSceneOverlayUIHit()} {moveData.inProgress}");
+            return;
+        }
+        if (currentMouseTick == moveData.lastMouseTick) 
+        {
+            // Chart.Log($"Returned 2. {typeof(T)}, {currentMouseTick}, {moveData.lastMouseTick}");
+            return;
+        }
 
         if (!moveData.inProgress)
         {
             moveData = new OneDimensionalMoveData<T>(
                     currentMouseTick,
-                    lane.ExportData(),
+                    lane,
                     selection.ExportNormalizedData(),
                     selection.GetFirstSelectedTick()
                 );
             Chart.editMode = false;
             return;
         }
+
+        // Chart.Log($"Passed init. {typeof(T)}, {currentMouseTick}, {moveData.lastMouseTick}");
 
         selection.Clear();
         lane.OverwriteLaneDataWith(moveData.preMoveData);
@@ -120,18 +128,19 @@ public class SyncTrackInstrument : IInstrument
         var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
         lane.OverwriteDataWithOffset(moveData.originalMovingDataSet, pasteDestination);
 
-        Chart.Refresh();
-
         moveData.lastMouseTick = currentMouseTick;
         moveData.lastGhostStartTick = pasteDestination;
 
-        if (typeof(T) == typeof(BPMData)) RecalculateTempoEventDictionary(pasteDestination);
+        if (typeof(T) == typeof(BPMData)) RecalculateTempoEventDictionary();
+        SongTime.InvokeTimeChanged();
+        Chart.Refresh();
     }
 
     public void CompleteMove()
     {
+        Chart.Log("Move completed");
+
         Chart.editMode = true;
-        if (!bpmMoveData.inProgress || !tsMoveData.inProgress) return;
 
         CompleteMove(ref bpmMoveData, bpmSelection);
         CompleteMove(ref tsMoveData, tsSelection);
@@ -139,6 +148,8 @@ public class SyncTrackInstrument : IInstrument
 
     public void CompleteMove<T>(ref OneDimensionalMoveData<T> moveData, SelectionSet<T> selection) where T : IEventData
     {
+        if (!moveData.inProgress) return;
+
         selection.ApplyScaledSelection(moveData.originalMovingDataSet, moveData.lastGhostStartTick);
 
         moveData = new();

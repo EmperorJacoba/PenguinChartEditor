@@ -12,11 +12,14 @@ public abstract class BaseBeatlineLane<T> : Lane<T> where T : IPoolable // BPMDa
         var firstTick = Chart.SyncTrackInstrument.GetNextBeatlineEvent(Waveform.startTick);
         var waveformEndBound = Mathf.Min(Waveform.endTick, SongTime.SongLengthTicks);
 
+        Chart.Log($"{firstTick}, {waveformEndBound}");
+
         for (int currentTick = firstTick;
             currentTick < waveformEndBound;
             currentTick = Chart.SyncTrackInstrument.GetNextBeatlineEventExclusive(currentTick)
             )
         {
+            Chart.Log($"{currentTick}");
             beatlineEvents.Add(currentTick);
         }
         return beatlineEvents;

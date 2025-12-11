@@ -270,7 +270,6 @@ public class Waveform : MonoBehaviour
         endTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)endTime);
         timeShown = endTime - startTime;
         ticksShown = endTick - startTick;
-        
 
         //Debug.Log($"{Time.frameCount}: {startTick}, {endTick}, {timeShown}, {startTime}, {endTime}");
     }

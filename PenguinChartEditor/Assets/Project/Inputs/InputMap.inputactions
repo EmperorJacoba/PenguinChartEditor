@@ -97,7 +97,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Drag",
+                    "name": "YDrag",
                     "type": "Value",
                     "id": "3c15a169-6bba-427d-8b7e-fcb67995686e",
                     "expectedControlType": "",
@@ -235,15 +235,6 @@
                     "name": "SustainExtended",
                     "type": "Button",
                     "id": "92571698-6663-4b8a-87cc-47b5fe041722",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "XDrag",
-                    "type": "Button",
-                    "id": "886c62d7-5414-481b-9994-0314b57f3474",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -443,7 +434,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Drag",
+                    "action": "YDrag",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -454,7 +445,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Drag",
+                    "action": "YDrag",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -465,7 +456,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Drag",
+                    "action": "YDrag",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -842,39 +833,6 @@
                     "action": "SustainExtended",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "One Modifier",
-                    "id": "695fe76c-7325-4f21-912d-01142ed5fee0",
-                    "path": "OneModifier",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "XDrag",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "modifier",
-                    "id": "872664d4-3071-443f-ac1c-af30a3fa36bf",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "XDrag",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "binding",
-                    "id": "70b7054c-0384-4aca-b63e-d9ba70f80d68",
-                    "path": "<Mouse>/delta/x",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "XDrag",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "One Modifier",
