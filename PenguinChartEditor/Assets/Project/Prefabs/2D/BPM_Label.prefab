@@ -613,10 +613,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 1121742303537570907}
-  <LabelObject>k__BackingField: {fileID: 4282045479885994295}
-  <LabelRectTransform>k__BackingField: {fileID: 6354539702733570004}
-  <LabelEntryBox>k__BackingField: {fileID: 7495996316370005151}
-  <_labelText>k__BackingField: {fileID: 3351073637747353966}
+  LabelRectTransform: {fileID: 6354539702733570004}
+  LabelEntryBox: {fileID: 7495996316370005151}
+  _labelText: {fileID: 3351073637747353966}
   anchorIcon: {fileID: 4364938457807363383}
 --- !u!1 &7831500826520334781
 GameObject:

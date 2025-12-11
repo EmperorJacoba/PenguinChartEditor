@@ -20,16 +20,6 @@ public class TSLabel : Label<TSData>, IPoolable
         tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsEventValid(tick);
     }
 
-    #region Event Handlers
-    public override void HandleManualEndEdit(string newVal)
-    {
-        Chart.SyncTrackInstrument.TimeSignatureEvents[Tick] = ProcessUnsafeTSString(newVal);
-
-        ConcludeManualEdit();
-    }
-
-    #endregion
-
     public override void SustainSelection() { }
     public override void CompleteSustain() { }
 
@@ -40,7 +30,7 @@ public class TSLabel : Label<TSData>, IPoolable
     /// </summary>
     /// <param name="newTS"></param>
     /// <returns></returns>
-    TSData ProcessUnsafeTSString(string newTS)
+    protected override TSData ProcessUnsafeLabelString(string newTS)
     {
         var currentTS = Chart.SyncTrackInstrument.TimeSignatureEvents[Tick];
         var seperatedTS = newTS.Split("/");
@@ -55,7 +45,7 @@ public class TSLabel : Label<TSData>, IPoolable
         return new TSData(num, denom);
     }
 
-    public override string ConvertDataToPreviewString()
+    protected override string ConvertDataToPreviewString()
     {
         return $"{Chart.SyncTrackInstrument.TimeSignatureEvents[Tick].Numerator} / {Chart.SyncTrackInstrument.TimeSignatureEvents[Tick].Denominator}";
     }

@@ -51,7 +51,6 @@ public class OneDimensionalMoveData<T> where T : IEventData
 
         foreach (var tick in originalMovingDataSet.Keys)
         {
-            Chart.Log($"{tick}");
             preMoveData.Remove(tick + firstSelectionTick, out T data);
         }
 

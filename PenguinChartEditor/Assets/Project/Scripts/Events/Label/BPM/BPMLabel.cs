@@ -23,7 +23,6 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     [SerializeField] Anchor anchorIcon;
     public Coroutine destructionCoroutine { get; set; }
 
-
     #endregion
 
     public void InitializeEvent(int tick)
@@ -58,18 +57,21 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     /// </summary>
     /// <param name="newBPM"></param>
     /// <returns></returns>
-    float ProcessUnsafeBPMString(string newBPM)
+    protected override BPMData ProcessUnsafeLabelString(string newBPM)
     {
+        var existingData = Chart.SyncTrackInstrument.TempoEvents[Tick];
+
         var bpmAsFloat = float.Parse(newBPM);
         if (bpmAsFloat == 0 || bpmAsFloat > 1000.0f)
         {
-            return Chart.SyncTrackInstrument.TempoEvents[Tick].BPMChange;
+            return Chart.SyncTrackInstrument.TempoEvents[Tick];
         }
         bpmAsFloat = (float)Math.Round(bpmAsFloat, 3);
-        return bpmAsFloat;
+
+        return new(bpmAsFloat, existingData.Timestamp, existingData.Anchor);
     }
 
-    public override string ConvertDataToPreviewString()
+    protected override string ConvertDataToPreviewString()
     {
         return $"{Chart.SyncTrackInstrument.TempoEvents[Tick].BPMChange}";
     }
@@ -78,35 +80,16 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
     #region Change BPM
 
-    public override void HandleManualEndEdit(string newVal)
-    {
-        try
-        {
-            Chart.SyncTrackInstrument.TempoEvents[Tick] = new BPMData(ProcessUnsafeBPMString(newVal), Chart.SyncTrackInstrument.TempoEvents[Tick].Timestamp, Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor);
-        }
-        catch
-        {
-            return;
-        }
-
-        Chart.SyncTrackInstrument.RecalculateTempoEventDictionary(Tick);
-
-        ConcludeManualEdit();
-    }
-
     // This runs alongside MoveSelection() on each label locally if restrictions apply
     // ChangeBPMPositionFromDrag() works a lot simpler with this approach versus overriding the function
     public void OnDrag(PointerEventData data)
     {
-        if (Tick == 0) return;
-        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftAlt))
-        {
-            ChangeBPMPositionFromDrag(data.delta.y, true);
-        }
-        else if (Input.GetKey(KeyCode.LeftControl))
-        {
-            ChangeBPMPositionFromDrag(data.delta.y, false);
-        }
+        if (Tick == 0 || !Input.GetKey(KeyCode.LeftControl)) return;
+
+        ChangeBPMPositionFromDrag(
+            mouseDelta: data.delta.y,
+            anchorNextEvent: Input.GetKey(KeyCode.LeftAlt)
+            );
     }
 
     /// <summary>

@@ -42,7 +42,15 @@ public interface IEvent
 public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPointerUpHandler where T : IEventData
 {
     #region Properties
-    public virtual int Tick { get; }
+    public int Tick
+    {
+        get
+        {
+            return _tick;
+        }
+    }
+    protected int _tick;
+
     public bool Selected
     {
         get
@@ -144,6 +152,12 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
 
             Selection.Remove(Tick); // otherwise it will lay dorment and screw up anything to do with selections
             disableNextSelectionCheck = true;
+
+            if (typeof(T) == typeof(BPMData))
+            {
+                Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
+                SongTime.InvokeTimeChanged();
+            }
 
             Chart.Refresh();
         }

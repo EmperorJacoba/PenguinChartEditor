@@ -102,15 +102,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public override IInstrument ParentInstrument => chartInstrument;
 
-    public override int Tick
-    {
-        get
-        {
-            return _tick;
-        }
-    }
-    [SerializeField] int _tick;
-
     public void InitializeEvent(int tick, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer)
     {
         _tick = tick;

@@ -2,26 +2,20 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public interface ILabel
 {
-    bool Visible { get; set; }
     string LabelText { get; set; }
-    bool Selected { get; set; }
-    string ConvertDataToPreviewString();
-    bool CheckForSelection();
-    void DeactivateManualInput();
 }
 
 public abstract class Label<T> : Event<T>, ILabel where T : IEventData
 {
-    [field: SerializeField] public GameObject LabelObject { get; set; }
-    [field: SerializeField] public RectTransform LabelRectTransform { get; set; }
-    [field: SerializeField] public TMP_InputField LabelEntryBox { get; set; }
-    [field: SerializeField] protected TextMeshProUGUI _labelText { get; set; }
+    #region Components
 
-    public abstract string ConvertDataToPreviewString();
+    [SerializeField] RectTransform LabelRectTransform;
+    [SerializeField] TMP_InputField LabelEntryBox;
+    [SerializeField] TextMeshProUGUI _labelText;
+
     public string LabelText
     {
         get
@@ -34,6 +28,10 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         }
     }
 
+    #endregion
+
+    #region Setup
+
     void Start()
     {
         if (LabelEntryBox != null)
@@ -43,30 +41,19 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         }
     }
 
-    public override int Tick
-    {
-        get
-        {
-            return _tick;
-        }
-    }
-    protected int _tick;
+    #endregion
 
-    public abstract void HandleManualEndEdit(string newVal);
+    #region Manual Input / Entry Box Handling
 
-    /// <summary>
-    /// This prevents label entry boxes from appearing on unrequested labels.
-    /// When initializing a label, this tick is set to the current tick of the label,
-    /// and when refreshing labels, if the ticks of the labels do not match, then the entry box should be hidden.
-    /// </summary>
-    protected static int editTick = -1;
+    protected abstract string ConvertDataToPreviewString();
+    protected abstract T ProcessUnsafeLabelString(string newVal);
 
     public void ActivateManualInput()
     {
         if (LabelEntryBox == null) return;
         LabelEntryBox.gameObject.SetActive(true);
-        
-        if (!LabelObject.activeInHierarchy || !LaneData.ContainsKey(Tick)) return;
+
+        if (!Visible || !LaneData.ContainsKey(Tick)) return;
         editTick = Tick;
 
         LabelEntryBox.gameObject.SetActive(true);
@@ -78,6 +65,34 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         SongTime.DisableChartingInputMap();
     }
 
+    /// <summary>
+    /// This prevents label entry boxes from appearing on unrequested labels.
+    /// When initializing a label, this tick is set to the current tick of the label,
+    /// and when refreshing labels, if the ticks of the labels do not match, then the entry box should be hidden.
+    /// </summary>
+    protected static int editTick = -1;
+
+    public void HandleManualEndEdit(string newVal)
+    {
+        LaneData[Tick] = ProcessUnsafeLabelString(newVal);
+
+        if (typeof(T) == typeof(BPMData)) Chart.SyncTrackInstrument.RecalculateTempoEventDictionary(_tick);
+
+        ConcludeManualEdit();
+        SongTime.InvokeTimeChanged();
+    }
+
+    public void HandleEntryBoxDeselect()
+    {
+        ConcludeManualEdit();
+    }
+
+    public void ConcludeManualEdit()
+    {
+        Chart.editMode = true;
+        DeactivateManualInput();
+    }
+
     public void DeactivateManualInput()
     {
         LabelEntryBox.gameObject.SetActive(false);
@@ -86,17 +101,9 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         SongTime.EnableChartingInputMap();
     }
 
-    public void ConcludeManualEdit()
-    {
-        Chart.editMode = true;
-        DeactivateManualInput();
-        Chart.Refresh();
-    }
+    #endregion
 
-    public void HandleEntryBoxDeselect()
-    {
-        ConcludeManualEdit();
-    }
+    #region Init/Deinit Label
 
     public virtual void InitializeLabel(int tick)
     {
@@ -110,18 +117,28 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         if (editTick != _tick) DeactivateManualInput();
     }
 
+    public void UpdatePosition(double percentOfScreen, float screenHeight)
+    {
+        var yScreenProportion = (float)percentOfScreen * screenHeight;
+        transform.localPosition = new Vector3(transform.localPosition.x, yScreenProportion - (LabelRectTransform.rect.height / 2));
+    }
+
     public virtual void SetLabelInactive()
     {
         Visible = false;
         DeactivateManualInput();
     }
 
+    #endregion
+
+    #region Double Click Implementation (Activate Labels)
+
     int clickCount = 0;
     public override void OnPointerDown(PointerEventData pointerEventData)
     {
         base.OnPointerDown(pointerEventData);
 
-        if (pointerEventData.button != PointerEventData.InputButton.Left) return;
+        if (pointerEventData.button != PointerEventData.InputButton.Left || !LaneData.ContainsKey(Tick)) return;
         
         clickCount++;
 
@@ -151,9 +168,5 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         clickCount = 0;
     }
 
-    public void UpdatePosition(double percentOfScreen, float screenHeight)
-    {
-        var yScreenProportion = (float)percentOfScreen * screenHeight;
-        transform.localPosition = new Vector3(transform.localPosition.x, yScreenProportion - (LabelRectTransform.rect.height / 2));
-    }
+    #endregion
 }
