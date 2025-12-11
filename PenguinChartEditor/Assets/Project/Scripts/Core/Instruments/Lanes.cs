@@ -71,7 +71,7 @@ public class Lanes<T> where T : IEventData
         return minSelectionTicks.Count > 0 ? minSelectionTicks.Min() : SelectionSet<T>.NONE_SELECTED;
     }
 
-    public SortedDictionary<int, T>[] GetNormalizedSelectionData()
+    public SortedDictionary<int, T>[] ExportNormalizedSelectionData()
     {
         SortedDictionary<int, T>[] normalizedData = new SortedDictionary<int, T>[Count];
         for (int i = 0; i < Count; i++)
@@ -115,7 +115,7 @@ public class Lanes<T> where T : IEventData
         return new TickBounds(prev, next);
     }
 
-    public SortedDictionary<int, T>[] ExportCurrentData()
+    public SortedDictionary<int, T>[] ExportData()
     {
         SortedDictionary<int, T>[] saveData = new SortedDictionary<int, T>[lanes.Length];
         for (int i = 0; i < Count; i++)

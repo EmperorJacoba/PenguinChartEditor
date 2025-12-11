@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-// Two dimension in this scenario meaning across time and lanes. Enables lane-to-lane movement.
+// Two dimensions in this scenario meaning across time and lanes. Enables lane-to-lane movement.
 public class TwoDimensionalMoveData<T> where T : IEventData
 {
     public bool inProgress = false;
@@ -38,13 +38,11 @@ public class TwoDimensionalMoveData<T> where T : IEventData
     }
 
     public TwoDimensionalMoveData(
-
         int currentMouseTick, 
         int firstLane,
         SortedDictionary<int, T>[] laneData, 
         SortedDictionary<int, T>[] selectionData, 
         int firstSelectionTick
-
         )
     {
         firstMouseTick = currentMouseTick;
@@ -52,10 +50,8 @@ public class TwoDimensionalMoveData<T> where T : IEventData
         this.firstLane = firstLane;
 
         this.firstSelectionTick = firstSelectionTick;
-        if (firstSelectionTick == SelectionSet<T>.NONE_SELECTED)
-        {
-            return;
-        }
+        if (firstSelectionTick == SelectionSet<T>.NONE_SELECTED) return;
+
         lastGhostStartTick = firstSelectionTick;
 
         // preMoveData needs selection data removed

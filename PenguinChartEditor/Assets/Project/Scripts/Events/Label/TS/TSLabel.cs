@@ -6,8 +6,6 @@ public class TSLabel : Label<TSData>, IPoolable
     #region Event Sets
     public override SelectionSet<TSData> Selection => Chart.SyncTrackInstrument.tsSelection;
     public override LaneSet<TSData> LaneData => Chart.SyncTrackInstrument.TimeSignatureEvents;
-
-    public override MoveData<TSData> GetMoveData() => Chart.SyncTrackInstrument.tsMoveData;
     public override void RefreshLane() => TSLane.instance.UpdateEvents();
     public override IPreviewer EventPreviewer => TSPreviewer.instance;
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;

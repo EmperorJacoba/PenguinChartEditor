@@ -10,7 +10,6 @@ using UnityEngine.EventSystems;
 
 public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 {
-    public override MoveData<FiveFretNoteData> GetMoveData() => chartInstrument.InstrumentMoveData[(int)laneIdentifier];
     public override LaneSet<FiveFretNoteData> LaneData => chartInstrument.Lanes.GetLane((int)laneIdentifier);
     public override SelectionSet<FiveFretNoteData> Selection => chartInstrument.Lanes.GetLaneSelection((int)laneIdentifier);
 

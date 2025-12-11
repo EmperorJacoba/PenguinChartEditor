@@ -128,7 +128,7 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
         return NONE_SELECTED;
     }
 
-    public HashSet<int> GetNormalizedSelection()
+    public HashSet<int> GetNormalizedSelectionData()
     {
         HashSet<int> receiver = new();
         var firstTick = GetFirstSelectedTick();

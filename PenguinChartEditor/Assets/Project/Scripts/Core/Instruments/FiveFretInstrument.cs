@@ -28,8 +28,8 @@ public class FiveFretInstrument : IInstrument
     #endregion
 
     public Lanes<FiveFretNoteData> Lanes { get; set; }
-    public MoveData<FiveFretNoteData>[] InstrumentMoveData { get; set; } =
-        new MoveData<FiveFretNoteData>[6] { new(), new(), new(), new(), new(), new() };
+    public OneDimensionalMoveData<FiveFretNoteData>[] InstrumentMoveData { get; set; } =
+        new OneDimensionalMoveData<FiveFretNoteData>[6] { new(), new(), new(), new(), new(), new() };
 
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
@@ -107,8 +107,8 @@ public class FiveFretInstrument : IInstrument
             moveData = new(
                 currentMouseTick,
                 firstLane: currentMouseLane,
-                Lanes.ExportCurrentData(),
-                Lanes.GetNormalizedSelectionData(),
+                Lanes.ExportData(),
+                Lanes.ExportNormalizedSelectionData(),
                 Lanes.GetFirstSelectionTick()
                 );
             Chart.editMode = false;

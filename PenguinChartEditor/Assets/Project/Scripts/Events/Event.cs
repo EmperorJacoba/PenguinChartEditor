@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -22,11 +20,8 @@ public interface IEvent
 
     // So that Lane<T> can access these easily
     void DeleteSelection();
-    void MoveSelection();
-    void MoveSelectionByLane();
     void SustainSelection();
     void CompleteSustain();
-    void CompleteMove();
     void CheckForSelectionClear();
     void SelectAllEvents();
 }
@@ -91,8 +86,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
     public abstract LaneSet<T> LaneData { get; }
     public ILaneData GetLaneData() => LaneData;
 
-    public abstract MoveData<T> GetMoveData();
-
     public abstract IPreviewer EventPreviewer { get; }
     public abstract IInstrument ParentInstrument { get; }
 
@@ -121,126 +114,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
         createAction.Execute(newTick, newData, Selection);
         Chart.Refresh();
     }
-
-    #endregion
-
-    #region Moving
-
-    /// <summary>
-    /// Runs every frame when Drag input action is active. 
-    /// </summary>
-    public virtual void MoveSelection()
-    {
-        return;
-        Debug.Log("Running event.cs move function.");
-        if (Input.GetKey(KeyCode.LeftControl)) return; // Let BPM labels do their thing undisturbed if applicable
-
-        var moveData = GetMoveData();
-
-        // Early return if attempting to start a move while over an overlay element
-        // Allows moves to start only if interacting with main content
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.moveInProgress)
-        {
-            return;
-        }
-
-        var currentMouseTick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
-
-        // early return if no changes to mouse's grid snap
-        if (currentMouseTick == moveData.lastMouseTick)
-        {
-            moveData.lastMouseTick = currentMouseTick;
-            return;
-        }
-
-        if (!moveData.moveInProgress)
-        {
-            InitializeMoveAction(currentMouseTick);
-            return;
-        }
-
-        // in some cases this runs even when nothing is moving which will throw an error 
-        if (moveData.MovingGhostSet.Count == 0)
-        {
-            return;
-        }
-
-        // temporarily clear selection to avoid selection jank while moving
-        // (items that are not selected could appear selected and vice versa b/c of selection logic)
-        // selection gets restored upon drag ending
-        Selection.Clear();
-
-        // delete last preview's data
-        LaneData.PopTicksInRange(moveData.lastTempGhostPasteStartTick, moveData.lastTempGhostPasteEndTick);
-
-        // re-add any data that was overwritten by last preview
-        // SaveData holds state of dictionary before move action without the moving objects 
-        // (moving objects themselves are stored in poppedData for needed uses)
-        var keysToReAdd = moveData.currentMoveAction.SaveData.Keys.Where(x => x >= moveData.lastTempGhostPasteStartTick && x <= moveData.lastTempGhostPasteEndTick).ToHashSet();
-        LaneData.OverwriteTicksFromSet(keysToReAdd, moveData.currentMoveAction.SaveData); // replace no longer overwritten data
-
-        var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
-
-        // base the paste on how the cursor moves so that the selection can move
-        // in parallel to the mouse (which is how moving should work intuitively)
-        var pasteDestination = moveData.selectionOriginTick + cursorMoveDifference;
-
-        LaneData.OverwriteDataWithOffset(moveData.MovingGhostSet, pasteDestination);
-
-        Chart.Refresh();
-
-        // set up variables for next loop
-        moveData.lastMouseTick = currentMouseTick;
-        moveData.lastTempGhostPasteStartTick = pasteDestination;
-    }
-
-    protected void InitializeMoveAction(int currentMouseTick)
-    {
-        var moveData = GetMoveData();
-        moveData.MovingGhostSet.Clear();
-
-        // first tick of move set should be 0 for correct pasting (localization)
-        // so get lowest tick to shift ticks down
-        var lowestTick = Selection.GetFirstSelectedTick();
-        if (lowestTick == SelectionSet<T>.NONE_SELECTED) return;
-
-        moveData.selectionOriginTick = lowestTick;
-
-        moveData.MovingGhostSet = Selection.ExportNormalizedData();
-
-        moveData.firstMouseTick = currentMouseTick;
-        moveData.lastMouseTick = currentMouseTick;
-
-        // happens after the moving set init in case no set is created (count = 0)
-        moveData.moveInProgress = true;
-
-        moveData.currentMoveAction = new(LaneData, moveData.MovingGhostSet, lowestTick);
-        moveData.lastTempGhostPasteStartTick = moveData.selectionOriginTick;
-
-        EventPreviewer.Hide();
-    }
-
-    static bool justMoved = false;
-    public virtual void CompleteMove()
-    {
-        // On "cancel" (CompleteMove), record edit action and put in undo stack
-
-        if (!GetMoveData().moveInProgress) return;
-
-        GetMoveData().moveInProgress = false;
-
-        Selection.ApplyScaledSelection(
-            GetMoveData().MovingGhostSet,
-            GetMoveData().lastTempGhostPasteStartTick);
-
-        EventPreviewer.Show();
-
-        justMoved = true;
-
-        Chart.Refresh();
-    }
-
-    public virtual void MoveSelectionByLane() { }
 
     #endregion
 
@@ -289,9 +162,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
         // move action's selection logic is very particular
         // needs to reinstate old selection after move completes, and that happens BEFORE the CalculateSelectionStatus() call,
         // so the reinstated selection immediately gets overwritten as a result
-        if (justMoved || ParentInstrument.justMoved)
+        if (ParentInstrument.justMoved)
         {
-            justMoved = false;
             ParentInstrument.justMoved = false;
             return;
         }

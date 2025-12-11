@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEditor.Overlays;
 using UnityEngine;
 
 public class SyncTrackInstrument : IInstrument
@@ -32,9 +33,6 @@ public class SyncTrackInstrument : IInstrument
     public SelectionSet<BPMData> bpmSelection;
     public SelectionSet<TSData> tsSelection;
 
-    public MoveData<BPMData> bpmMoveData = new();
-    public MoveData<TSData> tsMoveData = new();
-
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
 
@@ -60,6 +58,93 @@ public class SyncTrackInstrument : IInstrument
         tsSelection = new(TimeSignatureEvents);
 
         // Tempo.Events.UpdateNeededAtTick += modifiedTick => Tempo.RecalculateTempoEventDictionary(modifiedTick);
+    }
+
+    InputMap inputMap;
+    public void SetUpInputMap() 
+    {
+        inputMap = new();
+        inputMap.Enable();
+        inputMap.Charting.Drag.performed += x => 
+        {
+            // Let BPM labels do their thing undisturbed if applicable
+            if (!Input.GetKey(KeyCode.LeftControl)) 
+                MoveSelection(); 
+        };
+        inputMap.Charting.LMB.canceled += x => CompleteMove();
+    }
+
+
+    #endregion
+
+    #region Movement
+
+    OneDimensionalMoveData<BPMData> bpmMoveData = new();
+    OneDimensionalMoveData<TSData> tsMoveData = new();
+
+    /// <summary>
+    /// Runs every frame when Drag input action is active. 
+    /// </summary>
+    public virtual void MoveSelection()
+    {
+        // Early return if attempting to start a move while over an overlay element
+        // Allows moves to start only if interacting with main content
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !(bpmMoveData.inProgress || tsMoveData.inProgress)) return;
+
+        var currentMouseTick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
+        MoveLane(currentMouseTick, ref bpmMoveData, bpmSelection, TempoEvents);
+        MoveLane(currentMouseTick, ref tsMoveData, tsSelection, TimeSignatureEvents);
+    }
+
+    void MoveLane<T>(int currentMouseTick, ref OneDimensionalMoveData<T> moveData, SelectionSet<T> selection, LaneSet<T> lane) where T : IEventData
+    {
+        if (currentMouseTick == moveData.lastMouseTick) return;
+
+        if (!moveData.inProgress)
+        {
+            moveData = new OneDimensionalMoveData<T>(
+                    currentMouseTick,
+                    lane.ExportData(),
+                    selection.ExportNormalizedData(),
+                    selection.GetFirstSelectedTick()
+                );
+            Chart.editMode = false;
+            return;
+        }
+
+        selection.Clear();
+        lane.OverwriteLaneDataWith(moveData.preMoveData);
+
+        var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
+
+        var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
+        lane.OverwriteDataWithOffset(moveData.originalMovingDataSet, pasteDestination);
+
+        Chart.Refresh();
+
+        moveData.lastMouseTick = currentMouseTick;
+        moveData.lastGhostStartTick = pasteDestination;
+
+        if (typeof(T) == typeof(BPMData)) RecalculateTempoEventDictionary(pasteDestination);
+    }
+
+    public void CompleteMove()
+    {
+        Chart.editMode = true;
+        if (!bpmMoveData.inProgress || !tsMoveData.inProgress) return;
+
+        CompleteMove(ref bpmMoveData, bpmSelection);
+        CompleteMove(ref tsMoveData, tsSelection);
+    }
+
+    public void CompleteMove<T>(ref OneDimensionalMoveData<T> moveData, SelectionSet<T> selection) where T : IEventData
+    {
+        selection.ApplyScaledSelection(moveData.originalMovingDataSet, moveData.lastGhostStartTick);
+
+        moveData = new();
+        justMoved = true;
+
+        Chart.Refresh();
     }
 
     #endregion
@@ -547,8 +632,6 @@ public class SyncTrackInstrument : IInstrument
     #endregion
 
     #region Unused
-
-    public void SetUpInputMap() { }
     public void ReleaseTemporaryTicks() { } // unneeded - no sustains lol
 
     #endregion

@@ -10,7 +10,6 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     #region Event Sets
     public override SelectionSet<BPMData> Selection => Chart.SyncTrackInstrument.bpmSelection;
     public override LaneSet<BPMData> LaneData => Chart.SyncTrackInstrument.TempoEvents;
-    public override MoveData<BPMData> GetMoveData() => Chart.SyncTrackInstrument.bpmMoveData;
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
 
     #endregion
@@ -43,7 +42,6 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     // Overriden to make sure faulty/inaccurate data is not in Tempo dict after any large modifications
     public override void DeleteSelection() => ExecuteWithRecalculate(base.DeleteSelection);
     public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
-    public override void MoveSelection() => ExecuteWithRecalculate(() => base.MoveSelection());
     public override void RefreshLane() => BPMLane.instance.UpdateEvents();
     public override void SustainSelection() { return; }
     public override void CompleteSustain()
