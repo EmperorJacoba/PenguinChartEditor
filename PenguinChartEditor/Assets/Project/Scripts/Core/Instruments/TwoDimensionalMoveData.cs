@@ -2,89 +2,27 @@
 using System.Linq;
 using UnityEngine;
 
-public class MoveDataPackage<T> where T : IEventData
+// Two dimension in this scenario meaning across time and lanes. Enables lane-to-lane movement.
+public class TwoDimensionalMoveData<T> where T : IEventData
 {
     public bool inProgress = false;
 
-    public int firstMouseTick;
+    public readonly int firstMouseTick;
     public int lastMouseTick;
-    public int firstSelectionTick;
+    public readonly int firstLane;
+    public int lastLane;
+    public readonly int firstSelectionTick;
 
-    SortedDictionary<int, T>[] originalMovingDataSet;
-    public SortedDictionary<int, T>[] GetMoveData(int laneShift) 
-    {
-        if (laneShift == 0) return originalMovingDataSet;
+    /// <summary>
+    /// Contains the original (normalized) set of data that is being moved.
+    /// </summary>
+    readonly SortedDictionary<int, T>[] originalMovingDataSet;
 
-        // soooooo open note data is in the last array position
-        // even though in THEORY open notes should have a lower pitch
-        // than green, so put open note in the lowest position
-        // for correct moving between lanes via pitch
-        // this is done because in every other part of Penguin it makes
-        // vastly more sense for green to be 0 and not open,
-        // because in a .chart file N 0 0 means a green note (makes parsing/exporting more intuitive)
-        SortedDictionary<int, T>[] sequentialMoveData = new SortedDictionary<int, T>[originalMovingDataSet.Length];
-
-        if (Chart.instance.SceneDetails.currentScene == SceneType.fiveFretChart)
-        {
-            sequentialMoveData[0] = originalMovingDataSet[^1];
-            for (int i = 1; i < sequentialMoveData.Length; i++)
-            {
-                sequentialMoveData[i] = originalMovingDataSet[i - 1];
-            }
-        }
-        else sequentialMoveData = originalMovingDataSet;
-
-        SortedDictionary<int, T>[] output = new SortedDictionary<int, T>[originalMovingDataSet.Length];
-
-        for (int i = 0; i < output.Length; i++)
-        {
-            // this loop is here to make sure no dicts end up as
-            // null (which happens due to some lanes getting skipped
-            // by a lane shift, which will cause errors down the line)
-            // this cannot be implicitly done in the loop below
-            // because that loop is based on the cached move data,
-            // not the output data (to allow for lane "smooshing" (I have no better word to describe this))
-            output[i] = new();
-        }
-
-        for (int i = 0; i < sequentialMoveData.Length; i++)
-        {
-            int outputTargetIndex = i + laneShift;
-
-            // This loop is structured this way so that there is no data
-            // loss when users decide to shift the lane of a selection
-            // If data is marked for destruction (for example, if the original lane
-            // was orange, and laneShift = +1, orange would be deleted (as it is the highest lane in this context))
-            // then instead of destroying it, tell the LINQ call below to forward the data to either
-            // the lowest or highest dictionary in the output.
-            if (laneShift < 0 && i < Mathf.Abs(laneShift))
-            {
-                outputTargetIndex = 0;
-            }
-            else if (laneShift > 0 && outputTargetIndex >= output.Length)
-            {
-                outputTargetIndex = output.Length - 1;
-            }
-
-            // taken from https://stackoverflow.com/questions/294138/merging-dictionaries-in-c-sharp (second answer)
-            sequentialMoveData[i].ToList().ForEach(item => output[outputTargetIndex][item.Key] = item.Value);
-        }
-
-        // undo the lane shift in the very first loop to export correct data
-        SortedDictionary<int, T>[] correctedOutput = new SortedDictionary<int, T>[originalMovingDataSet.Length];
-        if (Chart.instance.SceneDetails.currentScene == SceneType.fiveFretChart)
-        {
-            correctedOutput[^1] = output[0];
-            for (int i = 0; i < correctedOutput.Length - 1; i++)
-            {
-                correctedOutput[i] = output[i + 1];
-            }
-        }
-        else correctedOutput = sequentialMoveData;
-
-        return correctedOutput;
-    }
+    /// <summary>
+    /// Contains the original chart data with the data being moved deleted.
+    /// </summary>
     public readonly SortedDictionary<int, T>[] preMoveData;
+
     public int lastGhostStartTick;
     public int lastGhostEndTick
     {
@@ -99,15 +37,14 @@ public class MoveDataPackage<T> where T : IEventData
         }
     }
 
-    public readonly int firstLane;
-    public int lastLane;
+    public TwoDimensionalMoveData(
 
-    public MoveDataPackage(
         int currentMouseTick, 
         int firstLane,
         SortedDictionary<int, T>[] laneData, 
         SortedDictionary<int, T>[] selectionData, 
         int firstSelectionTick
+
         )
     {
         firstMouseTick = currentMouseTick;
@@ -136,18 +73,82 @@ public class MoveDataPackage<T> where T : IEventData
         inProgress = true;
     }
 
-    public HashSet<int>[] GetKeysToReAdd()
-    {
-        HashSet<int>[] receiver = new HashSet<int>[preMoveData.Length];
-        for (int i = 0; i < preMoveData.Length; i++)
-        {
-            receiver[i] = preMoveData[i].Keys.Where(x => x >= lastGhostStartTick && x <= lastGhostEndTick).ToHashSet();
-        }
-        return receiver;
-    }
-
-    public MoveDataPackage()
+    public TwoDimensionalMoveData()
     {
         inProgress = false;
+    }
+
+    public SortedDictionary<int, T>[] GetMoveData(int laneShift)
+    {
+        if (laneShift == 0) return originalMovingDataSet;
+
+        // soooooo open note data is in the last array position
+        // even though in THEORY open notes should have a lower pitch
+        // than green, so put open note in the lowest position
+        // for correct moving between lanes via pitch
+        // this is done because in every other part of Penguin it makes
+        // vastly more sense for green to be 0 and not open,
+        // because in a .chart file N 0 0 means a green note (makes parsing/exporting more intuitive)
+        SortedDictionary<int, T>[] sequentialMoveData = new SortedDictionary<int, T>[originalMovingDataSet.Length];
+
+        if (Chart.instance.SceneDetails.currentScene == SceneType.fiveFretChart)
+        {
+            sequentialMoveData[0] = originalMovingDataSet[^1];
+            for (int i = 1; i < sequentialMoveData.Length; i++)
+            {
+                sequentialMoveData[i] = originalMovingDataSet[i - 1];
+            }
+        }
+        else sequentialMoveData = originalMovingDataSet;
+
+        SortedDictionary<int, T>[] pitchWrappedOutput = new SortedDictionary<int, T>[originalMovingDataSet.Length];
+
+        for (int i = 0; i < pitchWrappedOutput.Length; i++)
+        {
+            // this loop is here to make sure no dicts end up as
+            // null (which happens due to some lanes getting skipped
+            // by a lane shift, which will cause errors down the line)
+            // this cannot be implicitly done in the loop below
+            // because that loop is based on the cached move data,
+            // not the output data (to allow for lane "smooshing" (I have no better word to describe this))
+            pitchWrappedOutput[i] = new();
+        }
+
+        for (int i = 0; i < sequentialMoveData.Length; i++)
+        {
+            int outputTargetIndex = i + laneShift;
+
+            // This loop is structured this way so that there is no data
+            // loss when users decide to shift the lane of a selection
+            // If data is marked for destruction (for example, if the original lane
+            // was orange, and laneShift = +1, orange would be deleted (as it is the highest lane in this context))
+            // then instead of destroying it, tell the LINQ call below to forward the data to either
+            // the lowest or highest dictionary in the output.
+            if (laneShift < 0 && i < Mathf.Abs(laneShift))
+            {
+                outputTargetIndex = 0;
+            }
+            else if (laneShift > 0 && outputTargetIndex >= pitchWrappedOutput.Length)
+            {
+                outputTargetIndex = pitchWrappedOutput.Length - 1;
+            }
+
+            // taken from https://stackoverflow.com/questions/294138/merging-dictionaries-in-c-sharp (second answer)
+            sequentialMoveData[i].ToList().ForEach(item => pitchWrappedOutput[outputTargetIndex][item.Key] = item.Value);
+        }
+
+        // undo the lane shift in the very first loop to export correct data
+        SortedDictionary<int, T>[] correctedOutput = new SortedDictionary<int, T>[originalMovingDataSet.Length];
+        if (Chart.instance.SceneDetails.currentScene == SceneType.fiveFretChart)
+        {
+            correctedOutput[^1] = pitchWrappedOutput[0];
+            for (int i = 0; i < correctedOutput.Length - 1; i++)
+            {
+                correctedOutput[i] = pitchWrappedOutput[i + 1];
+            }
+        }
+        else correctedOutput = pitchWrappedOutput;
+
+        return correctedOutput;
     }
 }

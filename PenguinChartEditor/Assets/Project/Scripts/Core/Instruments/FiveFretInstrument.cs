@@ -84,7 +84,7 @@ public class FiveFretInstrument : IInstrument
         inputMap.Charting.LMB.canceled += x => CompleteMove();
     }
 
-    MoveDataPackage<FiveFretNoteData> moveData = new();
+    TwoDimensionalMoveData<FiveFretNoteData> moveData = new();
     public bool justMoved { get; set; } = false;
 
     void MoveSelection()
