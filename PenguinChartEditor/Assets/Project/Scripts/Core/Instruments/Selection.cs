@@ -46,7 +46,7 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
     {
         var receiver = new SortedDictionary<int, TValue>();
 
-        foreach (var selectedTick in selection)
+        foreach (var selectedTick in new HashSet<int>(selection))
         {
             if (parentLane.Contains(selectedTick))
             {

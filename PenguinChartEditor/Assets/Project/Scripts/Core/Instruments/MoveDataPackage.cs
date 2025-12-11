@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Overlays;
 using UnityEngine;
 
 public class MoveDataPackage<T> where T : IEventData
@@ -36,18 +35,42 @@ public class MoveDataPackage<T> where T : IEventData
         else sequentialMoveData = originalMovingDataSet;
 
         SortedDictionary<int, T>[] output = new SortedDictionary<int, T>[originalMovingDataSet.Length];
-        for (int i = 0; i < sequentialMoveData.Length; i++)
+
+        for (int i = 0; i < output.Length; i++)
         {
-            // this is here because when shifting lane data left/right, a (n = laneShift) number of dictionaries
-            // will be null upon a move, which throws errors later down the line.
-            // this makes it clear that they are genuinely just empty dictionaries
+            // this loop is here to make sure no dicts end up as
+            // null (which happens due to some lanes getting skipped
+            // by a lane shift, which will cause errors down the line)
+            // this cannot be implicitly done in the loop below
+            // because that loop is based on the cached move data,
+            // not the output data (to allow for lane "smooshing" (I have no better word to describe this))
             output[i] = new();
-
-            if (i - laneShift < 0 || i - laneShift > originalMovingDataSet.Length-1) continue;
-
-            output[i] = sequentialMoveData[i - laneShift];
         }
 
+        for (int i = 0; i < sequentialMoveData.Length; i++)
+        {
+            int outputTargetIndex = i + laneShift;
+
+            // This loop is structured this way so that there is no data
+            // loss when users decide to shift the lane of a selection
+            // If data is marked for destruction (for example, if the original lane
+            // was orange, and laneShift = +1, orange would be deleted (as it is the highest lane in this context))
+            // then instead of destroying it, tell the LINQ call below to forward the data to either
+            // the lowest or highest dictionary in the output.
+            if (laneShift < 0 && i < Mathf.Abs(laneShift))
+            {
+                outputTargetIndex = 0;
+            }
+            else if (laneShift > 0 && outputTargetIndex >= output.Length)
+            {
+                outputTargetIndex = output.Length - 1;
+            }
+
+            // taken from https://stackoverflow.com/questions/294138/merging-dictionaries-in-c-sharp (second answer)
+            sequentialMoveData[i].ToList().ForEach(item => output[outputTargetIndex][item.Key] = item.Value);
+        }
+
+        // undo the lane shift in the very first loop to export correct data
         SortedDictionary<int, T>[] correctedOutput = new SortedDictionary<int, T>[originalMovingDataSet.Length];
         if (Chart.instance.SceneDetails.currentScene == SceneType.fiveFretChart)
         {
@@ -57,6 +80,7 @@ public class MoveDataPackage<T> where T : IEventData
                 correctedOutput[i] = output[i + 1];
             }
         }
+        else correctedOutput = sequentialMoveData;
 
         return correctedOutput;
     }
