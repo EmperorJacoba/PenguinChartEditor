@@ -36,7 +36,10 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     void Start()
     {
         if (LabelEntryBox != null)
+        {
             LabelEntryBox.onEndEdit.AddListener(x => HandleManualEndEdit(x));
+            LabelEntryBox.onDeselect.AddListener(x => HandleEntryBoxDeselect());
+        }
     }
 
     public abstract void HandleManualEndEdit(string newVal);
@@ -94,14 +97,15 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     {
         base.OnPointerDown(pointerEventData);
 
-        if (pointerEventData.button == PointerEventData.InputButton.Left) clickCount++;
+        if (pointerEventData.button != PointerEventData.InputButton.Left) return;
+        
+        clickCount++;
 
         // Double click functionality for manual entry of beatline number
         // eventData.clickCount does not work here - pointerDown and pointerUp do not trigger click count for some reason
         // so manual coroutine solution is here to circumvent that issue
         if (!Input.GetKey(KeyCode.LeftControl) &&
             Chart.IsEditAllowed() && 
-            pointerEventData.button == PointerEventData.InputButton.Left && 
             clickCount == 2)
         {
             ActivateManualInput();
@@ -116,7 +120,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         if (clickCount == 1 && gameObject.activeInHierarchy) StartCoroutine(TriggerDoubleClick());
     }
 
-    private static WaitForSeconds clickCooldown = new(0.5f);
+    private static WaitForSeconds clickCooldown = new(0.15f);
     IEnumerator TriggerDoubleClick()
     {
         yield return clickCooldown;

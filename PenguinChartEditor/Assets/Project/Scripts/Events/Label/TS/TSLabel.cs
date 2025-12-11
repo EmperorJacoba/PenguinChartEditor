@@ -31,11 +31,6 @@ public class TSLabel : Label<TSData>, IPoolable
         UpdatePosition(Waveform.GetWaveformRatio(_tick), Chart.instance.SceneDetails.HighwayLength);
 
         tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsEventValid(tick);
-
-        // w/o this the input field will stay on if you delete it while editing
-        // leading to jank where the input field for the next event is visible
-        // but was never edited
-        if (justDeleted) DeactivateManualInput(); // does not work properly
     }
 
     #region Event Handlers
