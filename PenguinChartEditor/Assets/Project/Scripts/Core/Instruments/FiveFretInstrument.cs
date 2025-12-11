@@ -28,9 +28,6 @@ public class FiveFretInstrument : IInstrument
     #endregion
 
     public Lanes<FiveFretNoteData> Lanes { get; set; }
-    public OneDimensionalMoveData<FiveFretNoteData>[] InstrumentMoveData { get; set; } =
-        new OneDimensionalMoveData<FiveFretNoteData>[6] { new(), new(), new(), new(), new(), new() };
-
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
     public InstrumentType Instrument { get; set; }

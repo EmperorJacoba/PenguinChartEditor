@@ -44,10 +44,11 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     public void ActivateManualInput()
     {
         if (LabelEntryBox == null) return;
+        LabelEntryBox.gameObject.SetActive(true);
+        
         if (!LabelObject.activeInHierarchy || !LaneData.ContainsKey(Tick)) return;
 
         LabelEntryBox.gameObject.SetActive(true);
-
         LabelEntryBox.ActivateInputField();
 
         LabelEntryBox.text = ConvertDataToPreviewString();
@@ -66,7 +67,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
 
     public void ConcludeManualEdit()
     {
-        //BeatlinePreviewer.editMode = true;
+        Chart.editMode = true;
         DeactivateManualInput();
         Chart.Refresh();
     }

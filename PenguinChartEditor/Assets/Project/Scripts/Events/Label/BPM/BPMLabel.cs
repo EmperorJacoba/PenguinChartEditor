@@ -33,7 +33,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         // w/o this the input field will stay on if you delete it while editing
         // leading to jank where the input field for the next event is visible
         // but was never edited
-        if (justDeleted) DeactivateManualInput(); // does not work properly
+        // if (justDeleted) DeactivateManualInput(); // does not work properly
     }
 
 
