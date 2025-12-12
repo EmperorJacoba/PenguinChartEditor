@@ -74,7 +74,7 @@ public class FiveFretInstrument : IInstrument
             };
             Lanes.UpdatesNeededInRange += (startTick, endTick) =>
             {
-                // CheckForHoposInRange(startTick, endTick);
+                CheckForHoposInRange(startTick, endTick);
             };
         }
     }
@@ -145,9 +145,23 @@ public class FiveFretInstrument : IInstrument
         Chart.editMode = true;
         if (!moveData.inProgress) return;
 
+        var movingDataSet = moveData.GetMoveData(moveData.lastLane - moveData.firstLane);
         Lanes.ApplyScaledSelection(moveData.GetMoveData(moveData.lastLane - moveData.firstLane), moveData.lastGhostStartTick);
         disableNextSelectionCheck = true;
         CheckForHoposInRange(moveData.lastGhostStartTick, moveData.lastGhostEndTick);
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var lane = Lanes.GetLane(i);
+            if (movingDataSet[i].Count > 0)
+            {
+                var endTick = movingDataSet[i].Keys.Max() + moveData.lastGhostStartTick;
+                var startTick = movingDataSet[i].Keys.Min() + moveData.lastGhostStartTick;
+
+                UpdateSustain(endTick, (LaneOrientation)i, lane[endTick].Sustain);
+                ClampSustainsBefore(startTick, (LaneOrientation)i);
+            }
+        }
 
         moveData = new();
         justMoved = true;

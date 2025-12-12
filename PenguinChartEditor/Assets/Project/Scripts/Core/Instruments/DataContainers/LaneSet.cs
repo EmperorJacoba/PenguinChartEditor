@@ -266,7 +266,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     {
         int index = BinarySearchForTick(currentTick, out var tickTimeKeys);
 
-        if (~index == tickTimeKeys.Count || index == tickTimeKeys.Count) return NO_TICK_EVENT;
+        if (~index == tickTimeKeys.Count || index >= tickTimeKeys.Count - 1) return NO_TICK_EVENT;
 
         // bitwise complement is negative
         if (index >= 0) return tickTimeKeys[index + 1];
