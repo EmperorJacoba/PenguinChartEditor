@@ -148,10 +148,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
         if (Input.GetMouseButton(RMB_ID) && pointerEventData.button == PointerEventData.InputButton.Left)
         {
             var deleteAction = new Delete<T>(LaneData);
-            justDeleted = deleteAction.Execute(Tick);
-
-            Selection.Remove(Tick); // otherwise it will lay dorment and screw up anything to do with selections
-            disableNextSelectionCheck = true;
+            deleteAction.Execute(Tick);
 
             if (typeof(T) == typeof(BPMData))
             {

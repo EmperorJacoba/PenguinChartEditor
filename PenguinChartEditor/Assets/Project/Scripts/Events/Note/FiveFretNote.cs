@@ -139,15 +139,9 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public override void OnPointerUp(PointerEventData pointerEventData)
     {
-        if (disableNextSelectionCheck)
+        if (chartInstrument.disableNextSelectionCheck)
         {
-            disableNextSelectionCheck = false;
-            return;
-        }
-
-        if (justDeleted)
-        {
-            justDeleted = false;
+            chartInstrument.disableNextSelectionCheck = false;
             return;
         }
 

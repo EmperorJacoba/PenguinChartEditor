@@ -146,6 +146,7 @@ public class FiveFretInstrument : IInstrument
         if (!moveData.inProgress) return;
 
         Lanes.ApplyScaledSelection(moveData.GetMoveData(moveData.lastLane - moveData.firstLane), moveData.lastGhostStartTick);
+        disableNextSelectionCheck = true;
         CheckForHoposInRange(moveData.lastGhostStartTick, moveData.lastGhostEndTick);
 
         moveData = new();
@@ -153,6 +154,15 @@ public class FiveFretInstrument : IInstrument
 
         Chart.Refresh();
     }
+
+    /// <summary>
+    /// Set to true whenever a move concluded, set to false before an early return when a selection check happens
+    /// Since OnPointerUp (and then CalculateSelectionStatus()) happens right after
+    /// the move action (as both fire at the same time), the restored move selection is
+    /// overwritten by the selection check in OnPointerUp.
+    /// Thus, the selection check immediately after a move is invalid (which is what this represents)
+    /// </summary>
+    public bool disableNextSelectionCheck = false;
 
     public int TotalSelectionCount
     {
@@ -301,10 +311,8 @@ public class FiveFretInstrument : IInstrument
         return false;
     }
 
-    // integrate move data with this?
     public void CheckForHoposInRange(int startTick, int endTick)
     {
-        Chart.Log($"{startTick}, {endTick}");
         var uniqueTicks = Lanes.UniqueTicks;
 
         int startIndex = uniqueTicks.BinarySearch(startTick);
@@ -330,7 +338,6 @@ public class FiveFretInstrument : IInstrument
 
             var flag = (currentTick - prevTick < Chart.hopoCutoff) && !Lanes.IsTickChord(currentTick) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
 
-            Chart.Log($"{currentTick}: {flag}");
             ChangeTickFlag(currentTick, prevTick, flag);
         }
     }

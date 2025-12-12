@@ -478,7 +478,10 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 65702495048144492, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
     - {fileID: -8700617353114198275, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1455171597}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: -8391222552659086748, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
       insertIndex: -1
@@ -1987,7 +1990,6 @@ MonoBehaviour:
   tapTopper: {fileID: 1762839944}
   headBorder: {fileID: 318558675}
   previewer: 1
-  _tick: 0
 --- !u!4 &325951982
 Transform:
   m_ObjectHideFlags: 0
@@ -2801,7 +2803,6 @@ MonoBehaviour:
   tapTopper: {fileID: 115712183}
   headBorder: {fileID: 0}
   previewer: 1
-  _tick: 0
 --- !u!4 &550080833
 Transform:
   m_ObjectHideFlags: 0
@@ -3067,7 +3068,6 @@ MonoBehaviour:
   tapTopper: {fileID: 1384313243}
   headBorder: {fileID: 1970270122}
   previewer: 1
-  _tick: 0
 --- !u!4 &643972406
 Transform:
   m_ObjectHideFlags: 0
@@ -4696,15 +4696,15 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 2069553715}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
       propertyPath: m_LocalScale.x
-      value: 500
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
       propertyPath: m_LocalScale.z
-      value: 75
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4724,15 +4724,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -7792,6 +7792,11 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!4 &1455171597 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
+  m_PrefabInstance: {fileID: 830984287}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1455365662
 GameObject:
   m_ObjectHideFlags: 0
@@ -9899,7 +9904,6 @@ MonoBehaviour:
   tapTopper: {fileID: 929660217}
   headBorder: {fileID: 31935547}
   previewer: 1
-  _tick: 0
 --- !u!4 &1731475917
 Transform:
   m_ObjectHideFlags: 0
@@ -11569,7 +11573,6 @@ MonoBehaviour:
   tapTopper: {fileID: 724554002}
   headBorder: {fileID: 1300252273}
   previewer: 1
-  _tick: 0
 --- !u!4 &2006768578
 Transform:
   m_ObjectHideFlags: 0
@@ -12345,7 +12348,6 @@ MonoBehaviour:
   tapTopper: {fileID: 1663395485}
   headBorder: {fileID: 950197694}
   previewer: 1
-  _tick: 0
 --- !u!4 &2117541872
 Transform:
   m_ObjectHideFlags: 0
@@ -19017,7 +19019,6 @@ SceneRoots:
   - {fileID: 732549080}
   - {fileID: 1818674093}
   - {fileID: 29604111}
-  - {fileID: 830984287}
   - {fileID: 1936119443}
   - {fileID: 183943802}
   - {fileID: 1754544328}
