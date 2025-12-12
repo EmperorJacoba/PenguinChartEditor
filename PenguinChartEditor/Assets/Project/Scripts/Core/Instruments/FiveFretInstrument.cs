@@ -714,18 +714,28 @@ public class FiveFretInstrument : IInstrument
     {
         var lines = new List<KeyValuePair<int, string>>();
         var clipboardAsLines = clipboardData.Split("\n");
-        foreach (var line in clipboardAsLines)
+
+        for (int i = 0; i < clipboardAsLines.Length; i++)
         {
+            var line = clipboardAsLines[i];
+
             if (line.Trim() == "") continue;
             var parts = line.Split(" = ", 2);
+
             if (!int.TryParse(parts[0].Trim(), out int tick))
             {
                 Chart.Log(@$"Problem parsing event {line}");
                 continue;
             }
 
+            if (i == 0)
+            {
+                offset -= tick;
+            }
+
             lines.Add(new(tick + offset, parts[1]));
         }
+
         AddChartFormattedEventsToInstrument(lines);
     }
 
