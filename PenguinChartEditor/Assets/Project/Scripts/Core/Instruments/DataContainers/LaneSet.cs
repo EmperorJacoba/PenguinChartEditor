@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Forms;
 using UnityEditor.PackageManager;
 
 public interface ILaneData
@@ -18,14 +19,13 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     public const int NO_TICK_EVENT = -1;
     protected SortedDictionary<int, TValue> laneData;
 
-    public delegate void UpdateNeededDelegate(int tick);
-
+    public delegate void UpdateNeededDelegate(int startTick, int endTick);
 
     /// <summary>
     /// Invoked whenever a hopo check needs to happen at a certain tick. 
     /// When invoked, the tick from the delegate should be checked to see if it or its surrounding ticks have changed hopo status.
     /// </summary>
-    public event UpdateNeededDelegate UpdateNeededAtTick;
+    public event UpdateNeededDelegate UpdatesNeededInRange;
 
     /// <summary>
     /// Used to prevent the TS and BPM events at tick 0 from being deleted.
@@ -54,7 +54,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         laneData.Remove(key);
         laneData.Add(key, value);
-        UpdateNeededAtTick?.Invoke(key);
+        UpdatesNeededInRange?.Invoke(key, key);
     }
 
     public void Clear()
@@ -112,7 +112,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         }
 
         var returnVal = laneData.Remove(tick);
-        UpdateNeededAtTick?.Invoke(tick);
+        UpdatesNeededInRange?.Invoke(tick, tick);
         return returnVal;
     }
 
@@ -126,7 +126,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         // remove must happen before update
         var returnVal = laneData.Remove(tick, out data);
-        UpdateNeededAtTick?.Invoke(tick);
+        UpdatesNeededInRange?.Invoke(tick, tick);
         return returnVal;
     }
 
@@ -136,7 +136,8 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         laneData.Remove(tick, out var data);
 
-        UpdateNeededAtTick?.Invoke(tick);
+        UpdatesNeededInRange?.Invoke(tick, tick);
+
         return 
         new()
         {
@@ -151,16 +152,14 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         if (subtractedTicksSet.Count == 0) return;
 
         var keys = subtractedTicksSet.Keys;
-        UpdateNeededAtTick?.Invoke(keys.Min() + offset);
-        UpdateNeededAtTick?.Invoke(keys.Max() + offset);
+        UpdatesNeededInRange(keys.Min(), keys.Max());
     }
 
     void InvokeForSetEnds(HashSet<int> ticksAdded)
     {
         if (ticksAdded.Count == 0) return;
 
-        UpdateNeededAtTick?.Invoke(ticksAdded.Min());
-        UpdateNeededAtTick?.Invoke(ticksAdded.Max());
+        UpdatesNeededInRange(ticksAdded.Min(), ticksAdded.Max());
     }
 
     /// <summary>
@@ -221,14 +220,12 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
             if (!dataset.ContainsKey(tick)) continue;
             laneData.Add(tick, dataset[tick]);
         }
-
-        InvokeForSetEnds(ticks);
     }
 
     public void OverwriteLaneDataWith(SortedDictionary<int, TValue> data)
     {
         laneData = new(data);
-        InvokeForSetEnds(data.Keys.ToHashSet());
+        // InvokeForSetEnds(data.Keys.ToHashSet());
     }
 
     public void OverwriteDataWithOffset(SortedDictionary<int, TValue> data, int tickOffset)
@@ -269,7 +266,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     {
         int index = BinarySearchForTick(currentTick, out var tickTimeKeys);
 
-        if (~index == tickTimeKeys.Count) return NO_TICK_EVENT;
+        if (~index == tickTimeKeys.Count || index == tickTimeKeys.Count) return NO_TICK_EVENT;
 
         // bitwise complement is negative
         if (index >= 0) return tickTimeKeys[index + 1];

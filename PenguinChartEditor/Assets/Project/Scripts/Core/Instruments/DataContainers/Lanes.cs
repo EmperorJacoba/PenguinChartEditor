@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.UIElements;
 
 public class Lanes<T> where T : IEventData
 {
@@ -20,6 +18,14 @@ public class Lanes<T> where T : IEventData
             selections[i] = new(lanes[i]);
         }
     }
+
+    public delegate void UpdateNeededDelegate(int startTick, int endTick);
+
+    /// <summary>
+    /// Invoked whenever a hopo check needs to happen at a certain tick. 
+    /// When invoked, the tick from the delegate should be checked to see if it or its surrounding ticks have changed hopo status.
+    /// </summary>
+    public event UpdateNeededDelegate UpdatesNeededInRange;
 
     public LaneSet<T> GetLane(int lane) => lanes[lane];
     public void SetLane(int lane, SortedDictionary<int, T> newData) => lanes[lane].Update(newData);
@@ -135,26 +141,30 @@ public class Lanes<T> where T : IEventData
 
     public void OverwriteLaneDataWithOffset(SortedDictionary<int, T>[] newData, int offset)
     {
+        MinMaxTracker tracker = new(Count);
+
         for (int i = 0; i < Count; i++)
         {
             lanes[i].OverwriteDataWithOffset(newData[i], offset);
+            if (newData[i].Count == 0) continue;
+            var keys = newData[i].Keys;
+            tracker.AddTickMinMax(keys.Min(), keys.Max());
         }
-        
-        // need to do this separately because the invoke within the method above will not take into account
-        // new data from lanes not yet added
-        // maybe add a check to disable doing this if not needed?
-        for (int i = 0; i < Count; i++)
-        {
-            lanes[i].InvokeForSetEnds(newData[i], offset);
-        }
+
+        var ticks = tracker.GetAbsoluteMinMax();
+        UpdatesNeededInRange?.Invoke(ticks.min, ticks.max);
     }
 
     public void OverwriteTicksFromSet(SortedDictionary<int, T>[] newData, HashSet<int>[] ticks)
     {
+        MinMaxTracker tracker = new(Count);
         for (int i = 0; i < Count; i++)
         {
             lanes[i].OverwriteTicksFromSet(ticks[i], newData[i]);
+            tracker.AddTickMinMax(ticks[i].Min(), ticks[i].Max());
         }
+        var endTicks = tracker.GetAbsoluteMinMax();
+        UpdatesNeededInRange?.Invoke(endTicks.min, endTicks.max);
     }
 
     public void ApplyScaledSelection(SortedDictionary<int, T>[] movingData, int lastPasteStartTick)

@@ -65,7 +65,17 @@ public class FiveFretInstrument : IInstrument
         for (int i = 0; i < Lanes.Count; i++)
         {
             var laneIndex = i;
-            Lanes.GetLane(i).UpdateNeededAtTick += changedTick => CheckForHopos((LaneOrientation)laneIndex, changedTick);
+            // add Lanes update needed
+            // change to generic validateblic
+            Lanes.GetLane(laneIndex).UpdatesNeededInRange += (startTick, endTick) =>
+            {
+                if (startTick == endTick) CheckForHopos((LaneOrientation)laneIndex, startTick);
+                else CheckForHoposInRange(startTick, endTick);
+            };
+            Lanes.UpdatesNeededInRange += (startTick, endTick) =>
+            {
+                // CheckForHoposInRange(startTick, endTick);
+            };
         }
     }
 
@@ -132,11 +142,11 @@ public class FiveFretInstrument : IInstrument
     {
         if (this != Chart.LoadedInstrument) return;
 
-        Chart.Log("Move completed");
         Chart.editMode = true;
         if (!moveData.inProgress) return;
 
         Lanes.ApplyScaledSelection(moveData.GetMoveData(moveData.lastLane - moveData.firstLane), moveData.lastGhostStartTick);
+        CheckForHoposInRange(moveData.lastGhostStartTick, moveData.lastGhostEndTick);
 
         moveData = new();
         justMoved = true;
@@ -291,8 +301,10 @@ public class FiveFretInstrument : IInstrument
         return false;
     }
 
+    // integrate move data with this?
     public void CheckForHoposInRange(int startTick, int endTick)
     {
+        Chart.Log($"{startTick}, {endTick}");
         var uniqueTicks = Lanes.UniqueTicks;
 
         int startIndex = uniqueTicks.BinarySearch(startTick);
@@ -311,13 +323,14 @@ public class FiveFretInstrument : IInstrument
 
         for (int i = startIndex; i <= endIndex; i++)
         {
-            if (!uniqueTicks.Contains(i)) continue;
+            if (i < 0 || i >= uniqueTicks.Count) continue;
             var currentTick = uniqueTicks[i];
 
             var prevTick = i != 0 ? uniqueTicks[i - 1] : -Chart.hopoCutoff;
 
             var flag = (currentTick - prevTick < Chart.hopoCutoff) && !Lanes.IsTickChord(currentTick) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
 
+            Chart.Log($"{currentTick}: {flag}");
             ChangeTickFlag(currentTick, prevTick, flag);
         }
     }

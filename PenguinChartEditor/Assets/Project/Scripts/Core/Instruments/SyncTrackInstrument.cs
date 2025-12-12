@@ -97,12 +97,10 @@ public class SyncTrackInstrument : IInstrument
     {
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress)
         {
-            // Chart.Log($"Returned 1. {typeof(T)}, {Chart.instance.SceneDetails.IsSceneOverlayUIHit()} {moveData.inProgress}");
             return;
         }
         if (currentMouseTick == moveData.lastMouseTick) 
         {
-            // Chart.Log($"Returned 2. {typeof(T)}, {currentMouseTick}, {moveData.lastMouseTick}");
             return;
         }
 
@@ -117,8 +115,6 @@ public class SyncTrackInstrument : IInstrument
             Chart.editMode = false;
             return;
         }
-
-        // Chart.Log($"Passed init. {typeof(T)}, {currentMouseTick}, {moveData.lastMouseTick}");
 
         selection.Clear();
         lane.OverwriteLaneDataWith(moveData.preMoveData);
@@ -138,8 +134,6 @@ public class SyncTrackInstrument : IInstrument
 
     public void CompleteMove()
     {
-        Chart.Log("Move completed");
-
         Chart.editMode = true;
 
         CompleteMove(ref bpmMoveData, bpmSelection);
@@ -647,6 +641,8 @@ public class SyncTrackInstrument : IInstrument
 
     #endregion
 
+    #region Export
+
     public List<string> ExportAllEvents()
     {
         var syncTrackStrings = ExportTempoEvents();
@@ -683,6 +679,8 @@ public class SyncTrackInstrument : IInstrument
         }
         return eventContainer;
     }
+
+    #endregion
 
     public bool justMoved { get; set; }
 }

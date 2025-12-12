@@ -1,0 +1,144 @@
+charting program set up like dorico
+FLOWCHART & SKETCH ALL IDEAS BEFORE ATTEMPTING
+make sure a variety of existing charts open correctly in program
+
+tabs: 	song setup | tempo map | chart | star power | sections | preview | export | stats | settings- use alt+something to navigate tabs
+
+song setup = 	song properties, audio setup, ini setup, etc - add support for embedding album art and background within app & proper sizing/filetype
+		also have indirect song.ini editing through text boxes, direct song.ini editing is under an advanced option
+		explain what "drums" + "drums_1" + "drums_2" etc mean in audio setup
+		import metadata from file/existing audio file?
+		play chart preview in app, use slider/timestamp to select
+
+tempo map = 	basic highway (no instrument), fine-tune precision needed, low opacity barlines?
+		have no projection - no track warping - straight rectangle
+		ability to adjust height/intensity of waveform
+		metronome sound
+		timesignature setup: do not allow misaligned timesignatures - automatically fix when mistake is made
+		don't require control to move, but allow option to lock bpm marker
+		do not have bpm number on beatline, put it off to the side
+		have bpm marker in middle of screen to be able to see what you just mapped
+		allow adjustment of waveform peaks for accurate mapping (slide between big peaks (audacity) and small peaks (moonscraper mode))
+		spectrogram is useful apparently?
+		anchors are unintuitive - should work out automatically
+			every bpm marker is an anchor until editing in front of it?
+
+		when calculating distance between beatlines, remember hyperspeed - figure out calculations for clone hero/yarg and match that
+		distance between beatlines is what varies
+
+chart = 	placing notes - includes drum rolls & vocals (including unpitched lyrics) - 
+		needs all difficulty support - have easy, available button to copy down difficulty - must have warning that chart will be deleted
+		have nps calculator there - select notes & it calculates it for you as opposed to step-based calculation
+		INCLUDES VOCAL CHARTING
+		have volume adjusting in-window, no going through dialog boxes
+		play mode MUST have disappearing notes at bottom in sync with track like moonscraper
+		have markers for forced notes, BUT make sure it is separate from hopo/tap marker
+		allow for instrument specific sections, separate from practice sections
+		open notes over other notes/chords is a new feature to be allowed
+		
+starpower = 	placing starpower phrases, maybe have all instruments* side-by-side to allow for unison phrases/lining up phrases?
+		unison phrases
+		show measures since last phrase - implement guidelines from smoochum's star power guide
+		automatically bring down star power between difficulties
+		shift between difficulties in case difficulty specific edits are wanted
+
+sections = 	place sections with all instruments visible*
+
+preview = 	view chart moonscraper style, select difficulties, etc
+		export chart preview videos (secondary)
+
+		idea: like moonscraper preview, but camera over perspective track with ability to see flat top-down chart preview?
+
+export = 	self explanatory - "export" in moonscraper - export as standard .opus files + standard specifications (
+
+stats = 	stats section from moonscraper BUT add other things too
+		notes per instrument - total notes
+		star power amount per instrument - total star power
+		local events per instrument - total local events
+		average BPM
+		number of BPM markers
+		number of TS changes
+		number of global flags
+		add stats from CHopt - total score w & w/o star power, maximum average multiplier, etc, per instrument & for all instruments
+		how long the user has spent charting a song
+
+settings = 	MS settings clone
+		calibration
+		keybinds
+
+first time setup - set sustain gap, calibration, colors, etc
+
+lyrics/vocals in "chart" section - set up like lyric editor in moonscraper, but drag lyrics as flag over audio file b/c of usual imprecision
+		import lyrics like moonscraper - give waveform of audio file (presumably isolated vocals), and have user drag flags onto waveform to set lyric events
+		add pitch & sustain to lyric events
+
+interface: 	vocals set up like gameplay (left to right scrolling w/ lyrics & pitch // daw)
+		guitar, drums, bass set up top down like highway
+		add support for charting true/elite drums
+		add .chart support for vocals BUT also allow exporting to .mid files - find out how moonscraper does this for usual notes
+
+needs support for keys mode
+needs song validator
+needs roll lanes for all instruments (secondary)
+	roll lanes for drums primary
+needs metronome
+needs "clap" (better sound, please!!)
+needs calibration - use window/gameplay to avoid need for typing in random numbers
+	also figure out why calibration is needed, what it does, why it happens
+needs spectrogram
+needs lefty flip
+needs hyperspeed options
+needs side track view for quick navigation like moonscraper
+needs "quick export" to custom folder for playtesting in ch/yarg
+needs timer for how long user has worked on song
+NEEDS EQ like in media player
+needs right + left click to delete
+needs drag to select
+needs basic keybinds
+needs chart checklist to keep track of what's been done
+needs rclick + lclick delete
+needs shortcut to delete bar
+needs shortcut to set sustain to max
+copy and paste should persist between instances
+	temporarily save selection (notes & distance between them) in data file? Would also persist between openings
+
+keybinds to switch between instrument audios (tempo map)
+keybind to place section/marker
+keybind to select all notes in front of/behind selection
+keybind to max out sustain (extended/nonextended sustain modes)
+
+count time in beats/measure and seconds
+
+tie charting projects to folders to avoid audio problems, everything should stay in a single folder
+
+charting mode: each note/chord can snap to another to sample sound for consistency
+		example: r/y chord: click on it, see other r/y chords close by in chart or in similar sections to compare sounds
+		alternative: link chords/notes/sections that you know are the same pitch
+
+needs ability to export as .sng (secondary)
+
+needs GHL charting (secondary, who uses that, exactly?)
+needs support for RB/Yarg venue/character control flags (look at rbn documentation) (secondary)
+
+prep audio in the app (leading/lagging silence, .opus, etc) (secondary)
+
+double-click to select chord (or use shift)
+
+copy shortcuts from moonscraper controls menu, make non-obvious/standard ones better
+
+NO SUPPORT FOR PLAYTESTING IN-APP : 	DUMB AND WEIRD AND STUPID AND WEIRD AND DUMB
+					JUST EXPORT IT QUICK INTO YARG OR USE CLAP???
+
+
+.mid files - HOW?
+
+
+have track speed function same as moonscraper - but speed is navigable by keyboard instead of slider - "automatic pitch correction"
+
+* = select instruments to view, like a parts score
+
+song validator (secondary) : https://github.com/FireFox2000000/Moonscraper-Chart-Editor/issues/123
+
+.chart file format specification google doc: https://docs.google.com/document/d/1_dw8BD8XEBrSTQz5WJDp0xTUYgpCIuPEaXsSwC1a4wg
+song.ini specification google doc: https://docs.google.com/document/d/14yFYIUpvsK3U2dOFxIdzGvTf6tfU0ywheKlp3-ywjPU
+enchorus guidelines (for song.ini & exporting): https://docs.google.com/document/d/1XrLKnpL0xawaC90M4lLnhqhExwXM_3JpJnzNqlB_agM
