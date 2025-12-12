@@ -27,6 +27,8 @@ public class FiveFretInstrument : IInstrument
 
     #endregion
 
+    #region Data
+
     public Lanes<FiveFretNoteData> Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
@@ -47,6 +49,12 @@ public class FiveFretInstrument : IInstrument
         orange = 4,
         open = 5
     }
+
+    public List<int> UniqueTicks => Lanes.UniqueTicks;
+
+    #endregion
+
+    #region Constructor
 
     public FiveFretInstrument(
         Lanes<FiveFretNoteData> lanes,
@@ -79,8 +87,6 @@ public class FiveFretInstrument : IInstrument
         }
     }
 
-    public List<int> UniqueTicks => Lanes.UniqueTicks;
-
     public void SetUpInputMap()
     {
         inputMap = new();
@@ -90,6 +96,10 @@ public class FiveFretInstrument : IInstrument
         inputMap.Charting.XYDrag.performed += x => MoveSelection();
         inputMap.Charting.LMB.canceled += x => CompleteMove();
     }
+
+    #endregion
+
+    #region Moving
 
     TwoDimensionalMoveData<FiveFretNoteData> moveData = new();
     public bool justMoved { get; set; } = false;
@@ -169,6 +179,10 @@ public class FiveFretInstrument : IInstrument
         Chart.Refresh();
     }
 
+    #endregion
+
+    #region Selections
+
     /// <summary>
     /// Set to true whenever a move concluded, set to false before an early return when a selection check happens
     /// Since OnPointerUp (and then CalculateSelectionStatus()) happens right after
@@ -193,6 +207,17 @@ public class FiveFretInstrument : IInstrument
 
     public void ClearAllSelections() => Lanes.ClearAllSelections();
 
+    public void DeleteTicksInSelection()
+    {
+        Lanes.DeleteAllTicksInSelection();
+    }
+
+    public void ShiftClickSelect(int tick, bool temporary)
+    {
+        Lanes.TempSustainTicks.Add(tick);
+        ShiftClickSelect(tick);
+    }
+
     public void ShiftClickSelect(int start, int end)
     {
         for (int i = 0; i < Lanes.Count; i++)
@@ -202,27 +227,6 @@ public class FiveFretInstrument : IInstrument
     }
     public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
 
-    public void ShiftClickSustainClamp(int tick, int tickLength)
-    {
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            if (Lanes.GetLane(i).ContainsKey(tick))
-            {
-                Lanes.GetLane(i)[tick] = new(tickLength, Lanes.GetLane(i)[tick].Flag, Lanes.GetLane(i)[tick].Default);
-            }
-        }
-    }
-    public void ShiftClickSelect(int tick, bool temporary)
-    {
-        Lanes.TempSustainTicks.Add(tick);
-        ShiftClickSelect(tick);
-    }
-
-    public void ReleaseTemporaryTicks()
-    {
-        Lanes.TempSustainTicks.Clear();
-    }
-
     public void RemoveTickFromAllSelections(int tick)
     {
         for (int i = 0; i < Lanes.Count; i++)
@@ -231,131 +235,76 @@ public class FiveFretInstrument : IInstrument
         }
     }
 
-    // after an add
-    // needs to update target tick if the last tick before current tick is within hopo range
-    // needs to update next tick if the tick after current tick is within hopo range
-    public void CheckForHopos(LaneOrientation lane, int changedTick)
+    public string ConvertSelectionToString()
     {
-        var activeLane = Lanes.GetLane((int)lane);
+        if (Lanes.GetTotalSelection().Count == 0) return "";
+        var stringIDs = new List<KeyValuePair<int, string>>();
+        var zeroTick = Lanes.GetFirstSelectionTick();
 
-        bool nextTickHopo = false;
-        bool currentTickHopo = false;
-        bool changedTickExists = Lanes.AnyLaneContainsTick(changedTick);
-        bool changedTickChord = changedTickExists ? Lanes.IsTickChord(changedTick) : false; // optimize?
+        HashSet<int> tapTicks = new();
+        HashSet<int> strumTicks = new();
+        HashSet<int> hopoTicks = new();
 
-        var ticks = Lanes.GetTickEventBounds(changedTick); // biggest bottleneck here btw
-
-        if (ticks.next != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
-            ticks.next - changedTick < Chart.hopoCutoff) nextTickHopo = true;
-
-        if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
-            changedTick - ticks.prev < Chart.hopoCutoff) currentTickHopo = true;
-
-        if (activeLane.Contains(changedTick))
-        {
-            var parameterLaneTickData = activeLane[changedTick];
-            if (!parameterLaneTickData.Default ||
-                parameterLaneTickData.Flag == FiveFretNoteData.FlagType.tap)
-            {
-                currentTickHopo = false;
-            }
-        }
-
-        var flag = currentTickHopo ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-        ChangeTickFlag(changedTick, ticks.prev, flag);
-
-        if (IsTickTap(ticks.next)) return;
-        var nextFlag = nextTickHopo && changedTickExists ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-
-        ChangeTickFlag(ticks.next, changedTick, nextFlag);
-    }
-
-    public bool PreviewTickHopo(LaneOrientation lane, int tick)
-    {
-        var ticks = Lanes.GetTickEventBounds(tick);
-
-        if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
-            tick - ticks.prev < Chart.hopoCutoff &&
-            (Lanes.GetTickCountAtTick(tick) == 0 && !Lanes.GetLane((int)lane).Contains(ticks.prev))
-            ) return true;
-
-        return false;
-    }
-
-    public void ToggleTaps()
-    {
-        if (Chart.LoadedInstrument != this) return;
-
-        var allTicksSelected = Lanes.GetTotalSelection();
-
-        bool toggleToTaps = true;
-        foreach (var tick in allTicksSelected)
-        {
-            if (IsTickTap(tick)) toggleToTaps = false;
-        }
-
+        // add functionality here to allow N 5 forced pasting instead
         for (int i = 0; i < Lanes.Count; i++)
         {
-            var lane = Lanes.GetLane(i);
-            foreach (var tick in allTicksSelected)
+            var selectionData = Lanes.GetLaneSelection(i).ExportNormalizedData(zeroTick);
+            foreach (var note in selectionData)
             {
-                if (!lane.Contains(tick)) continue;
+                stringIDs.Add(
+                    new(note.Key, note.Value.ToChartFormat(i))
+                    );
 
-                lane[tick] = toggleToTaps ? lane[tick].ExportWithNewFlag(FiveFretNoteData.FlagType.tap) : lane[tick].ExportWithNewFlag(FiveFretNoteData.FlagType.hopo);
+                if (!note.Value.Default)
+                {
+                    switch (note.Value.Flag)
+                    {
+                        case FiveFretNoteData.FlagType.hopo:
+                            hopoTicks.Add(note.Key);
+                            break;
+                        case FiveFretNoteData.FlagType.strum:
+                            strumTicks.Add(note.Key);
+                            break;
+                    }
+                }
+                if (note.Value.Flag == FiveFretNoteData.FlagType.tap) tapTicks.Add(note.Key);
             }
         }
 
-        if (!toggleToTaps) CheckForHoposInRange(allTicksSelected.Min(), allTicksSelected.Max());
+        foreach (var tick in tapTicks)
+        {
+            stringIDs.Add(
+                new(tick, TAP_ID)
+                );
+        }
 
-        Chart.Refresh();
+        foreach (var tick in strumTicks)
+        {
+            stringIDs.Add(
+                new(tick, EXPLICIT_STRUM_ID)
+                );
+        }
+
+        foreach (var tick in hopoTicks)
+        {
+            stringIDs.Add(
+                new(tick, EXPLICIT_HOPO_ID)
+                );
+        }
+
+        stringIDs.Sort((a, b) => a.Key.CompareTo(b.Key));
+
+        StringBuilder combinedIDs = new();
+        foreach (var id in stringIDs)
+        {
+            combinedIDs.AppendLine($"\t{id.Key} = {id.Value}");
+        }
+        return combinedIDs.ToString();
     }
 
-    public bool IsTickTap(int tick)
-    {
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            var lane = Lanes.GetLane(i);
-            if (!lane.Contains(tick)) continue;
+    #endregion
 
-            if (lane[tick].Flag == FiveFretNoteData.FlagType.tap)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void CheckForHoposInRange(int startTick, int endTick)
-    {
-        var uniqueTicks = Lanes.UniqueTicks;
-
-        int startIndex = uniqueTicks.BinarySearch(startTick);
-
-        if (startIndex < 0)
-        {
-            startIndex = ~startIndex - 1;
-        }
-
-        int endIndex = uniqueTicks.BinarySearch(endTick);
-        if (endIndex < 0)
-        {
-            endIndex = ~endIndex + 1;
-        }
-        if (endIndex >= uniqueTicks.Count) endIndex = uniqueTicks.Count - 1;
-
-        for (int i = startIndex; i <= endIndex; i++)
-        {
-            if (i < 0 || i >= uniqueTicks.Count) continue;
-            var currentTick = uniqueTicks[i];
-
-            var prevTick = i != 0 ? uniqueTicks[i - 1] : -Chart.hopoCutoff;
-
-            var flag = (currentTick - prevTick < Chart.hopoCutoff) && !Lanes.IsTickChord(currentTick) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-
-            ChangeTickFlag(currentTick, prevTick, flag);
-        }
-    }
-
+    #region Flag Changes
     void ChangeTickFlag(int targetTick, int previousTick, FiveFretNoteData.FlagType flag)
     {
         bool isLastTickChord = Lanes.IsTickChord(previousTick);
@@ -378,6 +327,26 @@ public class FiveFretInstrument : IInstrument
                 lane[targetTick] = lane[targetTick].ExportWithNewFlag(flag);
             }
         }
+    }
+
+    #endregion
+
+    #region Sustains
+
+    public void ShiftClickSustainClamp(int tick, int tickLength)
+    {
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            if (Lanes.GetLane(i).ContainsKey(tick))
+            {
+                Lanes.GetLane(i)[tick] = new(tickLength, Lanes.GetLane(i)[tick].Flag, Lanes.GetLane(i)[tick].Default);
+            }
+        }
+    }
+
+    public void ReleaseTemporaryTicks()
+    {
+        Lanes.TempSustainTicks.Clear();
     }
 
     public void UpdateSustain(int tick, LaneOrientation lane, int newSustain)
@@ -432,17 +401,17 @@ public class FiveFretInstrument : IInstrument
     {
         if (UserSettings.ExtSustains)
         {
-            ClampLaneEvents(tick, lane);
+            ClampLaneEventsBefore(tick, lane);
             return;
         }
 
         for (int i = 0; i < Lanes.Count; i++)
         {
-            ClampLaneEvents(tick, (LaneOrientation)i);
+            ClampLaneEventsBefore(tick, (LaneOrientation)i);
         }
     }
 
-    void ClampLaneEvents(int tick, LaneOrientation lane)
+    void ClampLaneEventsBefore(int tick, LaneOrientation lane)
     {
         var currentLane = Lanes.GetLane((int)lane);
 
@@ -488,92 +457,139 @@ public class FiveFretInstrument : IInstrument
         return sustainLengthMS < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ? 0 : clampedSustain;
     }
 
-    // currently only supports N events, need support for E and S
-    // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)
-    // throw away sustains that are too small (ms < user settings constant) (add setting to do extra validation, or do this when validators fail)
-    public List<string> ExportAllEvents()
+    #endregion
+
+    #region HOPOs
+
+    public void CheckForHopos(LaneOrientation lane, int changedTick)
     {
-        List<string> notes = new();
-        for (int i = 0; i < Lanes.Count; i++)
+        var activeLane = Lanes.GetLane((int)lane);
+
+        bool nextTickHopo = false;
+        bool currentTickHopo = false;
+        bool changedTickExists = Lanes.AnyLaneContainsTick(changedTick);
+        bool changedTickChord = changedTickExists ? Lanes.IsTickChord(changedTick) : false; // optimize?
+
+        var ticks = Lanes.GetTickEventBounds(changedTick); // biggest bottleneck here btw
+
+        if (ticks.next != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
+            ticks.next - changedTick < Chart.hopoCutoff) nextTickHopo = true;
+
+        if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
+            changedTick - ticks.prev < Chart.hopoCutoff) currentTickHopo = true;
+
+        if (activeLane.Contains(changedTick))
         {
-            foreach (var note in Lanes.GetLane(i))
+            var parameterLaneTickData = activeLane[changedTick];
+            if (!parameterLaneTickData.Default ||
+                parameterLaneTickData.Flag == FiveFretNoteData.FlagType.tap)
             {
-                string value = $"\t{note.Key} = {note.Value.ToChartFormat(i)}";
-                notes.Add(value);
+                currentTickHopo = false;
             }
         }
 
-        var orderedStrings = notes.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
-        return orderedStrings;
+        var flag = currentTickHopo ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
+        ChangeTickFlag(changedTick, ticks.prev, flag);
+
+        if (IsTickTap(ticks.next)) return;
+        var nextFlag = nextTickHopo && changedTickExists ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
+
+        ChangeTickFlag(ticks.next, changedTick, nextFlag);
     }
-    
-    // add forced ids
-    public string ConvertSelectionToString()
+
+    public void CheckForHoposInRange(int startTick, int endTick)
     {
-        if (Lanes.GetTotalSelection().Count == 0) return "";
-        var stringIDs = new List<KeyValuePair<int, string>>();
-        var zeroTick = Lanes.GetFirstSelectionTick();
+        var uniqueTicks = Lanes.UniqueTicks;
 
-        HashSet<int> tapTicks = new();
-        HashSet<int> strumTicks = new();
-        HashSet<int> hopoTicks = new();
+        int startIndex = uniqueTicks.BinarySearch(startTick);
 
-        // add functionality here to allow N 5 forced pasting instead
+        if (startIndex < 0)
+        {
+            startIndex = ~startIndex - 1;
+        }
+
+        int endIndex = uniqueTicks.BinarySearch(endTick);
+        if (endIndex < 0)
+        {
+            endIndex = ~endIndex + 1;
+        }
+        if (endIndex >= uniqueTicks.Count) endIndex = uniqueTicks.Count - 1;
+
+        for (int i = startIndex; i <= endIndex; i++)
+        {
+            if (i < 0 || i >= uniqueTicks.Count) continue;
+            var currentTick = uniqueTicks[i];
+
+            var prevTick = i != 0 ? uniqueTicks[i - 1] : -Chart.hopoCutoff;
+
+            var flag = (currentTick - prevTick < Chart.hopoCutoff) && !Lanes.IsTickChord(currentTick) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
+
+            ChangeTickFlag(currentTick, prevTick, flag);
+        }
+    }
+
+    public bool PreviewTickHopo(LaneOrientation lane, int tick)
+    {
+        var ticks = Lanes.GetTickEventBounds(tick);
+
+        if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
+            tick - ticks.prev < Chart.hopoCutoff &&
+            (Lanes.GetTickCountAtTick(tick) == 0 && !Lanes.GetLane((int)lane).Contains(ticks.prev))
+            ) return true;
+
+        return false;
+    }
+
+    #endregion
+
+    #region Taps
+
+    public void ToggleTaps()
+    {
+        if (Chart.LoadedInstrument != this) return;
+
+        var allTicksSelected = Lanes.GetTotalSelection();
+
+        bool toggleToTaps = true;
+        foreach (var tick in allTicksSelected)
+        {
+            if (IsTickTap(tick)) toggleToTaps = false;
+        }
+
         for (int i = 0; i < Lanes.Count; i++)
         {
-            var selectionData = Lanes.GetLaneSelection(i).ExportNormalizedData(zeroTick);
-            foreach (var note in selectionData)
+            var lane = Lanes.GetLane(i);
+            foreach (var tick in allTicksSelected)
             {
-                stringIDs.Add(
-                    new(note.Key, note.Value.ToChartFormat(i))
-                    );
+                if (!lane.Contains(tick)) continue;
 
-                if (!note.Value.Default)
-                {
-                    switch (note.Value.Flag)
-                    {
-                        case FiveFretNoteData.FlagType.hopo:
-                            hopoTicks.Add(note.Key);
-                            break;
-                        case FiveFretNoteData.FlagType.strum:
-                            strumTicks.Add(note.Key);
-                            break;
-                    }
-                }
-                if (note.Value.Flag == FiveFretNoteData.FlagType.tap) tapTicks.Add(note.Key);
+                lane[tick] = toggleToTaps ? lane[tick].ExportWithNewFlag(FiveFretNoteData.FlagType.tap) : lane[tick].ExportWithNewFlag(FiveFretNoteData.FlagType.hopo);
             }
         }
 
-        foreach (var tick in tapTicks)
-        {
-            stringIDs.Add(
-                new(tick, TAP_ID)
-                );
-        }
+        if (!toggleToTaps) CheckForHoposInRange(allTicksSelected.Min(), allTicksSelected.Max());
 
-        foreach(var tick in strumTicks)
-        {
-            stringIDs.Add(
-                new(tick, EXPLICIT_STRUM_ID)
-                );
-        }
-
-        foreach(var tick in hopoTicks)
-        {
-            stringIDs.Add(
-                new(tick, EXPLICIT_HOPO_ID)
-                );
-        }
-
-        stringIDs.Sort((a, b) => a.Key.CompareTo(b.Key));
-
-        StringBuilder combinedIDs = new();
-        foreach (var id in stringIDs)
-        {
-            combinedIDs.AppendLine($"\t{id.Key} = {id.Value}");
-        }
-        return combinedIDs.ToString();
+        Chart.Refresh();
     }
+
+    public bool IsTickTap(int tick)
+    {
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var lane = Lanes.GetLane(i);
+            if (!lane.Contains(tick)) continue;
+
+            if (lane[tick].Flag == FiveFretNoteData.FlagType.tap)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    #endregion
+
+    #region Import
 
     // needs to clear out zone between start & end point of added events
     public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
@@ -760,8 +776,28 @@ public class FiveFretInstrument : IInstrument
         AddChartFormattedEventsToInstrument(lines);
     }
 
-    public void DeleteTicksInSelection()
+    #endregion
+
+    #region Export
+
+    // currently only supports N events, need support for E and S
+    // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)
+    // throw away sustains that are too small (ms < user settings constant) (add setting to do extra validation, or do this when validators fail)
+    public List<string> ExportAllEvents()
     {
-        Lanes.DeleteAllTicksInSelection();
+        List<string> notes = new();
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            foreach (var note in Lanes.GetLane(i))
+            {
+                string value = $"\t{note.Key} = {note.Value.ToChartFormat(i)}";
+                notes.Add(value);
+            }
+        }
+
+        var orderedStrings = notes.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
+        return orderedStrings;
     }
+
+    #endregion
 }
