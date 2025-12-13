@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -39,8 +40,9 @@ public interface IEvent
 
 // Each event (including one tasked with event handler) has an assigned lane 
 // Lane assignment happens through GetEventSet() and GetEventData(), which is just a reference to its "instrument" lane data.
-public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPointerUpHandler where T : IEventData
+public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler where T : IEventData
 {
+    protected static float doubleClickTime = 0.3f;
     #region Properties
     public int Tick
     {
@@ -157,30 +159,12 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
             }
 
             Chart.Refresh();
-        }
-    }
-    protected bool disableNextSelectionCheck = false; // used in charted instruments only
-
-    public virtual void OnPointerUp(PointerEventData pointerEventData)
-    {
-        // stops this from firing on the release after clicking to create an event
-        if (EventPreviewer.disableNextSelectionCheck)
-        {
-            EventPreviewer.disableNextSelectionCheck = false;
-            return;
-        }
-
-        // move action's selection logic is very particular
-        // needs to reinstate old selection after move completes, and that happens BEFORE the CalculateSelectionStatus() call,
-        // so the reinstated selection immediately gets overwritten as a result
-        if (ParentInstrument.justMoved)
-        {
-            ParentInstrument.justMoved = false;
             return;
         }
 
         CalculateSelectionStatus(pointerEventData);
     }
+    protected bool disableNextSelectionCheck = false; // used in charted instruments only
 
     public bool CheckForSelection()
     {
@@ -220,14 +204,16 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler, IPo
         // Regular click, no extra significant keybinds
         else
         {
-            ParentInstrument.ClearAllSelections();
-            if (LaneData.ContainsKey(Tick)) Selection.Add(Tick);
+            if (ParentInstrument.TotalSelectionCount < 2) ParentInstrument.ClearAllSelections();
+            Selection.Add(Tick);
             Chart.Refresh();
         }
 
         // Record the last selection data for shift-click selection
         if (Selection.Contains(Tick)) lastTickSelection = Tick;
     }
+
+    protected static WaitForSeconds clickCooldown = new(doubleClickTime);
 
     public void AddToSelection()
     {

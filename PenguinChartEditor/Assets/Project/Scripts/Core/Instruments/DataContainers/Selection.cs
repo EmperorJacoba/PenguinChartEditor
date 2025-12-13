@@ -77,7 +77,15 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
         this.parentLane = parentLane;
     }
 
-    public bool Add(int tick) => selection.Add(tick);
+    public bool Add(int tick)
+    {
+        if (parentLane.Contains(tick))
+        {
+            return selection.Add(tick);
+        }
+        return false;
+    }
+
 
     public void AddInRange(int startTick, int endTick)
     {

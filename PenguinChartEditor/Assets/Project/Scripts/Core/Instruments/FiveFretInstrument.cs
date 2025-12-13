@@ -115,8 +115,16 @@ public class FiveFretInstrument : IInstrument
         var currentMouseTick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
         var currentMouseLane = Chart.instance.SceneDetails.MatchXCoordinateToLane(Chart.instance.SceneDetails.GetCursorHighwayPosition().x);
 
-        if (currentMouseTick != moveData.lastMouseTick) tickMovement = true;
-        if (currentMouseLane != moveData.lastLane) laneMovement = true;
+        if (currentMouseTick != moveData.lastMouseTick)
+        {
+            moveData.lastMouseTick = currentMouseTick;
+            tickMovement = true;
+        }
+        if (currentMouseLane != moveData.lastLane)
+        {
+            moveData.lastLane = currentMouseLane;
+            laneMovement = true;
+        }
 
         if (!moveData.inProgress && (tickMovement || laneMovement))
         {
@@ -133,7 +141,7 @@ public class FiveFretInstrument : IInstrument
         }
         if (!(tickMovement || laneMovement)) return;
 
-        Lanes.ClearAllSelections();
+        //Lanes.ClearAllSelections();
         Lanes.SetLaneData(moveData.preMoveData);
 
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
@@ -156,9 +164,11 @@ public class FiveFretInstrument : IInstrument
         if (!moveData.inProgress) return;
 
         var movingDataSet = moveData.GetMoveData(moveData.lastLane - moveData.firstLane);
-        Lanes.ApplyScaledSelection(moveData.GetMoveData(moveData.lastLane - moveData.firstLane), moveData.lastGhostStartTick);
-        disableNextSelectionCheck = true;
+        //Lanes.ApplyScaledSelection(moveData.GetMoveData(moveData.lastLane - moveData.firstLane), moveData.lastGhostStartTick);
+
         CheckForHoposInRange(moveData.lastGhostStartTick, moveData.lastGhostEndTick);
+
+        var preMoveData = moveData.GetOriginalDataSet();
 
         for (int i = 0; i < Lanes.Count; i++)
         {
@@ -168,13 +178,12 @@ public class FiveFretInstrument : IInstrument
                 var endTick = movingDataSet[i].Keys.Max() + moveData.lastGhostStartTick;
                 var startTick = movingDataSet[i].Keys.Min() + moveData.lastGhostStartTick;
 
-                UpdateSustain(endTick, (LaneOrientation)i, lane[endTick].Sustain);
-                ClampSustainsBefore(startTick, (LaneOrientation)i);
+                if (lane.Contains(endTick)) UpdateSustain(endTick, (LaneOrientation)i, lane[endTick].Sustain);
+                if (lane.Contains(startTick)) ClampSustainsBefore(startTick, (LaneOrientation)i);
             }
         }
 
         moveData = new();
-        justMoved = true;
 
         Chart.Refresh();
     }

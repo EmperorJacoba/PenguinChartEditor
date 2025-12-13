@@ -104,6 +104,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public void InitializeEvent(int tick, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer)
     {
+        Debug.Log($"Init events");
         _tick = tick;
         Visible = true;
         laneIdentifier = lane;
@@ -136,34 +137,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
 
     public FiveFretInstrument chartInstrument => (FiveFretInstrument)Chart.LoadedInstrument;
-
-    public override void OnPointerUp(PointerEventData pointerEventData)
-    {
-        if (chartInstrument.disableNextSelectionCheck)
-        {
-            chartInstrument.disableNextSelectionCheck = false;
-            return;
-        }
-
-        // undo temporary selection add due to sustain when right-click dragging on a single note (sustaining is based on selection)
-        if (pointerEventData.button == PointerEventData.InputButton.Right)
-        {
-            if (chartInstrument.Lanes.TempSustainTicks.Contains(Tick) && Selection.Contains(Tick))
-            {
-                ParentInstrument.RemoveTickFromAllSelections(Tick);
-                ParentInstrument.ReleaseTemporaryTicks();
-            }
-            chartInstrument.Lanes.TempSustainTicks.Clear();
-            RefreshLane();
-            return;
-        }
-
-        if (pointerEventData.button == PointerEventData.InputButton.Left)
-        {
-            CalculateSelectionStatus(pointerEventData);
-            return;
-        }
-    } 
 
     public override void OnPointerDown(PointerEventData pointerEventData)
     {

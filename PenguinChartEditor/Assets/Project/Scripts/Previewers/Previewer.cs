@@ -11,7 +11,6 @@ public interface IPreviewer
     void Hide();
     void Show();
     int Tick { get; set; }
-    bool disableNextSelectionCheck { get; set; }
 }
 
 [RequireComponent(typeof(IEvent))]
@@ -38,7 +37,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         AddCurrentEventDataToLaneSet(); // implemented locally
 
         previewerEventReference.GetSelection().Remove(Tick);
-        disableNextSelectionCheck = true;
+        // disableNextSelectionCheck = true;
         Chart.Refresh();
     }
 
@@ -58,7 +57,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         set => previewTick = value;
     }
 
-    public bool disableNextSelectionCheck { get; set; } = false;
+    public static bool disableNextSelectionCheck { get; set; } = false;
 
     /// <summary>
     /// Shortcut to allow void events call the main UpdatePreviewPosition function.

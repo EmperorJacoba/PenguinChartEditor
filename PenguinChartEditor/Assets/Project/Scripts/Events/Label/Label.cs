@@ -161,7 +161,6 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         if (clickCount == 1 && gameObject.activeInHierarchy) StartCoroutine(TriggerDoubleClick());
     }
 
-    private static WaitForSeconds clickCooldown = new(0.15f);
     IEnumerator TriggerDoubleClick()
     {
         yield return clickCooldown;

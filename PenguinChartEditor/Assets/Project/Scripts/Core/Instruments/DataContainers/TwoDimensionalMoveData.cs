@@ -72,6 +72,8 @@ public class TwoDimensionalMoveData<T> where T : IEventData
     public TwoDimensionalMoveData()
     {
         inProgress = false;
+        lastMouseTick = -1;
+        lastLane = int.MinValue;
     }
 
     public SortedDictionary<int, T>[] GetMoveData(int laneShift)
@@ -146,5 +148,23 @@ public class TwoDimensionalMoveData<T> where T : IEventData
         else correctedOutput = pitchWrappedOutput;
 
         return correctedOutput;
+    }
+
+    public SortedDictionary<int, T>[] GetOriginalDataSet()
+    {
+        SortedDictionary<int, T>[] output = new SortedDictionary<int, T>[preMoveData.Length];
+        for (int i = 0; i < preMoveData.Length; i++)
+        {
+            output[i] = preMoveData[i];
+        }
+
+        for (int i = 0; i < output.Length; i++)
+        {
+            foreach (var tick in originalMovingDataSet[i].Keys)
+            {
+                output[i].Add(tick + firstSelectionTick, originalMovingDataSet[i][tick]);
+            }
+        }
+        return output;
     }
 }
