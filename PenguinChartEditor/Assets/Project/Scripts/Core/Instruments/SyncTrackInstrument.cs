@@ -80,8 +80,8 @@ public class SyncTrackInstrument : IInstrument
 
     #region Movement
 
-    OneDimensionalMoveData<BPMData> bpmMoveData = new();
-    OneDimensionalMoveData<TSData> tsMoveData = new();
+    UniversalMoveData<BPMData> bpmMoveData = new();
+    UniversalMoveData<TSData> tsMoveData = new();
 
     /// <summary>
     /// Runs every frame when Drag input action is active. 
@@ -93,7 +93,7 @@ public class SyncTrackInstrument : IInstrument
         MoveLane(currentMouseTick, ref tsMoveData, tsSelection, TimeSignatureEvents);
     }
 
-    void MoveLane<T>(int currentMouseTick, ref OneDimensionalMoveData<T> moveData, SelectionSet<T> selection, LaneSet<T> lane) where T : IEventData
+    void MoveLane<T>(int currentMouseTick, ref UniversalMoveData<T> moveData, SelectionSet<T> selection, LaneSet<T> lane) where T : IEventData
     {
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress)
         {
@@ -106,26 +106,27 @@ public class SyncTrackInstrument : IInstrument
 
         if (!moveData.inProgress)
         {
-            moveData = new OneDimensionalMoveData<T>(
+            moveData = new UniversalMoveData<T>(
                     currentMouseTick,
                     lane,
-                    selection.ExportNormalizedData(),
-                    selection.GetFirstSelectedTick()
+                    selection
                 );
             Chart.showPreviewers = false;
             return;
         }
 
-        lane.OverwriteLaneDataWith(moveData.preMoveData);
+        lane.OverwriteLaneDataWith(moveData.preMoveData[0]);
 
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
 
         var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
         moveData.lastGhostStartTick = pasteDestination;
 
-        lane.OverwriteDataWithOffset(moveData.originalMovingDataSet, pasteDestination);
+        var movingDataSet = moveData.OneDGetMoveData()[0];
 
-        selection.ApplyScaledSelection(moveData.originalMovingDataSet, moveData.lastGhostStartTick);
+        lane.OverwriteDataWithOffset(movingDataSet, pasteDestination);
+
+        selection.ApplyScaledSelection(movingDataSet, moveData.lastGhostStartTick);
 
         moveData.lastMouseTick = currentMouseTick;
 
@@ -145,7 +146,7 @@ public class SyncTrackInstrument : IInstrument
         Chart.Refresh();
     }
 
-    public void CompleteMove<T>(ref OneDimensionalMoveData<T> moveData, SelectionSet<T> selection) where T : IEventData
+    public void CompleteMove<T>(ref UniversalMoveData<T> moveData, SelectionSet<T> selection) where T : IEventData
     {
         if (!moveData.inProgress) return;
 
@@ -246,7 +247,11 @@ public class SyncTrackInstrument : IInstrument
         // Keep all events before change when creating new dictionary
         for (int i = 0; i <= positionOfTick; i++)
         {
-            outputTempoEventsDict.Add(tickEvents[i], TempoEvents[tickEvents[i]]);
+            var tick = tickEvents[i];
+            var bpmData = TempoEvents[tickEvents[i]];
+            var timestamp = tick == 0 ? new(bpmData.BPMChange, 0, bpmData.Anchor) : TempoEvents[tickEvents[i]];
+
+            outputTempoEventsDict.Add(tick, timestamp);
         }
         // Start new data with the song timestamp of the change
         double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Timestamp;

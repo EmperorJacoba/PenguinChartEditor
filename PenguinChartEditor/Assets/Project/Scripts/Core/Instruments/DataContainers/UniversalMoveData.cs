@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 // Two dimensions in this scenario meaning across time and lanes. Enables lane-to-lane movement.
-public class TwoDimensionalMoveData<T> where T : IEventData
+public class UniversalMoveData<T> where T : IEventData
 {
     public bool inProgress = false;
 
@@ -37,17 +37,25 @@ public class TwoDimensionalMoveData<T> where T : IEventData
         }
     }
 
-    public TwoDimensionalMoveData(
-        int currentMouseTick, 
-        int firstLane,
-        SortedDictionary<int, T>[] laneData, 
-        SortedDictionary<int, T>[] selectionData, 
+    /// <summary>
+    /// Use when operating on a 2D instrument lane set. 
+    /// </summary>
+    /// <param name="currentMouseTick"></param>
+    /// <param name="currentLane"></param>
+    /// <param name="laneData">Use Lanes.ExportData() to get this (or data of a similar kind)</param>
+    /// <param name="selectionData">Use Lanes.ExportNormalizedSelection() (or data of a similar kind)</param>
+    /// <param name="firstSelectionTick"></param>
+    public UniversalMoveData(
+        int currentMouseTick,
+        int currentLane,
+        SortedDictionary<int, T>[] laneData,
+        SortedDictionary<int, T>[] selectionData,
         int firstSelectionTick
         )
     {
         firstMouseTick = currentMouseTick;
         lastMouseTick = currentMouseTick;
-        this.firstLane = firstLane;
+        this.firstLane = currentLane;
 
         this.firstSelectionTick = firstSelectionTick;
         if (firstSelectionTick == SelectionSet<T>.NONE_SELECTED) return;
@@ -69,7 +77,53 @@ public class TwoDimensionalMoveData<T> where T : IEventData
         inProgress = true;
     }
 
-    public TwoDimensionalMoveData()
+    /// <summary>
+    /// Use when operating on one a single lane. 2D lane needs like lane shifting are waived. Use preMoveData[0] to reference the reference data.
+    /// </summary>
+    /// <param name="currentMouseTick"></param>
+    /// <param name="laneSet">The LaneSet corresponding to this lane.</param>
+    /// <param name="selection">The SelectionSet corresponding to this lane.</param>
+    public UniversalMoveData(
+        int currentMouseTick,
+        LaneSet<T> laneSet,
+        SelectionSet<T> selection
+        )
+    {
+        firstMouseTick = currentMouseTick;
+        lastMouseTick = currentMouseTick;
+
+        firstSelectionTick = selection.GetFirstSelectedTick();
+        if (firstSelectionTick == SelectionSet<T>.NONE_SELECTED || selection.Count == 0) return;
+
+        lastGhostStartTick = firstSelectionTick;
+
+        preMoveData = new SortedDictionary<int, T>[1]
+        {
+            laneSet.ExportData()
+        };
+        originalMovingDataSet = new SortedDictionary<int, T>[1]
+        {
+            selection.ExportNormalizedData()
+        };
+
+        foreach (var tick in laneSet.protectedTicks)
+        {
+            if (originalMovingDataSet[0].ContainsKey(tick - firstSelectionTick))
+            {
+                originalMovingDataSet[0].Remove(tick - firstSelectionTick);
+            }
+        }
+
+        foreach (var tick in originalMovingDataSet[0].Keys)
+        {
+            preMoveData[0].Remove(tick + firstSelectionTick, out T data);
+        }
+
+        inProgress = true;
+    }
+
+
+    public UniversalMoveData()
     {
         inProgress = false;
         lastMouseTick = -1;
@@ -82,20 +136,24 @@ public class TwoDimensionalMoveData<T> where T : IEventData
 
         for (int i = 0; i < originalMovingDataSet.Length; i++)
         {
-            boundsCorrectedData[i] = originalMovingDataSet[i];
-            foreach (var item in originalMovingDataSet[i])
+            var data = new SortedDictionary<int, T>(originalMovingDataSet[i]);
+            boundsCorrectedData[i] = data;
+            foreach (var item in new SortedDictionary<int, T>(data))
             {
                 if (item.Key + lastGhostStartTick < 0)
                 {
                     boundsCorrectedData[i].Remove(item.Key);
                     boundsCorrectedData[i][0] = item.Value;
+                    continue;
                 }
 
                 if (item.Key + lastGhostStartTick > SongTime.SongLengthTicks)
                 {
                     boundsCorrectedData[i].Remove(item.Key);
                     boundsCorrectedData[i][SongTime.SongLengthTicks] = item.Value;
+                    continue;
                 }
+
             }
         }
 
@@ -104,9 +162,9 @@ public class TwoDimensionalMoveData<T> where T : IEventData
 
     public SortedDictionary<int, T>[] GetMoveData(int laneShift)
     {
-        if (laneShift == 0) return originalMovingDataSet;
-
         var boundsCorrectedData = OneDGetMoveData();
+
+        if (laneShift == 0) return boundsCorrectedData;
 
         // soooooo open note data is in the last array position
         // even though in THEORY open notes should have a lower pitch

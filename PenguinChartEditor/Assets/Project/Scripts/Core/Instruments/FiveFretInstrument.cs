@@ -101,7 +101,7 @@ public class FiveFretInstrument : IInstrument
 
     #region Moving
 
-    TwoDimensionalMoveData<FiveFretNoteData> moveData = new();
+    UniversalMoveData<FiveFretNoteData> moveData = new();
     public bool justMoved { get; set; } = false;
 
     void MoveSelection()
@@ -131,9 +131,9 @@ public class FiveFretInstrument : IInstrument
             // optimize call
             moveData = new(
                 currentMouseTick,
-                firstLane: currentMouseLane,
+                currentLane: currentMouseLane,
                 Lanes.ExportData(),
-                Lanes.ExportNormalizedSelectionData(),
+                Lanes.ExportNormalizedSelection(),
                 Lanes.GetFirstSelectionTick()
                 );
             Chart.showPreviewers = false;
@@ -141,7 +141,6 @@ public class FiveFretInstrument : IInstrument
         }
         if (!(tickMovement || laneMovement)) return;
 
-        //Lanes.ClearAllSelections();
         Lanes.SetLaneData(moveData.preMoveData);
 
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
