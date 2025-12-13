@@ -152,6 +152,8 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         if (subtractedTicksSet.Count == 0) return;
 
         var keys = subtractedTicksSet.Keys;
+
+        Chart.Log($"{keys}");
         UpdatesNeededInRange(keys.Min(), keys.Max());
     }
 
@@ -183,7 +185,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
             }
         }
 
-        InvokeForSetEnds(subtractedTicks);
+        // InvokeForSetEnds(subtractedTicks);
 
         return subtractedTicks;
     }
@@ -204,7 +206,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
             }
         }
 
-        InvokeForSetEnds(subtractedTicks);
+        // InvokeForSetEnds(subtractedTicks);
 
         return subtractedTicks;
     }
@@ -225,7 +227,6 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     public void OverwriteLaneDataWith(SortedDictionary<int, TValue> data)
     {
         laneData = new(data);
-        // InvokeForSetEnds(data.Keys.ToHashSet());
     }
 
     public void OverwriteDataWithOffset(SortedDictionary<int, TValue> data, int tickOffset)
@@ -239,8 +240,6 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
             }
             laneData.Add(targetPasteTick, tick.Value);
         }
-
-        InvokeForSetEnds(data);
     }
 
     /// <summary>

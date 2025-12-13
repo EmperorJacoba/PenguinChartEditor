@@ -116,18 +116,21 @@ public class SyncTrackInstrument : IInstrument
             return;
         }
 
-        selection.Clear();
         lane.OverwriteLaneDataWith(moveData.preMoveData);
 
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
 
         var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
-        lane.OverwriteDataWithOffset(moveData.originalMovingDataSet, pasteDestination);
-
-        moveData.lastMouseTick = currentMouseTick;
         moveData.lastGhostStartTick = pasteDestination;
 
+        lane.OverwriteDataWithOffset(moveData.originalMovingDataSet, pasteDestination);
+
+        selection.ApplyScaledSelection(moveData.originalMovingDataSet, moveData.lastGhostStartTick);
+
+        moveData.lastMouseTick = currentMouseTick;
+
         if (typeof(T) == typeof(BPMData)) RecalculateTempoEventDictionary();
+
         SongTime.InvokeTimeChanged();
         Chart.Refresh();
     }
@@ -138,18 +141,15 @@ public class SyncTrackInstrument : IInstrument
 
         CompleteMove(ref bpmMoveData, bpmSelection);
         CompleteMove(ref tsMoveData, tsSelection);
+
+        Chart.Refresh();
     }
 
     public void CompleteMove<T>(ref OneDimensionalMoveData<T> moveData, SelectionSet<T> selection) where T : IEventData
     {
         if (!moveData.inProgress) return;
 
-        selection.ApplyScaledSelection(moveData.originalMovingDataSet, moveData.lastGhostStartTick);
-
         moveData = new();
-        justMoved = true;
-
-        Chart.Refresh();
     }
 
     #endregion
