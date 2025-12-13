@@ -137,7 +137,7 @@ public class Chart : MonoBehaviour
 
     #endregion
 
-    public static bool editMode = true; // for previewers
+    public static bool showPreviewers = true; // for previewers
 
     InputMap inputMap;
 
@@ -159,7 +159,7 @@ public class Chart : MonoBehaviour
             ToList()[0];
        // LoadedInstrument = SyncTrackInstrument;
 
-        AudioManager.PlaybackStateChanged += x => { editMode = !AudioManager.AudioPlaying; };
+        AudioManager.PlaybackStateChanged += x => { showPreviewers = !AudioManager.AudioPlaying; };
 
         inputMap = new();
         inputMap.Enable();

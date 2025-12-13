@@ -104,7 +104,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public void InitializeEvent(int tick, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer)
     {
-        Debug.Log($"Init events");
         _tick = tick;
         Visible = true;
         laneIdentifier = lane;

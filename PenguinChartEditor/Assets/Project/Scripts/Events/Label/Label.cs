@@ -89,7 +89,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
 
     public void ConcludeManualEdit()
     {
-        Chart.editMode = true;
+        Chart.showPreviewers = true;
         DeactivateManualInput();
     }
 

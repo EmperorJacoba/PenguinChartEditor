@@ -50,7 +50,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
     public void Add(int key, TValue value)
     {
-        if (key < 0) key = 0;
+        if (key < 0) return;
 
         laneData.Remove(key);
         laneData.Add(key, value);
@@ -328,6 +328,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         }
         set
         {
+            if (key < 0) return;
             laneData[key] = value;
         }
     }

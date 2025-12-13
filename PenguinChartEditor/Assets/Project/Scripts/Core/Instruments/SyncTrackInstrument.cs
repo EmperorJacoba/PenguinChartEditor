@@ -112,7 +112,7 @@ public class SyncTrackInstrument : IInstrument
                     selection.ExportNormalizedData(),
                     selection.GetFirstSelectedTick()
                 );
-            Chart.editMode = false;
+            Chart.showPreviewers = false;
             return;
         }
 
@@ -134,7 +134,7 @@ public class SyncTrackInstrument : IInstrument
 
     public void CompleteMove()
     {
-        Chart.editMode = true;
+        Chart.showPreviewers = true;
 
         CompleteMove(ref bpmMoveData, bpmSelection);
         CompleteMove(ref tsMoveData, tsSelection);

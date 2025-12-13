@@ -76,9 +76,37 @@ public class TwoDimensionalMoveData<T> where T : IEventData
         lastLane = int.MinValue;
     }
 
+    public SortedDictionary<int, T>[] OneDGetMoveData()
+    {
+        SortedDictionary<int, T>[] boundsCorrectedData = new SortedDictionary<int, T>[originalMovingDataSet.Length];
+
+        for (int i = 0; i < originalMovingDataSet.Length; i++)
+        {
+            boundsCorrectedData[i] = originalMovingDataSet[i];
+            foreach (var item in originalMovingDataSet[i])
+            {
+                if (item.Key + lastGhostStartTick < 0)
+                {
+                    boundsCorrectedData[i].Remove(item.Key);
+                    boundsCorrectedData[i][0] = item.Value;
+                }
+
+                if (item.Key + lastGhostStartTick > SongTime.SongLengthTicks)
+                {
+                    boundsCorrectedData[i].Remove(item.Key);
+                    boundsCorrectedData[i][SongTime.SongLengthTicks] = item.Value;
+                }
+            }
+        }
+
+        return boundsCorrectedData;
+    }
+
     public SortedDictionary<int, T>[] GetMoveData(int laneShift)
     {
         if (laneShift == 0) return originalMovingDataSet;
+
+        var boundsCorrectedData = OneDGetMoveData();
 
         // soooooo open note data is in the last array position
         // even though in THEORY open notes should have a lower pitch
@@ -91,10 +119,10 @@ public class TwoDimensionalMoveData<T> where T : IEventData
 
         if (Chart.instance.SceneDetails.currentScene == SceneType.fiveFretChart)
         {
-            sequentialMoveData[0] = originalMovingDataSet[^1];
+            sequentialMoveData[0] = boundsCorrectedData[^1];
             for (int i = 1; i < sequentialMoveData.Length; i++)
             {
-                sequentialMoveData[i] = originalMovingDataSet[i - 1];
+                sequentialMoveData[i] = boundsCorrectedData[i - 1];
             }
         }
         else sequentialMoveData = originalMovingDataSet;

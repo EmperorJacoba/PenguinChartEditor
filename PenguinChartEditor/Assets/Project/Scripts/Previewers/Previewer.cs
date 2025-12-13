@@ -67,7 +67,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     public bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
-        if (!Chart.editMode || 
+        if (!Chart.showPreviewers || 
             Chart.instance.SceneDetails.IsSceneOverlayUIHit() || 
             Input.GetMouseButton(RIGHT_MOUSE_ID) || // right mouse = sustaining
             !Chart.IsEditAllowed() ||

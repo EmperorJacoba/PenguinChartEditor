@@ -136,7 +136,7 @@ public class FiveFretInstrument : IInstrument
                 Lanes.ExportNormalizedSelectionData(),
                 Lanes.GetFirstSelectionTick()
                 );
-            Chart.editMode = false;
+            Chart.showPreviewers = false;
             return;
         }
         if (!(tickMovement || laneMovement)) return;
@@ -146,29 +146,11 @@ public class FiveFretInstrument : IInstrument
 
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
 
+        var movingDataSet = moveData.GetMoveData(currentMouseLane - moveData.firstLane);
+
         var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
-        Lanes.OverwriteLaneDataWithOffset(moveData.GetMoveData(currentMouseLane - moveData.firstLane), pasteDestination);
-
-        Chart.Refresh();
-
-        moveData.lastMouseTick = currentMouseTick;
         moveData.lastGhostStartTick = pasteDestination;
-        moveData.lastLane = currentMouseLane;
-    }
-
-    void CompleteMove()
-    {
-        if (this != Chart.LoadedInstrument) return;
-
-        Chart.editMode = true;
-        if (!moveData.inProgress) return;
-
-        var movingDataSet = moveData.GetMoveData(moveData.lastLane - moveData.firstLane);
-        //Lanes.ApplyScaledSelection(moveData.GetMoveData(moveData.lastLane - moveData.firstLane), moveData.lastGhostStartTick);
-
-        CheckForHoposInRange(moveData.lastGhostStartTick, moveData.lastGhostEndTick);
-
-        var preMoveData = moveData.GetOriginalDataSet();
+        Lanes.OverwriteLaneDataWithOffset(movingDataSet, pasteDestination);
 
         for (int i = 0; i < Lanes.Count; i++)
         {
@@ -183,9 +165,21 @@ public class FiveFretInstrument : IInstrument
             }
         }
 
-        moveData = new();
+        Lanes.ApplyScaledSelection(movingDataSet, moveData.lastGhostStartTick);
+
+        CheckForHoposInRange(moveData.lastGhostStartTick, moveData.lastGhostEndTick);
 
         Chart.Refresh();
+    }
+
+    void CompleteMove()
+    {
+        if (this != Chart.LoadedInstrument) return;
+
+        Chart.showPreviewers = true;
+        if (!moveData.inProgress) return;
+
+        moveData = new();
     }
 
     #endregion
