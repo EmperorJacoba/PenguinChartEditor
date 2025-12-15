@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEditor.Overlays;
 using UnityEngine;
 
 public class FiveFretInstrument : IInstrument
@@ -32,7 +33,7 @@ public class FiveFretInstrument : IInstrument
     public Lanes<FiveFretNoteData> Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
-    public InstrumentType Instrument { get; set; }
+    public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
 
     InputMap inputMap;
@@ -67,7 +68,7 @@ public class FiveFretInstrument : IInstrument
         Lanes = lanes;
         SpecialEvents = starpower;
         LocalEvents = localEvents;
-        Instrument = instrument;
+        InstrumentName = instrument;
         Difficulty = difficulty;
 
         for (int i = 0; i < Lanes.Count; i++)
@@ -95,6 +96,7 @@ public class FiveFretInstrument : IInstrument
         inputMap.Charting.ForceTap.performed += x => ToggleTaps();
         inputMap.Charting.XYDrag.performed += x => MoveSelection();
         inputMap.Charting.LMB.canceled += x => CompleteMove();
+        inputMap.Charting.Delete.performed += x => DeleteSelection();
     }
 
     #endregion
@@ -179,6 +181,22 @@ public class FiveFretInstrument : IInstrument
         if (!moveData.inProgress) return;
 
         moveData = new();
+    }
+
+    #endregion
+
+    #region Add/Delete
+
+    void DeleteSelection()
+    {
+        if (Chart.LoadedInstrument != this) return;
+
+        if (TotalSelectionCount == 0) return;
+
+        Lanes.DeleteAllTicksInSelection();
+        Lanes.ClearAllSelections();
+
+        Chart.Refresh();
     }
 
     #endregion
@@ -661,7 +679,7 @@ public class FiveFretInstrument : IInstrument
 
                         if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
                         {
-                            Chart.Log($"Invalid note identifier for {Instrument} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
+                            Chart.Log($"Invalid note identifier for {InstrumentName} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
                             continue;
                         }
 
@@ -669,7 +687,7 @@ public class FiveFretInstrument : IInstrument
 
                         if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
                         {
-                            Chart.Log($"Invalid sustain for {Instrument} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
+                            Chart.Log($"Invalid sustain for {InstrumentName} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
                             continue;
                         }
 
@@ -715,13 +733,13 @@ public class FiveFretInstrument : IInstrument
 
                         if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
                         {
-                            Chart.Log($"Invalid special identifier for {Instrument} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
+                            Chart.Log($"Invalid special identifier for {InstrumentName} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
                             break;
                         }
 
                         if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
                         {
-                            Chart.Log($"Invalid sustain for {Instrument} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
+                            Chart.Log($"Invalid sustain for {InstrumentName} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
                             break;
                         }
 

@@ -20,7 +20,6 @@ public interface IEvent
     void RefreshLane();
 
     // So that Lane<T> can access these easily
-    void DeleteSelection();
     void SustainSelection();
     void CompleteSustain();
     void CheckForSelectionClear();

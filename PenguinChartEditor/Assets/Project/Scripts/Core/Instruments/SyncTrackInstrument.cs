@@ -36,7 +36,7 @@ public class SyncTrackInstrument : IInstrument
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
 
-    public InstrumentType Instrument { get; set; } = InstrumentType.synctrack;
+    public InstrumentType InstrumentName { get; set; } = InstrumentType.synctrack;
     public DifficultyType Difficulty { get; set; } = DifficultyType.easy;
 
     public List<int> UniqueTicks
@@ -73,6 +73,7 @@ public class SyncTrackInstrument : IInstrument
                 MoveSelection(); 
         };
         inputMap.Charting.LMB.canceled += x => CompleteMove();
+        inputMap.Charting.Delete.performed += x => DeleteSelection();
     }
 
 
@@ -152,6 +153,31 @@ public class SyncTrackInstrument : IInstrument
 
         moveData = new();
     }
+
+    #endregion
+
+    #region Add/Delete
+
+    void DeleteSelection()
+    {
+        if (Chart.LoadedInstrument != this) return;
+
+        if (bpmSelection.Count > 0)
+        {
+            TempoEvents.PopTicksFromSet(bpmSelection.ExportData());
+            RecalculateTempoEventDictionary(bpmSelection.GetFirstSelectedTick());
+            bpmSelection.Clear();
+        }
+
+        if (tsSelection.Count > 0)
+        {
+            TimeSignatureEvents.PopTicksFromSet(tsSelection.ExportData());
+            tsSelection.Clear();
+        }
+
+        SongTime.InvokeTimeChanged();
+    }
+
 
     #endregion
 

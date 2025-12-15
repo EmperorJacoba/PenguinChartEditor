@@ -7,7 +7,7 @@ public class GHLInstrument : IInstrument
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
 
-    public InstrumentType Instrument { get; set; }
+    public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
     public List<int> UniqueTicks => Lanes.UniqueTicks;
 

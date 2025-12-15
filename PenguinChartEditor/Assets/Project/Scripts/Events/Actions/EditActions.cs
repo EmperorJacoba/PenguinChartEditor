@@ -34,21 +34,6 @@ public class Delete<T> : IEditAction<T> where T : IEventData
         return true;
     }
 
-    /// <summary>
-    /// Delete all events within two points in the target set.
-    /// </summary>
-    /// <param name="startDeleteTick"></param>
-    /// <param name="endDeleteTick"></param>
-    /// <returns></returns>
-    public bool Execute(int startDeleteTick, int endDeleteTick)
-    {
-        if (eventSetReference.Count == 0) return false;
-
-        SaveData = eventSetReference.PopTicksInRange(startDeleteTick, endDeleteTick);
-
-        return true;
-    }
-
     public bool Execute(int tick)
     {
         if (eventSetReference.Count == 0 || !eventSetReference.ContainsKey(tick)) return false;

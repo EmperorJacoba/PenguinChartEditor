@@ -5,9 +5,8 @@
 // future me: PLEASE STOP ADDING <T>! IT WILL NOT WORK THIS TIME! LIKE THE 7 OTHER TIMES
 public interface IInstrument
 {
-    SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
-    InstrumentType Instrument { get; set; }
+    InstrumentType InstrumentName { get; set; }
     DifficultyType Difficulty { get; set; }
     List<string> ExportAllEvents();
 
@@ -28,6 +27,8 @@ public interface IInstrument
     void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines);
 
     void DeleteTicksInSelection();
+    //void DeleteTick(int tick);
 
     bool justMoved { get; set; }
 }
+

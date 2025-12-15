@@ -29,9 +29,6 @@ public abstract class Lane<TEvent> : MonoBehaviour where TEvent : IPoolable
         inputMap = new();
         inputMap.Enable();
 
-        /// Basic Actions
-        inputMap.Charting.Delete.performed += x => eventAccessor.DeleteSelection();
-
         inputMap.Charting.SelectAll.performed += x => eventAccessor.SelectAllEvents();
 
         inputMap.Charting.LMB.performed += x => eventAccessor.CheckForSelectionClear();

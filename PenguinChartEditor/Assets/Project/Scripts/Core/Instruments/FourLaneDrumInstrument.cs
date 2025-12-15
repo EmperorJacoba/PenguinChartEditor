@@ -6,7 +6,7 @@ public class FourLaneDrumInstrument : IInstrument
     public Lanes<FourLaneDrumNoteData> Lanes;
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
-    public InstrumentType Instrument { get; set; }
+    public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
 
     public int TotalSelectionCount => throw new System.NotImplementedException();

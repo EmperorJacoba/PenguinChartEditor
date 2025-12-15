@@ -190,7 +190,7 @@ public static class ChartWriter
 
     static HeaderType GetMatchingHeader(IInstrument instrument)
     {
-        int enumValue = (int)instrument.Instrument + (int)instrument.Difficulty;
+        int enumValue = (int)instrument.InstrumentName + (int)instrument.Difficulty;
         return (HeaderType)enumValue;
     }
 }
