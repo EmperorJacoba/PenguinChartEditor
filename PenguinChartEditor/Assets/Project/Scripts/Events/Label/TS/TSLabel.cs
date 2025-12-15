@@ -14,6 +14,8 @@ public class TSLabel : Label<TSData>, IPoolable
 
     #endregion
 
+    public override int Lane => (int)SyncTrackInstrument.LaneOrientation.timeSignature;
+
     public void InitializeEvent(int tick)
     {
         base.InitializeLabel(tick);

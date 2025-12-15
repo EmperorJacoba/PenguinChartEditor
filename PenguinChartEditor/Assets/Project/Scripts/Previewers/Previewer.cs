@@ -37,7 +37,6 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         AddCurrentEventDataToLaneSet(); // implemented locally
 
         previewerEventReference.GetSelection().Remove(Tick);
-        // disableNextSelectionCheck = true;
         Chart.Refresh();
     }
 
@@ -56,8 +55,6 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         get => previewTick;
         set => previewTick = value;
     }
-
-    public static bool disableNextSelectionCheck { get; set; } = false;
 
     /// <summary>
     /// Shortcut to allow void events call the main UpdatePreviewPosition function.

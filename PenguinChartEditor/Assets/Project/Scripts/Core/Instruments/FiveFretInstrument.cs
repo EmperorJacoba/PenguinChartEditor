@@ -199,6 +199,17 @@ public class FiveFretInstrument : IInstrument
         Chart.Refresh();
     }
 
+    public void DeleteTick(int tick, int lane)
+    {
+        var laneReference = Lanes.GetLane(lane);
+        if (!laneReference.Contains(tick)) return;
+
+        var poppedTick = laneReference.PopSingle(tick);
+        if (poppedTick == null) return; // future proofing in case a protected tick is ever needed for FFN
+
+        Chart.Refresh();
+    }
+
     #endregion
 
     #region Selections
@@ -371,13 +382,14 @@ public class FiveFretInstrument : IInstrument
 
     public void UpdateSustain(int tick, LaneOrientation lane, int newSustain)
     {
-        // absolute next tick
+        var currentLane = Lanes.GetLane((int)lane);
+        if (!currentLane.Contains(tick)) return;
+
         var ticks = Lanes.GetTickEventBounds(tick);
 
         // clamp based on this lane only (ignore other lane overlap)
         if (UserSettings.ExtSustains)
         {
-            var currentLane = Lanes.GetLane((int)lane);
             currentLane[tick] = currentLane[tick].ExportWithNewSustain(
                 CalculateSustainClamp(newSustain, tick, currentLane.GetNextTickEventInLane(tick))
                 );
@@ -400,18 +412,18 @@ public class FiveFretInstrument : IInstrument
 
             for (int i = 0; i < Lanes.Count; i++)
             {
-                var currentLane = Lanes.GetLane((int)lane);
+                var iteratorLane = Lanes.GetLane((int)lane);
 
-                if (currentLane.Contains(tick))
+                if (iteratorLane.Contains(tick))
                 {
-                    currentLane[tick] = currentLane[tick].ExportWithNewSustain(calculatedCurrentSustain);
+                    iteratorLane[tick] = iteratorLane[tick].ExportWithNewSustain(calculatedCurrentSustain);
                 }
-                if (currentLane.Contains(ticks.prev))
+                if (iteratorLane.Contains(ticks.prev))
                 {
-                    var currentData = currentLane[ticks.prev];
+                    var currentData = iteratorLane[ticks.prev];
                     if (calculatedPrevSustain == -1) calculatedPrevSustain = CalculateSustainClamp(currentData.Sustain, ticks.prev, tick);
 
-                    currentLane[ticks.prev] = currentData.ExportWithNewSustain(calculatedPrevSustain);
+                    iteratorLane[ticks.prev] = currentData.ExportWithNewSustain(calculatedPrevSustain);
                 }
             }
         }

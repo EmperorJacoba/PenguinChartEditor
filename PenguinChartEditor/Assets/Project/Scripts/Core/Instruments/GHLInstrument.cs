@@ -85,5 +85,8 @@ public class GHLInstrument : IInstrument
         throw new NotImplementedException();
     }
 
-
+    public void DeleteTick(int tick, int lane)
+    {
+        throw new NotImplementedException();
+    }
 }

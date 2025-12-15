@@ -80,5 +80,10 @@ public class FourLaneDrumInstrument : IInstrument
         throw new NotImplementedException();
     }
 
+    public void DeleteTick(int tick, int lane)
+    {
+        throw new NotImplementedException();
+    }
+
     public bool justMoved { get; set; }
 }

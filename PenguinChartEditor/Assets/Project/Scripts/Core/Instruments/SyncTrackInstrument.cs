@@ -76,6 +76,11 @@ public class SyncTrackInstrument : IInstrument
         inputMap.Charting.Delete.performed += x => DeleteSelection();
     }
 
+    public enum LaneOrientation
+    {
+        bpm = 0,
+        timeSignature = 1
+    }
 
     #endregion
 
@@ -178,6 +183,26 @@ public class SyncTrackInstrument : IInstrument
         SongTime.InvokeTimeChanged();
     }
 
+    public void DeleteTick(int tick, int lane)
+    {
+        if (lane == (int)LaneOrientation.bpm)
+        {
+            if (!TempoEvents.Contains(tick)) return;
+            var poppedTick = TempoEvents.PopSingle(tick);
+            if (poppedTick == null) return;
+
+            RecalculateTempoEventDictionary(tick);
+        }
+
+        if (lane == (int)LaneOrientation.timeSignature)
+        {
+            if (!TimeSignatureEvents.Contains(tick)) return;
+            var poppedTick = TimeSignatureEvents.PopSingle(tick);
+            if (poppedTick == null) return;
+        }
+
+        SongTime.InvokeTimeChanged();
+    }
 
     #endregion
 

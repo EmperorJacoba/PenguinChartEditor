@@ -27,7 +27,7 @@ public interface IInstrument
     void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines);
 
     void DeleteTicksInSelection();
-    //void DeleteTick(int tick);
+    void DeleteTick(int tick, int lane);
 
     bool justMoved { get; set; }
 }

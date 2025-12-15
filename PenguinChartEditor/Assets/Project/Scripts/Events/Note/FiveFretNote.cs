@@ -26,6 +26,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public Coroutine destructionCoroutine { get; set; }
 
+    public override int Lane => (int)laneIdentifier;
     public FiveFretInstrument.LaneOrientation laneIdentifier
     {
         get

@@ -41,6 +41,7 @@ public interface IEvent
 // Lane assignment happens through GetEventSet() and GetEventData(), which is just a reference to its "instrument" lane data.
 public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler where T : IEventData
 {
+    public abstract int Lane { get; }
     protected static float doubleClickTime = 0.3f;
     #region Properties
     public int Tick
@@ -110,13 +111,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
 
     #region EditAction Handlers
 
-    public virtual void DeleteSelection()
-    {
-        var deleteAction = new Delete<T>(LaneData);
-        deleteAction.Execute(Selection);
-        Chart.Refresh();
-    }
-
     public virtual void CreateEvent(int newTick, T newData)
     {
         var createAction = new Create<T>(LaneData);
@@ -148,22 +142,12 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         // used for right click + left click delete functionality
         if (Input.GetMouseButton(RMB_ID) && pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            var deleteAction = new Delete<T>(LaneData);
-            deleteAction.Execute(Tick);
-
-            if (typeof(T) == typeof(BPMData))
-            {
-                Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
-                SongTime.InvokeTimeChanged();
-            }
-
-            Chart.Refresh();
+            ParentInstrument.DeleteTick(Tick, Lane);
             return;
         }
 
         CalculateSelectionStatus(pointerEventData);
     }
-    protected bool disableNextSelectionCheck = false; // used in charted instruments only
 
     public bool CheckForSelection()
     {

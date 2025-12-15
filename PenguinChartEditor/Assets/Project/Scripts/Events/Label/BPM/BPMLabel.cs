@@ -10,6 +10,8 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     private const int SECONDS_PER_MINUTE = 60;
     private const int BPM_DIGIT_COUNT = 3;
 
+    public override int Lane => (int)SyncTrackInstrument.LaneOrientation.bpm;
+
     #endregion
 
     #region Event Sets / Properties
@@ -35,7 +37,6 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     #region Event Handlers
 
     // Overriden to make sure faulty/inaccurate data is not in Tempo dict after any large modifications
-    public override void DeleteSelection() => ExecuteWithRecalculate(base.DeleteSelection);
     public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
     public override void RefreshLane() => BPMLane.instance.UpdateEvents();
     public override void SustainSelection() { }
