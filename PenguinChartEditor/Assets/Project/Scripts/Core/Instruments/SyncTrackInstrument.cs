@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEditor.Overlays;
 using UnityEngine;
 
 public class SyncTrackInstrument : IInstrument
@@ -72,8 +71,17 @@ public class SyncTrackInstrument : IInstrument
             if (!Input.GetKey(KeyCode.LeftControl)) 
                 MoveSelection(); 
         };
+
         inputMap.Charting.LMB.canceled += x => CompleteMove();
+
+        inputMap.Charting.SelectAll.performed += x =>
+        {
+            bpmSelection.SelectAllInLane();
+            tsSelection.SelectAllInLane();
+        };
+
         inputMap.Charting.Delete.performed += x => DeleteSelection();
+        inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
     }
 
     public enum LaneOrientation
@@ -518,6 +526,13 @@ public class SyncTrackInstrument : IInstrument
 
     #region Selections
 
+    public void CheckForSelectionClear()
+    {
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
+
+        bpmSelection.Clear();
+        tsSelection.Clear();
+    }
     public void DeleteTicksInSelection()
     {
         bpmSelection.PopSelectedTicksFromLane();

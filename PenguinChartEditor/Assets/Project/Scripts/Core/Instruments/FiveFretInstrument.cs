@@ -100,6 +100,8 @@ public class FiveFretInstrument : IInstrument
         inputMap.Charting.Delete.performed += x => DeleteSelection();
         inputMap.Charting.SustainDrag.performed += x => SustainSelection();
         inputMap.Charting.RMB.canceled += x => CompleteSustain();
+        inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
+        inputMap.Charting.SelectAll.performed += x => Lanes.SelectAll();
     }
 
     #endregion
@@ -271,6 +273,13 @@ public class FiveFretInstrument : IInstrument
         {
             Lanes.GetLaneSelection(i).Remove(tick);
         }
+    }
+
+    public void CheckForSelectionClear()
+    {
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
+
+        Lanes.ClearAllSelections();
     }
 
     public string ConvertSelectionToString()

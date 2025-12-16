@@ -19,10 +19,6 @@ public interface IEvent
     IPreviewer EventPreviewer { get; }
 
     void RefreshLane();
-
-    // So that Lane<T> can access these easily
-    void CheckForSelectionClear();
-    void SelectAllEvents();
 }
 
 #endregion
@@ -130,20 +126,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
     #endregion
 
     #region Selections
-
-    public virtual void CheckForSelectionClear()
-    {
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
-
-        Selection.Clear();
-        RefreshLane();
-    }
-
-    public void SelectAllEvents()
-    {
-        Selection.SelectAllInLane();
-        RefreshLane();
-    }
 
     public static bool justDeleted = false;
     public virtual void OnPointerDown(PointerEventData pointerEventData)

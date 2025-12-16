@@ -191,12 +191,12 @@ public class SongTime : MonoBehaviour
         if (remainder > (tickInterval / 2)) // Closer to following snap
         {
             // Regress to last grid snap and then add a snap to get to next grid position
-            return (int)Math.Floor(cursorTickTime - remainder + tickInterval);
+            return (int)Math.Ceiling(cursorTickTime - remainder + tickInterval);
         }
         else // Closer to previous grid snap or dead on a snap (subtract 0 = no change)
         {
             // Regress to last grid snap
-            return (int)Math.Floor(cursorTickTime - remainder);
+            return (int)Math.Ceiling(cursorTickTime - remainder);
         }
     }
 

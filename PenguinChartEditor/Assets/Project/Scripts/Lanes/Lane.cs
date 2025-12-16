@@ -20,20 +20,6 @@ public abstract class Lane<TEvent> : MonoBehaviour where TEvent : IPoolable
     // this variable references the Event script on the previewer
     protected IEvent eventAccessor;
 
-    protected InputMap inputMap;
-
-    protected virtual void Awake()
-    {
-        eventAccessor = gameObject.GetComponentInChildren<IEvent>();
-
-        inputMap = new();
-        inputMap.Enable();
-
-        inputMap.Charting.SelectAll.performed += x => eventAccessor.SelectAllEvents();
-
-        inputMap.Charting.LMB.performed += x => eventAccessor.CheckForSelectionClear();
-    }
-
     public void UpdateEvents()
     {
         var events = GetEventsToDisplay();

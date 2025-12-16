@@ -222,6 +222,15 @@ public class Lanes<T> where T : IEventData
         }
     }
 
+    public void SelectAll()
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            selections[i].SelectAllInLane();
+        }
+        Chart.Refresh();
+    }
+
     public void DeleteAllTicksInSelection()
     {
         for (int i = 0; i < Count; i++)

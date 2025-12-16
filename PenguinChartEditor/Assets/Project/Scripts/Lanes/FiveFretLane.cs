@@ -15,9 +15,8 @@ public class FiveFretLane : Lane<FiveFretNote>
     protected override IPooler<FiveFretNote> Pooler => (IPooler<FiveFretNote>)lanePooler;
     protected override IPreviewer Previewer => previewer;
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
         Chart.ChartTabUpdated += UpdateEvents;
     }
 
