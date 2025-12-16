@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -175,92 +173,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         if (localScaleZ < 0) localScaleZ = 0; // box collider negative size issues??
 
         sustain.localScale = new Vector3(sustain.localScale.x, sustain.localScale.y, localScaleZ);
-    }
-
-    // true = start sustain editing from the bottom of the note (sustain = 0)
-    // use when editing sustains from the note (root of sustain)
-    // false = start sustain editing from mouse cursor/current sustain positioning
-    // use when editing sustain from the sustain tail 
-    public static bool resetSustains = true;
-    public override void SustainSelection()
-    {
-        if (!Chart.IsEditAllowed()) return;
-        var sustainData = parentLane.sustainData;
-
-        // Early return if attempting to start an edit while over an overlay element
-        // Allows edit to start only if interacting with main content
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !sustainData.sustainInProgress)
-        {
-            return;
-        }
-
-        var currentMouseTick = GetCurrentMouseTick();
-        if (currentMouseTick == int.MinValue) return;
-
-        // early return if no changes to mouse's grid snap
-        if (currentMouseTick == sustainData.lastMouseTick)
-        {
-            sustainData.lastMouseTick = currentMouseTick;
-            return;
-        }
-
-        if (!sustainData.sustainInProgress)
-        {
-            // directly access parent lane here to avoid reassigning the local shortcut variable
-            parentLane.sustainData = new(LaneData, Selection, currentMouseTick);
-            return;
-        }
-
-        var workingEventSet = LaneData;
-        var ticks = workingEventSet.Keys.ToList();
-
-        var cursorMoveDifference = currentMouseTick - sustainData.firstMouseTick;
-        foreach (var tick in sustainData.sustainingTicks)
-        {
-            int sustainOffset = 0;
-            if (!resetSustains) sustainOffset = sustainData.firstMouseTick - tick;
-
-            var newSustain = sustainOffset + cursorMoveDifference;
-
-            // drag behind the note to max out sustain - cool feature from moonscraper
-            // -CurrentDivison is easy arbitrary value for when to max out - so that there is a buffer for users to remove sustain entirely
-            // SongLengthTicks will get clamped to max sustain length
-            if (newSustain < -DivisionChanger.CurrentDivision) newSustain = SongTime.SongLengthTicks;
-
-            if (workingEventSet.ContainsKey(tick))
-            {
-                chartInstrument.UpdateSustain(tick, laneIdentifier, newSustain);
-            }
-        }
-
-        RefreshLane();
-        sustainData.lastMouseTick = currentMouseTick;
-    }
-
-    public override void CompleteSustain()
-    {
-        Selection.OverwriteWith(parentLane.sustainData.sustainingTicks);
-
-        foreach (var item in chartInstrument.Lanes.TempSustainTicks)
-        {
-            Selection.Remove(item);
-        }
-
-        // parameterless new() = flag as empty 
-        parentLane.sustainData = new();
-        RefreshLane();
-    }
-
-    public int GetCurrentMouseTick()
-    {
-        var newHighwayPercent = Chart.instance.SceneDetails.GetCursorHighwayProportion();
-
-        // 0 is very unlikely as an actual position (as 0 is at the very bottom of the TRACK, which should be outside the screen in most cases)
-        // but is returned if cursor is outside track
-        // min value serves as an easy exit check in case the cursor is outside the highway
-        if (newHighwayPercent == 0) return int.MinValue;
-
-        return SongTime.CalculateGridSnappedTick(newHighwayPercent);
     }
 
     // used on sustain trail itself when click happens on trail

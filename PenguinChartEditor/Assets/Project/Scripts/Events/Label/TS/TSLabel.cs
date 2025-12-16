@@ -22,9 +22,6 @@ public class TSLabel : Label<TSData>, IPoolable
         tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsEventValid(tick);
     }
 
-    public override void SustainSelection() { }
-    public override void CompleteSustain() { }
-
     #region Conversions
 
     /// <summary>

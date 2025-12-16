@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -20,8 +21,6 @@ public interface IEvent
     void RefreshLane();
 
     // So that Lane<T> can access these easily
-    void SustainSelection();
-    void CompleteSustain();
     void CheckForSelectionClear();
     void SelectAllEvents();
 }
@@ -104,17 +103,27 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
     /// </summary>
     public abstract void RefreshLane();
 
-    public abstract void SustainSelection();
-    public abstract void CompleteSustain();
-
     #endregion
 
-    #region EditAction Handlers
+    #region CreateEvent
 
+    // This is the one edit-type action that I feel makes the most sense
+    // (and is the simplest)
+    // to just keep in the Event class.
     public virtual void CreateEvent(int newTick, T newData)
     {
-        var createAction = new Create<T>(LaneData);
-        createAction.Execute(newTick, newData, Selection);
+        // All editing of events does not come from adding an event that already exists
+        // Do not create event if one already exists at that point in the set
+        // If modification is required, user will drag/double click/delete etc.
+        // Since creating new event in BPM/TS inherits the last event's properties,
+        // Creating the same event twice is a waste of computing power.
+        if (LaneData.ContainsKey(newTick))
+        {
+            Selection.Clear();
+            return;
+        }
+        LaneData.Add(newTick, newData);
+
         Chart.Refresh();
     }
 

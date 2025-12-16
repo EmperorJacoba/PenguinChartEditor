@@ -45,7 +45,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     public abstract void Show();
 
     // this is done because there will never be a scenario where
-    // two previewers have different ticks (at least not jn any meaningful way)
+    // two previewers have different ticks (at least not in any meaningful way)
     // previewers do not update this unless they are active, and since there is only ever one active,
     // then this can be a property for the broad previewTick, while also making sense & being consistent
     // in the child classes. previewTick is used for clipboard calculations without needing

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -39,8 +38,6 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     // Overriden to make sure faulty/inaccurate data is not in Tempo dict after any large modifications
     public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
     public override void RefreshLane() => BPMLane.instance.UpdateEvents();
-    public override void SustainSelection() { }
-    public override void CompleteSustain() { }
 
     void ExecuteWithRecalculate(Action action)
     {

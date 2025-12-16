@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEditor.Overlays;
 using UnityEngine;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class FiveFretInstrument : IInstrument
 {
@@ -97,6 +98,8 @@ public class FiveFretInstrument : IInstrument
         inputMap.Charting.XYDrag.performed += x => MoveSelection();
         inputMap.Charting.LMB.canceled += x => CompleteMove();
         inputMap.Charting.Delete.performed += x => DeleteSelection();
+        inputMap.Charting.SustainDrag.performed += x => SustainSelection();
+        inputMap.Charting.RMB.canceled += x => CompleteSustain();
     }
 
     #endregion
@@ -193,7 +196,11 @@ public class FiveFretInstrument : IInstrument
 
         if (TotalSelectionCount == 0) return;
 
+        var totalSelection = Lanes.GetTotalSelection();
         Lanes.DeleteAllTicksInSelection();
+
+        CheckForHoposInRange(totalSelection.Min(), totalSelection.Max());
+
         Lanes.ClearAllSelections();
 
         Chart.Refresh();
@@ -363,6 +370,89 @@ public class FiveFretInstrument : IInstrument
     #endregion
 
     #region Sustains
+
+    // true = start sustain editing from the bottom of the note (sustain = 0)
+    // use when editing sustains from the note (root of sustain)
+    // false = start sustain editing from mouse cursor/current sustain positioning
+    // use when editing sustain from the sustain tail 
+    public static bool resetSustains = true;
+
+    SustainData<FiveFretNoteData> sustainData = new();
+
+    public void SustainSelection()
+    {
+        if (!Chart.IsEditAllowed()) return;
+
+        // Early return if attempting to start an edit while over an overlay element
+        // Allows edit to start only if interacting with main content
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !sustainData.sustainInProgress) return;
+
+        var currentMouseTick = GetCurrentMouseTick();
+        if (currentMouseTick == int.MinValue) return;
+
+        // early return if no changes to mouse's grid snap
+        if (currentMouseTick == sustainData.lastMouseTick) return;
+
+        if (!sustainData.sustainInProgress)
+        {
+            // directly access parent lane here to avoid reassigning the local shortcut variable
+            sustainData = new(Lanes.GetTotalSelectionByLane(), currentMouseTick);
+            return;
+        }
+
+        var cursorMoveDifference = currentMouseTick - sustainData.firstMouseTick;
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var laneTicks = sustainData.sustainingTicks[i];
+            var lane = Lanes.GetLane(i);
+
+            foreach (var tick in laneTicks)
+            {
+                int sustainOffset = 0;
+                if (!resetSustains) sustainOffset = sustainData.firstMouseTick - tick;
+
+                var newSustain = sustainOffset + cursorMoveDifference;
+
+                // drag behind the note to max out sustain - cool feature from moonscraper
+                // -CurrentDivison is easy arbitrary value for when to max out - so that there is a buffer for users to remove sustain entirely
+                // SongLengthTicks will get clamped to max sustain length
+                if (newSustain < -DivisionChanger.CurrentDivision) newSustain = SongTime.SongLengthTicks;
+
+                if (lane.ContainsKey(tick))
+                {
+                    UpdateSustain(tick, (LaneOrientation)i, newSustain);
+                }
+            }
+        }
+
+        Chart.Refresh();
+        sustainData.lastMouseTick = currentMouseTick;
+    }
+
+    public void CompleteSustain()
+    {
+        foreach (var item in Lanes.TempSustainTicks)
+        {
+            Lanes.RemoveTickFromTotalSelection(item);
+        }
+
+        // parameterless new() = flag as empty 
+        sustainData = new();
+        Chart.Refresh();
+    }
+
+    public static int GetCurrentMouseTick()
+    {
+        var newHighwayPercent = Chart.instance.SceneDetails.GetCursorHighwayProportion();
+
+        // 0 is very unlikely as an actual position (as 0 is at the very bottom of the TRACK, which should be outside the screen in most cases)
+        // but is returned if cursor is outside track
+        // min value serves as an easy exit check in case the cursor is outside the highway
+        if (newHighwayPercent == 0) return int.MinValue;
+
+        return SongTime.CalculateGridSnappedTick(newHighwayPercent);
+    }
 
     public void ShiftClickSustainClamp(int tick, int tickLength)
     {

@@ -3,24 +3,19 @@ using System.Linq;
 
 public class SustainData<T> where T : IEventData
 {
-    public bool sustainInProgress;
+    public bool sustainInProgress = false;
     public int lastMouseTick;
     public int firstMouseTick;
-    public Sustain<T> sustainEventAction;
-    public HashSet<int> sustainingTicks = new();
+    public HashSet<int>[] sustainingTicks;
 
-    public SustainData(LaneSet<T> eventSet, SelectionSet<T> selection, int mouseTick)
+    public SustainData(HashSet<int>[] selection, int mouseTick)
     {
-        sustainEventAction = new(eventSet);
-        sustainInProgress = true;
         lastMouseTick = mouseTick;
         firstMouseTick = mouseTick;
 
-        sustainingTicks.Clear();
-        sustainingTicks = new(selection);
+        sustainingTicks = selection;
 
-        selection.Clear();
-        sustainEventAction.CaptureOriginalSustain(sustainingTicks.ToList());
+        sustainInProgress = true;
     }
 
     // use only in Lane<T> class/end of user sustain --

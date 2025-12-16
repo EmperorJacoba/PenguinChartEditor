@@ -32,8 +32,6 @@ public abstract class Lane<TEvent> : MonoBehaviour where TEvent : IPoolable
         inputMap.Charting.SelectAll.performed += x => eventAccessor.SelectAllEvents();
 
         inputMap.Charting.LMB.performed += x => eventAccessor.CheckForSelectionClear();
-        inputMap.Charting.RMB.canceled += x => eventAccessor.CompleteSustain();
-        inputMap.Charting.SustainDrag.performed += x => eventAccessor.SustainSelection();
     }
 
     public void UpdateEvents()

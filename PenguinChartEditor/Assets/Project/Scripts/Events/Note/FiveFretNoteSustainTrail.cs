@@ -7,7 +7,7 @@ public class FiveFretNoteSustainTrail : MonoBehaviour, IPointerDownHandler, IPoi
 
     public void OnPointerUp(PointerEventData pointerEventData)
     {
-        FiveFretNote.resetSustains = true;
+        FiveFretInstrument.resetSustains = true;
         if (pointerEventData.button == PointerEventData.InputButton.Right && 
             parentNote.chartInstrument.Lanes.TempSustainTicks.Contains(parentNote.Tick))
         {
@@ -19,10 +19,10 @@ public class FiveFretNoteSustainTrail : MonoBehaviour, IPointerDownHandler, IPoi
 
     public void OnPointerDown(PointerEventData pointerEventData)
     {
-        FiveFretNote.resetSustains = false;
+        FiveFretInstrument.resetSustains = false;
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
-            var sustainClamp = parentNote.GetCurrentMouseTick() - parentNote.Tick;
+            var sustainClamp = FiveFretInstrument.GetCurrentMouseTick() - parentNote.Tick;
             if (Input.GetKey(KeyCode.LeftShift) || !UserSettings.ExtSustains)
             {
                 parentNote.chartInstrument.ShiftClickSelect(parentNote.Tick, true);

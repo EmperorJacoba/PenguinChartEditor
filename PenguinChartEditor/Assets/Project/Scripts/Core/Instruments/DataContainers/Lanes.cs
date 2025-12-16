@@ -196,11 +196,29 @@ public class Lanes<T> where T : IEventData
         return ticks;
     }
 
+    public HashSet<int>[] GetTotalSelectionByLane()
+    {
+        HashSet<int>[] ticks = new HashSet<int>[Count];
+        for (int i = 0; i < Count; i++)
+        {
+            ticks[i] = selections[i].GetSelectedTicks();
+        }
+        return ticks;
+    }
+
     public void ClearAllSelections()
     {
         for (int i = 0; i < Count; i++)
         {
             selections[i].Clear();
+        }
+    }
+
+    public void RemoveTickFromTotalSelection(int tick)
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            selections[i].Remove(tick);
         }
     }
 
