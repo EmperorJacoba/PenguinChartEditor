@@ -85,6 +85,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         inputMap.Enable();
 
         previewerEventReference = GetComponent<IEvent>();
+        previewerEventReference.IsPreviewEvent = true;
 
         inputMap.Charting.PreviewMousePos.performed += position => 
             UpdatePosition(position.ReadValue<Vector2>().y / Screen.height, position.ReadValue<Vector2>().x / Screen.width);

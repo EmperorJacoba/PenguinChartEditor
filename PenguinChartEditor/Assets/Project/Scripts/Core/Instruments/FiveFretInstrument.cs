@@ -390,7 +390,7 @@ public class FiveFretInstrument : IInstrument
 
     public void SustainSelection()
     {
-        if (!Chart.IsEditAllowed()) return;
+        if (Chart.LoadedInstrument != this || !Chart.IsEditAllowed()) return;
 
         // Early return if attempting to start an edit while over an overlay element
         // Allows edit to start only if interacting with main content

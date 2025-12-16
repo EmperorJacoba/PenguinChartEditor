@@ -157,7 +157,7 @@ public class Chart : MonoBehaviour
             Where(
             item => item.InstrumentName == InstrumentType.guitar). // for testing only
             ToList()[0];
-        // LoadedInstrument = SyncTrackInstrument;
+         LoadedInstrument = SyncTrackInstrument;
 
         AudioManager.PlaybackStateChanged += x => { showPreviewers = !AudioManager.AudioPlaying; };
 

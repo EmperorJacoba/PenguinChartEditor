@@ -47,6 +47,6 @@ public class BPMPreviewer : Previewer
     public override void AddCurrentEventDataToLaneSet()
     {
         bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
-        bpmLabel.Selection.Remove(Tick);
+        bpmLabel.Selection.Clear();
     }
 }

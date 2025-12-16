@@ -19,6 +19,7 @@ public interface IEvent
     IPreviewer EventPreviewer { get; }
 
     void RefreshLane();
+    bool IsPreviewEvent { get; set; }
 }
 
 #endregion
@@ -127,9 +128,11 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
 
     #region Selections
 
-    public static bool justDeleted = false;
+    public bool IsPreviewEvent { get; set; } = false;
     public virtual void OnPointerDown(PointerEventData pointerEventData)
     {
+        if (IsPreviewEvent) return;
+
         // used for right click + left click delete functionality
         if (Input.GetMouseButton(RMB_ID) && pointerEventData.button == PointerEventData.InputButton.Left)
         {

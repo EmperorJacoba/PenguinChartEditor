@@ -54,6 +54,6 @@ public class TSPreviewer : Previewer
     public override void AddCurrentEventDataToLaneSet()
     {
         tsLabel.CreateEvent(Tick, displayedTS);
-        tsLabel.Selection.Remove(Tick);
+        tsLabel.Selection.Clear();
     }
 }

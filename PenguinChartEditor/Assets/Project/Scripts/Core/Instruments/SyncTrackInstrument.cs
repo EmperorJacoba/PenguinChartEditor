@@ -178,7 +178,7 @@ public class SyncTrackInstrument : IInstrument
         if (bpmSelection.Count > 0)
         {
             TempoEvents.PopTicksFromSet(bpmSelection.ExportData());
-            RecalculateTempoEventDictionary(bpmSelection.GetFirstSelectedTick());
+            RecalculateTempoEventDictionary();
             bpmSelection.Clear();
         }
 
@@ -199,7 +199,7 @@ public class SyncTrackInstrument : IInstrument
             var poppedTick = TempoEvents.PopSingle(tick);
             if (poppedTick == null) return;
 
-            RecalculateTempoEventDictionary(tick);
+            RecalculateTempoEventDictionary();
         }
 
         if (lane == (int)LaneOrientation.timeSignature)
