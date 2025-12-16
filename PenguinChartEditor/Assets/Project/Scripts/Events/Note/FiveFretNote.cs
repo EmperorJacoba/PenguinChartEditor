@@ -147,7 +147,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
                 ParentInstrument.ShiftClickSelect(Tick, true);
                 return;
             }
-            chartInstrument.Lanes.TempSustainTicks.Add(Tick);
             Selection.Add(Tick);
         }
     }

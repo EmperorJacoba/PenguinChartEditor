@@ -8,13 +8,6 @@ public class FiveFretNoteSustainTrail : MonoBehaviour, IPointerDownHandler, IPoi
     public void OnPointerUp(PointerEventData pointerEventData)
     {
         FiveFretInstrument.resetSustains = true;
-        if (pointerEventData.button == PointerEventData.InputButton.Right && 
-            parentNote.chartInstrument.Lanes.TempSustainTicks.Contains(parentNote.Tick))
-        {
-            parentNote.ParentInstrument.RemoveTickFromAllSelections(parentNote.Tick);
-            parentNote.RemoveFromSelection();
-        }
-        parentNote.chartInstrument.Lanes.TempSustainTicks.Clear();
     }
 
     public void OnPointerDown(PointerEventData pointerEventData)
@@ -22,13 +15,13 @@ public class FiveFretNoteSustainTrail : MonoBehaviour, IPointerDownHandler, IPoi
         FiveFretInstrument.resetSustains = false;
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
+            parentNote.chartInstrument.ClearAllSelections();
             var sustainClamp = FiveFretInstrument.GetCurrentMouseTick() - parentNote.Tick;
             if (Input.GetKey(KeyCode.LeftShift) || !UserSettings.ExtSustains)
             {
                 parentNote.chartInstrument.ShiftClickSelect(parentNote.Tick, true);
                 parentNote.chartInstrument.ShiftClickSustainClamp(parentNote.Tick, sustainClamp);
             }
-            parentNote.chartInstrument.Lanes.TempSustainTicks.Add(parentNote.Tick);
             parentNote.AddToSelection();
             parentNote.ClampSustain(sustainClamp);
         }

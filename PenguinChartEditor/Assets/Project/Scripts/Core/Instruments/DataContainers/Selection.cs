@@ -62,7 +62,7 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
 
     public HashSet<int> GetSelectedTicks()
     {
-        foreach (var tick in selection)
+        foreach (var tick in new HashSet<int>(selection))
         {
             if (!parentLane.Contains(tick))
             {

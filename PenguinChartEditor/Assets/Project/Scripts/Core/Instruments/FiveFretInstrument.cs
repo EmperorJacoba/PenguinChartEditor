@@ -400,8 +400,6 @@ public class FiveFretInstrument : IInstrument
             return;
         }
 
-        var cursorMoveDifference = currentMouseTick - sustainData.firstMouseTick;
-
         for (int i = 0; i < Lanes.Count; i++)
         {
             var laneTicks = sustainData.sustainingTicks[i];
@@ -409,10 +407,7 @@ public class FiveFretInstrument : IInstrument
 
             foreach (var tick in laneTicks)
             {
-                int sustainOffset = 0;
-                if (!resetSustains) sustainOffset = sustainData.firstMouseTick - tick;
-
-                var newSustain = sustainOffset + cursorMoveDifference;
+                var newSustain = currentMouseTick - tick;
 
                 // drag behind the note to max out sustain - cool feature from moonscraper
                 // -CurrentDivison is easy arbitrary value for when to max out - so that there is a buffer for users to remove sustain entirely
@@ -432,11 +427,6 @@ public class FiveFretInstrument : IInstrument
 
     public void CompleteSustain()
     {
-        foreach (var item in Lanes.TempSustainTicks)
-        {
-            Lanes.RemoveTickFromTotalSelection(item);
-        }
-
         // parameterless new() = flag as empty 
         sustainData = new();
         Chart.Refresh();
@@ -498,7 +488,6 @@ public class FiveFretInstrument : IInstrument
             var calculatedPrevSustain = -1;
 
             calculatedCurrentSustain = CalculateSustainClamp(newSustain, tick, ticks.next);
-            Debug.Log(calculatedCurrentSustain);
 
             for (int i = 0; i < Lanes.Count; i++)
             {
