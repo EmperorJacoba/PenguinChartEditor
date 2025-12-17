@@ -349,6 +349,30 @@ public class FiveFretInstrument : IInstrument
         return combinedIDs.ToString();
     }
 
+    public void SetSelectionToNewLane(LaneOrientation lane)
+    {
+        var currentSelection = Lanes.GetTotalSelectionByLane();
+        var targetLane = Lanes.GetLane((int)lane);
+        var targetLaneSelection = Lanes.GetLaneSelection((int)lane);
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            if (i == (int)lane) continue;
+
+            var changingLane = Lanes.GetLane(i);
+            var laneSelection = currentSelection[i];
+
+            foreach (var selectedNote in laneSelection)
+            {
+                targetLane[selectedNote] = changingLane[selectedNote];
+                changingLane.Remove(selectedNote);
+                targetLaneSelection.Add(selectedNote);
+            }
+        }
+
+        Chart.Refresh();
+    }
+
     #endregion
 
     #region Flag Changes
