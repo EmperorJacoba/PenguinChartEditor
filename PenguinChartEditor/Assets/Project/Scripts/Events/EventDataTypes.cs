@@ -140,6 +140,11 @@ public struct FiveFretNoteData : IEventData
     {
         return new FiveFretNoteData(sustain, Flag, Default);
     }
+
+    public FiveFretNoteData ExportWithNewDefault(bool state)
+    {
+        return new FiveFretNoteData(Sustain, Flag, state);
+    }
 }
 
 public struct FourLaneDrumNoteData : IEventData

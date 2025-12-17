@@ -20,13 +20,13 @@ public class FiveFretNotePreviewer : Previewer
 
     public enum NoteOption
     {
-        dynamic,
+        natural,
         strum,
         hopo,
         tap
     }
 
-    public static NoteOption currentPlacementMode = NoteOption.dynamic;
+    public static NoteOption currentPlacementMode = NoteOption.natural;
 
     // use as way to get dropdown to set mode
     public int PlacementMode
@@ -58,7 +58,7 @@ public class FiveFretNotePreviewer : Previewer
         note.UpdatePosition(Waveform.GetWaveformRatio(Tick), note.XCoordinate);
         note.UpdateSustain(Tick, AppliedSustain);
 
-        if (currentPlacementMode == NoteOption.dynamic)
+        if (currentPlacementMode == NoteOption.natural)
         {
             note.IsHopo = note.chartInstrument.PreviewTickHopo(lane.laneIdentifier, Tick);
             note.IsTap = false;
@@ -113,7 +113,7 @@ public class FiveFretNotePreviewer : Previewer
             NoteOption.hopo => FiveFretNoteData.FlagType.hopo,
             NoteOption.strum => FiveFretNoteData.FlagType.strum,
             NoteOption.tap => FiveFretNoteData.FlagType.tap,
-            NoteOption.dynamic => FiveFretNoteData.FlagType.strum, // if dynamic, future algorithms will calculate the current type. Don't worry too much about it
+            NoteOption.natural => FiveFretNoteData.FlagType.strum, // if dynamic, future algorithms will calculate the current type. Don't worry too much about it
             _ => throw new System.ArgumentException("If you got this error, you don't know how dropdowns work. Congratulations!"),
         };
     }
@@ -131,7 +131,7 @@ public class FiveFretNotePreviewer : Previewer
             new FiveFretNoteData(
                 sustain,
                 MapPlacementModeToFlag(),
-                currentPlacementMode == NoteOption.dynamic
+                currentPlacementMode == NoteOption.natural
                 )
             );
 

@@ -266,6 +266,7 @@ GameObject:
   - component: {fileID: 5402864}
   - component: {fileID: 5402863}
   - component: {fileID: 5402862}
+  - component: {fileID: 5402865}
   m_Layer: 5
   m_Name: Natural
   m_TagString: Untagged
@@ -375,6 +376,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5402860}
   m_CullTransparentMesh: 1
+--- !u!114 &5402865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5402860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c36277537eb870343a9c6087a387b830, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  naturalize: 1
+  flag: 0
 --- !u!1 &24143012
 GameObject:
   m_ObjectHideFlags: 0
@@ -1289,6 +1304,7 @@ GameObject:
   - component: {fileID: 136434050}
   - component: {fileID: 136434049}
   - component: {fileID: 136434048}
+  - component: {fileID: 136434051}
   m_Layer: 5
   m_Name: Strum
   m_TagString: Untagged
@@ -1398,6 +1414,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 136434046}
   m_CullTransparentMesh: 1
+--- !u!114 &136434051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 136434046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c36277537eb870343a9c6087a387b830, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  naturalize: 0
+  flag: 4
 --- !u!1 &143122574
 GameObject:
   m_ObjectHideFlags: 0
@@ -1712,7 +1742,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneButton: {fileID: 169871272}
   lane: 2
 --- !u!1 &183943801
 GameObject:
@@ -2313,7 +2342,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneButton: {fileID: 236856259}
   lane: 4
 --- !u!1 &292098602
 GameObject:
@@ -4946,7 +4974,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneButton: {fileID: 672047352}
   lane: 1
 --- !u!1 &682007387
 GameObject:
@@ -6017,7 +6044,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneButton: {fileID: 757126920}
   lane: 3
 --- !u!1 &764433763
 GameObject:
@@ -6551,6 +6577,7 @@ GameObject:
   - component: {fileID: 798415085}
   - component: {fileID: 798415084}
   - component: {fileID: 798415083}
+  - component: {fileID: 798415086}
   m_Layer: 5
   m_Name: Tap
   m_TagString: Untagged
@@ -6660,6 +6687,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 798415081}
   m_CullTransparentMesh: 1
+--- !u!114 &798415086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 798415081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c36277537eb870343a9c6087a387b830, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  naturalize: 0
+  flag: 6
 --- !u!1 &812057767
 GameObject:
   m_ObjectHideFlags: 0
@@ -10828,7 +10869,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneButton: {fileID: 1447012249}
   lane: 5
 --- !u!1 &1454501874
 GameObject:
@@ -11988,6 +12028,7 @@ GameObject:
   - component: {fileID: 1543891270}
   - component: {fileID: 1543891269}
   - component: {fileID: 1543891268}
+  - component: {fileID: 1543891271}
   m_Layer: 5
   m_Name: HOPO
   m_TagString: Untagged
@@ -12097,6 +12138,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1543891266}
   m_CullTransparentMesh: 1
+--- !u!114 &1543891271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543891266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c36277537eb870343a9c6087a387b830, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  naturalize: 0
+  flag: 5
 --- !u!1 &1549096563
 GameObject:
   m_ObjectHideFlags: 0
@@ -14431,7 +14486,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneButton: {fileID: 1771713220}
   lane: 0
 --- !u!1 &1794188386
 GameObject:

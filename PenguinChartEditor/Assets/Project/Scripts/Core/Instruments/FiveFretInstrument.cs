@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEditor.Overlays;
-using UnityEngine;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class FiveFretInstrument : IInstrument
 {
@@ -359,14 +356,72 @@ public class FiveFretInstrument : IInstrument
         {
             if (i == (int)lane) continue;
 
-            var changingLane = Lanes.GetLane(i);
             var laneSelection = currentSelection[i];
+            if (laneSelection.Count == 0) continue;
+
+            var changingLane = Lanes.GetLane(i);
 
             foreach (var selectedNote in laneSelection)
             {
                 targetLane[selectedNote] = changingLane[selectedNote];
                 changingLane.Remove(selectedNote);
                 targetLaneSelection.Add(selectedNote);
+            }
+        }
+
+        Chart.Refresh();
+    }
+
+    public void NaturalizeSelection()
+    {
+        var currentSelection = Lanes.GetTotalSelectionByLane();
+        var totalSelectionSet = Lanes.GetTotalSelection();
+
+        if (totalSelectionSet.Count == 0) return;
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var laneSelection = currentSelection[i];
+            if (laneSelection.Count == 0) continue;
+
+            var changingLane = Lanes.GetLane(i);
+
+            foreach (var selectedNote in laneSelection)
+            {
+                var tickData = changingLane[selectedNote];
+
+                // strum will be overwritten by the check at the end of this function
+                // this is explicitly done to get rid of tap flags if they exist within the selection
+                changingLane[selectedNote] = new FiveFretNoteData(tickData.Sustain, FiveFretNoteData.FlagType.strum, true);
+            }
+        }
+
+        // use the range function b/c this is worlds
+        // faster than checking every individual selection note
+        // also ignores non-default notes and taps,
+        // so the unselected notes won't be affected by this
+        // (or will have a corrected calculation on the
+        // off-chance that it was missed somewhere down the line)
+        CheckForHoposInRange(totalSelectionSet.Min(), totalSelectionSet.Max());
+
+        Chart.Refresh();
+    }
+
+    public void SetSelectionToFlag(FiveFretNoteData.FlagType flag)
+    {
+        var currentSelection = Lanes.GetTotalSelectionByLane();
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var laneSelection = currentSelection[i];
+            if (laneSelection.Count == 0) continue;
+
+            var changingLane = Lanes.GetLane(i);
+
+            foreach (var selectedNote in laneSelection)
+            {
+                var tickData = changingLane[selectedNote];
+                changingLane[selectedNote] = new FiveFretNoteData(tickData.Sustain, flag, false);
             }
         }
 

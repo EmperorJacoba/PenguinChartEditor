@@ -20,7 +20,7 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
         inputMap.Charting.ForceTap.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.tap);
         inputMap.Charting.ForceStrum.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.strum);
         inputMap.Charting.ForceHopo.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.hopo);
-        inputMap.Charting.ForceDefault.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.dynamic);
+        inputMap.Charting.ForceDefault.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.natural);
 
         inputMap.Charting.SustainMax.performed += x => SetPreviewerSustain(SongTime.SongLengthTicks);
         inputMap.Charting.SustainZero.performed += x => SetPreviewerSustain(0);
