@@ -1575,6 +1575,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 152625774}
+  - component: {fileID: 152625775}
   m_Layer: 5
   m_Name: Sustain Modifier
   m_TagString: Untagged
@@ -1609,6 +1610,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -136.25}
   m_SizeDelta: {x: 670, y: 262.5}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &152625775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 152625773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 879c8ea1e73ce33408ecee0ede41063d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  customSustainInput: {fileID: 206365578}
+  zeroButton: {fileID: 1661409081}
+  maxButton: {fileID: 542276867}
 --- !u!1 &169871270
 GameObject:
   m_ObjectHideFlags: 0
@@ -1790,7 +1806,7 @@ GameObject:
   - component: {fileID: 206365579}
   - component: {fileID: 206365578}
   m_Layer: 5
-  m_Name: InputField (TMP)
+  m_Name: Custom Input
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4717,7 +4733,7 @@ GameObject:
   - component: {fileID: 665306653}
   - component: {fileID: 665306652}
   m_Layer: 5
-  m_Name: Sustain Label (2)
+  m_Name: Custom Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6094,7 +6110,7 @@ GameObject:
   - component: {fileID: 768539109}
   - component: {fileID: 768539108}
   m_Layer: 5
-  m_Name: Sustain Label (1)
+  m_Name: 'Custom:'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

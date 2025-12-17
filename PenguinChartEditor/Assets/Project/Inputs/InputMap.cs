@@ -143,7 +143,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""647fa779-7471-4ada-aac3-6a90411b6039"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {

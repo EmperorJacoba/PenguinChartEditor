@@ -29,7 +29,7 @@ public class FiveFretSustainController : MonoBehaviour
     {
         if (!float.TryParse(value, out float beatsAsFloat)) return;
 
-        FiveFretNotePreviewer.defaultSustain = (int)Math.Floor(beatsAsFloat * Chart.Resolution);
+        FiveFretNotePreviewer.defaultSustain = (int)Math.Ceiling(beatsAsFloat * Chart.Resolution);
     }
 
     public void ActivateCustomInput() => customSustainInput.ActivateInputField();

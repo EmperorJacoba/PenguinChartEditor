@@ -428,6 +428,26 @@ public class FiveFretInstrument : IInstrument
         Chart.Refresh();
     }
 
+    public void SetSelectionSustain(int ticks)
+    {
+        var currentSelection = Lanes.GetTotalSelectionByLane();
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var laneSelection = currentSelection[i];
+            if (laneSelection.Count == 0) continue;
+
+            var changingLane = Lanes.GetLane(i);
+
+            foreach (var selectedNote in laneSelection)
+            {
+                UpdateSustain(selectedNote, (LaneOrientation)i, ticks);
+            }
+        }
+
+        Chart.Refresh();
+    }
+
     #endregion
 
     #region Flag Changes
@@ -548,6 +568,10 @@ public class FiveFretInstrument : IInstrument
         Lanes.TempSustainTicks.Clear();
     }
 
+    // todo: split this function into multiple functions
+    // this is used by some functions that don't necessarily need to clamp the 
+    // preceding sustain, yet this one does always
+    // if this is a big bottleneck then do that pls
     public void UpdateSustain(int tick, LaneOrientation lane, int newSustain)
     {
         var currentLane = Lanes.GetLane((int)lane);
