@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class FiveFretInstrument : IInstrument
 {
@@ -155,19 +156,6 @@ public class FiveFretInstrument : IInstrument
         moveData.lastGhostStartTick = pasteDestination;
         Lanes.OverwriteLaneDataWithOffset(movingDataSet, pasteDestination);
 
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            var lane = Lanes.GetLane(i);
-            if (movingDataSet[i].Count > 0)
-            {
-                var endTick = movingDataSet[i].Keys.Max() + moveData.lastGhostStartTick;
-                var startTick = movingDataSet[i].Keys.Min() + moveData.lastGhostStartTick;
-
-                if (lane.Contains(endTick)) UpdateSustain(endTick, (LaneOrientation)i, lane[endTick].Sustain);
-                if (lane.Contains(startTick)) ClampSustainsBefore(startTick, (LaneOrientation)i);
-            }
-        }
-
         Lanes.ApplyScaledSelection(movingDataSet, moveData.lastGhostStartTick);
 
         CheckForHoposInRange(moveData.lastGhostStartTick, moveData.lastGhostEndTick);
@@ -181,6 +169,19 @@ public class FiveFretInstrument : IInstrument
 
         Chart.showPreviewers = true;
         if (!moveData.inProgress) return;
+
+        var movingDataSet = moveData.GetMoveData(moveData.lastLane - moveData.firstLane);
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var lane = Lanes.GetLane(i);
+            if (movingDataSet[i].Count > 0)
+            {
+                var endTick = movingDataSet[i].Keys.Max() + moveData.lastGhostStartTick;
+                var startTick = movingDataSet[i].Keys.Min() + moveData.lastGhostStartTick;
+
+                ValidateSustainsInRange(startTick, endTick);
+            }
+        }
 
         moveData = new();
     }
@@ -448,6 +449,42 @@ public class FiveFretInstrument : IInstrument
         Chart.Refresh();
     }
 
+    public void SetEqualSpacing()
+    {
+        var currentSelection = Lanes.GetTotalSelectionByLane();
+        var totalSelectionSet = Lanes.GetTotalSelection().ToList();
+        totalSelectionSet.Sort();
+
+        var firstTick = totalSelectionSet.Min();
+        var lastTick = totalSelectionSet.Max();
+        var tickCoverage = lastTick - firstTick;
+        var evenSpacingDistance = tickCoverage / (totalSelectionSet.Count-1);
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var laneSelection = currentSelection[i];
+            if (laneSelection.Count == 0) continue;
+
+            var changingLane = Lanes.GetLane(i);
+
+            foreach (var selectedNote in new HashSet<int>(laneSelection))
+            {
+                var tickData = changingLane.PopSingle(selectedNote);
+                if (tickData == null) continue;
+
+                var index = totalSelectionSet.BinarySearch(selectedNote);
+                var equalSpacingTick = (index * evenSpacingDistance) + firstTick;
+
+                changingLane[equalSpacingTick] = tickData.First().Value;
+                laneSelection.Add(equalSpacingTick);
+            }
+        }
+        CheckForHoposInRange(firstTick, lastTick);
+        ValidateSustainsInRange(firstTick, lastTick);
+
+        Chart.Refresh();
+    }
+
     #endregion
 
     #region Flag Changes
@@ -568,56 +605,93 @@ public class FiveFretInstrument : IInstrument
         Lanes.TempSustainTicks.Clear();
     }
 
-    // todo: split this function into multiple functions
-    // this is used by some functions that don't necessarily need to clamp the 
-    // preceding sustain, yet this one does always
-    // if this is a big bottleneck then do that pls
+    public void ValidateSustain(int tick, LaneOrientation lane)
+    {
+        if (UserSettings.ExtSustains)
+        {
+            var extendedLaneRef = Lanes.GetLane((int)lane);
+            if (!extendedLaneRef.Contains(tick)) return;
+
+            UpdateSustain(tick, lane, extendedLaneRef[tick].Sustain);
+        }
+        else
+        {
+            var smallestSustain = int.MaxValue;
+
+            for (int i = 0; i < Lanes.Count; i++)
+            {
+                var laneRef = Lanes.GetLane(i);
+                if (!laneRef.Contains(tick)) continue;
+
+                if (laneRef[tick].Sustain < smallestSustain) smallestSustain = laneRef[tick].Sustain;
+            }
+
+            UpdateSustain(tick, lane, smallestSustain);
+        }
+    }
+
     public void UpdateSustain(int tick, LaneOrientation lane, int newSustain)
     {
-        var currentLane = Lanes.GetLane((int)lane);
-        if (!currentLane.Contains(tick)) return;
-
-        var ticks = Lanes.GetTickEventBounds(tick);
-
         // clamp based on this lane only (ignore other lane overlap)
         if (UserSettings.ExtSustains)
         {
+            var currentLane = Lanes.GetLane((int)lane);
+            if (!currentLane.Contains(tick)) return;
+
             currentLane[tick] = currentLane[tick].ExportWithNewSustain(
                 CalculateSustainClamp(newSustain, tick, currentLane.GetNextTickEventInLane(tick))
-                );
-
-            var prevTickInLane = currentLane.GetPreviousTickEventInLane(tick);
-            if (prevTickInLane == LaneSet<FiveFretNoteData>.NO_TICK_EVENT) return;
-
-            currentLane[prevTickInLane] = currentLane[prevTickInLane].ExportWithNewSustain(
-                CalculateSustainClamp(currentLane[prevTickInLane].Sustain, prevTickInLane, tick)
                 );
         }
         // clamp based on ALL lanes
         else
         {
-            var calculatedCurrentSustain = -1;
-            var calculatedPrevSustain = -1;
-
-            calculatedCurrentSustain = CalculateSustainClamp(newSustain, tick, ticks.next);
+            var ticks = Lanes.GetTickEventBounds(tick);
+            var calculatedCurrentSustain = CalculateSustainClamp(newSustain, tick, ticks.next);
 
             for (int i = 0; i < Lanes.Count; i++)
             {
-                var iteratorLane = Lanes.GetLane((int)lane);
+                var iteratorLane = Lanes.GetLane(i);
 
                 if (iteratorLane.Contains(tick))
                 {
                     iteratorLane[tick] = iteratorLane[tick].ExportWithNewSustain(calculatedCurrentSustain);
                 }
-                if (iteratorLane.Contains(ticks.prev))
-                {
-                    var currentData = iteratorLane[ticks.prev];
-                    if (calculatedPrevSustain == -1) calculatedPrevSustain = CalculateSustainClamp(currentData.Sustain, ticks.prev, tick);
+            }
+        }
+    }
 
-                    iteratorLane[ticks.prev] = currentData.ExportWithNewSustain(calculatedPrevSustain);
+    public void ValidateSustainsInRange(int startTick, int endTick)
+    {
+        var uniqueTicks = Lanes.UniqueTicks;
+        var uniqueTicksInRange = uniqueTicks.Where(tick => tick >= startTick && tick <= endTick).ToList();
+
+        if (UserSettings.ExtSustains)
+        {
+            for (int i = 0; i < Lanes.Count; i++)
+            {
+                var currentLane = Lanes.GetLane(i);
+                ClampSustainsBefore(startTick, (LaneOrientation)i);
+
+                for (int index = 0; index < uniqueTicksInRange.Count(); index++)
+                {
+                    int tick = uniqueTicksInRange[index];
+                    if (currentLane.Contains(tick)) ValidateSustain(uniqueTicksInRange[index], (LaneOrientation)i);
                 }
             }
         }
+        else
+        {
+            // lane orientation is irrelevant, just pass in anything
+            ClampSustainsBefore(startTick, LaneOrientation.green);
+
+            for (int index = 0; index < uniqueTicksInRange.Count(); index++)
+            {
+                int tick = uniqueTicksInRange[index];
+                ValidateSustain(uniqueTicksInRange[index], LaneOrientation.green);
+            }
+        }
+
+        Chart.Refresh();
     }
 
     public void ClampSustainsBefore(int tick, LaneOrientation lane)

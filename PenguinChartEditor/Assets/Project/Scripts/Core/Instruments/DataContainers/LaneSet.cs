@@ -261,14 +261,14 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         return tickTimeKeys[index];
     }
 
-    public int GetNextTickEventInLane(int currentTick)
+    public int GetNextTickEventInLane(int currentTick, bool inclusive = false)
     {
         int index = BinarySearchForTick(currentTick, out var tickTimeKeys);
 
         if (~index == tickTimeKeys.Count || index >= tickTimeKeys.Count - 1) return NO_TICK_EVENT;
 
         // bitwise complement is negative
-        if (index >= 0) return tickTimeKeys[index + 1];
+        if (index >= 0) return inclusive ? tickTimeKeys[index] : tickTimeKeys[index + 1];
         else index = ~index;
 
         return tickTimeKeys[index];

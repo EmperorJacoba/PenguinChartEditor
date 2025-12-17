@@ -8,7 +8,10 @@ public class DisableWhenInputActive : IInputInteraction
 {
     public void Process(ref InputInteractionContext context)
     {
-        if (EventSystem.current.currentSelectedGameObject.name.Contains("Custom Input")) return;
+        if (EventSystem.current.currentSelectedGameObject != null)
+        {
+            if (EventSystem.current.currentSelectedGameObject.name.Contains("Custom Input")) return;
+        }
 
         if (context.ControlIsActuated()) context.Performed();
     }
