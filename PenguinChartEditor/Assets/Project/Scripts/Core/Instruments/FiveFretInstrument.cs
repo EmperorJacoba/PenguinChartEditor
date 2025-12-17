@@ -280,6 +280,8 @@ public class FiveFretInstrument : IInstrument
         Lanes.ClearAllSelections();
     }
 
+    public bool IsSelectionEmpty() => Lanes.IsSelectionEmpty();
+
     public string ConvertSelectionToString()
     {
         if (Lanes.GetTotalSelection().Count == 0) return "";

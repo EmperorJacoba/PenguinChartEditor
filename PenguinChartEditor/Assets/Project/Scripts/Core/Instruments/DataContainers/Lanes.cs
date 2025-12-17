@@ -196,6 +196,15 @@ public class Lanes<T> where T : IEventData
         return ticks;
     }
 
+    public bool IsSelectionEmpty()
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            if (selections[i].Count > 0) return false;
+        }
+        return true;
+    }
+
     public HashSet<int>[] GetTotalSelectionByLane()
     {
         HashSet<int>[] ticks = new HashSet<int>[Count];

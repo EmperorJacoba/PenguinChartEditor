@@ -33,6 +33,7 @@ public class Chart : MonoBehaviour
     public static Metadata Metadata { get; set; } = new();
     public static List<IInstrument> Instruments { get; set; }
     public static IInstrument LoadedInstrument { get; set; }
+    public static T GetActiveInstrument<T>() => (T)LoadedInstrument;
     public static SyncTrackInstrument SyncTrackInstrument { get; set; }
 
     #endregion

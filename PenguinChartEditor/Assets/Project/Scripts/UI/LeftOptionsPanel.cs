@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class LeftOptionsPanel : MonoBehaviour
 {
-    PanelConnector currentPanel;
+    public PanelConnector currentPanel;
 
     public List<PanelConnector> panels;
     public enum PanelType
@@ -13,6 +12,7 @@ public class LeftOptionsPanel : MonoBehaviour
         tempoMapMain,
         stemVolumeEditor,
         noteOptionsFiveFret,
+        noteSelectionFiveFret
     }
 
     void Awake()
