@@ -3,11 +3,11 @@ using UnityEngine;
 
 public class SongTime : MonoBehaviour
 {
+    private const int MIDDLE_MOUSE_BUTTON_ID = 2;
     static InputMap inputMap;
 
     // Needed for delta calculations when scrolling using MMB
     private float initialMouseY = float.NaN;
-    private float currentMouseY;
 
     #region Properties
 
@@ -65,11 +65,8 @@ public class SongTime : MonoBehaviour
 
         inputMap.Charting.ScrollTrack.performed += scrollChange => ChangeTime(scrollChange.ReadValue<float>());
 
-        inputMap.Charting.MiddleScrollMousePos.performed += x => currentMouseY = x.ReadValue<Vector2>().y;
-        inputMap.Charting.MiddleScrollMousePos.Disable(); // This is disabled immediately so that it's not running when it's not needed
-
-        inputMap.Charting.MiddleMouseClick.started += x => ChangeMiddleClick(true);
-        inputMap.Charting.MiddleMouseClick.canceled += x => ChangeMiddleClick(false);
+        inputMap.Charting.MiddleMouseClick.started += x => initialMouseY = Input.mousePosition.y;
+        inputMap.Charting.MiddleMouseClick.canceled += x => initialMouseY = float.NaN;
     }
 
     void Start()
@@ -79,11 +76,9 @@ public class SongTime : MonoBehaviour
 
     void Update()
     {
-        if (inputMap.Charting.MiddleScrollMousePos.enabled)
+        if (Input.GetMouseButton(MIDDLE_MOUSE_BUTTON_ID))
         {
-            ChangeTime(currentMouseY - initialMouseY, true);
-            // This runs every frame to get that smooth scrolling effect like on webpages and such
-            // If this ran when the mouse was moved then it would be super jumpy
+            ChangeTime(Input.mousePosition.y - initialMouseY, middleClick: true);
         }
 
         // No funky calculations needed, just update the song position every frame
@@ -115,31 +110,6 @@ public class SongTime : MonoBehaviour
     #region Time Modification
 
     /// <summary>
-    /// Enable/disable middle click movement upon press/release
-    /// </summary>
-    /// <param name="clickStatus">true = MMB pressed, false = MMB released</param>
-    void ChangeMiddleClick(bool clickStatus)
-    {
-        if (clickStatus)
-        {
-            inputMap.Charting.MiddleScrollMousePos.Enable(); // Allow calculations of middle mouse scroll now that MMB is clicked
-
-            initialMouseY = Input.mousePosition.y;
-            currentMouseY = Input.mousePosition.y;
-            // ^^ These HAVE to be here. I really didn't want to use the old input system for this (for unity in the literal sense)
-            // but initial & current mouse positions need to be initialized right this instant in order to get a 
-            // proper delta calculation in Update().
-            // Without this the waveform jumps to the beginning when you click MMB without moving
-        }
-        else
-        {
-            inputMap.Charting.MiddleScrollMousePos.Disable();
-            initialMouseY = float.NaN;
-            // Kind of a relic from testing, but I'm keeping this here because I feel like this is somewhat helpful in case this is improperly used somewhere
-        }
-    }
-
-    /// <summary>
     /// Change the timestamp of the song from a specified scroll change.
     /// </summary>
     /// <param name="scrollChange"></param>
@@ -167,7 +137,7 @@ public class SongTime : MonoBehaviour
 
         SongPositionSeconds = newTimeCandidate;
     }
-    
+
     public static int CalculateGridSnappedTick(float percentOfHighway)
     {
         var cursorTimestamp = (percentOfHighway * Waveform.timeShown) + Waveform.startTime;

@@ -6,11 +6,6 @@ public class Metronome : MonoBehaviour
     public static bool metronomeActive = false;
     const int TICK_BUFFER = 1;
 
-    void Awake()
-    {
-        SongTime.TimeChanged += CheckForMetronomeHit; // more concise solution for checking for metronome over Update()
-    }
-
     static int nextPromisedMetronomeHit = 0;
 
     // promised metronome hit will not be active on first loop
@@ -47,5 +42,14 @@ public class Metronome : MonoBehaviour
     public void ToggleMetronome()
     {
         metronomeActive = !metronomeActive;
+
+        if (metronomeActive)
+        {
+            SongTime.TimeChanged += CheckForMetronomeHit;
+        }
+        else
+        {
+            SongTime.TimeChanged -= CheckForMetronomeHit;    
+        }
     }
 }

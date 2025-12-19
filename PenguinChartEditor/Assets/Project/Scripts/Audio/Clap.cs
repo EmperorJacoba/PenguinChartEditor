@@ -11,10 +11,21 @@ public class Clap : MonoBehaviour
     private void Awake()
     {
         button.onClick.AddListener(ToggleClap);
-        SongTime.TimeChanged += CheckForClapHit;
     }
 
-    void ToggleClap() => clapActive = !clapActive;
+    void ToggleClap()
+    {
+        clapActive = !clapActive;
+
+        if (clapActive)
+        {
+            SongTime.TimeChanged += CheckForClapHit;
+        }
+        else
+        {
+            SongTime.TimeChanged -= CheckForClapHit;
+        }
+    }
 
     static int nextPromisedClapHit = -1;
     bool firstLoop = true;
