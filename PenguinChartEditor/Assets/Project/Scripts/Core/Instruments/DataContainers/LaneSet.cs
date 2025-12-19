@@ -234,6 +234,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         foreach (var tick in data)
         {
             var targetPasteTick = tickOffset + tick.Key;
+            if (targetPasteTick < 0 || targetPasteTick > SongTime.SongLengthTicks) continue;
             if (laneData.ContainsKey(targetPasteTick))
             {
                 laneData.Remove(targetPasteTick);

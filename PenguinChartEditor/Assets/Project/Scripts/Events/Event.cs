@@ -181,7 +181,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         // Regular click, no extra significant keybinds
         else
         {
-            if (ParentInstrument.TotalSelectionCount < 2) ParentInstrument.ClearAllSelections();
+            if (!ParentInstrument.SelectionContains(Tick, Lane))
+            {
+                ParentInstrument.ClearAllSelections();
+            }
             Selection.Add(Tick);
             Chart.Refresh();
         }

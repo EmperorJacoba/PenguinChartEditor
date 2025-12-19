@@ -89,4 +89,9 @@ public class GHLInstrument : IInstrument
     {
         throw new NotImplementedException();
     }
+
+    public bool SelectionContains(int tick, int lane)
+    {
+        throw new NotImplementedException();
+    }
 }

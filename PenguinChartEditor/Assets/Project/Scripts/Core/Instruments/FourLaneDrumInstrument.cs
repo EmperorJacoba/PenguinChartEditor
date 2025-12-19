@@ -85,5 +85,10 @@ public class FourLaneDrumInstrument : IInstrument
         throw new NotImplementedException();
     }
 
+    public bool SelectionContains(int tick, int lane)
+    {
+        throw new NotImplementedException();
+    }
+
     public bool justMoved { get; set; }
 }

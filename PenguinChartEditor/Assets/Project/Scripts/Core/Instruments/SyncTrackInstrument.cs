@@ -549,6 +549,19 @@ public class SyncTrackInstrument : IInstrument
         tsSelection.Clear();
     }
 
+    public bool SelectionContains(int tick, int lane)
+    {
+        if ((LaneOrientation)lane == LaneOrientation.bpm)
+        {
+            return bpmSelection.Contains(tick);
+        }
+        else if ((LaneOrientation)lane == LaneOrientation.timeSignature)
+        {
+            return tsSelection.Contains(tick);
+        }
+        return false;
+    }
+
     public void ShiftClickSelect(int start, int end)
     {
         bpmSelection.Clear();

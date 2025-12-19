@@ -235,6 +235,7 @@ public class FiveFretInstrument : IInstrument
     }
 
     public void ClearAllSelections() => Lanes.ClearAllSelections();
+    public bool SelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
 
     public void DeleteTicksInSelection()
     {

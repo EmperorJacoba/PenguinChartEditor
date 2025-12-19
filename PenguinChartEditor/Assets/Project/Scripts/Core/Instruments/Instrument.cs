@@ -11,6 +11,7 @@ public interface IInstrument
     List<string> ExportAllEvents();
 
     void ClearAllSelections();
+    bool SelectionContains(int tick, int lane);
     int TotalSelectionCount { get; }
     public void ShiftClickSelect(int start, int end);
     public void ShiftClickSelect(int tick);
