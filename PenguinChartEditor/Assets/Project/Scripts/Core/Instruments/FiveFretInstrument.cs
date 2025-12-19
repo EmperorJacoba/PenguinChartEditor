@@ -129,6 +129,8 @@ public class FiveFretInstrument : IInstrument
             laneMovement = true;
         }
 
+        if (IsSelectionEmpty()) return;
+
         if (!moveData.inProgress && (tickMovement || laneMovement))
         {
             // optimize call
@@ -745,6 +747,9 @@ public class FiveFretInstrument : IInstrument
                 clampedSustain = (SongTime.SongLengthTicks - tick); // does sustain gap apply to end of song? 🤔
             }
         }
+
+        if (clampedSustain < 0) clampedSustain = 0;
+
         var sustainLengthMS = Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick + clampedSustain) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick);
         return sustainLengthMS < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ? 0 : clampedSustain;
     }

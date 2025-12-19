@@ -102,6 +102,7 @@ public class SyncTrackInstrument : IInstrument
     /// </summary>
     public virtual void MoveSelection()
     {
+        if (Chart.LoadedInstrument != this) return;
         var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
         MoveLane(currentMouseTick, ref bpmMoveData, bpmSelection, TempoEvents);
         MoveLane(currentMouseTick, ref tsMoveData, tsSelection, TimeSignatureEvents);
@@ -113,6 +114,7 @@ public class SyncTrackInstrument : IInstrument
         {
             return;
         }
+
         if (currentMouseTick == moveData.lastMouseTick) 
         {
             return;

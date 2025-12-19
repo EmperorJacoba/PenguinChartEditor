@@ -93,4 +93,12 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
     }
 
+    protected void Update()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            CreateEvent();
+        }
+    }
+
 }
