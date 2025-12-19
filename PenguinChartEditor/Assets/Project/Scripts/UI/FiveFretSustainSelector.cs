@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-using UnityEngine.EventSystems;
 
 public class FiveFretSustainSelector : MonoBehaviour
 {
@@ -10,7 +9,6 @@ public class FiveFretSustainSelector : MonoBehaviour
     [SerializeField] Button zeroButton;
     [SerializeField] Button maxButton;
 
-    FiveFretInstrument ActiveInstrument => (FiveFretInstrument)Chart.LoadedInstrument;   
     private void Awake()
     {
         customSustainInput.onValueChanged.AddListener(SetCustomInput);
@@ -18,13 +16,13 @@ public class FiveFretSustainSelector : MonoBehaviour
         maxButton.onClick.AddListener(SetMax);
     }
 
-    void SetZero() => ActiveInstrument.SetSelectionSustain(0);
-    void SetMax() => ActiveInstrument.SetSelectionSustain(SongTime.SongLengthTicks);
+    void SetZero() => Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionSustain(0);
+    void SetMax() => Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionSustain(SongTime.SongLengthTicks);
 
     void SetCustomInput(string userInput)
     {
         if (!float.TryParse(userInput, out float beatsAsFloat)) return;
 
-        ActiveInstrument.SetSelectionSustain((int)Math.Ceiling(beatsAsFloat * Chart.Resolution));
+        Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionSustain((int)Math.Ceiling(beatsAsFloat * Chart.Resolution));
     }
 }

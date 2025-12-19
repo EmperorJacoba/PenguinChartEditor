@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class FiveFretFlagSelector : MonoBehaviour
 {
     Button button;
-    FiveFretInstrument ActiveInstrument => (FiveFretInstrument)Chart.LoadedInstrument;
+
     private void Awake()
     {
         button = GetComponent<Button>();
@@ -20,9 +20,9 @@ public class FiveFretFlagSelector : MonoBehaviour
     {
         if (naturalize)
         {
-            ActiveInstrument.NaturalizeSelection();
+            Chart.GetActiveInstrument<FiveFretInstrument>().NaturalizeSelection();
             return;
         }
-        ActiveInstrument.SetSelectionToFlag(flag);
+        Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionToFlag(flag);
     }
 }
