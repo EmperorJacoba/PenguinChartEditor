@@ -170,10 +170,6 @@ public class Waveform : MonoBehaviour
 
     #region Point Generation
 
-    /// <summary>
-    /// Generate an array of line renderer positions based on waveform audio.
-    /// </summary>
-    /// <returns>Vector3 array of line renderer positions</returns>
     protected virtual void GenerateWaveformPoints()
     {
         float[] waveformData;

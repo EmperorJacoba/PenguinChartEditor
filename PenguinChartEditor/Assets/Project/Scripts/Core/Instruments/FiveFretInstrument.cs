@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class FiveFretInstrument : IInstrument
 {
@@ -107,7 +106,6 @@ public class FiveFretInstrument : IInstrument
     #region Moving
 
     UniversalMoveData<FiveFretNoteData> moveData = new();
-    public bool justMoved { get; set; } = false;
 
     void MoveSelection()
     {
@@ -149,11 +147,11 @@ public class FiveFretInstrument : IInstrument
         Lanes.SetLaneData(moveData.preMoveData);
 
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
+        var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
+        moveData.lastGhostStartTick = pasteDestination;
 
         var movingDataSet = moveData.GetMoveData(currentMouseLane - moveData.firstLane);
 
-        var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
-        moveData.lastGhostStartTick = pasteDestination;
         Lanes.OverwriteLaneDataWithOffset(movingDataSet, pasteDestination);
 
         Lanes.ApplyScaledSelection(movingDataSet, moveData.lastGhostStartTick);
@@ -220,15 +218,6 @@ public class FiveFretInstrument : IInstrument
     #endregion
 
     #region Selections
-
-    /// <summary>
-    /// Set to true whenever a move concluded, set to false before an early return when a selection check happens
-    /// Since OnPointerUp (and then CalculateSelectionStatus()) happens right after
-    /// the move action (as both fire at the same time), the restored move selection is
-    /// overwritten by the selection check in OnPointerUp.
-    /// Thus, the selection check immediately after a move is invalid (which is what this represents)
-    /// </summary>
-    public bool disableNextSelectionCheck = false;
 
     public int TotalSelectionCount
     {
@@ -455,6 +444,10 @@ public class FiveFretInstrument : IInstrument
     {
         var currentSelection = Lanes.GetTotalSelectionByLane();
         var totalSelectionSet = Lanes.GetTotalSelection().ToList();
+
+        // equal spacing has no effect for selections of size 0-2
+        if (totalSelectionSet.Count < 3) return;
+
         totalSelectionSet.Sort();
 
         var firstTick = totalSelectionSet.Min();

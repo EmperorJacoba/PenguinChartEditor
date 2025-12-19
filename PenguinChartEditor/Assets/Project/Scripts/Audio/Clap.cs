@@ -24,6 +24,7 @@ public class Clap : MonoBehaviour
         else
         {
             SongTime.TimeChanged -= CheckForClapHit;
+            firstLoop = true;
         }
     }
 

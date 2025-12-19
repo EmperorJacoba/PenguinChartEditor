@@ -23,7 +23,6 @@ public class FiveFretLane : Lane<FiveFretNote>
     protected override List<int> GetEventsToDisplay()
     {
         var workingInstrument = (FiveFretInstrument)Chart.LoadedInstrument;
-
         return workingInstrument.Lanes.GetLane((int)laneIdentifier).
             Where(tick => (tick.Key <= Waveform.endTick) &&
             (tick.Key + tick.Value.Sustain >= Waveform.startTick)).

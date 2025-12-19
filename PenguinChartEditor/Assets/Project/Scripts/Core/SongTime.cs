@@ -154,14 +154,13 @@ public class SongTime : MonoBehaviour
         // Find how many Ticks off the cursor position is from the grid 
         var remainder = divisionBasisTick % tickInterval;
 
-        // Debug.Log($"cursor timestamp: {cursorTimestamp}, cursor ticktime: {cursorTickTime}, tick interval: {tickInterval}, div basis: {divisionBasisTick}, remainder: {remainder}");
-
         // Remainder will show how many Ticks off from the last event we are
         // Use remainder to determine which grid snap we are closest to and round to that
         if (remainder > (tickInterval / 2)) // Closer to following snap
         {
+            var targetSnap = (int)Math.Ceiling(cursorTickTime - remainder + tickInterval);
             // Regress to last grid snap and then add a snap to get to next grid position
-            return (int)Math.Ceiling(cursorTickTime - remainder + tickInterval);
+            return targetSnap < SongLengthTicks ? targetSnap : SongLengthTicks;
         }
         else // Closer to previous grid snap or dead on a snap (subtract 0 = no change)
         {

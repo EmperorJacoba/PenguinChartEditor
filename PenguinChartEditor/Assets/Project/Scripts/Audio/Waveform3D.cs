@@ -47,7 +47,6 @@ public class Waveform3D : Waveform
 
         Vector3[] lineRendererPositions = new Vector3[lineRendererMain.positionCount];
         float zPos = 0;
-
         for (int lineRendererIndex = 0; lineRendererIndex < lineRendererPositions.Length; lineRendererIndex++)
         {
             zPos = lineRendererIndex * ShrinkFactor3D;

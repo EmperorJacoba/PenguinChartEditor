@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-// get rid of need for TEventData via either
-// a) separate IEvent interface from IEvent<T> (for functions that don't need a type)
-// or b) create another GameObject (maybe a scriptable object?) that deals with inputs
 public abstract class Lane<TEvent> : MonoBehaviour where TEvent : IPoolable
 {
     [SerializeField] protected LaneProperties properties;
