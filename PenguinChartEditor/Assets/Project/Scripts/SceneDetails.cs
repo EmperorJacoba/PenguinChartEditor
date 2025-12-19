@@ -30,9 +30,6 @@ public class SceneDetails : MonoBehaviour
     public BaseRaycaster eventRaycaster;
     public PhysicsRaycaster cameraHighwayRaycaster;
 
-    const float DEFAULT_HIGHWAY_WIDTH = 10;
-    const float HIGHWAY_WIDTH_SIX_FRET = 12;
-    
     // Assume the center is 0.
     float highwayLeftEndCoordinate => -(highway.localScale.x / 2);
     float highwayRightEndCoordinate => highway.localScale.x / 2;
@@ -70,8 +67,6 @@ public class SceneDetails : MonoBehaviour
             "does not use traditional lanes (like TempoMap). Refer to SceneDetails.GetCenterXCoordinateFromLane() for more info."
             );
     }
-
-    const int NOT_IN_LANE = -1;
 
     public int MatchXCoordinateToLane(float xCoordinate)
     {
