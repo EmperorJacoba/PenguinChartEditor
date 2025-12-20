@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 1543690820077051992}
+  defaultYPos: 0
   sustain: {fileID: 5827114000584642399}
   sustainColor: {fileID: 7517892776847064699}
   noteColor: {fileID: 1639979275541850618}
@@ -57,6 +58,8 @@ MonoBehaviour:
   strumTopper: {fileID: 733948240046889302}
   tapTopper: {fileID: 8296133385676001322}
   headBorder: {fileID: 8944626348164949058}
+  noteModel: {fileID: 25628640989143237}
+  previewer: 0
 --- !u!65 &1592677647469395967
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -497,6 +500,11 @@ PrefabInstance:
       addedObject: {fileID: 76414913260520960}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+--- !u!1 &25628640989143237 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+  m_PrefabInstance: {fileID: 908149107006561684}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &733948240046889302 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8739825771319507774, guid: 715f8556dc375704685742a5340c50c8, type: 3}

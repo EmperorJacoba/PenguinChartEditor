@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
@@ -7,9 +8,35 @@ public class NoteReceiver : MonoBehaviour
     [SerializeField] FiveFretInstrument.LaneOrientation lane;
     bool firstLoop = true;
 
-    void Play()
+    void PlayNoSustain()
     {
+        animator.StopPlayback();
         animator.Play("Punch");
+    }
+
+    void PlaySustain(int tick, int sustainLength)
+    {
+        animator.StopPlayback();
+        animator.Play("SustainPunch");
+        StartCoroutine(StopSustainAfterLength(tick, sustainLength));
+    }
+
+    void PlayIdle()
+    {
+        animator.Play("Idle");
+    }
+
+    void PlayFall()
+    {
+        animator.StopPlayback();
+        animator.Play("SustainFall");
+    }
+
+    IEnumerator StopSustainAfterLength(int tick, int sustainLength)
+    {
+        var lengthSeconds = Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick + sustainLength) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick);
+        yield return new WaitForSeconds((float)lengthSeconds);
+        PlayFall();
     }
 
     private void Awake()
@@ -27,6 +54,7 @@ public class NoteReceiver : MonoBehaviour
         }
         else
         {
+            PlayIdle();
             SongTime.TimeChanged -= CheckForNoteHit;
         }
     }
@@ -36,21 +64,46 @@ public class NoteReceiver : MonoBehaviour
     {
         if (firstLoop)
         {
-            nextPromisedNoteHit = GetNextNoteHit();
+            nextPromisedNoteHit = GetStartingNote();
             firstLoop = false;
         }
 
         if (SongTime.SongPositionTicks >= nextPromisedNoteHit)
         {
-            Play();
+            var tickSustain = Chart.GetActiveInstrument<FiveFretInstrument>().Lanes.GetLane((int)lane)[nextPromisedNoteHit].Sustain;
+            if (tickSustain > 0)
+            {
+                PlaySustain(nextPromisedNoteHit, tickSustain);
+            }
+            else
+            {
+                PlayNoSustain();
+            }
             nextPromisedNoteHit = GetNextNoteHit();
         }
     }
 
     int GetNextNoteHit()
     {
+
         return Chart.GetActiveInstrument<FiveFretInstrument>().
             Lanes.GetLane((int)lane).
             GetNextTickEventInLane(SongTime.SongPositionTicks);
     }
+
+    int GetStartingNote()
+    {
+        var active = Chart.GetActiveInstrument<FiveFretInstrument>().Lanes.GetLane((int)lane);
+        var prevEvent = active.GetPreviousTickEventInLane(SongTime.SongPositionTicks, inclusive: true);
+        var nextEvent = active.GetNextTickEventInLane(SongTime.SongPositionTicks);
+
+        if (prevEvent == LaneSet<FiveFretNoteData>.NO_TICK_EVENT)
+            return ValidateEvent(nextEvent);
+
+        if (prevEvent + active[prevEvent].Sustain > SongTime.SongPositionTicks) return prevEvent;
+        
+        return ValidateEvent(nextEvent);
+    }
+
+    int ValidateEvent(int nextEvent) => nextEvent == LaneSet<FiveFretNoteData>.NO_TICK_EVENT ? SongTime.SongLengthTicks : nextEvent;
 }

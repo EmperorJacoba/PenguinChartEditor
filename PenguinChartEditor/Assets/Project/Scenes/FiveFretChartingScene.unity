@@ -2467,6 +2467,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GreenReceiver
       objectReference: {fileID: 0}
+    - target: {fileID: 2198911481680659657, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.05
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3358,6 +3362,10 @@ PrefabInstance:
     - target: {fileID: 946579857554538272, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: m_Name
       value: OrangeReceiver
+      objectReference: {fileID: 0}
+    - target: {fileID: 2198911481680659657, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 3424199836300548904, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -7022,6 +7030,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: YellowReceiver
       objectReference: {fileID: 0}
+    - target: {fileID: 2198911481680659657, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 3424199836300548904, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -8736,6 +8748,10 @@ PrefabInstance:
     - target: {fileID: 946579857554538272, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: m_Name
       value: BlueReceiver
+      objectReference: {fileID: 0}
+    - target: {fileID: 2198911481680659657, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 3424199836300548904, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -16084,7 +16100,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1936119442}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -16330,6 +16346,10 @@ PrefabInstance:
     - target: {fileID: 946579857554538272, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: m_Name
       value: RedReceiver
+      objectReference: {fileID: 0}
+    - target: {fileID: 2198911481680659657, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 3424199836300548904, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
