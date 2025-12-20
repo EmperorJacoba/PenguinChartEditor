@@ -45,6 +45,7 @@ public class Metronome : MonoBehaviour
 
         if (metronomeActive)
         {
+            firstLoop = true;
             SongTime.TimeChanged += CheckForMetronomeHit;
         }
         else
