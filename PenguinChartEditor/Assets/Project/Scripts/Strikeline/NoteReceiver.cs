@@ -10,26 +10,23 @@ public class NoteReceiver : MonoBehaviour
 
     void PlayNoSustain()
     {
-        animator.StopPlayback();
-        animator.Play("Punch");
+        animator.Play("Punch", 0, 0);
     }
 
     void PlaySustain(int tick, int sustainLength)
     {
-        animator.StopPlayback();
-        animator.Play("SustainPunch");
+        animator.Play("SustainPunch", 0, 0);
         StartCoroutine(StopSustainAfterLength(tick, sustainLength));
     }
 
     void PlayIdle()
     {
-        animator.Play("Idle");
+        animator.Play("Idle", 0, 0);
     }
 
     void PlayFall()
     {
-        animator.StopPlayback();
-        animator.Play("SustainFall");
+        animator.Play("SustainFall", 0, 0);
     }
 
     IEnumerator StopSustainAfterLength(int tick, int sustainLength)
