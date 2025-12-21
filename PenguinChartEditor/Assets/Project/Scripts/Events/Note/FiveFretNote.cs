@@ -20,6 +20,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     [SerializeField] GameObject strumTopper;
     [SerializeField] GameObject tapTopper;
     [SerializeField] MeshRenderer headBorder;
+    [SerializeField] GameObject noteModel;
     [SerializeField] bool previewer;
 
     public Coroutine destructionCoroutine { get; set; }
@@ -101,20 +102,21 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public override IInstrument ParentInstrument => chartInstrument;
 
-    public void InitializeEvent(int tick, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer)
+    public void InitializeEvent(int tick, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer, bool asSustainOnly)
     {
         _tick = tick;
         Visible = true;
         laneIdentifier = lane;
         lanePreviewer = previewer;
 
-        InitializeNote();
+        InitializeNote(!asSustainOnly);
 
+        var notePosition = asSustainOnly ? SongTime.SongPositionTicks : tick;
         UpdatePosition(
-            Waveform.GetWaveformRatio(tick),
+            Waveform.GetWaveformRatio(notePosition),
             XCoordinate);
 
-        UpdateSustain();
+        UpdateSustain(asSustainOnly);
 
         var tickData = LaneData[tick];
         IsHopo = (tickData.Flag == FiveFretNoteData.FlagType.hopo);
@@ -123,9 +125,17 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public float XCoordinate => Chart.instance.SceneDetails.GetCenterXCoordinateFromLane((int)laneIdentifier);
 
     public override void RefreshLane() => parentLane.UpdateEvents();
-    void InitializeNote()
+    void InitializeNote(bool includeNoteHead)
     {
-        if (SelectionOverlay != null) Selected = CheckForSelection();
+        if (!includeNoteHead)
+        {
+            if (noteModel.activeInHierarchy) noteModel.SetActive(false);
+        }
+        else
+        {
+            if (!noteModel.activeInHierarchy) noteModel.SetActive(true);
+            if (SelectionOverlay != null) Selected = CheckForSelection();
+        }
     }
 
     public void UpdatePosition(double percentOfTrack, float xPosition)
@@ -139,7 +149,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public override void OnPointerDown(PointerEventData pointerEventData)
     {
         base.OnPointerDown(pointerEventData);
-        
+
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
             if (Input.GetKey(KeyCode.LeftShift) || !UserSettings.ExtSustains)
@@ -151,7 +161,18 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
     }
 
-    void UpdateSustain() => UpdateSustain(Tick, LaneData[Tick].Sustain);
+    void UpdateSustain(bool sustainOnly)
+    {
+        if (sustainOnly)
+        {
+            UpdateSustain(SongTime.SongPositionTicks, Tick + LaneData[Tick].Sustain - SongTime.SongPositionTicks);
+        }
+        else
+        {
+            UpdateSustain(Tick, LaneData[Tick].Sustain);
+        }
+    }
+
 
     public void UpdateSustain(int tick, int sustainLength)
     {
@@ -166,8 +187,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         var localScaleZ = (float)(trackPosition - notePosition);
 
         // stop it from appearing past the end of the highway
-        if (localScaleZ + transform.localPosition.z > Chart.instance.SceneDetails.HighwayLength) 
-            localScaleZ = Chart.instance.SceneDetails.HighwayLength - transform.localPosition.z; 
+        if (localScaleZ + transform.localPosition.z > Chart.instance.SceneDetails.HighwayLength)
+            localScaleZ = Chart.instance.SceneDetails.HighwayLength - transform.localPosition.z;
 
         if (localScaleZ < 0) localScaleZ = 0; // box collider negative size issues??
 
@@ -177,4 +198,4 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     // used on sustain trail itself when click happens on trail
     // click on sustain trail + drag activates SustainSelection() within the previewer object
     public void ClampSustain(int tickLength) => chartInstrument.UpdateSustain(Tick, laneIdentifier, tickLength);
-} 
+}

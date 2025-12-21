@@ -36,7 +36,7 @@ public class NoteReceiver : MonoBehaviour
     {
         var lengthSeconds = Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick + sustainLength) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick);
         yield return new WaitForSeconds((float)lengthSeconds);
-        PlayFall();
+        if (AudioManager.AudioPlaying) PlayFall();
     }
 
     private void Awake()

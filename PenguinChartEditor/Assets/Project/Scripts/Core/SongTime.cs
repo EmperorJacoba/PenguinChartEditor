@@ -39,7 +39,7 @@ public class SongTime : MonoBehaviour
     }
     private static double _songPos = 0;
 
-    public static int SongPositionTicks => Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)_songPos);
+    public static int SongPositionTicks => Waveform.songPositionTicks;
 
     /// <summary>
     /// The length of the song in tick time.

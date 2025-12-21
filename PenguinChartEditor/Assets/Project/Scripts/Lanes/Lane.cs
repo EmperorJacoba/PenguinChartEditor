@@ -37,10 +37,7 @@ public abstract class Lane<TEvent> : MonoBehaviour where TEvent : IPoolable
 
     protected abstract void InitializeEvent(TEvent @event, int tick);
 
-    protected virtual bool HasPreviewer()
-    {
-        return true;
-    }
+    protected virtual bool HasPreviewer() => true;
 }
 
 [System.Serializable]

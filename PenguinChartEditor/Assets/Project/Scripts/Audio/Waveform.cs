@@ -259,11 +259,12 @@ public class Waveform : MonoBehaviour
         return (startPoint, endPoint);
     }
 
-    public void GetCurrentDisplayedWaveformInfo(out int startTick, out int endTick, out double timeShown, out double startTime, out double endTime, out int ticksShown)
+    public void CacheWaveformDetails()
     {
         (startTime, endTime) = GetDisplayedAudio();
         startTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)startTime);
         endTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)endTime);
+        songPositionTicks = Chart.SyncTrackInstrument.ConvertSecondsToTickTime(CurrentWaveformDataPosition * (float)AudioManager.ARRAY_RESOLUTION);
         timeShown = endTime - startTime;
         ticksShown = endTick - startTick;
 
@@ -274,6 +275,7 @@ public class Waveform : MonoBehaviour
     protected virtual int strikeSamplePoint => (int)Math.Ceiling(samplesPerBoundary * Strikeline.instance.GetStrikelineProportion());
     public static int ticksShown;
     public static int startTick;
+    public static int songPositionTicks;
     public static int endTick;
     public static double timeShown;
     public static double startTime;
@@ -285,7 +287,7 @@ public class Waveform : MonoBehaviour
     /// </summary>
     public void UpdateWaveformData()
     {
-        GetCurrentDisplayedWaveformInfo(out startTick, out endTick, out timeShown, out startTime, out endTime, out ticksShown);
+        CacheWaveformDetails();
 
         Chart.Refresh();
     }
