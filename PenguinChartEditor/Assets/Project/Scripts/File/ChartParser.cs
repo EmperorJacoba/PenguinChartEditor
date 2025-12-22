@@ -31,13 +31,6 @@ public class ChartParser
 
     #region Five Fret Instrument Constants
 
-    int hopoCutoff
-    {
-        get
-        {
-            return (int)Math.Floor(((float)65 / 192) * (float)resolution);
-        }
-    }
     const string NOTE_INDICATOR = "N";
     const string SPECIAL_INDICATOR = "S";
     const string EVENT_INDICATOR = "E";
@@ -59,7 +52,6 @@ public class ChartParser
     // Possibly in another object or collection where you access dictionaries based on type requested?
     public LaneSet<BPMData> bpmEvents;
     public LaneSet<TSData> tsEvents;
-    public int resolution;
     public Metadata metadata;
     public List<IInstrument> instruments = new();
 
@@ -124,7 +116,7 @@ public class ChartParser
             sectionHeaderCandidates.Remove(SONG_HEADER_LOCATION);
 
             var songData = InitializeSongGroup(SONG_HEADER_LOCATION);
-            (metadata, resolution) = ParseSongMetadata(songData);
+            (metadata, Chart.Resolution) = ParseSongMetadata(songData);
         }
 
         Parallel.ForEach(sectionHeaderCandidates, item => identifiedSections.Add(FormatEventSection(item)));
@@ -368,7 +360,7 @@ public class ChartParser
             {
                 // from Chart File Format Specifications
                 var tickDelta = ticks[i] - ticks[i - 1];
-                double timeDelta = tickDelta / (double)resolution * SECONDS_PER_MINUTE / bpms[i - 1];
+                double timeDelta = tickDelta / (double)Chart.Resolution * SECONDS_PER_MINUTE / bpms[i - 1];
                 currentSongTime += timeDelta;
             }
 
@@ -409,141 +401,7 @@ public class ChartParser
 
     FiveFretInstrument ParseFiveFret(ChartEventGroup chartEventGroup)
     {
-        // this is where all parsed data ends up, data is processed lane-by-lane
-        Lanes<FiveFretNoteData> lanes = new(6);
-
-        // this is for simplifying hopo checks - initialized with -hopoCutoff to prevent the first note from starting as a hopo
-        int[] lastNoteTicks = new int[6] { -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff, -hopoCutoff };
-
-        SortedDictionary<int, SpecialData> starpower = new();
-        SortedDictionary<int, LocalEventData> localEvents = new();
-
-        InstrumentType instrument = (int)chartEventGroup.EventGroupIdentifier switch
-        {
-            <= 13 => InstrumentType.guitar,
-            <= 23 => InstrumentType.coopGuitar,
-            <= 33 => InstrumentType.bass,
-            <= 43 => InstrumentType.rhythm,
-            <= 53 => InstrumentType.keys,
-            _ => throw new ArgumentException("Tried to identify an invalid instrument.")
-        };
-
-        DifficultyType difficulty = chartEventGroup.GetDifficulty();
-
-        HashSet<int> uniqueTicks = chartEventGroup.data.Select(item => item.Key).ToHashSet();
-
-        foreach (var uniqueTick in uniqueTicks)
-        {
-            var eventsAtTick = chartEventGroup.data.Where(item => item.Key == uniqueTick).Select(item => item.Value).ToList();
-            bool tapModifier = false;
-            bool forcedModifier = false;
-
-            foreach (var identifier in new List<string> (eventsAtTick))
-            {
-                if (identifier.Contains($"{FORCED_SUBSTRING}"))
-                {
-                    forcedModifier = true;
-                    eventsAtTick.Remove(identifier);
-                }
-
-                if (identifier.Contains($"{TAP_SUBSTRING}"))
-                {
-                    tapModifier = true;
-                    eventsAtTick.Remove(identifier);
-                }
-            }
-
-            var noteCount = 0;
-            for (int i = 0; i < eventsAtTick.Count; i++)
-            {
-                if (eventsAtTick[i].Contains("N")) noteCount++;
-            }
-
-            int noteIdentifier;
-            int sustain;
-            foreach (var @event in eventsAtTick)
-            {
-                var values = @event.Split(' ');
-                switch (values[IDENTIFIER_INDEX])
-                {
-                    case NOTE_INDICATOR:
-
-                        if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
-                            throw new ArgumentException($"Invalid note identifier for {instrument} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
-
-                        if (noteIdentifier > LAST_VALID_IDENTIFIER) continue;
-
-                        if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
-                            throw new ArgumentException($"Invalid sustain for {instrument} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
-
-                        FiveFretInstrument.LaneOrientation lane;
-                        if (noteIdentifier != OPEN_IDENTIFIER)
-                            lane = (FiveFretInstrument.LaneOrientation)noteIdentifier;
-                        else lane = FiveFretInstrument.LaneOrientation.open; // open identifier is not the same as lane orientation (index of lane dictionary)
-
-                        bool defaultOrientation = true; // equivilent to forced
-                        FiveFretNoteData.FlagType flagType;
-                        if (tapModifier)
-                        {
-                            flagType = FiveFretNoteData.FlagType.tap; // tap overrides any hopo/forcing logic
-                        }
-                        else
-                        {
-                            bool hopoEligible = false;
-
-                            for (var j = 0; j < lastNoteTicks.Length; j++)
-                            {
-                                if ((FiveFretInstrument.LaneOrientation)j == lane || lastNoteTicks[j] == uniqueTick) continue;
-
-                                if (uniqueTick - lastNoteTicks[j] < hopoCutoff && noteCount == 1)
-                                {
-                                    hopoEligible = true;
-                                    break;
-                                }
-                            }
-
-                            if (forcedModifier)
-                            {
-                                hopoEligible = !hopoEligible;
-                                defaultOrientation = false;
-                            }
-
-                            flagType = hopoEligible ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-                        }
-
-                        var noteData = new FiveFretNoteData(sustain, flagType, defaultOrientation);
-
-                        lanes.GetLane((int)lane).Add(uniqueTick, noteData);
-                        lastNoteTicks[(int)lane] = uniqueTick;
-
-                        break;
-                    case SPECIAL_INDICATOR:
-
-                        if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
-                            throw new ArgumentException($"Invalid special identifier for {instrument} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
-
-                        if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
-                            throw new ArgumentException($"Invalid sustain for {instrument} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
-
-                        if (noteIdentifier != STARPOWER_INDICATOR) continue; // should only have starpower indicator, no fills or anything
-
-                        starpower.Add(uniqueTick, new SpecialData(sustain, SpecialData.EventType.starpower));
-
-                        break;
-                    case EVENT_INDICATOR:
-                        if (!Enum.TryParse(typeof(LocalEventData.EventType), values[EVENT_DATA_INDEX], true, out var localEvent))
-                            throw new ArgumentException($"Error at {uniqueTick}: Unsupported event type: {values[EVENT_DATA_INDEX]}");
-
-                        localEvents.Add(uniqueTick, new LocalEventData((LocalEventData.EventType)localEvent));
-
-                        break;
-                    case DEPRECATED_HAND_INDICATOR:
-                        continue;
-                }
-            }
-        }
-
-        return new FiveFretInstrument(lanes, starpower, localEvents, instrument, difficulty);
+        return new(laneCount: 6, chartEventGroup.EventGroupIdentifier, chartEventGroup.data);
     }
 
     #endregion
@@ -578,9 +436,11 @@ class ChartEventGroup
         };
     }
 
-    public DifficultyType GetDifficulty()
+    public DifficultyType GetDifficulty() => GetDifficulty(EventGroupIdentifier);
+
+    public static DifficultyType GetDifficulty(HeaderType instrumentID)
     {
-        return ((int)EventGroupIdentifier % 10) switch
+        return ((int)instrumentID % 10) switch
         {
             0 => DifficultyType.easy,
             1 => DifficultyType.medium,

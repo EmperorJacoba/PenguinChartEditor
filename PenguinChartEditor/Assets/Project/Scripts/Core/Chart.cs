@@ -54,7 +54,6 @@ public class Chart : MonoBehaviour
 
         ChartParser chartParser = new(ChartPath);
 
-        Resolution = chartParser.resolution;
         Metadata = chartParser.metadata;
 
         // testing: please add audio selection in future if excess audio files are found
@@ -98,15 +97,25 @@ public class Chart : MonoBehaviour
     {
         get
         {
-            return _chartResolution;
+            return _chartRes == -1 ? throw new ArgumentException("Uninitialized resolution.") : _chartRes;
         }
         set
         {
             if (value == 0) throw new ArgumentException("Resolution cannot be zero!");
-            _chartResolution = value;
+            _chartRes = value;
+            _cachcut = (int)Math.Floor(((float)65 / 192) * (float)_chartRes);
         }
     }
-    private static int _chartResolution = 0;
+    private static int _chartRes = -1;
+
+    public static int hopoCutoff
+    {
+        get
+        {
+            return _cachcut == -1 ? throw new ArgumentException("Uninitialized hopo cutoff.") : _cachcut;
+        }
+    }
+    static int _cachcut = -1;
 
     public static string FolderPath { get; private set; }
     public static string ChartPath
@@ -138,7 +147,7 @@ public class Chart : MonoBehaviour
 
     #endregion
 
-    public static bool showPreviewers = true; // for previewers
+    public static bool showPreviewers = true;
 
     InputMap inputMap;
 
@@ -156,11 +165,9 @@ public class Chart : MonoBehaviour
         LoadFile();
         LoadedInstrument = Instruments.
             Where(
-            item => item.InstrumentName == InstrumentType.guitar). // for testing only
+            item => item.InstrumentName == InstrumentType.keys). // for testing only
             ToList()[0];
         // LoadedInstrument = SyncTrackInstrument;
-
-        AudioManager.PlaybackStateChanged += x => { showPreviewers = !AudioManager.AudioPlaying; };
 
         inputMap = new();
         inputMap.Enable();
@@ -188,13 +195,6 @@ public class Chart : MonoBehaviour
                 BeatlineLane3D.instance.UpdateEvents();
                 ChartTabUpdated?.Invoke(); // shortcut for all lanes to update
                 break;
-        }
-    }
-    public static int hopoCutoff
-    {
-        get
-        {
-            return (int)Math.Floor(((float)65 / 192) * (float)Resolution);
         }
     }
 

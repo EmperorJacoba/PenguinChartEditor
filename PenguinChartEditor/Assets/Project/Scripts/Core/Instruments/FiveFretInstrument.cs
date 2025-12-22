@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 public class FiveFretInstrument : IInstrument
 {
@@ -84,6 +85,47 @@ public class FiveFretInstrument : IInstrument
                 CheckForHoposInRange(startTick, endTick);
             };
         }
+    }
+
+    public FiveFretInstrument(int laneCount, HeaderType instrumentID, List<KeyValuePair<int, string>> instrumentInfo)
+    {
+        Lanes = new(6);
+        SpecialEvents = new();
+        LocalEvents = new();
+
+        InstrumentName = IdentifyInstrument(instrumentID);
+        Difficulty = ChartEventGroup.GetDifficulty(instrumentID);
+
+        AddChartFormattedEventsToInstrument(instrumentInfo);
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var laneIndex = i;
+            // add Lanes update needed
+            // change to generic validateblic
+            Lanes.GetLane(laneIndex).UpdatesNeededInRange += (startTick, endTick) =>
+            {
+                if (startTick == endTick) CheckForHopos((LaneOrientation)laneIndex, startTick);
+                else CheckForHoposInRange(startTick, endTick);
+            };
+            Lanes.UpdatesNeededInRange += (startTick, endTick) =>
+            {
+                CheckForHoposInRange(startTick, endTick);
+            };
+        }
+    }
+
+    InstrumentType IdentifyInstrument(HeaderType instrumentID)
+    {
+        return (int)instrumentID switch
+        {
+            <= 13 => InstrumentType.guitar,
+            <= 23 => InstrumentType.coopGuitar,
+            <= 33 => InstrumentType.bass,
+            <= 43 => InstrumentType.rhythm,
+            <= 53 => InstrumentType.keys,
+            _ => throw new ArgumentException("Tried to create a FiveFretInstrument with an unsupported instrument.")
+        };
     }
 
     public void SetUpInputMap()
@@ -806,6 +848,7 @@ public class FiveFretInstrument : IInstrument
         if (startIndex < 0)
         {
             startIndex = ~startIndex - 1;
+            if (startIndex < 0) startIndex = 0;
         }
 
         int endIndex = uniqueTicks.BinarySearch(endTick);
@@ -895,6 +938,7 @@ public class FiveFretInstrument : IInstrument
     public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
     {
         HashSet<int> uniqueTicks = lines.Select(item => item.Key).ToHashSet();
+        HashSet<int> flippedTicks = new(); // ticks that will be traditionally forced
 
         if (uniqueTicks.Count == 0) return;
         Lanes.PopDataInRange(uniqueTicks.Min(), uniqueTicks.Max());
@@ -917,35 +961,29 @@ public class FiveFretInstrument : IInstrument
 
             foreach (var identifier in new List<string>(eventsAtTick))
             {
-                if (identifier.Contains($"{FORCED_SUBSTRING}"))
+                if (identifier.Contains(FORCED_SUBSTRING))
                 {
                     forcedModifier = true;
                     eventsAtTick.Remove(identifier);
                 }
 
-                if (identifier.Contains($"{TAP_SUBSTRING}"))
+                if (identifier.Contains(TAP_SUBSTRING))
                 {
                     tapModifier = true;
                     eventsAtTick.Remove(identifier);
                 }
 
-                if (identifier.Contains($"{EXPLICIT_HOPO_ID}"))
+                if (identifier.Contains(EXPLICIT_HOPO_ID))
                 {
                     penguinHopo = true;
                     eventsAtTick.Remove(identifier);
                 }
 
-                if (identifier.Contains($"{EXPLICIT_STRUM_ID}"))
+                if (identifier.Contains(EXPLICIT_STRUM_ID))
                 {
                     penguinStrum = true;
                     eventsAtTick.Remove(identifier);
                 }
-            }
-
-            var noteCount = 0;
-            for (int i = 0; i < eventsAtTick.Count; i++)
-            {
-                if (eventsAtTick[i].Contains("N")) noteCount++;
             }
 
             int noteIdentifier;
@@ -956,7 +994,6 @@ public class FiveFretInstrument : IInstrument
                 switch (values[IDENTIFIER_INDEX])
                 {
                     case NOTE_INDICATOR:
-
                         if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
                         {
                             Chart.Log($"Invalid note identifier for {InstrumentName} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
@@ -972,11 +1009,14 @@ public class FiveFretInstrument : IInstrument
                         }
 
                         LaneOrientation lane;
-                        if (noteIdentifier != OPEN_IDENTIFIER)
+                        if (noteIdentifier != OPEN_IDENTIFIER) // 5 (forced) & 6 (tap) IDs already cleared
                             lane = (LaneOrientation)noteIdentifier;
                         else lane = LaneOrientation.open; // open identifier is not the same as lane orientation (index of lane dictionary)
 
-                        bool defaultOrientation = true; // equivilent to forced
+                        bool defaultOrientation = true; // somewhat equivilent to forced
+
+                        // use separate method (CheckForHoposInRange) at end to properly calculate hopo vs. strum
+                        // in the meantime, strum is good default
                         FiveFretNoteData.FlagType flagType = FiveFretNoteData.FlagType.strum;
                         if (tapModifier)
                         {
@@ -998,8 +1038,7 @@ public class FiveFretInstrument : IInstrument
 
                             if (forcedModifier)
                             {
-                                flagType = PreviewTickHopo(lane, uniqueTick) ? FiveFretNoteData.FlagType.strum : FiveFretNoteData.FlagType.hopo;
-                                defaultOrientation = false;
+                                flippedTicks.Add(uniqueTick);
                             }
                         }
 
@@ -1045,6 +1084,7 @@ public class FiveFretInstrument : IInstrument
         }
 
         CheckForHoposInRange(uniqueTicks.Min(), uniqueTicks.Max());
+        FlipTicks(flippedTicks);
     }
 
     public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
@@ -1074,6 +1114,23 @@ public class FiveFretInstrument : IInstrument
         }
 
         AddChartFormattedEventsToInstrument(lines);
+    }
+
+    public void FlipTicks(HashSet<int> flippedTicks)
+    {
+        foreach (var tick in flippedTicks)
+        {
+            for (int i = 0; i < Lanes.Count; i++)
+            {
+                var activeLane = Lanes.GetLane(i);
+                if (!activeLane.Contains(tick)) continue;
+
+                var data = activeLane[tick];
+                var replaceFlag = data.Flag == FiveFretNoteData.FlagType.strum ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
+
+                activeLane[tick] = new(data.Sustain, replaceFlag, false);
+            }
+        }
     }
 
     #endregion

@@ -60,8 +60,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         LabelEntryBox.ActivateInputField();
 
         LabelEntryBox.text = ConvertDataToPreviewString();
-        EventPreviewer.Hide();
-
+        Chart.showPreviewers = false;
         SongTime.DisableChartingInputMap();
     }
 
