@@ -6,6 +6,11 @@ public interface IEventData
 {
     string ToChartFormat(int lane);
 }
+
+public interface ISustainable
+{
+    int Sustain { get; set; }
+}
 public struct BPMData : IEquatable<BPMData>, IEventData
 {
     public const int BPM_CONVERSION = 1000;
@@ -103,7 +108,7 @@ public struct BookmarkData : IEventData
 // Note datas: LaneType is an enum with lane corresponding to their ID number in .chart files.
 // FlagType is an enum with flag corresponding to ID number in .chart files 
 
-public struct FiveFretNoteData : IEventData
+public struct FiveFretNoteData : IEventData, ISustainable
 {
     public enum FlagType
     {
@@ -114,7 +119,7 @@ public struct FiveFretNoteData : IEventData
 
     // true = flip as needed, false = hold Flag no matter what
     public bool Default; 
-    public int Sustain;
+    public int Sustain { get; set; }
     public FlagType Flag;
 
     public FiveFretNoteData(int sustain, FlagType flag, bool defaultOrientation = true)

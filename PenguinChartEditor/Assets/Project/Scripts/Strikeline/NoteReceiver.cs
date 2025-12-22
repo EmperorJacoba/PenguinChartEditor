@@ -57,6 +57,7 @@ public class NoteReceiver : MonoBehaviour
     }
 
     int nextPromisedNoteHit = -1;
+    bool nextIsOpen = false;
     void CheckForNoteHit()
     {
         if (firstLoop)
@@ -67,7 +68,10 @@ public class NoteReceiver : MonoBehaviour
 
         if (SongTime.SongPositionTicks >= nextPromisedNoteHit)
         {
-            var tickSustain = Chart.GetActiveInstrument<FiveFretInstrument>().Lanes.GetLane((int)lane)[nextPromisedNoteHit].Sustain;
+            var laneData = nextIsOpen ? Chart.GetActiveInstrument<FiveFretInstrument>().Lanes.GetLane((int)FiveFretInstrument.LaneOrientation.open) :
+                Chart.GetActiveInstrument<FiveFretInstrument>().Lanes.GetLane((int)lane);
+
+            var tickSustain = laneData[nextPromisedNoteHit].Sustain;
             if (tickSustain > 0)
             {
                 PlaySustain(nextPromisedNoteHit, tickSustain);
@@ -76,31 +80,45 @@ public class NoteReceiver : MonoBehaviour
             {
                 PlayNoSustain();
             }
+
             nextPromisedNoteHit = GetNextNoteHit();
         }
     }
 
     int GetNextNoteHit()
     {
+        nextIsOpen = false;
 
-        return Chart.GetActiveInstrument<FiveFretInstrument>().
-            Lanes.GetLane((int)lane).
-            GetNextTickEventInLane(SongTime.SongPositionTicks);
+        var instrumentLanesObject = Chart.GetActiveInstrument<FiveFretInstrument>().Lanes;
+        var activeLaneTick = instrumentLanesObject.GetLane((int)lane).GetNextRelevantTick();
+        var openLaneTick = instrumentLanesObject.GetLane((int)FiveFretInstrument.LaneOrientation.open).GetNextRelevantTick();
+
+        var relevantTick = Mathf.Min(activeLaneTick, openLaneTick);
+
+        if (relevantTick == openLaneTick) nextIsOpen = true;
+
+        return relevantTick;
     }
 
     int GetStartingNote()
     {
-        var active = Chart.GetActiveInstrument<FiveFretInstrument>().Lanes.GetLane((int)lane);
-        var prevEvent = active.GetPreviousTickEventInLane(SongTime.SongPositionTicks, inclusive: true);
-        var nextEvent = active.GetNextTickEventInLane(SongTime.SongPositionTicks);
+        nextIsOpen = false;
 
-        if (prevEvent == LaneSet<FiveFretNoteData>.NO_TICK_EVENT)
-            return ValidateEvent(nextEvent);
+        var instrumentLanesObject = Chart.GetActiveInstrument<FiveFretInstrument>().Lanes;
+        var activeLaneTick = instrumentLanesObject.GetLane((int)lane).GetFirstRelevantTick<FiveFretNoteData>();
+        var openLaneTick = instrumentLanesObject.GetLane((int)FiveFretInstrument.LaneOrientation.open).GetFirstRelevantTick<FiveFretNoteData>();
 
-        if (prevEvent + active[prevEvent].Sustain > SongTime.SongPositionTicks) return prevEvent;
-        
-        return ValidateEvent(nextEvent);
+        int relevantTick;
+        if (activeLaneTick < SongTime.SongPositionTicks && openLaneTick < SongTime.SongPositionTicks)
+        {
+            relevantTick = Mathf.Max(activeLaneTick, openLaneTick);
+        }
+        relevantTick = Mathf.Min(activeLaneTick, openLaneTick);
+
+        if (relevantTick == openLaneTick) nextIsOpen = true;
+
+        return relevantTick;
     }
 
-    int ValidateEvent(int nextEvent) => nextEvent == LaneSet<FiveFretNoteData>.NO_TICK_EVENT ? SongTime.SongLengthTicks : nextEvent;
+    int ValidateEvent(int nextEvent) => nextEvent == LaneSet<FiveFretNoteData>.NO_TICK_EVENT ? SongTime.SongLengthTicks + 1 : nextEvent;
 }

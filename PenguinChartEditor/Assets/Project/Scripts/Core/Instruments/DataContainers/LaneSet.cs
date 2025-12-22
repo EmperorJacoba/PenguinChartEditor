@@ -282,6 +282,47 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         return Keys.ToList().Where(x => x >= startPasteTick && x <= endPasteTick).ToHashSet();
     }
 
+    public int GetFirstRelevantTick<TSustain>() where TSustain : ISustainable
+        => GetFirstRelevantTick<TSustain>(SongTime.SongPositionTicks);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TSustain">Any type of event data that has a sustain field. See FiveFretNoteData, GHLNoteData, etc.</typeparam>
+    /// <param name="targetTick"></param>
+    /// <returns>The next tick in this lane that needs to show feedback. 
+    /// Returns the previous tick in the lane if the sustain of that note 
+    /// is in progress at targetTick, which will need to show feedback.</returns>
+    public int GetFirstRelevantTick<TSustain>(int targetTick) where TSustain : ISustainable
+    {
+        // validate next and not previous tick because there is no need to
+        // validate the previous tick in this scenario
+        // if the previous tick is -1, then Contains fails every time 
+        // (this<int>[] is effectively a uint unless something has gone terribly wrong)
+        // but nextTick should return an unreachable tick so that the first relevant tick is effectively null
+        // (theoretically, it is also possible to reach past the end of the song when something has gone terribly wrong)
+        // since this function is used to return the next note the receivers care about,
+        // returning a tick that will never be reached is a good substitute for null without breaking everything
+        var previousTick = GetPreviousTickEventInLane(targetTick);
+        var nextTick = ValidateEvent(GetNextTickEventInLane(targetTick, inclusive: true));
+
+        if (Contains(previousTick)) 
+        {
+            var sustainDataContainer = (ISustainable)this[previousTick];
+            var prevSustainLength = sustainDataContainer.Sustain;
+
+            var prevSustainEndPoint = previousTick + prevSustainLength;
+
+            if (prevSustainEndPoint > SongTime.SongPositionTicks) return previousTick;
+        }
+
+        return nextTick;
+    }
+
+    public int GetNextRelevantTick() => GetNextRelevantTick(SongTime.SongPositionTicks);
+    public int GetNextRelevantTick(int targetTick) => ValidateEvent(GetNextTickEventInLane(targetTick));
+
+    int ValidateEvent(int tickEvent) => tickEvent == NO_TICK_EVENT ? SongTime.SongLengthTicks + 1 : tickEvent;
 
     #region Unmodified IDictionary Implementations
 

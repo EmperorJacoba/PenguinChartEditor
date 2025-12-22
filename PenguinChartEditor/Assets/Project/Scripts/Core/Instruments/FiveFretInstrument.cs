@@ -214,6 +214,8 @@ public class FiveFretInstrument : IInstrument
         var poppedTick = laneReference.PopSingle(tick);
         if (poppedTick == null) return; // future proofing in case a protected tick is ever needed for FFN
 
+        Lanes.GetLaneSelection(lane).Remove(tick);
+
         Chart.Refresh();
     }
 
