@@ -56,6 +56,9 @@ public class Chart : MonoBehaviour
 
         Metadata = chartParser.metadata;
 
+        // also need to parse chart stems
+        // find properly named files - add to stems
+        // find other audio files - ask to assign
         // testing: please add audio selection in future if excess audio files are found
         foreach (StemType key in Enum.GetValues(typeof(StemType)))
         {
@@ -68,21 +71,13 @@ public class Chart : MonoBehaviour
 
         AudioManager.InitializeAudio();
 
-        SyncTrackInstrument = new(chartParser.bpmEvents, chartParser.tsEvents);
+        SyncTrackInstrument = chartParser.syncTrackInstrument;
+        SyncTrackInstrument.SetUpInputMap();
 
         Instruments = chartParser.instruments;
         foreach (var instrument in Instruments)
         {
             instrument.SetUpInputMap();
-        }
-
-        if (SyncTrackInstrument.TempoEvents.Count == 0) // if there is no data to load in 
-        {
-            SyncTrackInstrument.TempoEvents.Add(0, new BPMData(120.0f, 0, false)); // add placeholder bpm
-        }
-        if (SyncTrackInstrument.TimeSignatureEvents.Count == 0)
-        {
-            SyncTrackInstrument.TimeSignatureEvents.Add(0, new TSData(4, 4));
         }
     }
 

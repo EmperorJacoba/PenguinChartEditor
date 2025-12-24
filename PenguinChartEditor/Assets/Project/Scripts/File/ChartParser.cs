@@ -29,29 +29,8 @@ public class ChartParser
 
     #endregion
 
-    #region Five Fret Instrument Constants
-
-    const string NOTE_INDICATOR = "N";
-    const string SPECIAL_INDICATOR = "S";
-    const string EVENT_INDICATOR = "E";
-    const string DEPRECATED_HAND_INDICATOR = "H";
-    const int IDENTIFIER_INDEX = 0;
-    const int NOTE_IDENTIFIER_INDEX = 1;
-    const int SUSTAIN_INDEX = 2;
-    const string FORCED_SUBSTRING = "N 5 0";
-    const string TAP_SUBSTRING = "N 6 0";
-    const int EVENT_DATA_INDEX = 1;
-    const int LAST_VALID_IDENTIFIER = 7;
-    const int OPEN_IDENTIFIER = 7;
-    const int STARPOWER_INDICATOR = 2;
-
-    #endregion
-
     #region Accessors 
-    // Make accessing this more efficient
-    // Possibly in another object or collection where you access dictionaries based on type requested?
-    public LaneSet<BPMData> bpmEvents;
-    public LaneSet<TSData> tsEvents;
+    public SyncTrackInstrument syncTrackInstrument;
     public Metadata metadata;
     public List<IInstrument> instruments = new();
 
@@ -71,10 +50,6 @@ public class ChartParser
         var eventGroups = FormatEventSections();
 
         Parallel.ForEach(eventGroups, item => ProcessEventGroup(item));
-
-        // also need to parse chart stems
-        // find properly named files - add to stems
-        // find other audio files - ask to assign
     }
 
     void ProcessEventGroup(ChartEventGroup eventGroup)
@@ -83,7 +58,7 @@ public class ChartParser
         switch (eventGroup.EventGroupIdentifier)
         {
             case HeaderType.SyncTrack: // required (needs exception handling)
-                (bpmEvents, tsEvents) = ParseSyncTrack(eventGroup);
+                syncTrackInstrument = new SyncTrackInstrument(eventGroup.data);
                 break;
             case HeaderType.Events:
                 // events parse
@@ -116,7 +91,8 @@ public class ChartParser
             sectionHeaderCandidates.Remove(SONG_HEADER_LOCATION);
 
             var songData = InitializeSongGroup(SONG_HEADER_LOCATION);
-            (metadata, Chart.Resolution) = ParseSongMetadata(songData);
+            Chart.Resolution = GetChartResolution(songData);
+            metadata = ParseSongMetadata(songData);
         }
 
         Parallel.ForEach(sectionHeaderCandidates, item => identifiedSections.Add(FormatEventSection(item)));
@@ -231,7 +207,7 @@ public class ChartParser
     /// <param name="songEventGroup">ChartEventGroup object with [Song] header.</param>
     /// <returns>Constructed Metadata, resolution</returns>
     /// <exception cref="ArgumentException"></exception>
-    (Metadata, int) ParseSongMetadata(SongDataGroup songEventGroup)
+    Metadata ParseSongMetadata(SongDataGroup songEventGroup)
     {
         Metadata metadata = new();
         if (File.Exists($"{Chart.FolderPath}/song.ini")) // read from ini if exists (most reliable scenario)
@@ -267,112 +243,19 @@ public class ChartParser
                 }
             }
         }
+
+        return metadata;
+    }
+
+    int GetChartResolution(SongDataGroup songEventGroup)
+    {
         var resolutionData = songEventGroup.data.Where(list => list.Key == "Resolution").ToList();
 
         if (resolutionData.Count == 0)
             throw new ArgumentException("No resolution data found within chart file. Please add the correct resolution and try again.");
         if (!int.TryParse(resolutionData[0].Value, out int resolutionValue))
             throw new ArgumentException($"Resolution data is not valid. {HELPFUL_REMINDER}");
-
-        return (metadata, resolutionValue);
-    }
-
-    #endregion
-
-    #region SyncTrack
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="syncTrackEventGroup"></param>
-    /// <returns>BPM event data, TS event data</returns>
-    /// <exception cref="ArgumentException"></exception>
-    (LaneSet<BPMData>, LaneSet<TSData>) ParseSyncTrack(ChartEventGroup syncTrackEventGroup)
-    {
-        var events = syncTrackEventGroup.data;
-
-        List<int> tempoTickTimeKeys = new();
-        List<float> bpmVals = new();
-        LaneSet<TSData> tsEvents = new(protectedTicks: new() { 0 });
-        HashSet<int> anchoredTicks = new();
-
-        foreach (var entry in events)
-        {
-            if (entry.Value.Contains(TEMPO_EVENT_INDICATOR))
-            {
-                tempoTickTimeKeys.Add(entry.Key);
-
-                var eventData = entry.Value;
-                eventData = eventData.Replace($"{TEMPO_EVENT_INDICATOR} ", ""); // SPACE IS VERY IMPORTANT HERE
-
-                if (!int.TryParse(eventData, out int bpmNoDecimal))
-                    throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid tempo entry. {HELPFUL_REMINDER}");
-
-                float bpmWithDecimal = bpmNoDecimal / BPM_FORMAT_CONVERSION;
-                bpmVals.Add((float)Math.Round(bpmWithDecimal, 3));
-            }
-            else if (entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
-            {
-                var eventData = entry.Value;
-                eventData = eventData.Replace($"{TIME_SIGNATURE_EVENT_INDICATOR} ", "");
-
-                string[] tsParts = eventData.Split(" ");
-
-                if (!int.TryParse(tsParts[0], out int numerator))
-                    throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature numerator. {HELPFUL_REMINDER}");
-
-                int denominator = DEFAULT_TS_DENOMINATOR;
-                if (tsParts.Length == 2) // There is no space in the event value (only one number)
-                {
-                    if (!int.TryParse(tsParts[1], out int denominatorLog2))
-                        throw new ArgumentException($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature denominator. {HELPFUL_REMINDER}");
-                    denominator = (int)Math.Pow(TS_POWER_CONVERSION_NUMBER, denominatorLog2);
-                }
-
-                tsEvents.Add(entry.Key, new TSData(numerator, denominator));
-            }
-            else if (entry.Value.Contains(ANCHOR_INDICATOR))
-            {
-                anchoredTicks.Add(entry.Key);
-
-                // if for some reason you need to add parsing for the microsecond value do it here
-                // that is not here because a) penguin already works with and calculates the timestamps of every event
-                // and b) if the microsecond value is parsed and it's not aligned with the Format calculations,
-                // then what is penguin supposed to do? change the incoming BPM data? no
-                // I think it has the microsecond value for programs that choose not to work with timestamps
-                // (timestamps are easier to deal with in my opinion, even if an extra (minor) step is needed after every edit)
-            }
-        }
-
-        var bpmEvents = FormatBPMDictionary(tempoTickTimeKeys, bpmVals, anchoredTicks);
-
-        return (bpmEvents, tsEvents);
-    }
-
-    LaneSet<BPMData> FormatBPMDictionary(List<int> ticks, List<float> bpms, HashSet<int> anchors)
-    {
-        LaneSet<BPMData> outputDict = new(protectedTicks: new() { 0 });
-
-        double currentSongTime = 0;
-        for (int i = 0; i < ticks.Count; i++)
-        {
-            if (i > 0)
-            {
-                // from Chart File Format Specifications
-                var tickDelta = ticks[i] - ticks[i - 1];
-                double timeDelta = tickDelta / (double)Chart.Resolution * SECONDS_PER_MINUTE / bpms[i - 1];
-                currentSongTime += timeDelta;
-            }
-
-            outputDict.Add
-                (ticks[i], 
-                new BPMData(
-                    bpms[i], 
-                    (float)currentSongTime,
-                    anchors.Contains(ticks[i]))
-                );
-        }
-        return outputDict;
+        return resolutionValue;
     }
 
     #endregion
@@ -383,7 +266,7 @@ public class ChartParser
         switch (chartEventGroup.GetInstrumentGroup())
         {
             case ChartEventGroup.InstrumentGroup.FiveFret:
-                return ParseFiveFret(chartEventGroup);
+                return new FiveFretInstrument(chartEventGroup.EventGroupIdentifier, chartEventGroup.data);
             case ChartEventGroup.InstrumentGroup.FourLaneDrums:
                 // parse drums
                 break;
@@ -397,11 +280,6 @@ public class ChartParser
         //Chart.Log("Skipped instrument group");
         return null;
         // throw new ArgumentException("Tried to parse an unsupported instrument group.");
-    }
-
-    FiveFretInstrument ParseFiveFret(ChartEventGroup chartEventGroup)
-    {
-        return new(laneCount: 6, chartEventGroup.EventGroupIdentifier, chartEventGroup.data);
     }
 
     #endregion

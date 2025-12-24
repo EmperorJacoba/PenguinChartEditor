@@ -49,6 +49,7 @@ public class SyncTrackInstrument : IInstrument
             return list;
         }
     }
+
     public SyncTrackInstrument(LaneSet<BPMData> bpmEvents, LaneSet<TSData> tsEvents)
     {
         TempoEvents = bpmEvents;
@@ -56,8 +57,26 @@ public class SyncTrackInstrument : IInstrument
         bpmSelection = new(TempoEvents);
         tsSelection = new(TimeSignatureEvents);
         SetUpInputMap();
+    }
 
-        // Tempo.Events.UpdateNeededAtTick += modifiedTick => Tempo.RecalculateTempoEventDictionary(modifiedTick);
+    public SyncTrackInstrument(List<KeyValuePair<int, string>> fileData)
+    {
+        TempoEvents = new(protectedTicks: new() { 0 });
+        TimeSignatureEvents = new(protectedTicks: new() { 0 });
+
+        bpmSelection = new(TempoEvents);
+        tsSelection = new(TimeSignatureEvents);
+
+        AddChartFormattedEventsToInstrument(fileData);
+        if (TempoEvents.Count == 0)
+        {
+            TempoEvents[0] = new(120, 0, false);
+        }
+
+        if (TimeSignatureEvents.Count == 0)
+        {
+            TimeSignatureEvents[0] = new(4, 4);
+        }
     }
 
     InputMap inputMap;
@@ -640,7 +659,6 @@ public class SyncTrackInstrument : IInstrument
     public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
     {
         HashSet<int> anchoredTicks = new(); // allows for versitility if A event comes before or after tempo event proper
-        int recalcTick = int.MaxValue;
 
         foreach (var entry in lines)
         {
@@ -657,8 +675,8 @@ public class SyncTrackInstrument : IInstrument
 
                 float bpmWithDecimal = bpmNoDecimal / BPM_FORMAT_CONVERSION;
 
-                TempoEvents[entry.Key] = new((float)Math.Round(bpmWithDecimal, 3), 0, anchoredTicks.Contains(entry.Key));
-                if (recalcTick > entry.Key) recalcTick = entry.Key;
+                // timestamp will be calculated by the RecalculateTempoEventDictionary call following this
+                TempoEvents[entry.Key] = new((float)Math.Round(bpmWithDecimal, 3), timestamp: 0, anchoredTicks.Contains(entry.Key));
             }
             else if (entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
             {
@@ -688,14 +706,7 @@ public class SyncTrackInstrument : IInstrument
             }
             else if (entry.Value.Contains(ANCHOR_IDENTIFIER))
             {
-                if (TempoEvents.Contains(entry.Key))
-                {
-                    TempoEvents[entry.Key] = new(TempoEvents[entry.Key].BPMChange, TempoEvents[entry.Key].Timestamp, true);
-                }
-                else
-                {
-                    anchoredTicks.Add(entry.Key);
-                }
+                anchoredTicks.Add(entry.Key);
 
                 // if for some reason you need to add parsing for the microsecond value do it here
                 // that is not here because a) penguin already works with and calculates the timestamps of every event
@@ -706,8 +717,15 @@ public class SyncTrackInstrument : IInstrument
             }
         }
 
+        foreach (var anchoredTick in anchoredTicks)
+        {
+            if (TempoEvents.Contains(anchoredTick))
+            {
+                TempoEvents[anchoredTick] = new(TempoEvents[anchoredTick].BPMChange, 0, true);
+            }
+        }
+
         RecalculateTempoEventDictionary();
-        Chart.Refresh();
     }
 
     public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
@@ -726,6 +744,7 @@ public class SyncTrackInstrument : IInstrument
             lines.Add(new(tick + offset, parts[1]));
         }
         AddChartFormattedEventsToInstrument(lines);
+        Chart.Refresh();
     }
 
     #endregion

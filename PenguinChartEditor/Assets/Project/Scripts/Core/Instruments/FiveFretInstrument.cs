@@ -87,7 +87,7 @@ public class FiveFretInstrument : IInstrument
         }
     }
 
-    public FiveFretInstrument(int laneCount, HeaderType instrumentID, List<KeyValuePair<int, string>> instrumentInfo)
+    public FiveFretInstrument(HeaderType instrumentID, List<KeyValuePair<int, string>> instrumentInfo)
     {
         Lanes = new(6);
         SpecialEvents = new();
