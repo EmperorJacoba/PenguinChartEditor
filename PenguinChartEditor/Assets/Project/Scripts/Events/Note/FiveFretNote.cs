@@ -158,6 +158,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
                 return;
             }
             Selection.Add(Tick);
+            Chart.Refresh();
         }
     }
 

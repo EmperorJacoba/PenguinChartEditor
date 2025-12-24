@@ -261,6 +261,20 @@ public class FiveFretInstrument : IInstrument
         Chart.Refresh();
     }
 
+    public void DeleteAllEventsAtTick(int tick)
+    {
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var lane = Lanes.GetLane(i);
+            if (lane.Contains(tick))
+            {
+                lane.PopSingle(tick);
+            }
+        }
+
+        Lanes.ClearAllSelections();
+    }
+
     #endregion
 
     #region Selections

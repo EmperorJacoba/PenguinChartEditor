@@ -90,5 +90,8 @@ public class FourLaneDrumInstrument : IInstrument
         throw new NotImplementedException();
     }
 
-    public bool justMoved { get; set; }
+    public void DeleteAllEventsAtTick(int tick)
+    {
+        throw new NotImplementedException();
+    }
 }

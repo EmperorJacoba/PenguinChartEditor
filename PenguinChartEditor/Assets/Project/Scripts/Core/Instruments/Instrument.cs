@@ -29,5 +29,7 @@ public interface IInstrument
 
     void DeleteTicksInSelection();
     void DeleteTick(int tick, int lane);
+    void DeleteAllEventsAtTick(int tick);
+       
 }
 

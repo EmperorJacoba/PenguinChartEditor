@@ -94,4 +94,9 @@ public class GHLInstrument : IInstrument
     {
         throw new NotImplementedException();
     }
+
+    public void DeleteAllEventsAtTick(int tick)
+    {
+        throw new NotImplementedException();
+    }
 }

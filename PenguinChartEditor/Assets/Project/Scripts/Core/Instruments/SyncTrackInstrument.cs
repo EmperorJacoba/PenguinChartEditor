@@ -214,6 +214,14 @@ public class SyncTrackInstrument : IInstrument
         SongTime.InvokeTimeChanged();
     }
 
+    public void DeleteAllEventsAtTick(int tick)
+    {
+        if (TempoEvents.Contains(tick)) TempoEvents.PopSingle(tick);
+        if (TimeSignatureEvents.Contains(tick)) TempoEvents.PopSingle(tick);
+
+        SongTime.InvokeTimeChanged();
+    }
+
     #endregion
 
     #region Tempo
