@@ -141,7 +141,7 @@ public class SliderBoxLinker : MonoBehaviour
                 break;
             case WaveformProperties.highwayLength:
                 highway.localScale = new(highway.localScale.x, highway.localScale.y, newValue);
-                Waveform.instance.ChangeWaveformSegment();
+                Waveform.instance.GenerateWaveformPoints();
                 Chart.Refresh();
                 break;
 

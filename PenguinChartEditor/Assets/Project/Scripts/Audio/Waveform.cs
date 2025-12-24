@@ -7,29 +7,30 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class Waveform : MonoBehaviour
 {
+    private const float THREE_D_Y_POSITION_OFFSET = 0.01f;
     public static Waveform instance;
 
     /// <summary>
     /// Dictionary that contains waveform point data for each song stem.
     /// <para>StemType is the audio stem the data belongs to</para>
-    /// <para>The tuple in the value holds the data (float[]) and the number of bytes per sample (long)</para>
+    /// <para>Data holds cached waveform float array (float[] - fairly space efficient @ 1ms per sample) and the number of bytes per sample (long)</para>
     /// </summary>
     public static Dictionary<StemType, StemWaveformData> WaveformData { get; private set; } = new();
+    
+    /// <summary>
+    /// The currently displayed waveform.
+    /// </summary>
+    protected static StemType CurrentWaveform { get; set; }
 
     #region Scene Objects
-    /// <summary>
-    /// Line renderer that contains rightward (positive dir) waveform render
-    /// </summary>
+
+    // Waveform is made up of two line renderers (+ dir & - dir)
+    // forms symmetrical & hollow waveform 
+    // main is attached to waveform object itself (use prefab with this)
+    // mirror is first child
+    // uses local positioning
     LineRenderer lineRendererMain;
-
-    /// <summary>
-    /// Line renderer that contains leftward (negative dir) waveform render
-    /// </summary>
     LineRenderer lineRendererMirror;
-
-    // Note: Line renderer uses local positioning to more easily align with the screen
-    // both of these line renderers combine to make a symmetrical waveform
-    // and the center is hollow! so cool and unique
 
     /// <summary>
     /// RectTransform attached to the waveform container.
@@ -67,25 +68,6 @@ public class Waveform : MonoBehaviour
     private static float _shrinkFactor3Dadjustment => _shrinkFactor * 5;
 
     /// <summary>
-    /// Where the user is by sample count at the strikeline.
-    /// <para>This corresponds to an index in the WaveformData arrays.</para>
-    /// </summary>
-    public static int CurrentWaveformDataPosition
-    {
-        get
-        {
-            return _wfPosition;
-        }
-        private set
-        {
-            if (_wfPosition == value) return;
-            _wfPosition = value;
-            // GenerateWaveformPoints is already called elsewhere when this is changed
-        }
-    }
-    private static int _wfPosition = 0;
-
-    /// <summary>
     /// Controls the length of the waveform lines in the editor. BASS-generated values are multiplied by this value to get the final coordinate result. 
     /// </summary>
     public static float Amplitude
@@ -102,16 +84,24 @@ public class Waveform : MonoBehaviour
         }
     }
     private static float _amplitude = 1;
-    private static float _amplitude3DAdjustment = _amplitude * 5;
+    private static float _amplitude3DAdjustment => _amplitude * 5;
 
-    /// <summary>
-    /// The currently displayed waveform.
-    /// </summary>
-    protected static StemType CurrentWaveform { get; set; }
+    public bool Visible
+    {
+        get
+        {
+            return gameObject.activeInHierarchy;
+        }
+        set
+        {
+            gameObject.SetActive(value);
+        }
+    }
 
     #endregion
 
     #region Unity Functions
+
     protected virtual void Awake()
     {
         instance = this;
@@ -119,7 +109,7 @@ public class Waveform : MonoBehaviour
         lineRendererMirror = gameObject.transform.GetChild(0).GetComponent<LineRenderer>();
 
         // Initial waveform state is made possible by STLM's initial fire
-        SongTime.TimeChanged += ChangeWaveformSegment;
+        SongTime.TimeChanged += GenerateWaveformPoints;
     }
 
     protected void Start()
@@ -140,6 +130,7 @@ public class Waveform : MonoBehaviour
         var boundsRectTransform = (RectTransform)Chart.instance.SceneDetails.highway;
         rt_2DOnly.pivot = boundsRectTransform.pivot;
     }
+
     #endregion
 
     #region Data Initialization
@@ -166,10 +157,43 @@ public class Waveform : MonoBehaviour
 
     #endregion
 
+    #region Properties
+
+    protected virtual int GetSampleCapacity()
+    {
+        return Chart.instance.SceneDetails.is2D ?
+            (int)Mathf.Round(instance.rtHeight / ShrinkFactor) :
+            (int)Mathf.Round(Chart.instance.SceneDetails.HighwayLength / (ShrinkFactor));
+    }
+    protected int GetStrikelineSamplePosition()
+    {
+        return Chart.instance.SceneDetails.is2D ?
+            (int)Math.Ceiling(GetSampleCapacity() * Strikeline.instance.GetStrikelineProportion()) :
+            (int)Math.Ceiling(GetSampleCapacity() * Strikeline3D.instance.GetStrikelineProportion());
+    }
+
+    public static int ticksShown;
+    public static int startTick;
+    public static int songPositionTicks;
+    public static int endTick;
+    public static double timeShown;
+    public static double startTime;
+    public static double endTime;
+
+    public static double GetWaveformRatio(int tick)
+    {
+        return (Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick) - startTime) / timeShown;
+    }
+
+    #endregion
+
     #region Point Generation
 
-    protected virtual void GenerateWaveformPoints()
+    public void GenerateWaveformPoints()
     {
+        // This can use an implicit cast because song position is always rounded to 3 decimal places
+        var currentWaveformDataPosition = (int)(SongTime.SongPositionSeconds * AudioManager.SAMPLES_PER_SECOND);
+
         float[] waveformData;
         if (WaveformData.ContainsKey(CurrentWaveform))
         {
@@ -187,7 +211,7 @@ public class Waveform : MonoBehaviour
         }
 
         var sampleCount = GetSampleCapacity();
-        var startSampleIndex = CurrentWaveformDataPosition - GetStrikelineSamplePosition();
+        var startSampleIndex = currentWaveformDataPosition - GetStrikelineSamplePosition();
 
         // each line renderer point is a sample
         lineRendererMain.positionCount = sampleCount;
@@ -205,13 +229,15 @@ public class Waveform : MonoBehaviour
                 xPosition = waveformData[waveformIndex] * Amplitude;
             }
 
+            // Waveform is rendered slightly differently in 2D (TempoMap) versus 3D (chart & others)
+            // Track operates on X & Y directions in 2D, X & Z directions in 3D. Thus, the branching.
             if (Chart.instance.SceneDetails.is2D)
             {
                 lineRendererPositions[lineRendererIndex] = new(xPosition, incrementPosition);
             }
             else
             {
-                lineRendererPositions[lineRendererIndex] = new(xPosition, 0.01f, incrementPosition);
+                lineRendererPositions[lineRendererIndex] = new(xPosition, THREE_D_Y_POSITION_OFFSET, incrementPosition);
             }
         }
 
@@ -221,15 +247,26 @@ public class Waveform : MonoBehaviour
         lineRendererPositions = Array.ConvertAll(lineRendererPositions, pos => new Vector3(-pos.x, pos.y, pos.z));
 
         lineRendererMirror.SetPositions(lineRendererPositions);
-        UpdateWaveformData();
+
+        CacheWaveformDetails(
+            startTimeSeconds: startSampleIndex * AudioManager.ARRAY_RESOLUTION,
+            positionTimeSeconds: currentWaveformDataPosition * AudioManager.ARRAY_RESOLUTION,
+            endTimeSeconds: (startSampleIndex + sampleCount) * AudioManager.ARRAY_RESOLUTION
+            );
+
+        Chart.Refresh();
     }
 
-    public void ChangeWaveformSegment()
+    public void CacheWaveformDetails(double startTimeSeconds, double positionTimeSeconds, double endTimeSeconds)
     {
-        // This can use an implicit cast because song position is always rounded to 3 decimal places
-        CurrentWaveformDataPosition = (int)(SongTime.SongPositionSeconds * AudioManager.SAMPLES_PER_SECOND);
+        startTime = startTimeSeconds;
+        endTime = endTimeSeconds;
+        timeShown = endTimeSeconds - startTimeSeconds;
 
-        GenerateWaveformPoints();
+        startTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)startTimeSeconds);
+        songPositionTicks = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)positionTimeSeconds);
+        endTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)endTimeSeconds);
+        ticksShown = endTick - startTick;
     }
 
     /// <summary>
@@ -240,88 +277,6 @@ public class Waveform : MonoBehaviour
     {
         CurrentWaveform = stem;
         GenerateWaveformPoints();
-    }
-
-    #endregion
-
-    #region Properties
-
-    /// <summary>
-    /// Get the start and end second values of the visible waveform segment.
-    /// </summary>
-    /// <param name="startPoint">The first waveform point visible, in seconds.</param>
-    /// <param name="endPoint">The last waveform point visible, in seconds</param>
-    (double, double) GetDisplayedAudio()
-    {
-        var offset = GetStrikelineSamplePosition();
-        // get to bottom of screen, calculate what that waveform position is in seconds
-        var startPoint = (CurrentWaveformDataPosition - offset) * AudioManager.ARRAY_RESOLUTION;
-        // get to bottom of screen, jump to top of screen with samplesPerScreen, calculate what that waveform position is in seconds
-        var endPoint = (CurrentWaveformDataPosition - offset + GetSampleCapacity()) * AudioManager.ARRAY_RESOLUTION;
-
-        return (startPoint, endPoint);
-    }
-
-    public void CacheWaveformDetails()
-    {
-        (startTime, endTime) = GetDisplayedAudio();
-        startTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)startTime);
-        endTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)endTime);
-        songPositionTicks = Chart.SyncTrackInstrument.ConvertSecondsToTickTime(CurrentWaveformDataPosition * (float)AudioManager.ARRAY_RESOLUTION);
-        timeShown = endTime - startTime;
-        ticksShown = endTick - startTick;
-
-        //Debug.Log($"{Time.frameCount}: {startTick}, {endTick}, {timeShown}, {startTime}, {endTime}");
-    }
-
-    protected virtual int GetSampleCapacity()
-    {
-        return Chart.instance.SceneDetails.is2D ? 
-            (int)Mathf.Round(instance.rtHeight / ShrinkFactor) :
-            (int)Mathf.Round(Chart.instance.SceneDetails.HighwayLength / (ShrinkFactor));
-    }
-    protected int GetStrikelineSamplePosition()
-    {
-        return Chart.instance.SceneDetails.is2D ? 
-            (int)Math.Ceiling(GetSampleCapacity() * Strikeline.instance.GetStrikelineProportion()) :
-            (int)Math.Ceiling(GetSampleCapacity() * Strikeline3D.instance.GetStrikelineProportion());
-    }
-
-
-    public static int ticksShown;
-    public static int startTick;
-    public static int songPositionTicks;
-    public static int endTick;
-    public static double timeShown;
-    public static double startTime;
-    public static double endTime;
-
-    /// <summary>
-    /// Caches the current properties of the displayed waveform segment and refreshes data.
-    /// <para>Should be called after generating waveform points.</para>
-    /// </summary>
-    public void UpdateWaveformData()
-    {
-        CacheWaveformDetails();
-
-        Chart.Refresh();
-    }
-
-    public bool Visible
-    {
-        get
-        {
-            return gameObject.activeInHierarchy;
-        }
-        set
-        {
-            gameObject.SetActive(value);
-        }
-    }
-
-    public static double GetWaveformRatio(int tick)
-    {
-        return (Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick) - startTime) / timeShown;
     }
 
     #endregion
