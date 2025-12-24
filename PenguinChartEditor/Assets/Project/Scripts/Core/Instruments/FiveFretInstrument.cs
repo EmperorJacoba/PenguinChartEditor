@@ -1021,6 +1021,7 @@ public class FiveFretInstrument : IInstrument
                         if (tapModifier)
                         {
                             flagType = FiveFretNoteData.FlagType.tap; // tap overrides any hopo/forcing logic
+                            defaultOrientation = false;
                         }
                         else
                         {
