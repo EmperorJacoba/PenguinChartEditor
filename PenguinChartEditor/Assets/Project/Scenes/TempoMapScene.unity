@@ -9261,6 +9261,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e886bc37acec6247b95d55d3e7b218c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentPanel:
+    panelType: 0
+    panelObject: {fileID: 0}
+    correspondingTab: {fileID: 0}
   panels:
   - panelType: 0
     panelObject: {fileID: 1436647938}
@@ -10466,6 +10470,10 @@ PrefabInstance:
       propertyPath: sceneDetails
       value: 
       objectReference: {fileID: 1677505269}
+    - target: {fileID: 55859144864384448, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
+      propertyPath: currentDebugTab
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2408800730247674004, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

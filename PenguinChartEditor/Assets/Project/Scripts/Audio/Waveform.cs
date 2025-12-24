@@ -20,12 +20,12 @@ public class Waveform : MonoBehaviour
     /// <summary>
     /// Line renderer that contains rightward (positive dir) waveform render
     /// </summary>
-    [SerializeField] protected LineRenderer lineRendererMain;
+    LineRenderer lineRendererMain;
 
     /// <summary>
     /// Line renderer that contains leftward (negative dir) waveform render
     /// </summary>
-    [SerializeField] protected LineRenderer lineRendererMirror;
+    LineRenderer lineRendererMirror;
 
     // Note: Line renderer uses local positioning to more easily align with the screen
     // both of these line renderers combine to make a symmetrical waveform
@@ -41,11 +41,6 @@ public class Waveform : MonoBehaviour
     /// </summary>
     private float rtHeight => rt_2DOnly.rect.height;
 
-    /// <summary>
-    /// Panel that is always the size of the bounds of the waveform. Used to set waveform object at right distance from camera/background.
-    /// </summary>
-    [SerializeField] GameObject boundaryReference; // in tempo map, screen 
-
     #endregion
 
     #region Display Options
@@ -59,7 +54,7 @@ public class Waveform : MonoBehaviour
     {
         get
         {
-            return _shrinkFactor;
+            return Chart.instance.SceneDetails.is2D ? _shrinkFactor : _shrinkFactor3Dadjustment;
         }
         set
         {
@@ -69,6 +64,7 @@ public class Waveform : MonoBehaviour
         }
     }
     private static float _shrinkFactor = 0.005f;
+    private static float _shrinkFactor3Dadjustment => _shrinkFactor * 5;
 
     /// <summary>
     /// Where the user is by sample count at the strikeline.
@@ -96,7 +92,7 @@ public class Waveform : MonoBehaviour
     {
         get
         {
-            return _amplitude;
+            return Chart.instance.SceneDetails.is2D ? _amplitude : _amplitude3DAdjustment;
         }
         set
         {
@@ -106,6 +102,7 @@ public class Waveform : MonoBehaviour
         }
     }
     private static float _amplitude = 1;
+    private static float _amplitude3DAdjustment = _amplitude * 5;
 
     /// <summary>
     /// The currently displayed waveform.
@@ -118,6 +115,8 @@ public class Waveform : MonoBehaviour
     protected virtual void Awake()
     {
         instance = this;
+        lineRendererMain = GetComponent<LineRenderer>();
+        lineRendererMirror = gameObject.transform.GetChild(0).GetComponent<LineRenderer>();
 
         // Initial waveform state is made possible by STLM's initial fire
         SongTime.TimeChanged += ChangeWaveformSegment;
@@ -133,13 +132,12 @@ public class Waveform : MonoBehaviour
 
         CurrentWaveform = Chart.Metadata.StemPaths.Keys.First(); // This doesn't matter much b/c waveform is invis by default
         // This is just so that the waveform has something to generate from (avoid bricking program from error)
-        if (wf2D) Init2D();
+        if (Chart.instance.SceneDetails.is2D) Init2D();
     }
-    protected bool wf2D = true;
 
     void Init2D()
     {
-        var boundsRectTransform = boundaryReference.GetComponent<RectTransform>();
+        var boundsRectTransform = (RectTransform)Chart.instance.SceneDetails.highway;
         rt_2DOnly.pivot = boundsRectTransform.pivot;
     }
     #endregion
@@ -188,36 +186,41 @@ public class Waveform : MonoBehaviour
             waveformData = new float[0];
         }
 
-        var sampleCount = samplesPerBoundary;
-        var startSampleIndex = CurrentWaveformDataPosition - strikeSamplePoint;
+        var sampleCount = GetSampleCapacity();
+        var startSampleIndex = CurrentWaveformDataPosition - GetStrikelineSamplePosition();
 
         // each line renderer point is a sample
         lineRendererMain.positionCount = sampleCount;
         lineRendererMirror.positionCount = sampleCount;
-
-        Vector3[] lineRendererPositions = new Vector3[lineRendererMain.positionCount];
-        float yPos = 0;
+        Vector3[] lineRendererPositions = new Vector3[sampleCount];
 
         for (int lineRendererIndex = 0; lineRendererIndex < lineRendererPositions.Length; lineRendererIndex++)
         {
-            yPos = lineRendererIndex * ShrinkFactor;
-            var waveformIndex = startSampleIndex + lineRendererIndex;
+            int waveformIndex = startSampleIndex + lineRendererIndex;
+            float incrementPosition = lineRendererIndex * ShrinkFactor;
 
-            if (waveformIndex < 0 || waveformIndex >= waveformData.Length)
+            float xPosition = 0;
+            if (waveformIndex >= 0 && waveformIndex < waveformData.Length)
             {
-                lineRendererPositions[lineRendererIndex] = new Vector3(0, yPos);
-                continue;
+                xPosition = waveformData[waveformIndex] * Amplitude;
             }
-            lineRendererPositions[lineRendererIndex] = new(waveformData[waveformIndex] * Amplitude, yPos);
+
+            if (Chart.instance.SceneDetails.is2D)
+            {
+                lineRendererPositions[lineRendererIndex] = new(xPosition, incrementPosition);
+            }
+            else
+            {
+                lineRendererPositions[lineRendererIndex] = new(xPosition, 0.01f, incrementPosition);
+            }
         }
 
         lineRendererMain.SetPositions(lineRendererPositions);
 
         // mirror all x positions of every point
-        lineRendererPositions = Array.ConvertAll(lineRendererPositions, pos => new Vector3(-pos.x, pos.y));
+        lineRendererPositions = Array.ConvertAll(lineRendererPositions, pos => new Vector3(-pos.x, pos.y, pos.z));
 
         lineRendererMirror.SetPositions(lineRendererPositions);
-
         UpdateWaveformData();
     }
 
@@ -250,11 +253,11 @@ public class Waveform : MonoBehaviour
     /// <param name="endPoint">The last waveform point visible, in seconds</param>
     (double, double) GetDisplayedAudio()
     {
-        var offset = strikeSamplePoint;
+        var offset = GetStrikelineSamplePosition();
         // get to bottom of screen, calculate what that waveform position is in seconds
         var startPoint = (CurrentWaveformDataPosition - offset) * AudioManager.ARRAY_RESOLUTION;
         // get to bottom of screen, jump to top of screen with samplesPerScreen, calculate what that waveform position is in seconds
-        var endPoint = (CurrentWaveformDataPosition - offset + samplesPerBoundary) * AudioManager.ARRAY_RESOLUTION;
+        var endPoint = (CurrentWaveformDataPosition - offset + GetSampleCapacity()) * AudioManager.ARRAY_RESOLUTION;
 
         return (startPoint, endPoint);
     }
@@ -271,8 +274,20 @@ public class Waveform : MonoBehaviour
         //Debug.Log($"{Time.frameCount}: {startTick}, {endTick}, {timeShown}, {startTime}, {endTime}");
     }
 
-    protected virtual int samplesPerBoundary => (int)Mathf.Round(instance.rtHeight / ShrinkFactor);
-    protected virtual int strikeSamplePoint => (int)Math.Ceiling(samplesPerBoundary * Strikeline.instance.GetStrikelineProportion());
+    protected virtual int GetSampleCapacity()
+    {
+        return Chart.instance.SceneDetails.is2D ? 
+            (int)Mathf.Round(instance.rtHeight / ShrinkFactor) :
+            (int)Mathf.Round(Chart.instance.SceneDetails.HighwayLength / (ShrinkFactor));
+    }
+    protected int GetStrikelineSamplePosition()
+    {
+        return Chart.instance.SceneDetails.is2D ? 
+            (int)Math.Ceiling(GetSampleCapacity() * Strikeline.instance.GetStrikelineProportion()) :
+            (int)Math.Ceiling(GetSampleCapacity() * Strikeline3D.instance.GetStrikelineProportion());
+    }
+
+
     public static int ticksShown;
     public static int startTick;
     public static int songPositionTicks;

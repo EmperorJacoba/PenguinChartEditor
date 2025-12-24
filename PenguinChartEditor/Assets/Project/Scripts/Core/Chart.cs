@@ -138,7 +138,21 @@ public class Chart : MonoBehaviour
         TempoMap,
         Chart
     }
-    public static TabType currentTab;
+
+    // When linking tabs via top banner, the button presses will have to modify this.
+    // Serialize the field ONLY during debug
+    public TabType currentTab
+    {
+        get
+        {
+            return currentDebugTab;
+        }
+        set
+        {
+            currentDebugTab = value;
+        }
+    }
+    [SerializeField] TabType currentDebugTab;
 
     #endregion
 
@@ -176,7 +190,7 @@ public class Chart : MonoBehaviour
 
     public static void Refresh()
     {
-        switch (currentTab)
+        switch (instance.currentTab)
         {
             case TabType.SongSetup:
                 Debug.LogWarning("Song setup tab does not have an update function.");

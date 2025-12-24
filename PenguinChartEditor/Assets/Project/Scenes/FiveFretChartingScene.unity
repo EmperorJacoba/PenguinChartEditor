@@ -14733,14 +14733,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1754544325}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82cc0f39d0b8cc041b3eb084670345eb, type: 3}
+  m_Script: {fileID: 11500000, guid: 738d9bc210d45aa4b81e6a3e70d082a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lineRendererMain: {fileID: 1754544327}
-  lineRendererMirror: {fileID: 1248994117}
   rt_2DOnly: {fileID: 0}
-  boundaryReference: {fileID: 0}
-  highway: {fileID: 2069553715}
 --- !u!120 &1754544327
 LineRenderer:
   serializedVersion: 2
@@ -16746,6 +16742,10 @@ PrefabInstance:
       propertyPath: sceneDetails
       value: 
       objectReference: {fileID: 1455365663}
+    - target: {fileID: 55859144864384448, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
+      propertyPath: currentDebugTab
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2408800730247674004, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

@@ -16,7 +16,8 @@ public class CurrentTimeDisplay : MonoBehaviour
         SongTime.TimeChanged += UpdateSongText;
         TimeInputField.onEndEdit.AddListener(x => PrepTimeEdit(x));
     }
-
+    
+    // Diagnostic: This function takes <0.05ms on average per frame during song playback.
     private void UpdateSongText()
     {
         SongTimestampLabel.text = Chart.SyncTrackInstrument.ConvertSecondsToTimestamp(SongTime.SongPositionSeconds);

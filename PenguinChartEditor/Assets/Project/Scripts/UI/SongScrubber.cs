@@ -17,6 +17,7 @@ public class SongScrubber : MonoBehaviour
         });
     }
     
+    // Diagnostic: This function takes <0.05ms on average per frame during song playback.
     void UpdateSongScrubber()
     {
         scrubber.value = (float)SongTime.SongPositionSeconds / AudioManager.SongLength;
@@ -24,6 +25,7 @@ public class SongScrubber : MonoBehaviour
 
     void UpdateSongTimeFromScrubber(float newPos)
     {
+        // Don't worry about dual updates for a scroll - SongPositionSeconds will not update the scene unless the passed in value is different
         SongTime.SongPositionSeconds = AudioManager.SongLength * scrubber.value;
     }
 }
