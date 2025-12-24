@@ -16,8 +16,16 @@ public class FiveFretSustainSelector : MonoBehaviour
         maxButton.onClick.AddListener(SetMax);
     }
 
-    void SetZero() => Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionSustain(0);
-    void SetMax() => Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionSustain(SongTime.SongLengthTicks);
+    void SetZero()
+    {
+        Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionSustain(0);
+        customSustainInput.text = "";
+    }
+    void SetMax()
+    {
+        Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionSustain(SongTime.SongLengthTicks);
+        customSustainInput.text = "";
+    }
 
     void SetCustomInput(string userInput)
     {
@@ -25,4 +33,6 @@ public class FiveFretSustainSelector : MonoBehaviour
 
         Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionSustain((int)Math.Ceiling(beatsAsFloat * Chart.Resolution));
     }
+
+    public void ActivateCustomInput() => customSustainInput.ActivateInputField();
 }

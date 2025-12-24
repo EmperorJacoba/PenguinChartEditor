@@ -6,7 +6,8 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
     InputMap inputMap;
     [SerializeField] TMP_Dropdown modifierDropdown;
     [SerializeField] ExtendedSustainController esc;
-    [SerializeField] FiveFretSustainController ffsc;
+    [SerializeField] FiveFretSustainController noteFFSC;
+    [SerializeField] FiveFretSustainSelector selectionFFSC;
     private void Awake()
     {
         inputMap = new();
@@ -17,15 +18,36 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
             FiveFretNotePreviewer.openNoteEditing = !FiveFretNotePreviewer.openNoteEditing;
             UpdatePreviewer?.Invoke();
         };
+
         inputMap.Charting.ForceTap.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.tap);
         inputMap.Charting.ForceStrum.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.strum);
         inputMap.Charting.ForceHopo.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.hopo);
         inputMap.Charting.ForceDefault.performed += x => ChangeModifier(FiveFretNotePreviewer.NoteOption.natural);
 
-        inputMap.Charting.SustainMax.performed += x => SetPreviewerSustain(SongTime.SongLengthTicks);
-        inputMap.Charting.SustainZero.performed += x => SetPreviewerSustain(0);
+        inputMap.Charting.SustainMax.performed += x => SetCurrentSustain(SongTime.SongLengthTicks);
+        inputMap.Charting.SustainZero.performed += x => SetCurrentSustain(0);
+        inputMap.Charting.SustainCustom.performed += x =>
+        {
+            if (Chart.GetActiveInstrument<FiveFretInstrument>().IsSelectionEmpty())
+            {
+                noteFFSC.ActivateCustomInput();
+            }
+            else
+            {
+                selectionFFSC.ActivateCustomInput();
+            }
+        };
+
         inputMap.Charting.SustainExtended.performed += x => esc.SetExtendedSustains(!UserSettings.ExtSustains);
-        inputMap.Charting.SustainCustom.performed += x => ffsc.ActivateCustomInput();
+
+        inputMap.Charting.SetLane0.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.open);
+        inputMap.Charting.SetLane1.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.green);
+        inputMap.Charting.SetLane2.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.red);
+        inputMap.Charting.SetLane3.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.yellow);
+        inputMap.Charting.SetLane4.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.blue);
+        inputMap.Charting.SetLane5.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.orange);
+
+        inputMap.Charting.SetEqualSpacing.performed += x => Chart.GetActiveInstrument<FiveFretInstrument>().SetEqualSpacing();
     }
 
     public delegate void UpdatePreviewerDelegate();
@@ -33,16 +55,61 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
 
     public void ChangeModifier(FiveFretNotePreviewer.NoteOption newMode)
     {
+        var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
+        if (!instrument.IsSelectionEmpty())
+        {
+            if (newMode == FiveFretNotePreviewer.NoteOption.natural)
+            {
+                instrument.NaturalizeSelection();
+                return;
+            }
+            instrument.SetSelectionToFlag(MatchNoteModeToFlagType(newMode));
+            return;
+        }
+
         if (newMode == FiveFretNotePreviewer.currentPlacementMode) return;
+
         modifierDropdown.value = (int)newMode;
         FiveFretNotePreviewer.currentPlacementMode = newMode;
         UpdatePreviewer?.Invoke();
     }
 
-    public void SetPreviewerSustain(int ticks)
+    public FiveFretNoteData.FlagType MatchNoteModeToFlagType(FiveFretNotePreviewer.NoteOption mode)
     {
+        return mode switch
+        {
+            FiveFretNotePreviewer.NoteOption.tap => FiveFretNoteData.FlagType.tap,
+            FiveFretNotePreviewer.NoteOption.strum => FiveFretNoteData.FlagType.strum,
+            FiveFretNotePreviewer.NoteOption.hopo => FiveFretNoteData.FlagType.hopo,
+            _ => throw new System.Exception("Invalid mode <=> flag match")
+        };
+    }
+
+    public void SetCurrentSustain(int ticks)
+    {
+        var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
+        if (!instrument.IsSelectionEmpty())
+        {
+            instrument.SetSelectionSustain(ticks);
+            return;
+        }
+
         FiveFretNotePreviewer.defaultSustain = ticks;
-        ffsc.ClearInput();
+        noteFFSC.ClearInput();
         UpdatePreviewer?.Invoke();
+    }
+
+    void ActivateCustomInput()
+    {
+        var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
+
+
+    }
+
+    public void SetSelectionLane(FiveFretInstrument.LaneOrientation lane)
+    {
+        var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
+
+        instrument.SetSelectionToNewLane(lane);
     }
 }

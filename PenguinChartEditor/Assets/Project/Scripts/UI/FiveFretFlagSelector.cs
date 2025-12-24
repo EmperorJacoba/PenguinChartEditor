@@ -16,7 +16,7 @@ public class FiveFretFlagSelector : MonoBehaviour
     [SerializeField] bool naturalize;
     [SerializeField] FiveFretNoteData.FlagType flag;
 
-    void HandleClick()
+    public void HandleClick()
     {
         if (naturalize)
         {

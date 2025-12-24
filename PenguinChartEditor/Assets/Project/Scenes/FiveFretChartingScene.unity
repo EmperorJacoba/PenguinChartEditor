@@ -2258,7 +2258,6 @@ RectTransform:
   m_Children:
   - {fileID: 722697834}
   - {fileID: 1629716993}
-  - {fileID: 727410294}
   m_Father: {fileID: 1426883440}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -3293,6 +3292,7 @@ MonoBehaviour:
   strumTopper: {fileID: 318558674}
   tapTopper: {fileID: 1762839944}
   headBorder: {fileID: 318558675}
+  noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &325951982
 Transform:
@@ -4485,6 +4485,7 @@ MonoBehaviour:
   strumTopper: {fileID: 1617354165}
   tapTopper: {fileID: 115712183}
   headBorder: {fileID: 0}
+  noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &550080833
 Transform:
@@ -4907,6 +4908,7 @@ MonoBehaviour:
   strumTopper: {fileID: 1970270121}
   tapTopper: {fileID: 1384313243}
   headBorder: {fileID: 1970270122}
+  noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &643972406
 Transform:
@@ -5853,12 +5855,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 727410293}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 233214821}
+  m_Father: {fileID: 1426883440}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5879,7 +5881,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modifierDropdown: {fileID: 1485619529}
   esc: {fileID: 1601505626}
-  ffsc: {fileID: 933821452}
+  noteFFSC: {fileID: 933821452}
+  selectionFFSC: {fileID: 152625775}
 --- !u!1 &727998514
 GameObject:
   m_ObjectHideFlags: 0
@@ -11294,6 +11297,7 @@ RectTransform:
   - {fileID: 5002134954542621794}
   - {fileID: 233214821}
   - {fileID: 120204154}
+  - {fileID: 727410294}
   m_Father: {fileID: 1387491383}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
@@ -14683,6 +14687,7 @@ MonoBehaviour:
   strumTopper: {fileID: 31935546}
   tapTopper: {fileID: 929660217}
   headBorder: {fileID: 31935547}
+  noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &1731475917
 Transform:
@@ -16848,6 +16853,7 @@ MonoBehaviour:
   strumTopper: {fileID: 1300252272}
   tapTopper: {fileID: 724554002}
   headBorder: {fileID: 1300252273}
+  noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &2006768578
 Transform:
@@ -17635,6 +17641,7 @@ MonoBehaviour:
   strumTopper: {fileID: 950197693}
   tapTopper: {fileID: 1663395485}
   headBorder: {fileID: 950197694}
+  noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &2117541872
 Transform:

@@ -334,6 +334,87 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""SetLane0"",
+                    ""type"": ""Button"",
+                    ""id"": ""98d9727a-8382-4ca7-8b3e-7d29e49d5872"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLane1"",
+                    ""type"": ""Button"",
+                    ""id"": ""961ecf0d-b0f8-479e-94f7-170b4d2c2a2e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLane2"",
+                    ""type"": ""Button"",
+                    ""id"": ""a061ab4b-6250-4969-87e2-c6d8a5b21443"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLane3"",
+                    ""type"": ""Button"",
+                    ""id"": ""4cb33396-dcbb-4830-900c-288c4bd919df"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLane4"",
+                    ""type"": ""Button"",
+                    ""id"": ""92ffa0f7-085b-412b-aefd-3d7f530d84ca"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLane5"",
+                    ""type"": ""Button"",
+                    ""id"": ""71179573-2e66-4c96-8456-786b5aae49ce"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLane6"",
+                    ""type"": ""Button"",
+                    ""id"": ""af57ab11-98df-4393-af93-7da9b91e3c24"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLane7"",
+                    ""type"": ""Button"",
+                    ""id"": ""358d6d18-0a78-44d8-84fd-e982a4426489"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetEqualSpacing"",
+                    ""type"": ""Button"",
+                    ""id"": ""8cbfc83d-6879-4459-9c4c-31c82122c8f8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -952,6 +1033,105 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""action"": ""XYDrag"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b1348f51-e4a5-48fc-8860-e1273486ae18"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLane0"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""431a09d7-2057-489a-9fd3-f7efe53c8911"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLane1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""31890511-271e-4fa7-ab67-679ea4a7bdcf"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLane2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9a8e5fc0-6ffe-4f74-8fa1-6b9e2cb71b24"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLane3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6e660699-715d-4c31-8143-b9cdb0b58a3d"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLane4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0cce7c88-4c19-4e9c-9e15-91febeafd06d"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLane5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2aa3592b-015d-402a-94ec-ec63f7d28060"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLane6"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9e8c4cb0-fd4d-4227-a448-9d44b6bf933c"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLane7"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0fdb877c-b4f5-4742-9f7d-e9be06a05b25"",
+                    ""path"": ""<Keyboard>/equals"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetEqualSpacing"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -2230,6 +2410,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_SustainCustom = m_Charting.FindAction("SustainCustom", throwIfNotFound: true);
         m_Charting_SustainExtended = m_Charting.FindAction("SustainExtended", throwIfNotFound: true);
         m_Charting_XYDrag = m_Charting.FindAction("XYDrag", throwIfNotFound: true);
+        m_Charting_SetLane0 = m_Charting.FindAction("SetLane0", throwIfNotFound: true);
+        m_Charting_SetLane1 = m_Charting.FindAction("SetLane1", throwIfNotFound: true);
+        m_Charting_SetLane2 = m_Charting.FindAction("SetLane2", throwIfNotFound: true);
+        m_Charting_SetLane3 = m_Charting.FindAction("SetLane3", throwIfNotFound: true);
+        m_Charting_SetLane4 = m_Charting.FindAction("SetLane4", throwIfNotFound: true);
+        m_Charting_SetLane5 = m_Charting.FindAction("SetLane5", throwIfNotFound: true);
+        m_Charting_SetLane6 = m_Charting.FindAction("SetLane6", throwIfNotFound: true);
+        m_Charting_SetLane7 = m_Charting.FindAction("SetLane7", throwIfNotFound: true);
+        m_Charting_SetEqualSpacing = m_Charting.FindAction("SetEqualSpacing", throwIfNotFound: true);
         // ExternalCharting
         m_ExternalCharting = asset.FindActionMap("ExternalCharting", throwIfNotFound: true);
         m_ExternalCharting_IncreaseStep = m_ExternalCharting.FindAction("IncreaseStep", throwIfNotFound: true);
@@ -2372,6 +2561,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_SustainCustom;
     private readonly InputAction m_Charting_SustainExtended;
     private readonly InputAction m_Charting_XYDrag;
+    private readonly InputAction m_Charting_SetLane0;
+    private readonly InputAction m_Charting_SetLane1;
+    private readonly InputAction m_Charting_SetLane2;
+    private readonly InputAction m_Charting_SetLane3;
+    private readonly InputAction m_Charting_SetLane4;
+    private readonly InputAction m_Charting_SetLane5;
+    private readonly InputAction m_Charting_SetLane6;
+    private readonly InputAction m_Charting_SetLane7;
+    private readonly InputAction m_Charting_SetEqualSpacing;
     /// <summary>
     /// Provides access to input actions defined in input action map "Charting".
     /// </summary>
@@ -2492,6 +2690,42 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @XYDrag => m_Wrapper.m_Charting_XYDrag;
         /// <summary>
+        /// Provides access to the underlying input action "Charting/SetLane0".
+        /// </summary>
+        public InputAction @SetLane0 => m_Wrapper.m_Charting_SetLane0;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SetLane1".
+        /// </summary>
+        public InputAction @SetLane1 => m_Wrapper.m_Charting_SetLane1;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SetLane2".
+        /// </summary>
+        public InputAction @SetLane2 => m_Wrapper.m_Charting_SetLane2;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SetLane3".
+        /// </summary>
+        public InputAction @SetLane3 => m_Wrapper.m_Charting_SetLane3;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SetLane4".
+        /// </summary>
+        public InputAction @SetLane4 => m_Wrapper.m_Charting_SetLane4;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SetLane5".
+        /// </summary>
+        public InputAction @SetLane5 => m_Wrapper.m_Charting_SetLane5;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SetLane6".
+        /// </summary>
+        public InputAction @SetLane6 => m_Wrapper.m_Charting_SetLane6;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SetLane7".
+        /// </summary>
+        public InputAction @SetLane7 => m_Wrapper.m_Charting_SetLane7;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/SetEqualSpacing".
+        /// </summary>
+        public InputAction @SetEqualSpacing => m_Wrapper.m_Charting_SetEqualSpacing;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Charting; }
@@ -2598,6 +2832,33 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @XYDrag.started += instance.OnXYDrag;
             @XYDrag.performed += instance.OnXYDrag;
             @XYDrag.canceled += instance.OnXYDrag;
+            @SetLane0.started += instance.OnSetLane0;
+            @SetLane0.performed += instance.OnSetLane0;
+            @SetLane0.canceled += instance.OnSetLane0;
+            @SetLane1.started += instance.OnSetLane1;
+            @SetLane1.performed += instance.OnSetLane1;
+            @SetLane1.canceled += instance.OnSetLane1;
+            @SetLane2.started += instance.OnSetLane2;
+            @SetLane2.performed += instance.OnSetLane2;
+            @SetLane2.canceled += instance.OnSetLane2;
+            @SetLane3.started += instance.OnSetLane3;
+            @SetLane3.performed += instance.OnSetLane3;
+            @SetLane3.canceled += instance.OnSetLane3;
+            @SetLane4.started += instance.OnSetLane4;
+            @SetLane4.performed += instance.OnSetLane4;
+            @SetLane4.canceled += instance.OnSetLane4;
+            @SetLane5.started += instance.OnSetLane5;
+            @SetLane5.performed += instance.OnSetLane5;
+            @SetLane5.canceled += instance.OnSetLane5;
+            @SetLane6.started += instance.OnSetLane6;
+            @SetLane6.performed += instance.OnSetLane6;
+            @SetLane6.canceled += instance.OnSetLane6;
+            @SetLane7.started += instance.OnSetLane7;
+            @SetLane7.performed += instance.OnSetLane7;
+            @SetLane7.canceled += instance.OnSetLane7;
+            @SetEqualSpacing.started += instance.OnSetEqualSpacing;
+            @SetEqualSpacing.performed += instance.OnSetEqualSpacing;
+            @SetEqualSpacing.canceled += instance.OnSetEqualSpacing;
         }
 
         /// <summary>
@@ -2690,6 +2951,33 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @XYDrag.started -= instance.OnXYDrag;
             @XYDrag.performed -= instance.OnXYDrag;
             @XYDrag.canceled -= instance.OnXYDrag;
+            @SetLane0.started -= instance.OnSetLane0;
+            @SetLane0.performed -= instance.OnSetLane0;
+            @SetLane0.canceled -= instance.OnSetLane0;
+            @SetLane1.started -= instance.OnSetLane1;
+            @SetLane1.performed -= instance.OnSetLane1;
+            @SetLane1.canceled -= instance.OnSetLane1;
+            @SetLane2.started -= instance.OnSetLane2;
+            @SetLane2.performed -= instance.OnSetLane2;
+            @SetLane2.canceled -= instance.OnSetLane2;
+            @SetLane3.started -= instance.OnSetLane3;
+            @SetLane3.performed -= instance.OnSetLane3;
+            @SetLane3.canceled -= instance.OnSetLane3;
+            @SetLane4.started -= instance.OnSetLane4;
+            @SetLane4.performed -= instance.OnSetLane4;
+            @SetLane4.canceled -= instance.OnSetLane4;
+            @SetLane5.started -= instance.OnSetLane5;
+            @SetLane5.performed -= instance.OnSetLane5;
+            @SetLane5.canceled -= instance.OnSetLane5;
+            @SetLane6.started -= instance.OnSetLane6;
+            @SetLane6.performed -= instance.OnSetLane6;
+            @SetLane6.canceled -= instance.OnSetLane6;
+            @SetLane7.started -= instance.OnSetLane7;
+            @SetLane7.performed -= instance.OnSetLane7;
+            @SetLane7.canceled -= instance.OnSetLane7;
+            @SetEqualSpacing.started -= instance.OnSetEqualSpacing;
+            @SetEqualSpacing.performed -= instance.OnSetEqualSpacing;
+            @SetEqualSpacing.canceled -= instance.OnSetEqualSpacing;
         }
 
         /// <summary>
@@ -3525,6 +3813,69 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnXYDrag(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SetLane0" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSetLane0(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SetLane1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSetLane1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SetLane2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSetLane2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SetLane3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSetLane3(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SetLane4" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSetLane4(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SetLane5" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSetLane5(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SetLane6" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSetLane6(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SetLane7" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSetLane7(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SetEqualSpacing" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSetEqualSpacing(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ExternalCharting" which allows adding and removing callbacks.
