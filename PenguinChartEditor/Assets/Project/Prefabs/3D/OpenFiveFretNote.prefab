@@ -252,6 +252,7 @@ MonoBehaviour:
   strumTopper: {fileID: 6465600504821105427}
   tapTopper: {fileID: 3608994770172177623}
   headBorder: {fileID: 0}
+  noteBase: {fileID: 3711626513503879828}
   noteModel: {fileID: 7426812169962370380}
   previewer: 0
 --- !u!65 &5105991374100904059
@@ -626,6 +627,11 @@ PrefabInstance:
       addedObject: {fileID: 3841298029593723022}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
+--- !u!23 &3711626513503879828 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2859109400176981367, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
+  m_PrefabInstance: {fileID: 7768779177010563101}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6465600504821105427 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -5590564834978018546, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}

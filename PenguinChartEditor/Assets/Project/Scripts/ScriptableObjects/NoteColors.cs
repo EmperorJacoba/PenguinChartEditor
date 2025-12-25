@@ -26,6 +26,8 @@ public class NoteColors : ScriptableObject
     [SerializeField] Material tapBorderColor;
     [SerializeField] Material previewerColor;
     [SerializeField] Material previewerTapColor;
+    [SerializeField] Material defaultBaseColor;
+    [SerializeField] Material nonDefaultBaseColor;
 
     public Material GetHeadColor(bool tap)
     {
@@ -36,6 +38,11 @@ public class NoteColors : ScriptableObject
     public Material GetPreviewerMat(bool tap)
     {
         return tap ? previewerTapColor : previewerColor;
+    }
+
+    public Material GetBaseColor(bool @default)
+    {
+        return @default ? defaultBaseColor : nonDefaultBaseColor;
     }
 }
 

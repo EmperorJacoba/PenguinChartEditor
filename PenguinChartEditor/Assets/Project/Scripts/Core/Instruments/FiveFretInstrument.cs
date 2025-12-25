@@ -133,7 +133,6 @@ public class FiveFretInstrument : IInstrument
         inputMap = new();
         inputMap.Enable();
 
-        inputMap.Charting.ForceTap.performed += x => ToggleTaps();
         inputMap.Charting.XYDrag.performed += x => MoveSelection();
         inputMap.Charting.LMB.canceled += x => CompleteMove();
         inputMap.Charting.Delete.performed += x => DeleteSelection();
@@ -273,6 +272,20 @@ public class FiveFretInstrument : IInstrument
         }
 
         Lanes.ClearAllSelections();
+    }
+
+    public void AddData(int tick, LaneOrientation lane, FiveFretNoteData data)
+    {
+        var activeLane = Lanes.GetLane((int)lane);            
+        activeLane[tick] = data;
+
+        UpdateTickDataToMatch(tick, data);
+
+        CheckForHopos(lane, tick);
+        ClampSustainsBefore(tick, lane);
+        ClearAllSelections();
+
+        Chart.Refresh();
     }
 
     #endregion
@@ -427,20 +440,18 @@ public class FiveFretInstrument : IInstrument
 
     public void NaturalizeSelection()
     {
-        var currentSelection = Lanes.GetTotalSelectionByLane();
         var totalSelectionSet = Lanes.GetTotalSelection();
 
         if (totalSelectionSet.Count == 0) return;
 
         for (int i = 0; i < Lanes.Count; i++)
         {
-            var laneSelection = currentSelection[i];
-            if (laneSelection.Count == 0) continue;
-
             var changingLane = Lanes.GetLane(i);
 
-            foreach (var selectedNote in laneSelection)
+            foreach (var selectedNote in totalSelectionSet)
             {
+                if (!changingLane.Contains(selectedNote)) continue;
+
                 var tickData = changingLane[selectedNote];
 
                 // strum will be overwritten by the check at the end of this function
@@ -462,17 +473,17 @@ public class FiveFretInstrument : IInstrument
 
     public void SetSelectionToFlag(FiveFretNoteData.FlagType flag)
     {
-        var currentSelection = Lanes.GetTotalSelectionByLane();
+        var currentSelection = Lanes.GetTotalSelection();
+        if (currentSelection.Count == 0) return;
 
         for (int i = 0; i < Lanes.Count; i++)
         {
-            var laneSelection = currentSelection[i];
-            if (laneSelection.Count == 0) continue;
-
             var changingLane = Lanes.GetLane(i);
 
-            foreach (var selectedNote in laneSelection)
+            foreach (var selectedNote in currentSelection)
             {
+                if (!changingLane.Contains(selectedNote)) continue;
+
                 var tickData = changingLane[selectedNote];
                 changingLane[selectedNote] = new FiveFretNoteData(tickData.Sustain, flag, false);
             }
@@ -546,24 +557,67 @@ public class FiveFretInstrument : IInstrument
     #region Flag Changes
     void ChangeTickFlag(int targetTick, int previousTick, FiveFretNoteData.FlagType flag)
     {
+        if (flag == FiveFretNoteData.FlagType.tap)
+        {
+            SetAllEventsAtTickTo(targetTick, flag);
+            return;
+        }
+
         bool isLastTickChord = Lanes.IsTickChord(previousTick);
         bool isCurrentTickChord = Lanes.IsTickChord(targetTick);
-        bool settingToTap = flag == FiveFretNoteData.FlagType.tap;
 
         for (int i = 0; i < Lanes.Count; i++)
         {
             var lane = Lanes.GetLane(i);
             if (!lane.Contains(targetTick)) continue;
-            if (!lane[targetTick].Default) break;
 
-            if (((!isLastTickChord && lane.Contains(previousTick)) || isCurrentTickChord) && !settingToTap)
+            if (((!isLastTickChord && lane.Contains(previousTick)) || isCurrentTickChord))
             {
                 flag = FiveFretNoteData.FlagType.strum;
+                break;
             }
+        }
+        SetAllEventsAtTickTo(targetTick, flag);
+    }
 
-            if (lane[targetTick].Flag != flag)
+    void ChangeTickFlag(int targetTick, int previousTick, LaneOrientation targetLane, FiveFretNoteData.FlagType flag)
+    {
+        if (!Lanes.GetLane((int)targetLane).Contains(targetTick))
+        {
+            if (!IsTickDefault(targetTick)) 
             {
-                lane[targetTick] = lane[targetTick].ExportWithNewFlag(flag);
+                ChangeTickFlag(targetTick, previousTick, flag);
+            }
+            return;
+        }
+        var targetData = Lanes.GetLane((int)targetLane)[targetTick];
+
+        if (!targetData.Default) SetAllEventsAtTickTo(targetTick, targetData.Flag);
+        else ChangeTickFlag(targetTick, previousTick, flag);
+    }
+
+    void UpdateTickDataToMatch(int tick, FiveFretNoteData data)
+    {
+        var @default = data.Default;
+        var flag = data.Flag;
+
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var activeLane = Lanes.GetLane(i);
+            if (!activeLane.Contains(tick)) continue;
+            var sustain = UserSettings.ExtSustains ? activeLane[tick].Sustain : data.Sustain;
+            activeLane[tick] = new FiveFretNoteData(sustain, flag, @default);
+        }
+    }
+
+    void SetAllEventsAtTickTo(int targetTick, FiveFretNoteData.FlagType flag)
+    {
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var currentLane = Lanes.GetLane(i);
+            if (currentLane.Contains(targetTick))
+            {
+                currentLane[targetTick] = currentLane[targetTick].ExportWithNewFlag(flag);
             }
         }
     }
@@ -824,7 +878,6 @@ public class FiveFretInstrument : IInstrument
         bool nextTickHopo = false;
         bool currentTickHopo = false;
         bool changedTickExists = Lanes.AnyLaneContainsTick(changedTick);
-        bool changedTickChord = changedTickExists ? Lanes.IsTickChord(changedTick) : false; // optimize?
 
         var ticks = Lanes.GetTickEventBounds(changedTick); // biggest bottleneck here btw
 
@@ -834,23 +887,17 @@ public class FiveFretInstrument : IInstrument
         if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
             changedTick - ticks.prev < Chart.hopoCutoff) currentTickHopo = true;
 
-        if (activeLane.Contains(changedTick))
+        if (IsTickNaturallyChangable(changedTick))
         {
-            var parameterLaneTickData = activeLane[changedTick];
-            if (!parameterLaneTickData.Default ||
-                parameterLaneTickData.Flag == FiveFretNoteData.FlagType.tap)
-            {
-                currentTickHopo = false;
-            }
+            var flag = currentTickHopo ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
+            ChangeTickFlag(changedTick, ticks.prev, lane, flag);
         }
 
-        var flag = currentTickHopo ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-        ChangeTickFlag(changedTick, ticks.prev, flag);
-
-        if (IsTickTap(ticks.next)) return;
-        var nextFlag = nextTickHopo && changedTickExists ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-
-        ChangeTickFlag(ticks.next, changedTick, nextFlag);
+        if (IsTickNaturallyChangable(ticks.next))
+        {
+            var nextFlag = nextTickHopo && changedTickExists ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
+            ChangeTickFlag(ticks.next, changedTick, nextFlag);
+        }
     }
 
     public void CheckForHoposInRange(int startTick, int endTick)
@@ -875,7 +922,10 @@ public class FiveFretInstrument : IInstrument
         for (int i = startIndex; i <= endIndex; i++)
         {
             if (i < 0 || i >= uniqueTicks.Count) continue;
+
             var currentTick = uniqueTicks[i];
+
+            if (!IsTickNaturallyChangable(currentTick)) continue;
 
             var prevTick = i != 0 ? uniqueTicks[i - 1] : -Chart.hopoCutoff;
 
@@ -942,6 +992,32 @@ public class FiveFretInstrument : IInstrument
             }
         }
         return false;
+    }
+
+    public bool IsTickDefault(int tick)
+    {
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var lane = Lanes.GetLane(i);
+            if (!lane.Contains(tick)) continue;
+            if (!lane[tick].Default) return false;
+        }
+        return true;
+    }
+
+    public bool IsTickNaturallyChangable(int tick)
+    {
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var lane = Lanes.GetLane(i);
+            if (!lane.Contains(tick)) continue;
+
+            if (lane[tick].Flag == FiveFretNoteData.FlagType.tap || !lane[tick].Default)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     #endregion

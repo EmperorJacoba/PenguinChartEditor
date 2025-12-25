@@ -20,6 +20,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     [SerializeField] GameObject strumTopper;
     [SerializeField] GameObject tapTopper;
     [SerializeField] MeshRenderer headBorder;
+    [SerializeField] MeshRenderer noteBase;
     [SerializeField] GameObject noteModel;
     [SerializeField] bool previewer;
 
@@ -100,6 +101,19 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
     bool _isTap = false;
 
+    public bool IsDefault
+    {
+        get => _isDefault;
+        set
+        {
+            if (_isDefault == value) return;
+
+            noteBase.material = colors.GetBaseColor(value);
+            _isDefault = value;
+        }
+    }
+    bool _isDefault = true;
+
     public override IInstrument ParentInstrument => chartInstrument;
 
     public void InitializeEvent(int tick, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer, bool asSustainOnly)
@@ -121,6 +135,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         var tickData = LaneData[tick];
         IsHopo = (tickData.Flag == FiveFretNoteData.FlagType.hopo);
         IsTap = (tickData.Flag == FiveFretNoteData.FlagType.tap);
+        IsDefault = tickData.Default;
     }
     public float XCoordinate => Chart.instance.SceneDetails.GetCenterXCoordinateFromLane((int)laneIdentifier);
 

@@ -2049,6 +2049,11 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 350}
   m_SizeDelta: {x: 340, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!23 &223767550 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2859109400176981367, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
+  m_PrefabInstance: {fileID: 1617354163}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &227389401
 GameObject:
   m_ObjectHideFlags: 0
@@ -3292,6 +3297,7 @@ MonoBehaviour:
   strumTopper: {fileID: 318558674}
   tapTopper: {fileID: 1762839944}
   headBorder: {fileID: 318558675}
+  noteBase: {fileID: 1044010542}
   noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &325951982
@@ -4485,6 +4491,7 @@ MonoBehaviour:
   strumTopper: {fileID: 1617354165}
   tapTopper: {fileID: 115712183}
   headBorder: {fileID: 0}
+  noteBase: {fileID: 223767550}
   noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &550080833
@@ -4908,6 +4915,7 @@ MonoBehaviour:
   strumTopper: {fileID: 1970270121}
   tapTopper: {fileID: 1384313243}
   headBorder: {fileID: 1970270122}
+  noteBase: {fileID: 841094556}
   noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &643972406
@@ -7719,6 +7727,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1991279692}
   m_SourcePrefab: {fileID: 100100000, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
+--- !u!23 &841094556 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2859109400176981367, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+  m_PrefabInstance: {fileID: 1970270119}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &873217980
 GameObject:
   m_ObjectHideFlags: 0
@@ -7794,6 +7807,16 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 873217980}
   m_CullTransparentMesh: 1
+--- !u!23 &910385623 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2859109400176981367, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+  m_PrefabInstance: {fileID: 1300252270}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &915255297 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2859109400176981367, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+  m_PrefabInstance: {fileID: 31935544}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &929660217
 GameObject:
   m_ObjectHideFlags: 0
@@ -8531,6 +8554,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1005502235}
   m_CullTransparentMesh: 1
+--- !u!23 &1044010542 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2859109400176981367, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+  m_PrefabInstance: {fileID: 318558672}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1044604972
 GameObject:
   m_ObjectHideFlags: 0
@@ -12388,6 +12416,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1512199337}
   m_Mesh: {fileID: -6242890028839439520, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
+--- !u!23 &1519217533 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2859109400176981367, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+  m_PrefabInstance: {fileID: 950197691}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1526032054
 GameObject:
   m_ObjectHideFlags: 0
@@ -14687,6 +14720,7 @@ MonoBehaviour:
   strumTopper: {fileID: 31935546}
   tapTopper: {fileID: 929660217}
   headBorder: {fileID: 31935547}
+  noteBase: {fileID: 915255297}
   noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &1731475917
@@ -16853,6 +16887,7 @@ MonoBehaviour:
   strumTopper: {fileID: 1300252272}
   tapTopper: {fileID: 724554002}
   headBorder: {fileID: 1300252273}
+  noteBase: {fileID: 910385623}
   noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &2006768578
@@ -17641,6 +17676,7 @@ MonoBehaviour:
   strumTopper: {fileID: 950197693}
   tapTopper: {fileID: 1663395485}
   headBorder: {fileID: 950197694}
+  noteBase: {fileID: 1519217533}
   noteModel: {fileID: 0}
   previewer: 1
 --- !u!4 &2117541872

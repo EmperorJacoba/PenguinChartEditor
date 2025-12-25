@@ -58,6 +58,7 @@ MonoBehaviour:
   strumTopper: {fileID: 733948240046889302}
   tapTopper: {fileID: 8296133385676001322}
   headBorder: {fileID: 8944626348164949058}
+  noteBase: {fileID: 6109137202553181981}
   noteModel: {fileID: 25628640989143237}
   previewer: 0
 --- !u!65 &1592677647469395967
@@ -518,6 +519,11 @@ Transform:
 --- !u!23 &1639979275541850618 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1898272445544690798, guid: 715f8556dc375704685742a5340c50c8, type: 3}
+  m_PrefabInstance: {fileID: 908149107006561684}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6109137202553181981 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2859109400176981367, guid: 715f8556dc375704685742a5340c50c8, type: 3}
   m_PrefabInstance: {fileID: 908149107006561684}
   m_PrefabAsset: {fileID: 0}
 --- !u!23 &8944626348164949058 stripped

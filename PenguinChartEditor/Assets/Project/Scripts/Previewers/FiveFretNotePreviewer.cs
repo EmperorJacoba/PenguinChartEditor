@@ -62,11 +62,13 @@ public class FiveFretNotePreviewer : Previewer
         {
             note.IsHopo = note.chartInstrument.PreviewTickHopo(lane.laneIdentifier, Tick);
             note.IsTap = false;
+            note.IsDefault = true;
         }
         else
         {
             note.IsHopo = currentPlacementMode == NoteOption.hopo;
             note.IsTap = currentPlacementMode == NoteOption.tap;
+            note.IsDefault = false;
         }
 
         note.Visible = IsWithinRange(hitPosition);
@@ -126,20 +128,14 @@ public class FiveFretNotePreviewer : Previewer
             Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(Tick + AppliedSustain) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(Tick) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
             0 : AppliedSustain;
 
-        note.CreateEvent(
+        Chart.GetActiveInstrument<FiveFretInstrument>().AddData(
             Tick,
+            note.laneIdentifier,
             new FiveFretNoteData(
                 sustain,
                 MapPlacementModeToFlag(),
                 currentPlacementMode == NoteOption.natural
                 )
             );
-
-        // this takes care of non-extended sustain calculations too
-        note.chartInstrument.ClampSustainsBefore(Tick, lane.laneIdentifier);
-
-        // make sure to update other events in the lane so that they are all the same type (hopo/strum/tap)
-
-        note.chartInstrument.Lanes.ClearAllSelections();
     }
 }

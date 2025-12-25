@@ -29,3 +29,5 @@ MonoBehaviour:
   tapBorderColor: {fileID: 2100000, guid: 79f68782faacc584eb653b44221fe7a1, type: 2}
   previewerColor: {fileID: 2100000, guid: 1d18b3d80e7899f4397e7e216a468248, type: 2}
   previewerTapColor: {fileID: 2100000, guid: 223f6f4ffc56d7643b985e941a22c37f, type: 2}
+  defaultBaseColor: {fileID: 2100000, guid: c9ea49d8024d3f043a0296a6e48bd4f3, type: 2}
+  nonDefaultBaseColor: {fileID: 2100000, guid: 51b8ac8e455cf4c4688671b2fe069b0a, type: 2}
