@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// This is a GameObject that MUST exist in every scene. Provides abstractions for things like highway length, cursor highway proportion, etc.
+/// </summary>
 public class SceneDetails : MonoBehaviour
 {
     public SceneType currentScene;
@@ -72,7 +75,7 @@ public class SceneDetails : MonoBehaviour
     {
         if (currentScene == SceneType.fiveFretChart)
         {
-            // Isolated algebraically & through testing. Works for any x coordinate.
+            // Isolated algebraically & through testing. Works for any x coordinate on the highway (secret or visible).
             return (int)Mathf.Floor((xCoordinate - highwayLeftEndCoordinate) / laneWidth);
         }
         throw new System.Exception("Error when matching X coordinate to a lane. Cursor is within highway bounds but not within a lane.");
@@ -127,7 +130,6 @@ public class SceneDetails : MonoBehaviour
     {
         if (is2D)
         {
-            Debug.LogWarning("If you are attempting to use this function for vocal editing, the current code does not account for 2D lane positions.");
             return Input.mousePosition.y / Screen.height;
         }
 

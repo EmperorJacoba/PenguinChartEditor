@@ -14,16 +14,14 @@ public class TSPreviewer : Previewer
         instance = this;
     }
 
-    public override void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    public override void UpdatePosition()
     {
-        if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) { Hide(); return; }
-
-        Tick = SongTime.CalculateGridSnappedTick(percentOfScreenVertical);
+        Tick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
         tsLabel.UpdatePosition(Waveform.GetWaveformRatio(Tick), boundaryReference.rect.height);
 
         // only call this function when cursor is within certain range?
         // takes the functionality out of this function
-        if (percentOfScreenHorizontal < 0.5f)
+        if (Input.mousePosition.x / Screen.height < 0.5f)
         {
             tsLabel.Visible = true;
             var prevTick = Chart.SyncTrackInstrument.TimeSignatureEvents.GetPreviousTickEventInLane(Tick);

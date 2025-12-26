@@ -59,14 +59,23 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     /// <summary>
     /// Shortcut to allow void events call the main UpdatePreviewPosition function.
     /// </summary>
-    public void UpdatePosition() => UpdatePosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
-    public abstract void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
+    public abstract void UpdatePosition();
+    public void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    {
+        if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal))
+        {
+            Hide();
+            return;
+        }
+
+        UpdatePosition();
+    }
 
     public bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!Chart.showPreviewers || AudioManager.AudioPlaying ||
             Chart.instance.SceneDetails.IsSceneOverlayUIHit() || 
-            Input.GetMouseButton(RIGHT_MOUSE_ID) || // right mouse = sustaining
+            Input.GetMouseButton(RIGHT_MOUSE_ID) || // right mouse = sustaining or trying to delete
             !Chart.IsEditAllowed() ||
             percentOfScreenVertical < 0 ||
             percentOfScreenHorizontal < 0 ||
@@ -87,15 +96,16 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         previewerEventReference = GetComponent<IEvent>();
         previewerEventReference.IsPreviewEvent = true;
 
-        inputMap.Charting.PreviewMousePos.performed += position => 
-            UpdatePosition(position.ReadValue<Vector2>().y / Screen.height, position.ReadValue<Vector2>().x / Screen.width);
+        inputMap.Charting.PreviewMousePos.performed += position =>
+            UpdatePosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
 
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
     }
 
     protected void Update()
     {
-        if (Input.GetMouseButton(0))
+        // Rclick + Lclick deletion impossible without extra check here
+        if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
         {
             CreateEvent();
         }

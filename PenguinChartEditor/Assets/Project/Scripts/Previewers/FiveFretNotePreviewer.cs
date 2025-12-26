@@ -37,10 +37,8 @@ public class FiveFretNotePreviewer : Previewer
 
     public int defaultSustainPlacement = 0;
 
-    public override void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    public override void UpdatePosition()
     {
-        if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) { Hide(); return; }
-
         var hitPosition = Chart.instance.SceneDetails.GetCursorHighwayPosition();
         var highwayProportion = Chart.instance.SceneDetails.GetCursorHighwayProportion();
         if (highwayProportion == 0)

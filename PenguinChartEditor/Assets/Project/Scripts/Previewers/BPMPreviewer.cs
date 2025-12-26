@@ -14,16 +14,14 @@ public class BPMPreviewer : Previewer
         instance = this;
     }
 
-    public override void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    public override void UpdatePosition()
     {
-        if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal)) { Hide(); return; }
-
-        Tick = SongTime.CalculateGridSnappedTick(percentOfScreenVertical);
+        Tick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
         bpmLabel.UpdatePosition(Waveform.GetWaveformRatio(Tick), boundaryReference.rect.height);
 
         // only call this function when cursor is within certain range?
         // takes the functionality out of this function
-        if (percentOfScreenHorizontal > 0.5f)
+        if (Input.mousePosition.x / Screen.height > 0.5f)
         {
             bpmLabel.Visible = true;
             var lastTick = Chart.SyncTrackInstrument.TempoEvents.GetPreviousTickEventInLane(Tick, inclusive: true);
