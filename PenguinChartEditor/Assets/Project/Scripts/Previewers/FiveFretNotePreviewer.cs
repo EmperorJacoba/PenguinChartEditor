@@ -107,7 +107,7 @@ public class FiveFretNotePreviewer : Previewer
     {
         base.Awake();
         var fiveFretNote = GetComponent<FiveFretNote>();
-        fiveFretNote.lanePreviewer = this;
+        fiveFretNote.LanePreviewer = this;
         fiveFretNote.laneIdentifier = lane.laneIdentifier;
 
         FiveFretNoteKeybindManager.UpdatePreviewer += UpdatePosition;
@@ -127,8 +127,6 @@ public class FiveFretNotePreviewer : Previewer
 
     public override void AddCurrentEventDataToLaneSet()
     {
-        if (note.LaneData.Contains(Tick)) return;
-
         int sustain =
             Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(Tick + AppliedSustain) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(Tick) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
             0 : AppliedSustain;

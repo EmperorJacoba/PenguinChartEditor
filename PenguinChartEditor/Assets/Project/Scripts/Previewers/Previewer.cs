@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public interface IPreviewer
 {
     void CreateEvent();
-    void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal);
     void UpdatePosition();
     void Hide();
     void Show();
@@ -32,7 +31,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     public virtual void CreateEvent()
     {
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || !Chart.IsEditAllowed()) return;
-        if (!previewerEventReference.Visible || previewerEventReference.GetLaneData().Contains(Tick)) return;
+        if (!previewerEventReference.Visible) return;
 
         AddCurrentEventDataToLaneSet(); // implemented locally
 
@@ -57,10 +56,10 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     }
 
     /// <summary>
-    /// Shortcut to allow void events call the main UpdatePreviewPosition function.
+    /// Refresh the previewer, with checks to ensure the previewer is allowed to be active.
     /// </summary>
     public void UpdatePosition() => UpdatePosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
-    public void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal))
         {
@@ -71,6 +70,9 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         UpdatePreviewer();
     }
 
+    /// <summary>
+    /// Updates position and shows the previewer without any checks. 
+    /// </summary>
     protected abstract void UpdatePreviewer();
 
     public bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)

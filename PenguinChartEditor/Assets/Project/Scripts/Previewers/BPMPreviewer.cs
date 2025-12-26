@@ -21,7 +21,7 @@ public class BPMPreviewer : Previewer
 
         // only call this function when cursor is within certain range?
         // takes the functionality out of this function
-        if (Input.mousePosition.x / Screen.height > 0.5f)
+        if (Input.mousePosition.x / Screen.width > 0.5f)
         {
             bpmLabel.Visible = true;
             var lastTick = Chart.SyncTrackInstrument.TempoEvents.GetPreviousTickEventInLane(Tick, inclusive: true);

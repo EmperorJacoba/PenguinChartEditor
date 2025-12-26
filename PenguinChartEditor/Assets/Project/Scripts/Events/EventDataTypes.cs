@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IEventData 
+public interface IEventData : IEquatable<IEventData>
 {
     string ToChartFormat(int lane);
 }
@@ -11,6 +11,7 @@ public interface ISustainable
 {
     int Sustain { get; set; }
 }
+
 public struct BPMData : IEquatable<BPMData>, IEventData
 {
     public const int BPM_CONVERSION = 1000;
@@ -31,22 +32,16 @@ public struct BPMData : IEquatable<BPMData>, IEventData
     public static bool operator ==(BPMData one, BPMData two) => one.Equals(two);
 
     public override bool Equals(object obj) => obj is BPMData other && Equals(other);
-
+    public bool Equals(IEventData data) => data is BPMData other && Equals(other);
     public bool Equals(BPMData other) => BPMChange == other.BPMChange && Timestamp == other.Timestamp;
 
     public override string ToString() => $"{BPMChange} @ {Timestamp}s, Anchor = {Anchor}";
 
     public string ToChartFormat(int lane) => $"{BPM_IDENTIFIER} {BPMChange * BPM_CONVERSION}";
 
-    public override int GetHashCode() // literally just doing this because VSCode is yelling at me
+    public override int GetHashCode()
     {
-        unchecked
-        {
-            int hash = 17;
-            hash *= 23 + BPMChange.GetHashCode();
-            hash *= 23 + Timestamp.GetHashCode();
-            return hash;
-        }
+        return HashCode.Combine(BPMChange, Timestamp, Anchor);
     }
 }
 
@@ -64,6 +59,7 @@ public struct TSData : IEquatable<TSData>, IEventData
     }
 
     public override bool Equals(object obj) => obj is TSData other && Equals(other);
+    public bool Equals(IEventData data) => data is TSData other && Equals(other);
     public bool Equals(TSData other) => Numerator == other.Numerator && Denominator == other.Denominator;
 
     public override string ToString() => $"{Numerator} / {Denominator}";
@@ -77,38 +73,26 @@ public struct TSData : IEquatable<TSData>, IEventData
 
         return $"{TS_IDENTIFIER} {Numerator}{denom}"; // denom will contain leading space if needed
     }
-
-    public override int GetHashCode() // literally just doing this because VSCode is yelling at me
+    public override int GetHashCode()
     {
-        unchecked
-        {
-            int hash = 17;
-            hash *= 23 + Numerator.GetHashCode();
-            hash *= 23 + Denominator.GetHashCode();
-            return hash;
-        }
-    }
-}
-
-public struct BookmarkData : IEventData
-{
-    public string Name;
-
-    public BookmarkData(string name)
-    {
-        Name = name;
+        return HashCode.Combine(Numerator, Denominator);
     }
 
-    public string ToChartFormat(int lane)
+    public static bool operator ==(TSData left, TSData right)
     {
-        throw new NotImplementedException();
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(TSData left, TSData right)
+    {
+        return !(left == right);
     }
 }
 
 // Note datas: LaneType is an enum with lane corresponding to their ID number in .chart files.
 // FlagType is an enum with flag corresponding to ID number in .chart files 
 
-public struct FiveFretNoteData : IEventData, ISustainable
+public struct FiveFretNoteData : IEventData, ISustainable, IEquatable<FiveFretNoteData>
 {
     public enum FlagType
     {
@@ -128,6 +112,7 @@ public struct FiveFretNoteData : IEventData, ISustainable
         Flag = flag;
         Default = defaultOrientation;
     }
+
 
     public override string ToString() => $"(FFN: {Flag}, defaultOrientation = {Default}. {Sustain}T sustain)";
     public string ToChartFormat(int lane)
@@ -149,6 +134,32 @@ public struct FiveFretNoteData : IEventData, ISustainable
     public FiveFretNoteData ExportWithNewDefault(bool state)
     {
         return new FiveFretNoteData(Sustain, Flag, state);
+    }
+
+    public bool Equals(IEventData other) => other is FiveFretNoteData data && Equals(data);
+
+    public bool Equals(FiveFretNoteData other)
+    {
+        return Default == other.Default &&
+               Sustain == other.Sustain &&
+               Flag == other.Flag;
+    }
+
+    public override bool Equals(object obj) => base.Equals(obj);
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Default, Sustain, Flag);
+    }
+
+    public static bool operator ==(FiveFretNoteData left, FiveFretNoteData right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(FiveFretNoteData left, FiveFretNoteData right)
+    {
+        return !(left == right);
     }
 }
 
@@ -179,6 +190,11 @@ public struct FourLaneDrumNoteData : IEventData
     {
         throw new NotImplementedException();
     }
+
+    public bool Equals(IEventData other)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public struct GHLNoteData : IEventData
@@ -201,6 +217,10 @@ public struct GHLNoteData : IEventData
         throw new NotImplementedException();
     }
 
+    public bool Equals(IEventData other)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 /*

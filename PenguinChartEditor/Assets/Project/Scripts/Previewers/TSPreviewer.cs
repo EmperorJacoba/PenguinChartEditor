@@ -21,7 +21,7 @@ public class TSPreviewer : Previewer
 
         // only call this function when cursor is within certain range?
         // takes the functionality out of this function
-        if (Input.mousePosition.x / Screen.height < 0.5f)
+        if (Input.mousePosition.x / Screen.width < 0.5f)
         {
             tsLabel.Visible = true;
             var prevTick = Chart.SyncTrackInstrument.TimeSignatureEvents.GetPreviousTickEventInLane(Tick);

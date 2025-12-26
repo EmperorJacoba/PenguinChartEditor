@@ -221,7 +221,7 @@ Transform:
   m_GameObject: {fileID: 2653644340035125748}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.2, z: 8.47}
+  m_LocalPosition: {x: 0, y: 0, z: 8.47}
   m_LocalScale: {x: 1, y: 0.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -243,7 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 1129377194858338633}
-  defaultYPos: 0.2
+  defaultYPos: 0
   sustain: {fileID: 6939271581842165778}
   sustainColor: {fileID: 6397297667777913142}
   noteColor: {fileID: 8180853849380158579}
@@ -255,6 +255,7 @@ MonoBehaviour:
   noteBase: {fileID: 3711626513503879828}
   noteModel: {fileID: 7426812169962370380}
   previewer: 0
+  xCoordinate: 0
 --- !u!65 &5105991374100904059
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -522,7 +523,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 207a721f0b4ed224e8df7f14e498192c, type: 3}
       propertyPath: m_LocalPosition.z

@@ -156,11 +156,12 @@ public class SongTime : MonoBehaviour
 
         // Remainder will show how many Ticks off from the last event we are
         // Use remainder to determine which grid snap we are closest to and round to that
-        if (remainder > (tickInterval / 2)) // Closer to following snap
+        if (remainder > (tickInterval / 2))
         {
-            var targetSnap = (int)Math.Ceiling(cursorTickTime - remainder + tickInterval);
             // Regress to last grid snap and then add a snap to get to next grid position
-            return targetSnap < SongLengthTicks ? targetSnap : SongLengthTicks;
+            var targetSnap = (int)Math.Ceiling(cursorTickTime - remainder + tickInterval);
+
+            return Mathf.Min(targetSnap, SongLengthTicks);
         }
         else // Closer to previous grid snap or dead on a snap (subtract 0 = no change)
         {

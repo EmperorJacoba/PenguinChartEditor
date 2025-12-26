@@ -11,7 +11,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public override LaneSet<FiveFretNoteData> LaneData => chartInstrument.Lanes.GetLane((int)laneIdentifier);
     public override SelectionSet<FiveFretNoteData> Selection => chartInstrument.Lanes.GetLaneSelection((int)laneIdentifier);
 
-    [SerializeField] float defaultYPos = 0;
+    private const float PREVIEWER_Y_OFFSET = 0.00001f;
     [SerializeField] Transform sustain;
     [SerializeField] MeshRenderer sustainColor;
     [SerializeField] MeshRenderer noteColor;
@@ -56,8 +56,17 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     // starts as -1 so the redundancy check in laneIdentifier.set does not return true when setting lane to 0
     FiveFretInstrument.LaneOrientation _li = (FiveFretInstrument.LaneOrientation)(-1);
 
-    public override IPreviewer EventPreviewer => lanePreviewer;
-    public IPreviewer lanePreviewer; // define in pooler
+    public override IPreviewer EventPreviewer => LanePreviewer;
+    public IPreviewer LanePreviewer
+    {
+        get => _prevobj;
+        set
+        {
+            if (_prevobj == value) return;
+            _prevobj = value;
+        }
+    } // define in pooler
+    IPreviewer _prevobj;
 
     FiveFretLane parentLane
     {
@@ -124,12 +133,15 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public override IInstrument ParentInstrument => chartInstrument;
 
+    public FiveFretNoteData representedData;
+
     public void InitializeEvent(int tick, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer, bool asSustainOnly)
     {
         _tick = tick;
-        Visible = true;
         laneIdentifier = lane;
-        lanePreviewer = previewer;
+        LanePreviewer = previewer;
+        Visible = true;
+        representedData = LaneData[tick];
 
         InitializeNote(!asSustainOnly);
 
@@ -139,7 +151,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
         UpdateSustain(asSustainOnly);
 
-        SetVisualProperties(LaneData[tick]);
+        SetVisualProperties(representedData);
     }
 
     public void InitializeEventAsPreviewer(int previewTick, FiveFretNoteData previewData)
@@ -148,7 +160,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         // but this is here just in case & for the functions below
         _tick = previewTick;
 
-        UpdatePosition();
+        UpdatePositionAsPreviewer();
         UpdateSustain(previewData);
         SetVisualProperties(previewData);
     }
@@ -174,13 +186,14 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
     }
 
+    public void UpdatePositionAsPreviewer() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate, PREVIEWER_Y_OFFSET);
     public void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate);
     public void UpdatePosition(int tick) => UpdatePosition(Waveform.GetWaveformRatio(tick), xCoordinate);
     public void UpdatePosition(double percentOfTrack) => UpdatePosition(percentOfTrack, xCoordinate);
-    public void UpdatePosition(double percentOfTrack, float xPosition)
+    public void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
     {
         var trackProportion = (float)percentOfTrack * Chart.instance.SceneDetails.HighwayLength;
-        transform.position = new Vector3(xPosition, defaultYPos, trackProportion);
+        transform.position = new Vector3(xPosition, yPosition, trackProportion);
     }
 
     public FiveFretInstrument chartInstrument => (FiveFretInstrument)Chart.LoadedInstrument;
