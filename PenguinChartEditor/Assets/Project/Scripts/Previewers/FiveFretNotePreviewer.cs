@@ -37,39 +37,46 @@ public class FiveFretNotePreviewer : Previewer
 
     public int defaultSustainPlacement = 0;
 
-    public override void UpdatePosition()
+    protected override void UpdatePreviewer()
     {
         var hitPosition = Chart.instance.SceneDetails.GetCursorHighwayPosition();
+
+        if (!IsWithinRange(hitPosition))
+        {
+            Hide();
+            return;
+        }
+
         var highwayProportion = Chart.instance.SceneDetails.GetCursorHighwayProportion();
+
         if (highwayProportion == 0)
         {
-            Hide(); return;
+            Hide(); 
+            return;
         }
 
         Tick = SongTime.CalculateGridSnappedTick(highwayProportion);
-
-        if (note.LaneData.ContainsKey(Tick))
-        {
-            Hide(); return;
-        }
-
-        note.UpdatePosition(Waveform.GetWaveformRatio(Tick), note.XCoordinate);
-        note.UpdateSustain(Tick, AppliedSustain);
-
+        FiveFretNoteData.FlagType previewFlag;
         if (currentPlacementMode == NoteOption.natural)
         {
-            note.IsHopo = note.chartInstrument.PreviewTickHopo(lane.laneIdentifier, Tick);
-            note.IsTap = false;
-            note.IsDefault = true;
+            previewFlag = 
+                Chart.GetActiveInstrument<FiveFretInstrument>().PreviewTickHopo(lane.laneIdentifier, Tick) ? 
+                FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
         }
         else
         {
-            note.IsHopo = currentPlacementMode == NoteOption.hopo;
-            note.IsTap = currentPlacementMode == NoteOption.tap;
-            note.IsDefault = false;
+            previewFlag = MapPlacementModeToFlag();
         }
 
-        note.Visible = IsWithinRange(hitPosition);
+        FiveFretNoteData previewData = new(
+            sustain: AppliedSustain,
+            flag: previewFlag,
+            defaultOrientation: currentPlacementMode == NoteOption.natural
+            );
+
+        note.InitializeEventAsPreviewer(Tick, previewData);
+
+        Show();
     }
 
     bool IsWithinRange(Vector3 hitPosition)

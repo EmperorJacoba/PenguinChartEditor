@@ -42,8 +42,16 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
                 sustainColor.material = previewer ? colors.GetPreviewerMat(false) : colors.GetNoteMaterial((int)value, IsTap);
             }
             _li = value;
+            CacheXCoordinate();
         }
     }
+
+    void CacheXCoordinate()
+    {
+        xCoordinate = Chart.instance.SceneDetails.GetCenterXCoordinateFromLane((int)laneIdentifier);
+    }
+    public float xCoordinate;
+
 
     // starts as -1 so the redundancy check in laneIdentifier.set does not return true when setting lane to 0
     FiveFretInstrument.LaneOrientation _li = (FiveFretInstrument.LaneOrientation)(-1);
@@ -125,19 +133,32 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
         InitializeNote(!asSustainOnly);
 
-        var notePosition = asSustainOnly ? SongTime.SongPositionTicks : tick;
         UpdatePosition(
-            Waveform.GetWaveformRatio(notePosition),
-            XCoordinate);
+            tick: asSustainOnly ? SongTime.SongPositionTicks : tick
+        );
 
         UpdateSustain(asSustainOnly);
 
-        var tickData = LaneData[tick];
-        IsHopo = (tickData.Flag == FiveFretNoteData.FlagType.hopo);
-        IsTap = (tickData.Flag == FiveFretNoteData.FlagType.tap);
-        IsDefault = tickData.Default;
+        SetVisualProperties(LaneData[tick]);
     }
-    public float XCoordinate => Chart.instance.SceneDetails.GetCenterXCoordinateFromLane((int)laneIdentifier);
+
+    public void InitializeEventAsPreviewer(int previewTick, FiveFretNoteData previewData)
+    {
+        // do not use this with the previewer, use previewer's tick instead
+        // but this is here just in case & for the functions below
+        _tick = previewTick;
+
+        UpdatePosition();
+        UpdateSustain(previewData);
+        SetVisualProperties(previewData);
+    }
+
+    void SetVisualProperties(FiveFretNoteData data)
+    {
+        IsHopo = (data.Flag == FiveFretNoteData.FlagType.hopo);
+        IsTap = (data.Flag == FiveFretNoteData.FlagType.tap);
+        IsDefault = data.Default;
+    }
 
     public override void RefreshLane() => parentLane.UpdateEvents();
     void InitializeNote(bool includeNoteHead)
@@ -153,6 +174,9 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
     }
 
+    public void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate);
+    public void UpdatePosition(int tick) => UpdatePosition(Waveform.GetWaveformRatio(tick), xCoordinate);
+    public void UpdatePosition(double percentOfTrack) => UpdatePosition(percentOfTrack, xCoordinate);
     public void UpdatePosition(double percentOfTrack, float xPosition)
     {
         var trackProportion = (float)percentOfTrack * Chart.instance.SceneDetails.HighwayLength;
@@ -189,6 +213,10 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
     }
 
+    void UpdateSustain(FiveFretNoteData data)
+    {
+        UpdateSustain(_tick, data.Sustain);
+    }
 
     public void UpdateSustain(int tick, int sustainLength)
     {

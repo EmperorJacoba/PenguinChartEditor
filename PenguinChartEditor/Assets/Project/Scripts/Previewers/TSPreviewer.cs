@@ -14,7 +14,7 @@ public class TSPreviewer : Previewer
         instance = this;
     }
 
-    public override void UpdatePosition()
+    protected override void UpdatePreviewer()
     {
         Tick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
         tsLabel.UpdatePosition(Waveform.GetWaveformRatio(Tick), boundaryReference.rect.height);

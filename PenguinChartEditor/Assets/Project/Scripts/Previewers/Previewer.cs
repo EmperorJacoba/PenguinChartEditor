@@ -59,7 +59,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     /// <summary>
     /// Shortcut to allow void events call the main UpdatePreviewPosition function.
     /// </summary>
-    public abstract void UpdatePosition();
+    public void UpdatePosition() => UpdatePosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
     public void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal))
@@ -68,8 +68,10 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
             return;
         }
 
-        UpdatePosition();
+        UpdatePreviewer();
     }
+
+    protected abstract void UpdatePreviewer();
 
     public bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
@@ -87,6 +89,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         }
         return true;
     }
+    public bool IsPreviewerActive() => IsPreviewerActive(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
 
     protected virtual void Awake()
     {
@@ -105,7 +108,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     protected void Update()
     {
         // Rclick + Lclick deletion impossible without extra check here
-        if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
+        if (Input.GetMouseButton(0) && !Input.GetMouseButton(1) && IsPreviewerActive())
         {
             CreateEvent();
         }
