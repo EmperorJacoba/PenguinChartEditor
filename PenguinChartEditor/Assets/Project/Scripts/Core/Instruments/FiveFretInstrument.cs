@@ -150,7 +150,7 @@ public class FiveFretInstrument : IInstrument
 
     void MoveSelection()
     {
-        if (this != Chart.LoadedInstrument) return;
+        if (this != Chart.LoadedInstrument || !Chart.IsModificationAllowed()) return;
 
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress) return;
         bool tickMovement = false;
@@ -636,7 +636,7 @@ public class FiveFretInstrument : IInstrument
 
     public void SustainSelection()
     {
-        if (Chart.LoadedInstrument != this || !Chart.IsEditAllowed()) return;
+        if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
 
         // Early return if attempting to start an edit while over an overlay element
         // Allows edit to start only if interacting with main content

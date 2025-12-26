@@ -145,7 +145,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         // eventData.clickCount does not work here - pointerDown and pointerUp do not trigger click count for some reason
         // so manual coroutine solution is here to circumvent that issue
         if (!Input.GetKey(KeyCode.LeftControl) &&
-            Chart.IsEditAllowed() && 
+            Chart.IsModificationAllowed() && 
             clickCount == 2)
         {
             ActivateManualInput();

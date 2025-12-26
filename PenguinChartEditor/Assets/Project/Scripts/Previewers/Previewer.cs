@@ -30,7 +30,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     public virtual void CreateEvent()
     {
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || !Chart.IsEditAllowed()) return;
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || !Chart.IsPlacementAllowed()) return;
         if (!previewerEventReference.Visible) return;
 
         AddCurrentEventDataToLaneSet(); // implemented locally
@@ -80,7 +80,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         if (!Chart.showPreviewers || AudioManager.AudioPlaying ||
             Chart.instance.SceneDetails.IsSceneOverlayUIHit() || 
             Input.GetMouseButton(RIGHT_MOUSE_ID) || // right mouse = sustaining or trying to delete
-            !Chart.IsEditAllowed() ||
+            !Chart.IsPlacementAllowed() ||
             percentOfScreenVertical < 0 ||
             percentOfScreenHorizontal < 0 ||
             percentOfScreenVertical > 1 ||

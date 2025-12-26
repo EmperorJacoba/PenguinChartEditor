@@ -119,10 +119,12 @@ public class SyncTrackInstrument : IInstrument
     /// <summary>
     /// Runs every frame when Drag input action is active. 
     /// </summary>
-    public virtual void MoveSelection()
+    void MoveSelection()
     {
-        if (Chart.LoadedInstrument != this) return;
+        if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
+
         var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
+
         MoveLane(currentMouseTick, ref bpmMoveData, bpmSelection, TempoEvents);
         MoveLane(currentMouseTick, ref tsMoveData, tsSelection, TimeSignatureEvents);
     }

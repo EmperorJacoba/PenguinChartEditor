@@ -17,7 +17,6 @@ public class SelectionController : MonoBehaviour
         inputMap.Enable();
 
         inputMap.Charting.SelectionView.performed += x => SetSelectionMode(Chart.SelectionMode.view);
-        inputMap.Charting.SelectionDynamic.performed += x => SetSelectionMode(Chart.SelectionMode.dynamic);
         inputMap.Charting.SelectionEdit.performed += x => SetSelectionMode(Chart.SelectionMode.edit);
         inputMap.Charting.SelectionSelect.performed += x => SetSelectionMode(Chart.SelectionMode.select);
 

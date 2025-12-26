@@ -209,17 +209,15 @@ public class Chart : MonoBehaviour
 
     public enum SelectionMode
     {
-        dynamic,
-        select,
         edit,
+        select,
         view
     }
-    public static SelectionMode currentSelectionMode = SelectionMode.dynamic;
+    public static SelectionMode currentSelectionMode = SelectionMode.edit;
     public static bool IsSelectionAllowed()
     {
         return currentSelectionMode switch
         {
-            SelectionMode.dynamic => true,
             SelectionMode.select => true,
             SelectionMode.edit => false,
             SelectionMode.view => false,
@@ -227,12 +225,22 @@ public class Chart : MonoBehaviour
         };
     }
 
-    public static bool IsEditAllowed()
+    public static bool IsPlacementAllowed()
     {
         return currentSelectionMode switch
         {
-            SelectionMode.dynamic => true,
             SelectionMode.select => false,
+            SelectionMode.edit => true,
+            SelectionMode.view => false,
+            _ => throw new ArgumentException("Invalid assigned selection mode.")
+        };
+    }
+
+    public static bool IsModificationAllowed()
+    {
+        return currentSelectionMode switch
+        {
+            SelectionMode.select => true,
             SelectionMode.edit => true,
             SelectionMode.view => false,
             _ => throw new ArgumentException("Invalid assigned selection mode.")
