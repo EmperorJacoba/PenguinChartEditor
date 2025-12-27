@@ -31,7 +31,7 @@ public class FiveFretInstrument : IInstrument
 
     public Lanes<FiveFretNoteData> Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
-    public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
+    public List<SoloEvent> SoloEvents { get; set; }
     public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
 
@@ -56,42 +56,11 @@ public class FiveFretInstrument : IInstrument
 
     #region Constructor
 
-    public FiveFretInstrument(
-        Lanes<FiveFretNoteData> lanes,
-        SortedDictionary<int, SpecialData> starpower,
-        SortedDictionary<int, LocalEventData> localEvents,
-        InstrumentType instrument,
-        DifficultyType difficulty
-        )
-    {
-        Lanes = lanes;
-        SpecialEvents = starpower;
-        LocalEvents = localEvents;
-        InstrumentName = instrument;
-        Difficulty = difficulty;
-
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            var laneIndex = i;
-            // add Lanes update needed
-            // change to generic validateblic
-            Lanes.GetLane(laneIndex).UpdatesNeededInRange += (startTick, endTick) =>
-            {
-                if (startTick == endTick) CheckForHopos((LaneOrientation)laneIndex, startTick);
-                else CheckForHoposInRange(startTick, endTick);
-            };
-            Lanes.UpdatesNeededInRange += (startTick, endTick) =>
-            {
-                CheckForHoposInRange(startTick, endTick);
-            };
-        }
-    }
-
     public FiveFretInstrument(HeaderType instrumentID, List<KeyValuePair<int, string>> instrumentInfo)
     {
         Lanes = new(6);
         SpecialEvents = new();
-        LocalEvents = new();
+        SoloEvents = new();
 
         InstrumentName = IdentifyInstrument(instrumentID);
         Difficulty = ChartEventGroup.GetDifficulty(instrumentID);
@@ -1024,11 +993,13 @@ public class FiveFretInstrument : IInstrument
 
     #region Import
 
-    // needs to clear out zone between start & end point of added events
+    // Prepare for indentation hell.
     public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
     {
         HashSet<int> uniqueTicks = lines.Select(item => item.Key).ToHashSet();
         HashSet<int> flippedTicks = new(); // ticks that will be traditionally forced
+
+        SoloEvent openSoloEvent = new(-1, -1);
 
         if (uniqueTicks.Count == 0) return;
         Lanes.PopDataInRange(uniqueTicks.Min(), uniqueTicks.Max());
@@ -1159,14 +1130,32 @@ public class FiveFretInstrument : IInstrument
 
                         break;
                     case EVENT_INDICATOR:
-                        if (!Enum.TryParse(typeof(LocalEventData.EventType), values[EVENT_DATA_INDEX], true, out var localEvent))
+
+                        if (!Enum.TryParse(typeof(LocalEventIdentifier), values[EVENT_DATA_INDEX], true, out var localEvent))
                         {
                             Chart.Log($"Error at {uniqueTick}: Unsupported event type: {values[EVENT_DATA_INDEX]}");
                             break;
                         }
 
-                        LocalEvents[uniqueTick] = new LocalEventData((LocalEventData.EventType)localEvent);
+                        switch (localEvent)
+                        {
+                            case LocalEventIdentifier.solo:
+                                // I know this looks weird but there is no way to clamp this to any reasonable bound at this stage
+                                // SongLengthTicks is not initialized when this will be called
+                                // SoloEvent has internal clamping logic to handle this in case there is never a closing soloend event.
+                                openSoloEvent = new(uniqueTick, int.MaxValue);
+                                break;
+                            case LocalEventIdentifier.soloend:
+                                // Techinically a possibility for a soloend event to come before a solo event, even if unlikely.
+                                // I will not be having weirdness in MY solo events no thank you
+                                if (openSoloEvent.StartTick == -1) continue;
 
+                                openSoloEvent = new(openSoloEvent.StartTick, uniqueTick - openSoloEvent.StartTick);
+                                SoloEvents.Add(openSoloEvent);
+                                openSoloEvent = new(-1, -1);
+                                break;
+                        }
+                        
                         break;
                     case DEPRECATED_HAND_INDICATOR:
                         continue;
@@ -1174,6 +1163,7 @@ public class FiveFretInstrument : IInstrument
             }
         }
 
+        if (openSoloEvent.StartTick > 0 && openSoloEvent.TickLength > 0) SoloEvents.Add(openSoloEvent);
         CheckForHoposInRange(uniqueTicks.Min(), uniqueTicks.Max());
         FlipTicks(flippedTicks);
     }

@@ -84,8 +84,6 @@ public class AudioManager : MonoBehaviour
 
     public static void InitializeAudio()
     {
-        InitializeBassPlugin();
-
         UpdateStemStreams();
 
         StreamLink = GetLongestStream();
@@ -101,7 +99,7 @@ public class AudioManager : MonoBehaviour
 
     #region Audio Setup
 
-    static void InitializeBassPlugin()
+    public static void InitializeBassPlugin()
     {
         if (Bass.BASS_Init(-1, SAMPLE_RATE, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero))
         {

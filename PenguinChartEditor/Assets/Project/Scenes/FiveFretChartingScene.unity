@@ -447,7 +447,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Dynamic
+  m_text: Edit
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9b1ec8703aceefe4c840dd7ce5bd2d35, type: 2}
   m_sharedMaterial: {fileID: -8941867732808617394, guid: 9b1ec8703aceefe4c840dd7ce5bd2d35, type: 2}
@@ -3288,7 +3288,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  defaultYPos: 0
   sustain: {fileID: 409208749}
   sustainColor: {fileID: 409208753}
   noteColor: {fileID: 318558676}
@@ -4483,7 +4482,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  defaultYPos: 0.2
   sustain: {fileID: 1418732218}
   sustainColor: {fileID: 1418732219}
   noteColor: {fileID: 1617354166}
@@ -4908,7 +4906,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  defaultYPos: 0
   sustain: {fileID: 1539271465}
   sustainColor: {fileID: 1539271469}
   noteColor: {fileID: 1970270123}
@@ -7373,13 +7370,10 @@ MonoBehaviour:
   m_MultiSelect: 0
   m_Options:
     m_Options:
-    - m_Text: Dynamic
+    - m_Text: Edit
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
     - m_Text: Select
-      m_Image: {fileID: 0}
-      m_Color: {r: 1, g: 1, b: 1, a: 1}
-    - m_Text: Edit
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
     - m_Text: View
@@ -7643,7 +7637,7 @@ PrefabInstance:
     - target: {fileID: -4683669308469848369, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7292ae972017a384bbe95a02198919a5, type: 2}
+      objectReference: {fileID: 2100000, guid: abf89e2572aba804d8193760dcd98f13, type: 2}
     - target: {fileID: 919132149155446097, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
       propertyPath: m_Name
       value: SecretHighway
@@ -8849,6 +8843,52 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
+--- !u!1 &1110686252
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1110686254}
+  - component: {fileID: 1110686253}
+  m_Layer: 6
+  m_Name: SoloSectionPooler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1110686253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1110686252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd93d7204c47c714eb6b173b152f0ca3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 5440432693466295465, guid: b1f7bd77994386d47aa9a427070e9edd, type: 3}
+  parentObject: {fileID: 1666396266}
+--- !u!4 &1110686254
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1110686252}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1666396268}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1117031078
 GameObject:
   m_ObjectHideFlags: 0
@@ -14481,6 +14521,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1664076993}
   m_CullTransparentMesh: 1
+--- !u!1 &1666396266
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1666396268}
+  - component: {fileID: 1666396267}
+  m_Layer: 6
+  m_Name: SoloSections
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1666396267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666396266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f47b77efbb4b0d40be54ccf917731d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pooler: {fileID: 1110686253}
+--- !u!4 &1666396268
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666396266}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1110686254}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1683187647
 GameObject:
   m_ObjectHideFlags: 0
@@ -14653,7 +14739,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  defaultYPos: 0
   sustain: {fileID: 788927335}
   sustainColor: {fileID: 788927339}
   noteColor: {fileID: 31935548}
@@ -16821,7 +16906,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  defaultYPos: 0
   sustain: {fileID: 956723920}
   sustainColor: {fileID: 956723921}
   noteColor: {fileID: 1300252274}
@@ -17611,7 +17695,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 0}
-  defaultYPos: 0
   sustain: {fileID: 1526527855}
   sustainColor: {fileID: 1526527859}
   noteColor: {fileID: 950197695}
@@ -24293,8 +24376,9 @@ SceneRoots:
   m_Roots:
   - {fileID: 1455365664}
   - {fileID: 732549080}
-  - {fileID: 1818674093}
+  - {fileID: 1666396268}
   - {fileID: 29604111}
+  - {fileID: 1818674093}
   - {fileID: 1936119443}
   - {fileID: 183943802}
   - {fileID: 1754544328}

@@ -33,7 +33,10 @@ public class SyncTrackInstrument : IInstrument
     public SelectionSet<TSData> tsSelection;
 
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
-    public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
+    public List<SoloEvent> SoloEvents{
+        get { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
+        set { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
+    }
 
     public InstrumentType InstrumentName { get; set; } = InstrumentType.synctrack;
     public DifficultyType Difficulty { get; set; } = DifficultyType.easy;

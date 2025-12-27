@@ -51,6 +51,12 @@ public enum StemType
     crowd = 14
 }
 
+public enum LocalEventIdentifier
+{
+    solo,
+    soloend
+}
+
 /// <summary>
 /// Contains possible section headers enclosed as [Name] in a .chart file.
 /// Identifiers follow a pattern based on instrument parsing needs. Metadata/tempo has values 10^0, Five-fret is 10^1, Drums is 10^2, GHL is 10^3, Vox is 10^4.

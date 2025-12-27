@@ -5,7 +5,7 @@
 // future me: PLEASE STOP ADDING <T>! IT WILL NOT WORK THIS TIME! LIKE THE 7 OTHER TIMES
 public interface IInstrument
 {
-    SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
+    List<SoloEvent> SoloEvents { get; set; }
     InstrumentType InstrumentName { get; set; }
     DifficultyType Difficulty { get; set; }
     List<string> ExportAllEvents();

@@ -68,7 +68,6 @@ public class Chart : MonoBehaviour
                 Metadata.StemPaths.Add(key, targetFilePath);
             }
         }
-
         AudioManager.InitializeAudio();
 
         SyncTrackInstrument = chartParser.syncTrackInstrument;
@@ -170,6 +169,8 @@ public class Chart : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(instance);
+
+        AudioManager.InitializeBassPlugin();
 
         LoadFile();
         LoadedInstrument = Instruments.

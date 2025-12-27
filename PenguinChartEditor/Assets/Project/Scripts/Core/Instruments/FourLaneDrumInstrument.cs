@@ -5,7 +5,8 @@ public class FourLaneDrumInstrument : IInstrument
 {
     public Lanes<FourLaneDrumNoteData> Lanes;
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
-    public SortedDictionary<int, LocalEventData> LocalEvents { get; set; }
+    public List<SoloEvent> SoloEvents { get; set; }
+
     public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
 
