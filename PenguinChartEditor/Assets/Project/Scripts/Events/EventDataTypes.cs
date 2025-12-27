@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public interface IEventData : IEquatable<IEventData>
@@ -278,47 +279,36 @@ public struct LocalEventData
         throw new NotImplementedException();
     }
 
-} 
+}
 
 public struct SoloEvent
 {
     public int StartTick;
-    public int TickLength
-    {
-        get
-        {
-            // This is a semi-temporary workaround to song length parsing
-            // at the current stage of development
-            // (as of writing this comment: pre-alpha on December 26, 2025)
-            // SongLengthTicks is an abstraction for converting AudioManager.SongLength to a tick length.
-            // These events are loaded during parsing BEFORE audio is loaded,
-            // so clamping this value to stay within song bounds is not possible during parsing (currently).
-            // This clamps the value ONLY if a song is loaded.
-            if (AudioManager.SongLength != 0)
-            {
-                if (StartTick + _tickLength > SongTime.SongLengthTicks)
-                {
-                    _tickLength = SongTime.SongLengthTicks - StartTick;
-                }
-            }
-            return _tickLength;
-        }
-        set
-        {
-            _tickLength = value;
-        }
-    }
-    public int _tickLength;
 
     public int EndTick
     {
-        get => StartTick + TickLength;
-        set => TickLength = value - StartTick;
+        get
+        {
+            // Allows setting a general open ended end tick. Used during pre-audio initialization.
+            if (_etick != int.MaxValue) return _etick;
+            return SongTime.SongLengthTicks;
+        }
+        set
+        {
+            _etick = value;
+        }
     }
+    int _etick;
 
-    public SoloEvent(int startTick, int length)
+    public SoloEvent(int startTick, int endTick)
     {
         StartTick = startTick;
-        _tickLength = length;
+        _etick = endTick;
+    }
+
+    public SoloEvent(int startTick)
+    {
+        StartTick = startTick;
+        _etick = int.MaxValue;
     }
 }

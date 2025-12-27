@@ -999,7 +999,7 @@ public class FiveFretInstrument : IInstrument
         HashSet<int> uniqueTicks = lines.Select(item => item.Key).ToHashSet();
         HashSet<int> flippedTicks = new(); // ticks that will be traditionally forced
 
-        SoloEvent openSoloEvent = new(-1, -1);
+        SoloEvent openSoloEvent = new(-1);
 
         if (uniqueTicks.Count == 0) return;
         Lanes.PopDataInRange(uniqueTicks.Min(), uniqueTicks.Max());
@@ -1140,19 +1140,17 @@ public class FiveFretInstrument : IInstrument
                         switch (localEvent)
                         {
                             case LocalEventIdentifier.solo:
-                                // I know this looks weird but there is no way to clamp this to any reasonable bound at this stage
-                                // SongLengthTicks is not initialized when this will be called
-                                // SoloEvent has internal clamping logic to handle this in case there is never a closing soloend event.
-                                openSoloEvent = new(uniqueTick, int.MaxValue);
+                                openSoloEvent = new(uniqueTick);
                                 break;
                             case LocalEventIdentifier.soloend:
                                 // Techinically a possibility for a soloend event to come before a solo event, even if unlikely.
                                 // I will not be having weirdness in MY solo events no thank you
                                 if (openSoloEvent.StartTick == -1) continue;
 
-                                openSoloEvent = new(openSoloEvent.StartTick, uniqueTick - openSoloEvent.StartTick);
+                                openSoloEvent = new(openSoloEvent.StartTick, uniqueTick);
                                 SoloEvents.Add(openSoloEvent);
-                                openSoloEvent = new(-1, -1);
+
+                                openSoloEvent = new(-1);
                                 break;
                         }
                         
@@ -1163,7 +1161,7 @@ public class FiveFretInstrument : IInstrument
             }
         }
 
-        if (openSoloEvent.StartTick > 0 && openSoloEvent.TickLength > 0) SoloEvents.Add(openSoloEvent);
+        if (openSoloEvent.StartTick >= 0) SoloEvents.Add(openSoloEvent);
         CheckForHoposInRange(uniqueTicks.Min(), uniqueTicks.Max());
         FlipTicks(flippedTicks);
     }
