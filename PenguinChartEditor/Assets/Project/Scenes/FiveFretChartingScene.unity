@@ -8992,7 +8992,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd93d7204c47c714eb6b173b152f0ca3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 5440432693466295465, guid: b1f7bd77994386d47aa9a427070e9edd, type: 3}
+  objectPrefab: {fileID: 8974281703401690028, guid: e0b551a5238254f4ebb6308e46f6adce, type: 3}
   parentObject: {fileID: 1666396266}
 --- !u!4 &1110686254
 Transform:

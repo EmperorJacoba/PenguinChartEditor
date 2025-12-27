@@ -12,8 +12,7 @@ public class SoloSectionSpawner : MonoBehaviour
 
     void CheckForSoloDisplay()
     {
-        var activeSoloSections = Chart.LoadedInstrument.SoloEvents.Where(@soloEvent => soloEvent.EndTick - Waveform.endTick > 0 || Waveform.startTick - soloEvent.StartTick > 0).ToList();
-        if (activeSoloSections.Count == 0) return;
+        var activeSoloSections = Chart.LoadedInstrument.SoloEvents.Where(@soloEvent => Waveform.endTick > soloEvent.StartTick && Waveform.startTick < soloEvent.EndTick).ToList();
 
         int i;
         for (i = 0; i < activeSoloSections.Count; i++)
