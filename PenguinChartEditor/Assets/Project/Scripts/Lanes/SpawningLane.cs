@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public abstract class Lane<TEvent> : MonoBehaviour where TEvent : IPoolable
+public abstract class SpawningLane<TEvent> : MonoBehaviour where TEvent : IPoolable
 {
     [SerializeField] protected LaneProperties properties;
 

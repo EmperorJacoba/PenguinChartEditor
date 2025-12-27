@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TSLane : Lane<TSLabel>
+public class TSLane : SpawningLane<TSLabel>
 {
     public static TSLane instance;
 
