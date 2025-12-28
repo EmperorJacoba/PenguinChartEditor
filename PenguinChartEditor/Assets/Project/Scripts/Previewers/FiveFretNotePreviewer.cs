@@ -125,7 +125,7 @@ public class FiveFretNotePreviewer : Previewer
         };
     }
 
-    public override void AddCurrentEventDataToLaneSet()
+    protected override void AddCurrentEventDataToLaneSet()
     {
         int sustain =
             Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(Tick + AppliedSustain) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(Tick) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?

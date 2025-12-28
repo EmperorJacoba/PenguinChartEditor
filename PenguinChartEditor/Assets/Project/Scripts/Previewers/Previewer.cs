@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public interface IPreviewer
 {
@@ -12,17 +9,13 @@ public interface IPreviewer
     int Tick { get; set; }
 }
 
-[RequireComponent(typeof(IEvent))]
 /// <summary>
-/// Each previewer is the child of a Lane object, that it is attached to.
+/// Each previewer is the child of a SpawningLane object that it is attached to.
 /// </summary>
 public abstract class Previewer : MonoBehaviour, IPreviewer
 {
     public static int previewTick = 0;
     private const int RIGHT_MOUSE_ID = 1;
-
-    [SerializeField] protected GraphicRaycaster overlayUIRaycaster;
-    [SerializeField] protected BaseRaycaster eventRaycaster;
 
     protected InputMap inputMap;
 
@@ -31,15 +24,25 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     public virtual void CreateEvent()
     {
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || !Chart.IsPlacementAllowed()) return;
-        if (!previewerEventReference.Visible) return;
+        if (!IsPreviewerVisible()) return;
 
         AddCurrentEventDataToLaneSet(); // implemented locally
 
-        previewerEventReference.GetSelection().Remove(Tick);
+        RemoveTickFromSelection();
         Chart.Refresh();
     }
 
-    public abstract void AddCurrentEventDataToLaneSet();
+    protected virtual bool IsPreviewerVisible()
+    {
+        return previewerEventReference.Visible;
+    }
+
+    protected virtual void RemoveTickFromSelection()
+    {
+        previewerEventReference.GetSelection().Remove(Tick);
+    }
+
+    protected abstract void AddCurrentEventDataToLaneSet();
     public abstract void Hide();
     public abstract void Show();
 
@@ -98,6 +101,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         inputMap = new();
         inputMap.Enable();
 
+        // ignore this warning on GetComponent - this is overriden when the preview object does not meet this criteria
         previewerEventReference = GetComponent<IEvent>();
         previewerEventReference.IsPreviewEvent = true;
 

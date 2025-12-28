@@ -1,43 +1,41 @@
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor.Overlays;
 using UnityEngine;
 
-public class SoloPreviewer : MonoBehaviour
+public class SoloPreviewer : Previewer
 {
-    InputMap inputMap;
-    [SerializeField] GameObject previewSoloPlate;
-    [SerializeField] GameObject previewEndPlate;
+    [SerializeField] SoloPlate previewSoloPlate;
+    [SerializeField] SoloEnd previewEndPlate;
 
-    public int Tick { get; set; }
-
-    public void AddCurrentEventDataToLaneSet()
-    {
-
-    }
-
-    void Awake()
+    protected override void Awake()
     {
         inputMap = new();
         inputMap.Enable();
 
+        previewEndPlate.IsPreviewEvent = true;
+        previewSoloPlate.IsPreviewEvent = true;
+        // event reference removed - there are multiple references
+
         inputMap.Charting.PreviewMousePos.performed += position =>
-            UpdatePosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
+            UpdatePosition();
 
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
     }
 
-    void UpdatePosition(float mouseRatioY, float mouseRatioX)
+    protected override bool IsPreviewerVisible()
     {
-        if (!Previewer.IsPreviewerActive())
-        {
-            HideAll();
-            return;
-        }
+        return previewEndPlate.Visible || previewSoloPlate.Visible;
+    }
 
+    protected override void RemoveTickFromSelection()
+    {
+        previewSoloPlate.Selection.Remove(Tick);
+    }
+
+    protected override void UpdatePreviewer()
+    {
         if (Chart.instance.SceneDetails.GetCursorHighwayPosition().x < Chart.instance.SceneDetails.highwayRightEndCoordinate)
         {
-            HideAll();
+            Hide();
             return;
         }
 
@@ -45,7 +43,7 @@ public class SoloPreviewer : MonoBehaviour
 
         if (highwayProportion == 0)
         {
-            HideAll();
+            Hide();
             return;
         }
 
@@ -53,70 +51,56 @@ public class SoloPreviewer : MonoBehaviour
         var percentOfTrack = Waveform.GetWaveformRatio(Tick);
         var zPosition = (float)percentOfTrack * Chart.instance.SceneDetails.HighwayLength;
 
-        var activeSoloEvents = Chart.LoadedInstrument.SoloEvents.Where(x => x.StartTick <= Tick && x.EndTick >= Tick);
+        var activeSoloEvents = Chart.LoadedInstrument.SoloEvents.Where(x => x.Value.StartTick <= Tick && x.Value.EndTick >= Tick);
 
         if (activeSoloEvents.Count() == 0)
         {
             previewSoloPlate.transform.position = new(previewSoloPlate.transform.position.x, previewSoloPlate.transform.position.y, zPosition);
-            ShowPlate();
-            HideEnd();
+            previewSoloPlate.Visible = true;
+            previewEndPlate.Visible = false;
         }
         else
         {
             previewEndPlate.transform.position = new(previewEndPlate.transform.position.x, previewEndPlate.transform.position.y, zPosition);
-            ShowEnd();
-            HidePlate();
+            previewEndPlate.Visible = true;
+            previewSoloPlate.Visible = false;
         }
     }
 
-    protected void CreateEvent()
+    protected override void AddCurrentEventDataToLaneSet()
     {
-        var activeSoloEvents = Chart.LoadedInstrument.SoloEvents.Where(x => x.StartTick <= Tick && x.EndTick >= Tick);
+        var activeSoloEvents = Chart.LoadedInstrument.SoloEvents.Where(x => x.Value.StartTick <= Tick && x.Value.EndTick >= Tick);
 
         if (activeSoloEvents.Count() == 0)
         {
             var endTick = SongTime.SongLengthTicks;
-            var nextSoloEvent = Chart.LoadedInstrument.SoloEvents.Where(x => x.StartTick > Tick);
+            var nextSoloEvent = Chart.LoadedInstrument.SoloEvents.Where(x => x.Value.StartTick > Tick);
 
-            if (nextSoloEvent.Count() > 0) endTick = nextSoloEvent.ToList()[0].StartTick - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
+            if (nextSoloEvent.Count() > 0) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
 
-            Chart.LoadedInstrument.SoloEvents.Add(new(Tick, endTick));
+            Chart.LoadedInstrument.SoloEvents.Add(Tick, new(Tick, endTick));
         }
         else
         {
-            var soloEventList = activeSoloEvents.ToList();
-            var replacingEvent = new SoloEvent(soloEventList[0].StartTick, Tick);
+            var soloEventList = activeSoloEvents.Select(x => x.Key).ToList();
+
+            var currentEvent = Chart.LoadedInstrument.SoloEvents[soloEventList[0]];
+            if (currentEvent.StartTick == Tick) return;
+
+            var replacingEvent = new SoloEventData(currentEvent.StartTick, Tick);
 
             Chart.LoadedInstrument.SoloEvents.Remove(soloEventList[0]);
-            Chart.LoadedInstrument.SoloEvents.Add(replacingEvent);
+            Chart.LoadedInstrument.SoloEvents.Add(replacingEvent.StartTick, replacingEvent);
         }
-
-        Chart.Refresh();
     }
 
-    void HideAll()
+    public override void Hide()
     {
-        HideEnd();
-        HidePlate();
+        previewEndPlate.Visible = false;
+        previewSoloPlate.Visible = false;
     }
 
-    void HidePlate()
-    {
-        if (previewSoloPlate.activeInHierarchy) previewSoloPlate.SetActive(false);
-    }
-
-    void ShowPlate()
-    {
-        if (!previewSoloPlate.activeInHierarchy) previewSoloPlate.SetActive(true);
-    }
-
-    void HideEnd()
-    {
-        if (previewEndPlate.activeInHierarchy) previewEndPlate.SetActive(false);
-    }
-
-    void ShowEnd()
-    {
-        if (!previewEndPlate.activeInHierarchy) previewEndPlate.SetActive(true);
-    }
+    public override void Show() => throw new System.NotSupportedException(
+        "Show() cannot be called on SoloPreviewer. SoloPreviewer is made up of multiple events shown depending on its position on the track. Use individual visible attributes."
+        );
 }

@@ -31,7 +31,8 @@ public class FiveFretInstrument : IInstrument
 
     public Lanes<FiveFretNoteData> Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
-    public List<SoloEvent> SoloEvents { get; set; }
+    public LaneSet<SoloEventData> SoloEvents { get; set; }
+    public SelectionSet<SoloEventData> SoloEventSelection { get; set; }
     public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
 
@@ -61,6 +62,7 @@ public class FiveFretInstrument : IInstrument
         Lanes = new(6);
         SpecialEvents = new();
         SoloEvents = new();
+        SoloEventSelection = new(SoloEvents);
 
         InstrumentName = IdentifyInstrument(instrumentID);
         Difficulty = ChartEventGroup.GetDifficulty(instrumentID);
@@ -204,7 +206,7 @@ public class FiveFretInstrument : IInstrument
     {
         if (Chart.LoadedInstrument != this) return;
 
-        if (TotalSelectionCount == 0) return;
+        if (NoteSelectionCount == 0) return;
 
         var totalSelection = Lanes.GetTotalSelection();
         Lanes.DeleteAllTicksInSelection();
@@ -261,7 +263,7 @@ public class FiveFretInstrument : IInstrument
 
     #region Selections
 
-    public int TotalSelectionCount
+    public int NoteSelectionCount
     {
         get
         {
@@ -331,7 +333,7 @@ public class FiveFretInstrument : IInstrument
             foreach (var note in selectionData)
             {
                 stringIDs.Add(
-                    new(note.Key, note.Value.ToChartFormat(i))
+                    new(note.Key, note.Value.ToChartFormat(i)[0])
                     );
 
                 if (!note.Value.Default)
@@ -999,7 +1001,7 @@ public class FiveFretInstrument : IInstrument
         HashSet<int> uniqueTicks = lines.Select(item => item.Key).ToHashSet();
         HashSet<int> flippedTicks = new(); // ticks that will be traditionally forced
 
-        SoloEvent openSoloEvent = new(-1);
+        SoloEventData openSoloEvent = new(-1);
 
         if (uniqueTicks.Count == 0) return;
         Lanes.PopDataInRange(uniqueTicks.Min(), uniqueTicks.Max());
@@ -1148,7 +1150,7 @@ public class FiveFretInstrument : IInstrument
                                 if (openSoloEvent.StartTick == -1) continue;
 
                                 openSoloEvent = new(openSoloEvent.StartTick, uniqueTick);
-                                SoloEvents.Add(openSoloEvent);
+                                SoloEvents.Add(openSoloEvent.StartTick, openSoloEvent);
 
                                 openSoloEvent = new(-1);
                                 break;
@@ -1161,7 +1163,7 @@ public class FiveFretInstrument : IInstrument
             }
         }
 
-        if (openSoloEvent.StartTick >= 0) SoloEvents.Add(openSoloEvent);
+        if (openSoloEvent.StartTick >= 0) SoloEvents.Add(openSoloEvent.StartTick, openSoloEvent);
         CheckForHoposInRange(uniqueTicks.Min(), uniqueTicks.Max());
         FlipTicks(flippedTicks);
     }

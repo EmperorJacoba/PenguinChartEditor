@@ -1,25 +1,30 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class SoloSectionSpawner : MonoBehaviour
+public class SoloSectionSpawner : SpawningLane<SoloSection>
 {
     [SerializeField] SoloSectionPooler pooler;
+    [SerializeField] SoloPreviewer previewer;
+    public static SoloSectionSpawner instance;
+
+    protected override IPooler<SoloSection> Pooler => pooler;
+
+    protected override IPreviewer Previewer => (IPreviewer)previewer;
 
     private void Awake()
     {
-        Chart.ChartTabUpdated += CheckForSoloDisplay;
+        instance = this;
+        Chart.ChartTabUpdated += UpdateEvents;
     }
 
-    void CheckForSoloDisplay()
+    protected override List<int> GetEventsToDisplay()
     {
-        var activeSoloSections = Chart.LoadedInstrument.SoloEvents.Where(@soloEvent => Waveform.endTick > soloEvent.StartTick && Waveform.startTick < soloEvent.EndTick).ToList();
+        return Chart.LoadedInstrument.SoloEvents.Where(@soloEvent => Waveform.endTick > soloEvent.Value.StartTick && Waveform.startTick < soloEvent.Value.EndTick).Select(x => x.Key).ToList();
+    }
 
-        int i;
-        for (i = 0; i < activeSoloSections.Count; i++)
-        {
-            var soloSection = pooler.GetObject(i);
-            soloSection.UpdateProperties(activeSoloSections[i].StartTick, activeSoloSections[i].EndTick);
-        }
-        pooler.DeactivateUnused(i);
+    protected override void InitializeEvent(SoloSection @event, int tick)
+    {
+        @event.UpdateProperties(Chart.LoadedInstrument.SoloEvents[tick].StartTick, Chart.LoadedInstrument.SoloEvents[tick].EndTick);
     }
 }

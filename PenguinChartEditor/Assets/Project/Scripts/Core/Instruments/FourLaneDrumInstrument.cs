@@ -5,12 +5,14 @@ public class FourLaneDrumInstrument : IInstrument
 {
     public Lanes<FourLaneDrumNoteData> Lanes;
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
-    public List<SoloEvent> SoloEvents { get; set; }
+    public LaneSet<SoloEventData> SoloEvents { get; set; }
+    public SelectionSet<SoloEventData> SoloEventSelection { get; set; }
+
 
     public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
 
-    public int TotalSelectionCount => throw new System.NotImplementedException();
+    public int NoteSelectionCount => throw new System.NotImplementedException();
     public List<int> UniqueTicks => Lanes.UniqueTicks;
 
 

@@ -4,9 +4,6 @@ using System.Collections.Generic;
 public abstract class SpawningLane<TEvent> : MonoBehaviour where TEvent : IPoolable
 {
     [SerializeField] protected LaneProperties properties;
-
-    [Tooltip("Use \"ScreenReference\" in TempoMap, use highway GameObject in Chart.")]
-    [SerializeField] protected Transform eventBoundary;
     protected abstract List<int> GetEventsToDisplay();
     protected abstract IPooler<TEvent> Pooler { get; }
     protected abstract IPreviewer Previewer { get; }

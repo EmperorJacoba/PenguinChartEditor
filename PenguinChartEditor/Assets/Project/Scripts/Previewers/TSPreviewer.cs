@@ -49,7 +49,7 @@ public class TSPreviewer : Previewer
         if (!tsLabel.Visible) tsLabel.Visible = true;
     }
 
-    public override void AddCurrentEventDataToLaneSet()
+    protected override void AddCurrentEventDataToLaneSet()
     {
         tsLabel.CreateEvent(Tick, displayedTS);
         tsLabel.Selection.Clear();

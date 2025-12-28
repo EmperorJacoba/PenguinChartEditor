@@ -5,7 +5,7 @@ using UnityEngine;
 
 public interface IEventData : IEquatable<IEventData>
 {
-    string ToChartFormat(int lane);
+    string[] ToChartFormat(int lane);
 }
 
 public interface ISustainable
@@ -38,7 +38,7 @@ public struct BPMData : IEquatable<BPMData>, IEventData
 
     public override string ToString() => $"{BPMChange} @ {Timestamp}s, Anchor = {Anchor}";
 
-    public string ToChartFormat(int lane) => $"{BPM_IDENTIFIER} {BPMChange * BPM_CONVERSION}";
+    public string[] ToChartFormat(int lane) => new string[1] { $"{BPM_IDENTIFIER} {BPMChange * BPM_CONVERSION}" };
 
     public override int GetHashCode()
     {
@@ -65,14 +65,14 @@ public struct TSData : IEquatable<TSData>, IEventData
 
     public override string ToString() => $"{Numerator} / {Denominator}";
 
-    public string ToChartFormat(int lane) 
+    public string[] ToChartFormat(int lane) 
     {
         string denom;
 
         if (Denominator == 4) denom = "";
         else denom = $" {Math.Log(Denominator, 2)}";
 
-        return $"{TS_IDENTIFIER} {Numerator}{denom}"; // denom will contain leading space if needed
+        return new string[1] { $"{TS_IDENTIFIER} {Numerator}{denom}" }; // denom will contain leading space if needed
     }
     public override int GetHashCode()
     {
@@ -116,10 +116,10 @@ public struct FiveFretNoteData : IEventData, ISustainable, IEquatable<FiveFretNo
 
 
     public override string ToString() => $"(FFN: {Flag}, defaultOrientation = {Default}. {Sustain}T sustain)";
-    public string ToChartFormat(int lane)
+    public string[] ToChartFormat(int lane)
     {
         int laneIdentifier = lane != 5 ? lane : 7;
-        return $"N {laneIdentifier} {Sustain}";
+        return new string[1] { $"N {laneIdentifier} {Sustain}" };
     }
 
     public FiveFretNoteData ExportWithNewFlag(FlagType newFlag)
@@ -187,7 +187,7 @@ public struct FourLaneDrumNoteData : IEventData
         Flags = flags;
     }
 
-    public string ToChartFormat(int lane)
+    public string[] ToChartFormat(int lane)
     {
         throw new NotImplementedException();
     }
@@ -213,7 +213,7 @@ public struct GHLNoteData : IEventData
     {
         Flag = flag;
     }
-    public string ToChartFormat(int lane)
+    public string[] ToChartFormat(int lane)
     {
         throw new NotImplementedException();
     }
@@ -254,7 +254,7 @@ public struct SpecialData
         Sustain = sustain;
     }
 
-    public string ToChartFormat(int lane)
+    public string[] ToChartFormat(int lane)
     {
         throw new NotImplementedException();
     }
@@ -274,14 +274,14 @@ public struct LocalEventData
     {
         this.eventType = eventType;
     }
-    public string ToChartFormat(int lane)
+    public string[] ToChartFormat(int lane)
     {
         throw new NotImplementedException();
     }
 
 }
 
-public struct SoloEvent
+public struct SoloEventData : IEventData, IEquatable<SoloEventData>
 {
     public int StartTick;
 
@@ -300,15 +300,52 @@ public struct SoloEvent
     }
     int _etick;
 
-    public SoloEvent(int startTick, int endTick)
+    public SoloEventData(int startTick, int endTick)
     {
         StartTick = startTick;
         _etick = endTick;
     }
 
-    public SoloEvent(int startTick)
+    public SoloEventData(int startTick)
     {
         StartTick = startTick;
         _etick = int.MaxValue;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is SoloEventData data && Equals(data);
+    }
+
+    public bool Equals(IEventData data) => Equals((object)data);
+
+    public bool Equals(SoloEventData other)
+    {
+        return StartTick == other.StartTick &&
+               EndTick == other.EndTick;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(StartTick, EndTick);
+    }
+
+    public static bool operator ==(SoloEventData left, SoloEventData right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(SoloEventData left, SoloEventData right)
+    {
+        return !(left == right);
+    }
+
+    public string[] ToChartFormat(int lane)
+    {
+        return new string[2]
+        {
+            $"{StartTick} = E solo",
+            $"{EndTick} = E soloend"
+        };
     }
 }

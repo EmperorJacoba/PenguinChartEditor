@@ -33,10 +33,18 @@ public class SyncTrackInstrument : IInstrument
     public SelectionSet<TSData> tsSelection;
 
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
-    public List<SoloEvent> SoloEvents{
+    public LaneSet<SoloEventData> SoloEvents
+    {
         get { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
         set { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
     }
+
+    public SelectionSet<SoloEventData> SoloEventSelection
+    {
+        get { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
+        set { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
+    }
+
 
     public InstrumentType InstrumentName { get; set; } = InstrumentType.synctrack;
     public DifficultyType Difficulty { get; set; } = DifficultyType.easy;
@@ -622,7 +630,7 @@ public class SyncTrackInstrument : IInstrument
         foreach (var item in bpmSelectionData)
         {
             stringIDs.Add(
-                new(item.Key, item.Value.ToChartFormat(0))
+                new(item.Key, item.Value.ToChartFormat(0)[0])
                 );
             if (item.Value.Anchor)
             {
@@ -634,7 +642,7 @@ public class SyncTrackInstrument : IInstrument
         foreach (var item in tsSelectionData)
         {
             stringIDs.Add(
-                new(item.Key, item.Value.ToChartFormat(0))
+                new(item.Key, item.Value.ToChartFormat(0)[0])
                 );
         }
 
@@ -649,7 +657,7 @@ public class SyncTrackInstrument : IInstrument
         return combinedIDs.ToString();
     }
 
-    public int TotalSelectionCount
+    public int NoteSelectionCount
     {
         get
         {

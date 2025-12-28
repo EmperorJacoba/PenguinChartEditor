@@ -5,7 +5,8 @@ public class GHLInstrument : IInstrument
 {
     public Lanes<GHLNoteData> Lanes;
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
-    public List<SoloEvent> SoloEvents { get; set; }
+    public LaneSet<SoloEventData> SoloEvents { get; set; }
+    public SelectionSet<SoloEventData> SoloEventSelection { get; set; }
 
 
     public InstrumentType InstrumentName { get; set; }
@@ -13,7 +14,7 @@ public class GHLInstrument : IInstrument
     public List<int> UniqueTicks => Lanes.UniqueTicks;
 
 
-    public int TotalSelectionCount => throw new System.NotImplementedException();
+    public int NoteSelectionCount => throw new System.NotImplementedException();
 
     public bool justMoved { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 

@@ -1619,7 +1619,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 0
   lanePooler: {fileID: 1844158015}
   previewer: {fileID: 2006768576}
@@ -3389,8 +3388,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ec3a0107025ee348a0469fd210ef3a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayUIRaycaster: {fileID: 1387491380}
-  eventRaycaster: {fileID: 732549082}
   note: {fileID: 325951981}
   lane: {fileID: 1933190197}
   laneCenterPosition: 0
@@ -4475,7 +4472,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 4
   lanePooler: {fileID: 1417207405}
   previewer: {fileID: 643972404}
@@ -4646,8 +4642,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ec3a0107025ee348a0469fd210ef3a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayUIRaycaster: {fileID: 1387491380}
-  eventRaycaster: {fileID: 732549082}
   note: {fileID: 550080832}
   lane: {fileID: 1292801093}
   laneCenterPosition: 0
@@ -5070,8 +5064,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ec3a0107025ee348a0469fd210ef3a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayUIRaycaster: {fileID: 1387491380}
-  eventRaycaster: {fileID: 732549082}
   note: {fileID: 643972405}
   lane: {fileID: 536290878}
   laneCenterPosition: 4
@@ -8673,11 +8665,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1005502235}
   m_CullTransparentMesh: 1
---- !u!1 &1015155388 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1615466407518480962, guid: c957634d1c52fa54c8b752cdcbc01bbe, type: 3}
-  m_PrefabInstance: {fileID: 511702845}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1015155389 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8281992846609522562, guid: c957634d1c52fa54c8b752cdcbc01bbe, type: 3}
@@ -9448,7 +9435,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 1
   lanePooler: {fileID: 1432554526}
   previewer: {fileID: 1731475915}
@@ -10353,7 +10339,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 5
   lanePooler: {fileID: 1907842689}
   previewer: {fileID: 550080831}
@@ -12162,7 +12147,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 3
   lanePooler: {fileID: 1255020706}
   previewer: {fileID: 2117541870}
@@ -14800,7 +14784,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f47b77efbb4b0d40be54ccf917731d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  properties:
+    is3D: 0
   pooler: {fileID: 1110686253}
+  previewer: {fileID: 1969598577}
 --- !u!4 &1666396268
 Transform:
   m_ObjectHideFlags: 0
@@ -14893,16 +14880,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1683187647}
   m_CullTransparentMesh: 1
---- !u!1 &1701952071 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6015155014519168900, guid: 71a9e571e9596fa4d83a3d8695e9f407, type: 3}
-  m_PrefabInstance: {fileID: 1496450324}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1701952072 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3350591564838765585, guid: 71a9e571e9596fa4d83a3d8695e9f407, type: 3}
   m_PrefabInstance: {fileID: 1496450324}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1701952074 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6390779474239446121, guid: 71a9e571e9596fa4d83a3d8695e9f407, type: 3}
+  m_PrefabInstance: {fileID: 1496450324}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96eba055285b8154aae378bcb7245228, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1708384031
 GameObject:
   m_ObjectHideFlags: 0
@@ -14934,7 +14927,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  eventBoundary: {fileID: 2069553715}
   pooler: {fileID: 1636806883}
 --- !u!4 &1708384033
 Transform:
@@ -14951,6 +14943,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 183943802}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1713649338 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2149426271119000796, guid: c957634d1c52fa54c8b752cdcbc01bbe, type: 3}
+  m_PrefabInstance: {fileID: 511702845}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 555d68438840e51419871acfe2edb03a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1731475914
 GameObject:
   m_ObjectHideFlags: 0
@@ -14981,8 +14984,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ec3a0107025ee348a0469fd210ef3a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayUIRaycaster: {fileID: 1387491380}
-  eventRaycaster: {fileID: 732549082}
   note: {fileID: 1731475916}
   lane: {fileID: 1158524636}
   laneCenterPosition: -2
@@ -16336,7 +16337,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  eventBoundary: {fileID: 2069553715}
   laneIdentifier: 2
   lanePooler: {fileID: 1233862335}
   previewer: {fileID: 325951980}
@@ -16913,8 +16913,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1ba26d423984fa46b1f473a47096745, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  previewSoloPlate: {fileID: 1015155388}
-  previewEndPlate: {fileID: 1701952071}
+  previewSoloPlate: {fileID: 1713649338}
+  previewEndPlate: {fileID: 1701952074}
 --- !u!1001 &1970270119
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17196,8 +17196,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ec3a0107025ee348a0469fd210ef3a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayUIRaycaster: {fileID: 1387491380}
-  eventRaycaster: {fileID: 732549082}
   note: {fileID: 2006768577}
   lane: {fileID: 143122575}
   laneCenterPosition: -4
@@ -17985,8 +17983,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ec3a0107025ee348a0469fd210ef3a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayUIRaycaster: {fileID: 1387491380}
-  eventRaycaster: {fileID: 732549082}
   note: {fileID: 2117541871}
   lane: {fileID: 1482099733}
   laneCenterPosition: 2

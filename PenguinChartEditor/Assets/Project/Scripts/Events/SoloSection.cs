@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class SoloSection : MonoBehaviour, IPoolable
@@ -7,7 +5,7 @@ public class SoloSection : MonoBehaviour, IPoolable
     private const float HEIGHT_VISIBILITY_OFFSET = 0f;
     [SerializeField] GameObject overlay;
     [SerializeField] SoloPlate platehead;
-    [SerializeField] GameObject plateheadReceiver;
+    [SerializeField] SoloEnd plateheadReceiver;
 
     public bool Visible
     {
@@ -25,8 +23,8 @@ public class SoloSection : MonoBehaviour, IPoolable
     public void UpdateProperties(int startTick, int endTick)
     {
         UpdateOverlayProperties(startTick, endTick);
-        UpdatePlateheadPosition(startTick, endTick);
-        UpdateReceiverPosition(endTick);
+        platehead.InitializeEvent(startTick, endTick);
+        plateheadReceiver.InitializeEvent(startTick, endTick);
     }
 
     private void UpdateOverlayProperties(int startTick, int endTick)
@@ -48,41 +46,4 @@ public class SoloSection : MonoBehaviour, IPoolable
         overlay.transform.localScale = new(Chart.instance.SceneDetails.highway.localScale.x, 1f, localScaleZ);
     }
 
-    private void UpdatePlateheadPosition(int startTick, int endTick)
-    {
-        float zPosition;
-        if (SongTime.SongPositionTicks < startTick)
-        {
-            zPosition = (float)(Waveform.GetWaveformRatio(startTick) * Chart.instance.SceneDetails.HighwayLength);
-        }
-        else if (SongTime.SongPositionTicks > endTick)
-        {
-            zPosition = (float)(Waveform.GetWaveformRatio(endTick) * Chart.instance.SceneDetails.HighwayLength);
-        }
-        else
-        {
-            zPosition = Mathf.Floor((float)Waveform.GetWaveformRatio(SongTime.SongPositionTicks) * Chart.instance.SceneDetails.HighwayLength);
-        }
-
-        List<int> ticks = Chart.LoadedInstrument.UniqueTicks;
-        var tickCount = ticks.Where(x => x >= startTick && x <= endTick).Count();
-        var ticksHit = ticks.Where(x => x >= startTick && x <= SongTime.SongPositionTicks).Count();
-
-        platehead.UpdatePositionAndText(zPosition, notesHit: ticksHit, totalNotes: tickCount);
-    }
-
-    private void UpdateReceiverPosition(int endTick)
-    {
-        double ratio = Waveform.GetWaveformRatio(endTick);
-        if (ratio > 1) 
-        {
-            if (plateheadReceiver.activeInHierarchy) plateheadReceiver.SetActive(false);
-            return;
-        }
-
-        if (!plateheadReceiver.activeInHierarchy) plateheadReceiver.SetActive(true);
-
-        float zPosition = (float)(Waveform.GetWaveformRatio(endTick) * Chart.instance.SceneDetails.HighwayLength);
-        plateheadReceiver.transform.position = new(plateheadReceiver.transform.position.x, platehead.transform.position.y, zPosition);
-    }
 }
