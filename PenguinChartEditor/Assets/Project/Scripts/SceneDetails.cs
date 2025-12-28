@@ -34,8 +34,8 @@ public class SceneDetails : MonoBehaviour
     public PhysicsRaycaster cameraHighwayRaycaster;
 
     // Assume the center is 0.
-    float highwayLeftEndCoordinate => -(highway.localScale.x / 2);
-    float highwayRightEndCoordinate => highway.localScale.x / 2;
+    public float highwayLeftEndCoordinate => -(highway.localScale.x / 2);
+    public float highwayRightEndCoordinate => highway.localScale.x / 2;
 
     public float GetCenterXCoordinateFromLane(int lane)
     {

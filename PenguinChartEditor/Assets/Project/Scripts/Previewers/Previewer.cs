@@ -75,7 +75,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     /// </summary>
     protected abstract void UpdatePreviewer();
 
-    public bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    public static bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!Chart.showPreviewers || AudioManager.AudioPlaying ||
             Chart.instance.SceneDetails.IsSceneOverlayUIHit() || 
@@ -91,7 +91,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         }
         return true;
     }
-    public bool IsPreviewerActive() => IsPreviewerActive(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
+    public static bool IsPreviewerActive() => IsPreviewerActive(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
 
     protected virtual void Awake()
     {
