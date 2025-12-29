@@ -291,7 +291,7 @@ public struct SoloEventData : IEventData, IEquatable<SoloEventData>
         {
             // Allows setting a general open ended end tick. Used during pre-audio initialization.
             if (_etick != int.MaxValue) return _etick;
-            return SongTime.SongLengthTicks;
+            return StartTick - SongTime.SongLengthTicks;
         }
         set
         {

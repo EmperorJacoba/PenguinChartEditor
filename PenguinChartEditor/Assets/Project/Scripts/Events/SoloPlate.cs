@@ -33,13 +33,15 @@ public class SoloPlate : Event<SoloEventData>
         transform.position = new(transform.position.x, transform.position.y, zPosition);
         percentage.text = $"{Mathf.Floor((notesHit / (float)totalNotes) * 100)}%";
         counter.text = $"{notesHit} / {totalNotes}";
+
+        Selected = CheckForSelection();
     }
 
     public override int Lane => 0;
 
-    public override SelectionSet<SoloEventData> Selection => Chart.LoadedInstrument.SoloEventSelection;
+    public override SelectionSet<SoloEventData> Selection => Chart.LoadedInstrument.SoloData.SelectedStartEvents;
 
-    public override LaneSet<SoloEventData> LaneData => Chart.LoadedInstrument.SoloEvents;
+    public override LaneSet<SoloEventData> LaneData => Chart.LoadedInstrument.SoloData.SoloEvents;
 
     public override IPreviewer EventPreviewer => (IPreviewer)previewer;
     public SoloPreviewer previewer
@@ -53,16 +55,16 @@ public class SoloPlate : Event<SoloEventData>
     } // define in pooler
     SoloPreviewer _prevobj;
 
-    public override IInstrument ParentInstrument => throw new System.NotImplementedException();
+    public override IInstrument ParentInstrument => Chart.LoadedInstrument;
 
     public override void OnPointerDown(PointerEventData eventData)
     {
         if (Input.GetMouseButton(1) && eventData.button == PointerEventData.InputButton.Left)
         {
-            var targetEvent = Chart.LoadedInstrument.SoloEvents.Where(x => x.Value.StartTick == Tick).ToList();
+            var targetEvent = Chart.LoadedInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick == Tick).ToList();
             if (targetEvent.Count == 0) return;
 
-            Chart.LoadedInstrument.SoloEvents.Remove(targetEvent[0]);
+            Chart.LoadedInstrument.SoloData.SoloEvents.Remove(targetEvent[0]);
             return;
         }
 

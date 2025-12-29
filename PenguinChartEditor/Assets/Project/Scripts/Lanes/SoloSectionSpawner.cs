@@ -20,11 +20,11 @@ public class SoloSectionSpawner : SpawningLane<SoloSection>
 
     protected override List<int> GetEventsToDisplay()
     {
-        return Chart.LoadedInstrument.SoloEvents.Where(@soloEvent => Waveform.endTick > soloEvent.Value.StartTick && Waveform.startTick < soloEvent.Value.EndTick).Select(x => x.Key).ToList();
+        return Chart.LoadedInstrument.SoloData.SoloEvents.Where(@soloEvent => Waveform.endTick > soloEvent.Value.StartTick && Waveform.startTick < soloEvent.Value.EndTick).Select(x => x.Key).ToList();
     }
 
     protected override void InitializeEvent(SoloSection @event, int tick)
     {
-        @event.UpdateProperties(Chart.LoadedInstrument.SoloEvents[tick].StartTick, Chart.LoadedInstrument.SoloEvents[tick].EndTick);
+        @event.UpdateProperties(Chart.LoadedInstrument.SoloData.SoloEvents[tick].StartTick, Chart.LoadedInstrument.SoloData.SoloEvents[tick].EndTick);
     }
 }

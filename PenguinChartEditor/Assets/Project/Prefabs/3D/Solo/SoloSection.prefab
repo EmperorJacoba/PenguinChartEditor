@@ -292,9 +292,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoloPlate
       objectReference: {fileID: 0}
+    - target: {fileID: 2321745716960517008, guid: c957634d1c52fa54c8b752cdcbc01bbe, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3526644448949747804, guid: c957634d1c52fa54c8b752cdcbc01bbe, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5137980517764128770, guid: c957634d1c52fa54c8b752cdcbc01bbe, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8281992846609522562, guid: c957634d1c52fa54c8b752cdcbc01bbe, type: 3}
       propertyPath: m_LocalScale.z

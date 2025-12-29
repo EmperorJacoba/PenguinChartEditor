@@ -5,8 +5,7 @@ public class FourLaneDrumInstrument : IInstrument
 {
     public Lanes<FourLaneDrumNoteData> Lanes;
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
-    public LaneSet<SoloEventData> SoloEvents { get; set; }
-    public SelectionSet<SoloEventData> SoloEventSelection { get; set; }
+    public SoloDataSet SoloData { get; set; }
 
 
     public InstrumentType InstrumentName { get; set; }
@@ -88,7 +87,7 @@ public class FourLaneDrumInstrument : IInstrument
         throw new NotImplementedException();
     }
 
-    public bool SelectionContains(int tick, int lane)
+    public bool NoteSelectionContains(int tick, int lane)
     {
         throw new NotImplementedException();
     }

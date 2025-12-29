@@ -6,9 +6,9 @@ public class SoloEnd : Event<SoloEventData>
 {
     public override int Lane => 0;
 
-    public override SelectionSet<SoloEventData> Selection => Chart.LoadedInstrument.SoloEventSelection;
+    public override SelectionSet<SoloEventData> Selection => Chart.LoadedInstrument.SoloData.SelectedEndEvents;
 
-    public override LaneSet<SoloEventData> LaneData => Chart.LoadedInstrument.SoloEvents;
+    public override LaneSet<SoloEventData> LaneData => Chart.LoadedInstrument.SoloData.SoloEvents;
 
     public override IPreviewer EventPreviewer => (IPreviewer)previewer;
     public SoloPreviewer previewer
@@ -22,10 +22,11 @@ public class SoloEnd : Event<SoloEventData>
     } // define in pooler
     SoloPreviewer _prevobj;
 
-    public override IInstrument ParentInstrument => throw new System.NotImplementedException();
+    public override IInstrument ParentInstrument => Chart.LoadedInstrument;
 
     public override void CreateEvent(int newTick, SoloEventData newData) { } // unused - please remove from top-level
 
+    public int representedTick;
     public void InitializeEvent(int startTick, int endTick)
     {
         double ratio = Waveform.GetWaveformRatio(endTick);
@@ -35,11 +36,15 @@ public class SoloEnd : Event<SoloEventData>
             return;
         }
 
+        // Selection uses the startTick as the ID for all solo events.
+        // The tick this represents is the end tick, but the selection depends on the start tick for continuity.
         _tick = startTick;
+        representedTick = endTick;
 
         float zPosition = (float)(Waveform.GetWaveformRatio(endTick) * Chart.instance.SceneDetails.HighwayLength);
         transform.position = new(transform.position.x, transform.position.y, zPosition);
 
+        Selected = CheckForSelection();
         Visible = true;
     }
 
@@ -47,18 +52,18 @@ public class SoloEnd : Event<SoloEventData>
     {
         if (Input.GetMouseButton(1) && eventData.button == PointerEventData.InputButton.Left)
         {
-            var targetEvent = Chart.LoadedInstrument.SoloEvents.Where(x => x.Value.EndTick == Tick).ToList();
+            var targetEvent = Chart.LoadedInstrument.SoloData.SoloEvents.Where(x => x.Value.EndTick == representedTick).ToList();
             if (targetEvent.Count == 0) return;
 
-            var endTick = SongTime.SongLengthTicks;
-            var nextSoloEvent = Chart.LoadedInstrument.SoloEvents.Where(x => x.Value.StartTick > Tick);
+            var endTick = SongTime.SongLengthTicks - targetEvent[0].Value.StartTick;
+            var nextSoloEvent = Chart.LoadedInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick > representedTick);
 
             if (nextSoloEvent.Count() > 0) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
 
             var replacingEvent = new SoloEventData(targetEvent[0].Value.StartTick, endTick);
 
-            Chart.LoadedInstrument.SoloEvents.Remove(targetEvent[0]);
-            Chart.LoadedInstrument.SoloEvents.Add(replacingEvent.StartTick, replacingEvent);
+            Chart.LoadedInstrument.SoloData.SoloEvents.Remove(targetEvent[0]);
+            Chart.LoadedInstrument.SoloData.SoloEvents.Add(replacingEvent.StartTick, replacingEvent);
 
             return;
         }

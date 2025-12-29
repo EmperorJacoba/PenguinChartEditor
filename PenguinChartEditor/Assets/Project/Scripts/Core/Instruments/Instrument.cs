@@ -5,17 +5,13 @@
 // future me: PLEASE STOP ADDING <T>! IT WILL NOT WORK THIS TIME! LIKE THE 7 OTHER TIMES
 public interface IInstrument
 {
-    /// <summary>
-    /// This is a non-traditional lane. Access solo events via their start tick; all other lane set rules apply as normal
-    /// </summary>
-    LaneSet<SoloEventData> SoloEvents { get; set; }
-    SelectionSet<SoloEventData> SoloEventSelection { get; set; }
+    SoloDataSet SoloData { get; set; }
     InstrumentType InstrumentName { get; set; }
     DifficultyType Difficulty { get; set; }
     List<string> ExportAllEvents();
 
     void ClearAllSelections();
-    bool SelectionContains(int tick, int lane);
+    bool NoteSelectionContains(int tick, int lane);
     int NoteSelectionCount { get; }
     public void ShiftClickSelect(int start, int end);
     public void ShiftClickSelect(int tick);

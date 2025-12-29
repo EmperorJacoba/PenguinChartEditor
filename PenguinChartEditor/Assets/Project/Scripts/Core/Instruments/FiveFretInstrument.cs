@@ -31,8 +31,7 @@ public class FiveFretInstrument : IInstrument
 
     public Lanes<FiveFretNoteData> Lanes { get; set; }
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
-    public LaneSet<SoloEventData> SoloEvents { get; set; }
-    public SelectionSet<SoloEventData> SoloEventSelection { get; set; }
+    public SoloDataSet SoloData { get; set; }
     public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
 
@@ -61,8 +60,7 @@ public class FiveFretInstrument : IInstrument
     {
         Lanes = new(6);
         SpecialEvents = new();
-        SoloEvents = new();
-        SoloEventSelection = new(SoloEvents);
+        SoloData = new();
 
         InstrumentName = IdentifyInstrument(instrumentID);
         Difficulty = ChartEventGroup.GetDifficulty(instrumentID);
@@ -141,7 +139,7 @@ public class FiveFretInstrument : IInstrument
             laneMovement = true;
         }
 
-        if (IsSelectionEmpty()) return;
+        if (IsNoteSelectionEmpty()) return;
 
         if (!moveData.inProgress && (tickMovement || laneMovement))
         {
@@ -206,14 +204,17 @@ public class FiveFretInstrument : IInstrument
     {
         if (Chart.LoadedInstrument != this) return;
 
-        if (NoteSelectionCount == 0) return;
+        SoloData.DeleteSelection();
 
-        var totalSelection = Lanes.GetTotalSelection();
-        Lanes.DeleteAllTicksInSelection();
+        if (NoteSelectionCount != 0)
+        {
+            var totalSelection = Lanes.GetTotalSelection();
+            Lanes.DeleteAllTicksInSelection();
 
-        CheckForHoposInRange(totalSelection.Min(), totalSelection.Max());
+            CheckForHoposInRange(totalSelection.Min(), totalSelection.Max());
 
-        Lanes.ClearAllSelections();
+            Lanes.ClearAllSelections();
+        }
 
         Chart.Refresh();
     }
@@ -233,6 +234,8 @@ public class FiveFretInstrument : IInstrument
 
     public void DeleteAllEventsAtTick(int tick)
     {
+        SoloData.DeleteTick(tick);
+
         for (int i = 0; i < Lanes.Count; i++)
         {
             var lane = Lanes.GetLane(i);
@@ -276,18 +279,25 @@ public class FiveFretInstrument : IInstrument
         }
     }
 
-    public void ClearAllSelections() => Lanes.ClearAllSelections();
-    public bool SelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
+    public void ClearAllSelections()
+    {
+        Lanes.ClearAllSelections();
+        SoloData.ClearSelection();
+    }
+    public bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
 
     public void DeleteTicksInSelection()
     {
         Lanes.DeleteAllTicksInSelection();
+        SoloData.DeleteSelection();
+        Chart.Refresh();
     }
 
     public void ShiftClickSelect(int tick, bool temporary)
     {
         Lanes.TempSustainTicks.Add(tick);
         ShiftClickSelect(tick);
+        SoloData.SelectTick(tick);
     }
 
     public void ShiftClickSelect(int start, int end)
@@ -296,6 +306,7 @@ public class FiveFretInstrument : IInstrument
         {
             Lanes.GetLaneSelection(i).ShiftClickSelectInRange(start, end);
         }
+        SoloData.SelectTicksInRange(start, end);
     }
     public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
 
@@ -305,17 +316,19 @@ public class FiveFretInstrument : IInstrument
         {
             Lanes.GetLaneSelection(i).Remove(tick);
         }
+        SoloData.RemoveTickFromAllSelections(tick);
     }
 
     public void CheckForSelectionClear()
     {
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
 
-        Lanes.ClearAllSelections();
+        ClearAllSelections();
     }
 
-    public bool IsSelectionEmpty() => Lanes.IsSelectionEmpty();
+    public bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
 
+    // solos not here as of current
     public string ConvertSelectionToString()
     {
         if (Lanes.GetTotalSelection().Count == 0) return "";
@@ -383,15 +396,15 @@ public class FiveFretInstrument : IInstrument
         return combinedIDs.ToString();
     }
 
-    public void SetSelectionToNewLane(LaneOrientation lane)
+    public void SetSelectionToNewLane(LaneOrientation destinationLane)
     {
         var currentSelection = Lanes.GetTotalSelectionByLane();
-        var targetLane = Lanes.GetLane((int)lane);
-        var targetLaneSelection = Lanes.GetLaneSelection((int)lane);
+        var targetLane = Lanes.GetLane((int)destinationLane);
+        var targetLaneSelection = Lanes.GetLaneSelection((int)destinationLane);
 
         for (int i = 0; i < Lanes.Count; i++)
         {
-            if (i == (int)lane) continue;
+            if (i == (int)destinationLane) continue;
 
             var laneSelection = currentSelection[i];
             if (laneSelection.Count == 0) continue;
@@ -1150,7 +1163,7 @@ public class FiveFretInstrument : IInstrument
                                 if (openSoloEvent.StartTick == -1) continue;
 
                                 openSoloEvent = new(openSoloEvent.StartTick, uniqueTick);
-                                SoloEvents.Add(openSoloEvent.StartTick, openSoloEvent);
+                                SoloData.SoloEvents.Add(openSoloEvent.StartTick, openSoloEvent);
 
                                 openSoloEvent = new(-1);
                                 break;
@@ -1163,7 +1176,7 @@ public class FiveFretInstrument : IInstrument
             }
         }
 
-        if (openSoloEvent.StartTick >= 0) SoloEvents.Add(openSoloEvent.StartTick, openSoloEvent);
+        if (openSoloEvent.StartTick >= 0) SoloData.SoloEvents.Add(openSoloEvent.StartTick, openSoloEvent);
         CheckForHoposInRange(uniqueTicks.Min(), uniqueTicks.Max());
         FlipTicks(flippedTicks);
     }

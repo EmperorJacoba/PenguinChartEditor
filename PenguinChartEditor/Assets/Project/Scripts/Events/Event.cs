@@ -173,7 +173,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         // Regular click, no extra significant keybinds
         else
         {
-            if (!ParentInstrument.SelectionContains(Tick, Lane))
+            if (!ParentInstrument.NoteSelectionContains(Tick, Lane))
             {
                 ParentInstrument.ClearAllSelections();
             }

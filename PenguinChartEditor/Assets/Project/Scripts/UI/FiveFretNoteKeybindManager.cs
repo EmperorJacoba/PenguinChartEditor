@@ -28,7 +28,7 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
         inputMap.Charting.SustainZero.performed += x => SetCurrentSustain(0);
         inputMap.Charting.SustainCustom.performed += x =>
         {
-            if (Chart.GetActiveInstrument<FiveFretInstrument>().IsSelectionEmpty())
+            if (Chart.GetActiveInstrument<FiveFretInstrument>().IsNoteSelectionEmpty())
             {
                 noteFFSC.ActivateCustomInput();
             }
@@ -56,7 +56,7 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
     public void ChangeModifier(FiveFretNotePreviewer.NoteOption newMode)
     {
         var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
-        if (!instrument.IsSelectionEmpty())
+        if (!instrument.IsNoteSelectionEmpty())
         {
             if (newMode == FiveFretNotePreviewer.NoteOption.natural)
             {
@@ -88,7 +88,7 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
     public void SetCurrentSustain(int ticks)
     {
         var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
-        if (!instrument.IsSelectionEmpty())
+        if (!instrument.IsNoteSelectionEmpty())
         {
             instrument.SetSelectionSustain(ticks);
             return;

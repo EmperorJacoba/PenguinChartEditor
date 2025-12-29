@@ -33,18 +33,11 @@ public class SyncTrackInstrument : IInstrument
     public SelectionSet<TSData> tsSelection;
 
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
-    public LaneSet<SoloEventData> SoloEvents
+    public SoloDataSet SoloData
     {
         get { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
         set { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
     }
-
-    public SelectionSet<SoloEventData> SoloEventSelection
-    {
-        get { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
-        set { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
-    }
-
 
     public InstrumentType InstrumentName { get; set; } = InstrumentType.synctrack;
     public DifficultyType Difficulty { get; set; } = DifficultyType.easy;
@@ -589,7 +582,7 @@ public class SyncTrackInstrument : IInstrument
         tsSelection.Clear();
     }
 
-    public bool SelectionContains(int tick, int lane)
+    public bool NoteSelectionContains(int tick, int lane)
     {
         if ((LaneOrientation)lane == LaneOrientation.bpm)
         {

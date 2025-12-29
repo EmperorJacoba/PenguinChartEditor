@@ -8,7 +8,7 @@ public class FiveFretSelectionTabManager : MonoBehaviour
 
     void Update()
     {
-        var selectionEmpty = Chart.GetActiveInstrument<FiveFretInstrument>().IsSelectionEmpty();
+        var selectionEmpty = Chart.GetActiveInstrument<FiveFretInstrument>().IsNoteSelectionEmpty();
         if (noteTab.gameObject.activeInHierarchy != selectionEmpty)
             noteTab.gameObject.SetActive(selectionEmpty);
 

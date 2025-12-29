@@ -51,7 +51,7 @@ public class SoloPreviewer : Previewer
         var percentOfTrack = Waveform.GetWaveformRatio(Tick);
         var zPosition = (float)percentOfTrack * Chart.instance.SceneDetails.HighwayLength;
 
-        var activeSoloEvents = Chart.LoadedInstrument.SoloEvents.Where(x => x.Value.StartTick <= Tick && x.Value.EndTick >= Tick);
+        var activeSoloEvents = Chart.LoadedInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick <= Tick && x.Value.EndTick >= Tick);
 
         if (activeSoloEvents.Count() == 0)
         {
@@ -69,28 +69,28 @@ public class SoloPreviewer : Previewer
 
     protected override void AddCurrentEventDataToLaneSet()
     {
-        var activeSoloEvents = Chart.LoadedInstrument.SoloEvents.Where(x => x.Value.StartTick <= Tick && x.Value.EndTick >= Tick);
+        var activeSoloEvents = Chart.LoadedInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick <= Tick && x.Value.EndTick >= Tick);
 
         if (activeSoloEvents.Count() == 0)
         {
             var endTick = SongTime.SongLengthTicks;
-            var nextSoloEvent = Chart.LoadedInstrument.SoloEvents.Where(x => x.Value.StartTick > Tick);
+            var nextSoloEvent = Chart.LoadedInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick > Tick);
 
             if (nextSoloEvent.Count() > 0) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
 
-            Chart.LoadedInstrument.SoloEvents.Add(Tick, new(Tick, endTick));
+            Chart.LoadedInstrument.SoloData.SoloEvents.Add(Tick, new(Tick, endTick));
         }
         else
         {
             var soloEventList = activeSoloEvents.Select(x => x.Key).ToList();
 
-            var currentEvent = Chart.LoadedInstrument.SoloEvents[soloEventList[0]];
+            var currentEvent = Chart.LoadedInstrument.SoloData.SoloEvents[soloEventList[0]];
             if (currentEvent.StartTick == Tick) return;
 
             var replacingEvent = new SoloEventData(currentEvent.StartTick, Tick);
 
-            Chart.LoadedInstrument.SoloEvents.Remove(soloEventList[0]);
-            Chart.LoadedInstrument.SoloEvents.Add(replacingEvent.StartTick, replacingEvent);
+            Chart.LoadedInstrument.SoloData.SoloEvents.Remove(soloEventList[0]);
+            Chart.LoadedInstrument.SoloData.SoloEvents.Add(replacingEvent.StartTick, replacingEvent);
         }
     }
 
