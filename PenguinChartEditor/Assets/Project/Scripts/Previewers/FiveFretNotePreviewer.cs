@@ -4,9 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(FiveFretNote))]
 public class FiveFretNotePreviewer : Previewer
 {
-    [SerializeField] FiveFretNote note; // use Previewer.Tick, not note.tick for any tick related actions
-    [SerializeField] FiveFretLane lane;
-    [SerializeField] int laneCenterPosition;
+    FiveFretNote note; // use Previewer.Tick, not note.tick for any tick related actions
+    FiveFretLane lane;
+    float laneCenterPosition => note.xCoordinate;
 
     public static int defaultSustain = 0;
 
@@ -35,8 +35,6 @@ public class FiveFretNotePreviewer : Previewer
         get => (int)currentPlacementMode;
         set => currentPlacementMode = (NoteOption)value;
     }
-
-    public int defaultSustainPlacement = 0;
 
     protected override void UpdatePreviewer()
     {
@@ -107,11 +105,17 @@ public class FiveFretNotePreviewer : Previewer
     protected override void Awake()
     {
         base.Awake();
-        var fiveFretNote = GetComponent<FiveFretNote>();
-        fiveFretNote.LanePreviewer = this;
-        fiveFretNote.laneIdentifier = lane.laneIdentifier;
 
         FiveFretNoteKeybindManager.UpdatePreviewer += UpdatePosition;
+    }
+
+    protected void Start()
+    {
+        lane = GetComponentInParent<FiveFretLane>();
+
+        note = GetComponent<FiveFretNote>();
+        note.LanePreviewer = this;
+        note.laneIdentifier = lane.laneIdentifier;
     }
 
     FiveFretNoteData.FlagType MapPlacementModeToFlag()

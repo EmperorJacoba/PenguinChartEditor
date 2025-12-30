@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 // Each lane has its own set of notes and selections (EventData)
@@ -12,17 +11,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public override SelectionSet<FiveFretNoteData> Selection => chartInstrument.GetLaneSelection(laneIdentifier);
 
     private const float PREVIEWER_Y_OFFSET = 0.00001f;
-    [SerializeField] Transform sustain;
-    [SerializeField] MeshRenderer sustainColor;
-    [SerializeField] MeshRenderer noteColor;
-    [SerializeField] NoteColors colors;
-    [SerializeField] GameObject hopoTopper;
-    [SerializeField] GameObject strumTopper;
-    [SerializeField] GameObject tapTopper;
-    [SerializeField] MeshRenderer headBorder;
-    [SerializeField] MeshRenderer noteBase;
-    [SerializeField] GameObject noteModel;
-    [SerializeField] bool previewer;
+
+    [SerializeField] FiveFretAnatomy notePieces;
 
     public Coroutine destructionCoroutine { get; set; }
 
@@ -36,11 +26,9 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         set
         {
             if (_li == value) return;
-            if (colors != null)
-            {
-                noteColor.material = previewer ? colors.GetPreviewerMat(false) : colors.GetNoteMaterial((int)value, IsTap);
-                sustainColor.material = previewer ? colors.GetPreviewerMat(false) : colors.GetNoteMaterial((int)value, IsTap);
-            }
+
+            notePieces.ChangeColor(value, IsTap);
+
             _li = value;
             CacheXCoordinate();
         }
@@ -88,8 +76,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             if (_isHopo == value) return;
 
-            strumTopper.SetActive(!value);
-            hopoTopper.SetActive(value);
+            notePieces.ChangeHopo(value);
             _isHopo = value;
         }
     }
@@ -102,17 +89,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             if (_isTap == value) return;
 
-            noteColor.material = previewer ? colors.GetPreviewerMat(value) : colors.GetNoteMaterial((int)laneIdentifier, value);
-
-            // this script is also on opens
-            // opens do not have head borders and thus borders will be null
-            if (headBorder != null)
-            {
-                headBorder.material = colors.GetHeadColor(value);
-            }
-
-            strumTopper.SetActive(!value);
-            tapTopper.SetActive(value);
+            notePieces.ChangeTap(laneIdentifier, value);
             _isTap = value;
         }
     }
@@ -125,7 +102,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             if (_isDefault == value) return;
 
-            noteBase.material = colors.GetBaseColor(value);
+            notePieces.ChangeDefault(value);
             _isDefault = value;
         }
     }
@@ -176,11 +153,11 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     {
         if (!includeNoteHead)
         {
-            if (noteModel.activeInHierarchy) noteModel.SetActive(false);
+            notePieces.SetVisibility(false);
         }
         else
         {
-            if (!noteModel.activeInHierarchy) noteModel.SetActive(true);
+            notePieces.SetVisibility(true);
             CheckForSelection();
         }
     }
@@ -217,38 +194,17 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     {
         if (sustainOnly)
         {
-            UpdateSustain(SongTime.SongPositionTicks, Tick + LaneData[Tick].Sustain - SongTime.SongPositionTicks);
+            notePieces.UpdateSustainLength(SongTime.SongPositionTicks, Tick + LaneData[Tick].Sustain - SongTime.SongPositionTicks, transform.localPosition.z);
         }
         else
         {
-            UpdateSustain(Tick, LaneData[Tick].Sustain);
+            notePieces.UpdateSustainLength(Tick, LaneData[Tick].Sustain, transform.localPosition.z);
         }
     }
 
     void UpdateSustain(FiveFretNoteData data)
     {
-        UpdateSustain(_tick, data.Sustain);
-    }
-
-    public void UpdateSustain(int tick, int sustainLength)
-    {
-        var sustainEndPointTicks = tick + sustainLength;
-
-        var trackProportion = Waveform.GetWaveformRatio(sustainEndPointTicks);
-        var trackPosition = trackProportion * Chart.instance.SceneDetails.HighwayLength;
-
-        var noteProportion = Waveform.GetWaveformRatio(tick);
-        var notePosition = noteProportion * Chart.instance.SceneDetails.HighwayLength;
-
-        var localScaleZ = (float)(trackPosition - notePosition);
-
-        // stop it from appearing past the end of the highway
-        if (localScaleZ + transform.localPosition.z > Chart.instance.SceneDetails.HighwayLength)
-            localScaleZ = Chart.instance.SceneDetails.HighwayLength - transform.localPosition.z;
-
-        if (localScaleZ < 0) localScaleZ = 0; // box collider negative size issues??
-
-        sustain.localScale = new Vector3(sustain.localScale.x, sustain.localScale.y, localScaleZ);
+        notePieces.UpdateSustainLength(_tick, data.Sustain, transform.localPosition.z);
     }
 
     // used on sustain trail itself when click happens on trail
