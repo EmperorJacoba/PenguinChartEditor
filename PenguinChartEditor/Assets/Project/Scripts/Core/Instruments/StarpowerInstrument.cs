@@ -21,6 +21,25 @@ public class StarpowerInstrument : IInstrument
     public void AddChartFormattedEventsToInstrument(string lines, int offset)
     {
         throw new System.NotImplementedException();
+        /*
+        if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
+        {
+            Chart.Log($"Invalid special identifier for {InstrumentName} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
+            break;
+        }
+
+        if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
+        {
+            Chart.Log($"Invalid sustain for {InstrumentName} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
+            break;
+        }
+
+        if (noteIdentifier != STARPOWER_INDICATOR) break; // should only have starpower indicator, no fills or anything
+
+        SpecialEvents[uniqueTick] = new SpecialData(sustain, SpecialData.EventType.starpower);
+
+        break; 
+        */
     }
 
     public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)

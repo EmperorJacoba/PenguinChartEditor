@@ -8,8 +8,8 @@ using UnityEngine.EventSystems;
 
 public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 {
-    public override LaneSet<FiveFretNoteData> LaneData => chartInstrument.Lanes.GetLane((int)laneIdentifier);
-    public override SelectionSet<FiveFretNoteData> Selection => chartInstrument.Lanes.GetLaneSelection((int)laneIdentifier);
+    public override LaneSet<FiveFretNoteData> LaneData => chartInstrument.GetLaneData(laneIdentifier);
+    public override SelectionSet<FiveFretNoteData> Selection => chartInstrument.GetLaneSelection(laneIdentifier);
 
     private const float PREVIEWER_Y_OFFSET = 0.00001f;
     [SerializeField] Transform sustain;

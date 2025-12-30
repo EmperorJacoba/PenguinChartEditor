@@ -29,8 +29,14 @@ public class FiveFretInstrument : IInstrument
 
     #region Data
 
-    public Lanes<FiveFretNoteData> Lanes { get; set; }
-    public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
+    private Lanes<FiveFretNoteData> Lanes { get; set; }
+    public LaneSet<FiveFretNoteData> GetLaneData(int lane) => Lanes.GetLane(lane);
+    public LaneSet<FiveFretNoteData> GetLaneData(LaneOrientation lane) => Lanes.GetLane((int)lane);
+    public SelectionSet<FiveFretNoteData> GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
+    public SelectionSet<FiveFretNoteData> GetLaneSelection(LaneOrientation lane) => Lanes.GetLaneSelection((int)lane);
+
+
+
     public SoloDataSet SoloData { get; set; }
     public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
@@ -59,7 +65,6 @@ public class FiveFretInstrument : IInstrument
     public FiveFretInstrument(HeaderType instrumentID, List<KeyValuePair<int, string>> instrumentInfo)
     {
         Lanes = new(6);
-        SpecialEvents = new();
         SoloData = new();
 
         InstrumentName = IdentifyInstrument(instrumentID);
@@ -1020,6 +1025,8 @@ public class FiveFretInstrument : IInstrument
                 var values = @event.Split(' ');
                 switch (values[IDENTIFIER_INDEX])
                 {
+                    // note (pun not intended):
+                    // starpower is parsed seperately via StarpowerInstrument by the Instrument = Tab model
                     case NOTE_INDICATOR:
                         if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
                         {
@@ -1074,25 +1081,6 @@ public class FiveFretInstrument : IInstrument
                         var noteData = new FiveFretNoteData(sustain, flagType, defaultOrientation);
 
                         Lanes.GetLane((int)lane)[uniqueTick] = noteData;
-
-                        break;
-                    case SPECIAL_INDICATOR:
-
-                        if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
-                        {
-                            Chart.Log($"Invalid special identifier for {InstrumentName} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
-                            break;
-                        }
-
-                        if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
-                        {
-                            Chart.Log($"Invalid sustain for {InstrumentName} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
-                            break;
-                        }
-
-                        if (noteIdentifier != STARPOWER_INDICATOR) break; // should only have starpower indicator, no fills or anything
-
-                        SpecialEvents[uniqueTick] = new SpecialData(sustain, SpecialData.EventType.starpower);
 
                         break;
                     case EVENT_INDICATOR:

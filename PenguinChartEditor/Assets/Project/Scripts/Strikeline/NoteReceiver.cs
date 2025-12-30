@@ -68,8 +68,8 @@ public class NoteReceiver : MonoBehaviour
 
         if (SongTime.SongPositionTicks >= nextPromisedNoteHit)
         {
-            var laneData = nextIsOpen ? Chart.GetActiveInstrument<FiveFretInstrument>().Lanes.GetLane((int)FiveFretInstrument.LaneOrientation.open) :
-                Chart.GetActiveInstrument<FiveFretInstrument>().Lanes.GetLane((int)lane);
+            var laneData = nextIsOpen ? Chart.GetActiveInstrument<FiveFretInstrument>().GetLaneData(FiveFretInstrument.LaneOrientation.open) :
+                Chart.GetActiveInstrument<FiveFretInstrument>().GetLaneData(lane);
 
             var tickSustain = laneData[nextPromisedNoteHit].Sustain;
             if (tickSustain > 0)
@@ -89,9 +89,9 @@ public class NoteReceiver : MonoBehaviour
     {
         nextIsOpen = false;
 
-        var instrumentLanesObject = Chart.GetActiveInstrument<FiveFretInstrument>().Lanes;
-        var activeLaneTick = instrumentLanesObject.GetLane((int)lane).GetNextRelevantTick();
-        var openLaneTick = instrumentLanesObject.GetLane((int)FiveFretInstrument.LaneOrientation.open).GetNextRelevantTick();
+        var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
+        var activeLaneTick = instrument.GetLaneData(lane).GetNextRelevantTick();
+        var openLaneTick = instrument.GetLaneData(FiveFretInstrument.LaneOrientation.open).GetNextRelevantTick();
 
         var relevantTick = Mathf.Min(activeLaneTick, openLaneTick);
 
@@ -104,9 +104,9 @@ public class NoteReceiver : MonoBehaviour
     {
         nextIsOpen = false;
 
-        var instrumentLanesObject = Chart.GetActiveInstrument<FiveFretInstrument>().Lanes;
-        var activeLaneTick = instrumentLanesObject.GetLane((int)lane).GetFirstRelevantTick<FiveFretNoteData>();
-        var openLaneTick = instrumentLanesObject.GetLane((int)FiveFretInstrument.LaneOrientation.open).GetFirstRelevantTick<FiveFretNoteData>();
+        var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
+        var activeLaneTick = instrument.GetLaneData(lane).GetFirstRelevantTick<FiveFretNoteData>();
+        var openLaneTick = instrument.GetLaneData(FiveFretInstrument.LaneOrientation.open).GetFirstRelevantTick<FiveFretNoteData>();
 
         int relevantTick;
         if (activeLaneTick < SongTime.SongPositionTicks && openLaneTick < SongTime.SongPositionTicks)

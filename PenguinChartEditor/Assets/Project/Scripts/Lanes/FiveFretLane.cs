@@ -23,7 +23,7 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
 
     protected override List<int> GetEventsToDisplay()
     {
-        var workingLane = Chart.GetActiveInstrument<FiveFretInstrument>().Lanes.GetLane((int)laneIdentifier);
+        var workingLane = Chart.GetActiveInstrument<FiveFretInstrument>().GetLaneData(laneIdentifier);
 
         // creating the events list is incredibly slow
         // perhaps get the keys and then binary search?
