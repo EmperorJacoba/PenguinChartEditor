@@ -140,7 +140,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         _tick = tick;
         laneIdentifier = lane;
         LanePreviewer = previewer;
-        Visible = true;
         representedData = LaneData[tick];
 
         InitializeNote(!asSustainOnly);
@@ -182,7 +181,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         else
         {
             if (!noteModel.activeInHierarchy) noteModel.SetActive(true);
-            if (SelectionOverlay != null) Selected = CheckForSelection();
+            CheckForSelection();
         }
     }
 

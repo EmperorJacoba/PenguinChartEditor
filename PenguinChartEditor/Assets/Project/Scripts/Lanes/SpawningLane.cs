@@ -24,11 +24,8 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour where TEvent : IPoola
             TEvent @event = Pooler.GetObject(i);
             InitializeEvent(@event, events[i]);
         }
-
         Pooler.DeactivateUnused(i);
 
-        // HasPreviewer() is only overriden in beatline lanes
-        // there is no previewer, but rest of logic is the same
         if (HasPreviewer()) Previewer.UpdatePosition();
     }
 

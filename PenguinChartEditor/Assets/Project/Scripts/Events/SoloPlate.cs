@@ -34,7 +34,7 @@ public class SoloPlate : Event<SoloEventData>
         percentage.text = $"{Mathf.Floor((notesHit / (float)totalNotes) * 100)}%";
         counter.text = $"{notesHit} / {totalNotes}";
 
-        Selected = CheckForSelection();
+        CheckForSelection();
     }
 
     public override int Lane => 0;

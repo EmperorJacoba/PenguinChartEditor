@@ -119,6 +119,4 @@ public class NoteReceiver : MonoBehaviour
 
         return relevantTick;
     }
-
-    int ValidateEvent(int nextEvent) => nextEvent == LaneSet<FiveFretNoteData>.NO_TICK_EVENT ? SongTime.SongLengthTicks + 1 : nextEvent;
 }

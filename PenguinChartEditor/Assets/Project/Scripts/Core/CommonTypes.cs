@@ -128,5 +128,6 @@ public enum SceneType
 {
     setup,
     tempoMap,
-    fiveFretChart
+    fiveFretChart,
+    starpower,
 }

@@ -135,10 +135,16 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         CalculateSelectionStatus(pointerEventData);
     }
 
-    public bool CheckForSelection()
+    public void CheckForSelection()
     {
-        if (Selection.Contains(Tick) && SelectionOverlay != null) return true;
-        else return false;
+        if (SelectionOverlay != null && Selection.Contains(Tick))
+        {
+            Selected = true;
+        }
+        else 
+        {
+            Selected = false;
+        }
     }
 
     public static int lastTickSelection;

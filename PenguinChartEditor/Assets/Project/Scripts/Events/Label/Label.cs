@@ -111,7 +111,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         UpdatePosition(Waveform.GetWaveformRatio(_tick), Chart.instance.SceneDetails.HighwayLength);
 
         LabelText = ConvertDataToPreviewString();
-        Selected = CheckForSelection();
+        CheckForSelection();
 
         if (editTick != _tick) DeactivateManualInput();
     }

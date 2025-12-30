@@ -18,6 +18,18 @@ public class StarpowerInstrument : IInstrument
 
     public List<int> UniqueTicks => Lanes.UniqueTicks;
 
+    public StarpowerInstrument(List<KeyValuePair<int, string>> starpowerEvents)
+    {
+        int instrumentCount = 0;
+        foreach (var instrumentType in Enum.GetValues(typeof(HeaderType)))
+        {
+            // instruments begin at 10^1. Refer to HeaderType for specifics.
+            if ((int)instrumentType < 10) continue;
+            instrumentCount++;
+        }
+        Lanes = new(instrumentCount);
+    }
+
     public void AddChartFormattedEventsToInstrument(string lines, int offset)
     {
         throw new System.NotImplementedException();

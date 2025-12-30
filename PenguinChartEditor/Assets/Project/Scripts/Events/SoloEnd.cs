@@ -44,7 +44,7 @@ public class SoloEnd : Event<SoloEventData>
         float zPosition = (float)(Waveform.GetWaveformRatio(endTick) * Chart.instance.SceneDetails.HighwayLength);
         transform.position = new(transform.position.x, transform.position.y, zPosition);
 
-        Selected = CheckForSelection();
+        CheckForSelection();
         Visible = true;
     }
 

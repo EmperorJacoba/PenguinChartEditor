@@ -94,6 +94,7 @@ public class Waveform : MonoBehaviour
         }
         set
         {
+            if (Visible == value) return;
             gameObject.SetActive(value);
         }
     }
@@ -107,24 +108,14 @@ public class Waveform : MonoBehaviour
         instance = this;
         lineRendererMain = GetComponent<LineRenderer>();
         lineRendererMirror = gameObject.transform.GetChild(0).GetComponent<LineRenderer>();
+        
+
+        InitializeWaveformData();
+        if (Chart.instance.SceneDetails.is2D) Init2D();
 
         // Initial waveform state is made possible by STLM's initial fire
         SongTime.TimeChanged += GenerateWaveformPoints;
     }
-
-    protected void Start()
-    {
-        InitializeWaveformData();
-
-        // Invisible by default so that a bunch of dropdown defaulting logic isn't needed
-        // Just have user select it
-        Visible = false;
-
-        CurrentWaveform = Chart.Metadata.StemPaths.Keys.First(); // This doesn't matter much b/c waveform is invis by default
-        // This is just so that the waveform has something to generate from (avoid bricking program from error)
-        if (Chart.instance.SceneDetails.is2D) Init2D();
-    }
-
     void Init2D()
     {
         var boundsRectTransform = (RectTransform)Chart.instance.SceneDetails.highway;
@@ -180,6 +171,11 @@ public class Waveform : MonoBehaviour
     public static double startTime;
     public static double endTime;
 
+    // This uses seconds, not ticks, because ticks cannot account for positions before/after the waveform's true start.
+    // There is effectively no resolution <0 or >SongLengthTicks, and calculations get funky.
+    // Plus the inherent inaccuracy of using ticks in place of time (ticks are discrete, but time is continuous)
+    // Any precision issues from time are much less than that of ticks,
+    // and even then, it's calculated as a double. Which I think makes it better?
     public static double GetWaveformRatio(int tick)
     {
         return (Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick) - startTime) / timeShown;
@@ -198,6 +194,7 @@ public class Waveform : MonoBehaviour
         if (WaveformData.ContainsKey(CurrentWaveform))
         {
             waveformData = WaveformData[CurrentWaveform].volumeData;
+            Visible = true;
         }
         else
         {
@@ -208,6 +205,7 @@ public class Waveform : MonoBehaviour
             // the if statement in that loop is always true when an empty float[] exists in waveformData,
             // so it accurately represents no data (even though the "waveform" is actually behind the track)
             waveformData = new float[0];
+            Visible = false;
         }
 
         var sampleCount = GetSampleCapacity();
