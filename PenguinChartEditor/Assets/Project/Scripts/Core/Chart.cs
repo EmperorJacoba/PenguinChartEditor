@@ -69,6 +69,7 @@ public class Chart : MonoBehaviour
             }
         }
         AudioManager.InitializeAudio();
+        Waveform.InitializeWaveformData();
 
         SyncTrackInstrument = chartParser.syncTrackInstrument;
         SyncTrackInstrument.SetUpInputMap();

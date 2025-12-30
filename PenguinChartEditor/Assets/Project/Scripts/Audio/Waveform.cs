@@ -109,13 +109,15 @@ public class Waveform : MonoBehaviour
         lineRendererMain = GetComponent<LineRenderer>();
         lineRendererMirror = gameObject.transform.GetChild(0).GetComponent<LineRenderer>();
         
-
-        InitializeWaveformData();
-        if (Chart.instance.SceneDetails.is2D) Init2D();
-
         // Initial waveform state is made possible by STLM's initial fire
         SongTime.TimeChanged += GenerateWaveformPoints;
     }
+
+    private void Start()
+    {
+        if (Chart.instance.SceneDetails.is2D) Init2D();
+    }
+
     void Init2D()
     {
         var boundsRectTransform = (RectTransform)Chart.instance.SceneDetails.highway;
@@ -129,7 +131,7 @@ public class Waveform : MonoBehaviour
     /// <summary>
     /// Create waveform data for each stem in the ChartMetadata Stems dictionary.
     /// </summary>
-    void InitializeWaveformData()
+    public static void InitializeWaveformData()
     {
         WaveformData = new();
         Parallel.ForEach(Chart.Metadata.StemPaths.Keys, item => UpdateWaveformData(item));
@@ -139,7 +141,7 @@ public class Waveform : MonoBehaviour
     /// Update waveform data to a new audio file.
     /// </summary>
     /// <param name="stem">The BASS stream to get audio samples of.</param>
-    void UpdateWaveformData(StemType stem) // pass in file path here later
+    static void UpdateWaveformData(StemType stem) // pass in file path here later
     {
         float[] stemWaveformData = AudioManager.GetAudioSamples(stem, out long bytesPerSample);
 
