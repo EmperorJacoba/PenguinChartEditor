@@ -1,3 +1,4 @@
+using Penguin.FiveFretUI;
 using UnityEngine;
 
 [RequireComponent(typeof(FiveFretNote))]
