@@ -243,7 +243,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 1129377194858338633}
-  defaultYPos: 0
   sustain: {fileID: 6939271581842165778}
   sustainColor: {fileID: 6397297667777913142}
   noteColor: {fileID: 8180853849380158579}
@@ -255,7 +254,18 @@ MonoBehaviour:
   noteBase: {fileID: 3711626513503879828}
   noteModel: {fileID: 7426812169962370380}
   previewer: 0
-  xCoordinate: 0
+  notePieces:
+    isPreviewer: 0
+    colorPalette: {fileID: 11400000, guid: eb56b0b37d464c7499fa0617d150d4d4, type: 2}
+    noteModel: {fileID: 7426812169962370380}
+    sustainTail: {fileID: 6939271581842165778}
+    sustainColorMesh: {fileID: 6397297667777913142}
+    noteColorMesh: {fileID: 8180853849380158579}
+    headBorderMesh: {fileID: 0}
+    noteBaseMesh: {fileID: 3711626513503879828}
+    hopoTopper: {fileID: 655276822242441486}
+    strumTopper: {fileID: 6465600504821105427}
+    tapTopper: {fileID: 3608994770172177623}
 --- !u!65 &5105991374100904059
 BoxCollider:
   m_ObjectHideFlags: 0

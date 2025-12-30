@@ -7,7 +7,7 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
     public FiveFretInstrument.LaneOrientation laneIdentifier;
 
     [SerializeField] FiveFretNotePooler lanePooler;
-    [SerializeField] FiveFretNotePreviewer previewer;
+    FiveFretNotePreviewer previewer;
 
     // notes rely on this for their lane's sustain data
     public SustainData<FiveFretNoteData> sustainData = new();
@@ -17,6 +17,7 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
 
     protected void Awake()
     {
+        previewer = transform.GetChild(0).gameObject.GetComponent<FiveFretNotePreviewer>();
         Chart.ChartTabUpdated += UpdateEvents;
         AudioManager.PlaybackStateChanged += playing => { if (!playing) UpdateEvents(); };
     }
