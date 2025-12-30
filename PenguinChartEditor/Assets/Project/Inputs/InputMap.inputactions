@@ -196,15 +196,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SelectionDynamic",
-                    "type": "Button",
-                    "id": "1df2f85f-c158-4c0b-b42e-acb4a0563709",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "SustainZero",
                     "type": "Button",
                     "id": "4423d4dc-c4f6-4cf7-b4c7-3bb6a860a7c8",
@@ -325,6 +316,15 @@
                     "name": "SetEqualSpacing",
                     "type": "Button",
                     "id": "8cbfc83d-6879-4459-9c4c-31c82122c8f8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleSolos",
+                    "type": "Button",
+                    "id": "479056d3-c736-45a7-98f8-2bb448fbe94c",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -752,17 +752,6 @@
                 },
                 {
                     "name": "",
-                    "id": "3aa4d095-26ac-4d9e-b0bc-528641380ddc",
-                    "path": "<Keyboard>/y",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SelectionDynamic",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "c3603369-006d-439d-88ad-ae129a6f853e",
                     "path": "<Keyboard>/0",
                     "interactions": "",
@@ -1044,6 +1033,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "SetEqualSpacing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "31eb539b-bf62-411e-a5eb-1930696f2bb1",
+                    "path": "<Keyboard>/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleSolos",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

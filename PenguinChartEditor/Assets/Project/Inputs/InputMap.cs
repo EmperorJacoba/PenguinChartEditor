@@ -282,15 +282,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""SelectionDynamic"",
-                    ""type"": ""Button"",
-                    ""id"": ""1df2f85f-c158-4c0b-b42e-acb4a0563709"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""SustainZero"",
                     ""type"": ""Button"",
                     ""id"": ""4423d4dc-c4f6-4cf7-b4c7-3bb6a860a7c8"",
@@ -411,6 +402,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""name"": ""SetEqualSpacing"",
                     ""type"": ""Button"",
                     ""id"": ""8cbfc83d-6879-4459-9c4c-31c82122c8f8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleSolos"",
+                    ""type"": ""Button"",
+                    ""id"": ""479056d3-c736-45a7-98f8-2bb448fbe94c"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -838,17 +838,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""3aa4d095-26ac-4d9e-b0bc-528641380ddc"",
-                    ""path"": ""<Keyboard>/y"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SelectionDynamic"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""c3603369-006d-439d-88ad-ae129a6f853e"",
                     ""path"": ""<Keyboard>/0"",
                     ""interactions"": """",
@@ -1130,6 +1119,17 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SetEqualSpacing"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""31eb539b-bf62-411e-a5eb-1930696f2bb1"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleSolos"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -2404,7 +2404,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_SelectionView = m_Charting.FindAction("SelectionView", throwIfNotFound: true);
         m_Charting_SelectionEdit = m_Charting.FindAction("SelectionEdit", throwIfNotFound: true);
         m_Charting_SelectionSelect = m_Charting.FindAction("SelectionSelect", throwIfNotFound: true);
-        m_Charting_SelectionDynamic = m_Charting.FindAction("SelectionDynamic", throwIfNotFound: true);
         m_Charting_SustainZero = m_Charting.FindAction("SustainZero", throwIfNotFound: true);
         m_Charting_SustainMax = m_Charting.FindAction("SustainMax", throwIfNotFound: true);
         m_Charting_SustainCustom = m_Charting.FindAction("SustainCustom", throwIfNotFound: true);
@@ -2419,6 +2418,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_SetLane6 = m_Charting.FindAction("SetLane6", throwIfNotFound: true);
         m_Charting_SetLane7 = m_Charting.FindAction("SetLane7", throwIfNotFound: true);
         m_Charting_SetEqualSpacing = m_Charting.FindAction("SetEqualSpacing", throwIfNotFound: true);
+        m_Charting_ToggleSolos = m_Charting.FindAction("ToggleSolos", throwIfNotFound: true);
         // ExternalCharting
         m_ExternalCharting = asset.FindActionMap("ExternalCharting", throwIfNotFound: true);
         m_ExternalCharting_IncreaseStep = m_ExternalCharting.FindAction("IncreaseStep", throwIfNotFound: true);
@@ -2555,7 +2555,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_SelectionView;
     private readonly InputAction m_Charting_SelectionEdit;
     private readonly InputAction m_Charting_SelectionSelect;
-    private readonly InputAction m_Charting_SelectionDynamic;
     private readonly InputAction m_Charting_SustainZero;
     private readonly InputAction m_Charting_SustainMax;
     private readonly InputAction m_Charting_SustainCustom;
@@ -2570,6 +2569,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_SetLane6;
     private readonly InputAction m_Charting_SetLane7;
     private readonly InputAction m_Charting_SetEqualSpacing;
+    private readonly InputAction m_Charting_ToggleSolos;
     /// <summary>
     /// Provides access to input actions defined in input action map "Charting".
     /// </summary>
@@ -2666,10 +2666,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @SelectionSelect => m_Wrapper.m_Charting_SelectionSelect;
         /// <summary>
-        /// Provides access to the underlying input action "Charting/SelectionDynamic".
-        /// </summary>
-        public InputAction @SelectionDynamic => m_Wrapper.m_Charting_SelectionDynamic;
-        /// <summary>
         /// Provides access to the underlying input action "Charting/SustainZero".
         /// </summary>
         public InputAction @SustainZero => m_Wrapper.m_Charting_SustainZero;
@@ -2725,6 +2721,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Charting/SetEqualSpacing".
         /// </summary>
         public InputAction @SetEqualSpacing => m_Wrapper.m_Charting_SetEqualSpacing;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/ToggleSolos".
+        /// </summary>
+        public InputAction @ToggleSolos => m_Wrapper.m_Charting_ToggleSolos;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2814,9 +2814,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SelectionSelect.started += instance.OnSelectionSelect;
             @SelectionSelect.performed += instance.OnSelectionSelect;
             @SelectionSelect.canceled += instance.OnSelectionSelect;
-            @SelectionDynamic.started += instance.OnSelectionDynamic;
-            @SelectionDynamic.performed += instance.OnSelectionDynamic;
-            @SelectionDynamic.canceled += instance.OnSelectionDynamic;
             @SustainZero.started += instance.OnSustainZero;
             @SustainZero.performed += instance.OnSustainZero;
             @SustainZero.canceled += instance.OnSustainZero;
@@ -2859,6 +2856,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SetEqualSpacing.started += instance.OnSetEqualSpacing;
             @SetEqualSpacing.performed += instance.OnSetEqualSpacing;
             @SetEqualSpacing.canceled += instance.OnSetEqualSpacing;
+            @ToggleSolos.started += instance.OnToggleSolos;
+            @ToggleSolos.performed += instance.OnToggleSolos;
+            @ToggleSolos.canceled += instance.OnToggleSolos;
         }
 
         /// <summary>
@@ -2933,9 +2933,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SelectionSelect.started -= instance.OnSelectionSelect;
             @SelectionSelect.performed -= instance.OnSelectionSelect;
             @SelectionSelect.canceled -= instance.OnSelectionSelect;
-            @SelectionDynamic.started -= instance.OnSelectionDynamic;
-            @SelectionDynamic.performed -= instance.OnSelectionDynamic;
-            @SelectionDynamic.canceled -= instance.OnSelectionDynamic;
             @SustainZero.started -= instance.OnSustainZero;
             @SustainZero.performed -= instance.OnSustainZero;
             @SustainZero.canceled -= instance.OnSustainZero;
@@ -2978,6 +2975,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SetEqualSpacing.started -= instance.OnSetEqualSpacing;
             @SetEqualSpacing.performed -= instance.OnSetEqualSpacing;
             @SetEqualSpacing.canceled -= instance.OnSetEqualSpacing;
+            @ToggleSolos.started -= instance.OnToggleSolos;
+            @ToggleSolos.performed -= instance.OnToggleSolos;
+            @ToggleSolos.canceled -= instance.OnToggleSolos;
         }
 
         /// <summary>
@@ -3772,13 +3772,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSelectionSelect(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "SelectionDynamic" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSelectionDynamic(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "SustainZero" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -3876,6 +3869,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSetEqualSpacing(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleSolos" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleSolos(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ExternalCharting" which allows adding and removing callbacks.
