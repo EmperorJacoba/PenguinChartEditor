@@ -128,7 +128,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
             {
                 ParentInstrument.DeleteAllEventsAtTick(Tick);
             }
-            ParentInstrument.DeleteTick(Tick, Lane);
+            ParentInstrument.DeleteTickInLane(Tick, Lane);
             return;
         }
 

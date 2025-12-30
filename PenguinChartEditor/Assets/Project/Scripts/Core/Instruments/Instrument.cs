@@ -15,9 +15,7 @@ public interface IInstrument
     int NoteSelectionCount { get; }
     public void ShiftClickSelect(int start, int end);
     public void ShiftClickSelect(int tick);
-    public void ShiftClickSelect(int tick, bool temporary);
-    public void ReleaseTemporaryTicks();
-    public void RemoveTickFromAllSelections(int tick);
+    public void ClearTickFromAllSelections(int tick);
 
     List<int> UniqueTicks { get; }
 
@@ -28,7 +26,7 @@ public interface IInstrument
     void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines);
 
     void DeleteTicksInSelection();
-    void DeleteTick(int tick, int lane);
+    void DeleteTickInLane(int tick, int lane);
     void DeleteAllEventsAtTick(int tick);
        
 }

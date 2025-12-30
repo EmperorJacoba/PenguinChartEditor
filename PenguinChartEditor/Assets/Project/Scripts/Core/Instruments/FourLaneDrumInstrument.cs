@@ -53,7 +53,7 @@ public class FourLaneDrumInstrument : IInstrument
         throw new System.NotImplementedException();
     }
 
-    public void RemoveTickFromAllSelections(int tick)
+    public void ClearTickFromAllSelections(int tick)
     {
         throw new System.NotImplementedException();
     }
@@ -82,7 +82,7 @@ public class FourLaneDrumInstrument : IInstrument
         throw new NotImplementedException();
     }
 
-    public void DeleteTick(int tick, int lane)
+    public void DeleteTickInLane(int tick, int lane)
     {
         throw new NotImplementedException();
     }

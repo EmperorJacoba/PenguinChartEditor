@@ -260,6 +260,60 @@ public struct SpecialData
     }
 }
 
+public struct StarpowerEventData : IEventData, IEquatable<StarpowerEventData>, ISustainable
+{
+    public enum EventType
+    {
+        standard = 2,
+        drumFill = 64,
+        drumRoll = 65
+    }
+
+    public EventType eventType;
+    public int Sustain { get; set; }
+
+    public string[] ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool Equals(StarpowerEventData other)
+    {
+        return 
+           eventType == other.eventType &&
+           Sustain == other.Sustain;
+    }
+
+    public bool Equals(IEventData other)
+    {
+        return other is StarpowerEventData data &&
+               eventType == data.eventType &&
+               Sustain == data.Sustain;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(eventType, Sustain);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is StarpowerEventData data &&
+               eventType == data.eventType &&
+               Sustain == data.Sustain;
+    }
+
+    public static bool operator ==(StarpowerEventData left, StarpowerEventData right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(StarpowerEventData left, StarpowerEventData right)
+    {
+        return !(left == right);
+    }
+}
+
 public struct LocalEventData
 {
     public enum EventType

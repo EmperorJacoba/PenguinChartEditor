@@ -35,8 +35,8 @@ public class SyncTrackInstrument : IInstrument
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SoloDataSet SoloData
     {
-        get { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
-        set { throw new NotImplementedException("SyncTrack does not have solo events. Please reconsider how you are accessing this property."); }
+        get { throw new NotImplementedException("SyncTrack does not have solo events. If you are using the SoloEvent suite, it is not required."); }
+        set { throw new NotImplementedException("SyncTrack does not have solo events. If you are using the SoloEvent suite, it is not required."); }
     }
 
     public InstrumentType InstrumentName { get; set; } = InstrumentType.synctrack;
@@ -218,7 +218,7 @@ public class SyncTrackInstrument : IInstrument
         SongTime.InvokeTimeChanged();
     }
 
-    public void DeleteTick(int tick, int lane)
+    public void DeleteTickInLane(int tick, int lane)
     {
         if (lane == (int)LaneOrientation.bpm)
         {
@@ -608,7 +608,7 @@ public class SyncTrackInstrument : IInstrument
 
     public void ShiftClickSelect(int tick, bool temporary) => ShiftClickSelect(tick);
 
-    public void RemoveTickFromAllSelections(int tick)
+    public void ClearTickFromAllSelections(int tick)
     {
         bpmSelection.Remove(tick);
         tsSelection.Remove(tick);

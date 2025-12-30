@@ -219,32 +219,13 @@ public class FiveFretInstrument : IInstrument
         Chart.Refresh();
     }
 
-    public void DeleteTick(int tick, int lane)
-    {
-        var laneReference = Lanes.GetLane(lane);
-        if (!laneReference.Contains(tick)) return;
-
-        var poppedTick = laneReference.PopSingle(tick);
-        if (poppedTick == null) return; // future proofing in case a protected tick is ever needed for FFN
-
-        Lanes.GetLaneSelection(lane).Remove(tick);
-
-        Chart.Refresh();
-    }
+    public void DeleteTickInLane(int tick, int lane) => Lanes.PopTickFromLane(tick, lane);
 
     public void DeleteAllEventsAtTick(int tick)
     {
         SoloData.DeleteTick(tick);
 
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            var lane = Lanes.GetLane(i);
-            if (lane.Contains(tick))
-            {
-                lane.PopSingle(tick);
-            }
-        }
-
+        Lanes.PopAllEventsAtTick(tick);
         Lanes.ClearAllSelections();
     }
 
@@ -266,18 +247,7 @@ public class FiveFretInstrument : IInstrument
 
     #region Selections
 
-    public int NoteSelectionCount
-    {
-        get
-        {
-            var sum = 0;
-            for (int i = 0; i < Lanes.Count; i++)
-            {
-                sum += Lanes.GetLaneSelection(i).Count;
-            }
-            return sum;
-        }
-    }
+    public int NoteSelectionCount => Lanes.GetTotalSelectionCount();
 
     public void ClearAllSelections()
     {
@@ -290,32 +260,18 @@ public class FiveFretInstrument : IInstrument
     {
         Lanes.DeleteAllTicksInSelection();
         SoloData.DeleteSelection();
-        Chart.Refresh();
-    }
-
-    public void ShiftClickSelect(int tick, bool temporary)
-    {
-        Lanes.TempSustainTicks.Add(tick);
-        ShiftClickSelect(tick);
-        SoloData.SelectTick(tick);
     }
 
     public void ShiftClickSelect(int start, int end)
     {
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            Lanes.GetLaneSelection(i).ShiftClickSelectInRange(start, end);
-        }
+        Lanes.ShiftClickSelect(start, end);
         SoloData.SelectTicksInRange(start, end);
     }
     public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
 
-    public void RemoveTickFromAllSelections(int tick)
+    public void ClearTickFromAllSelections(int tick)
     {
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            Lanes.GetLaneSelection(i).Remove(tick);
-        }
+        Lanes.ClearTickFromAllSelections(tick);
         SoloData.RemoveTickFromAllSelections(tick);
     }
 
@@ -692,11 +648,6 @@ public class FiveFretInstrument : IInstrument
                 Lanes.GetLane(i)[tick] = new(tickLength, Lanes.GetLane(i)[tick].Flag, Lanes.GetLane(i)[tick].Default);
             }
         }
-    }
-
-    public void ReleaseTemporaryTicks()
-    {
-        Lanes.TempSustainTicks.Clear();
     }
 
     public void ValidateSustain(int tick, LaneOrientation lane)

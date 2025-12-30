@@ -16,6 +16,7 @@ public enum DifficultyType
 public enum InstrumentType
 {
     synctrack = 1,
+    starpower = 3,
     guitar = 10,
     coopGuitar = 20,
     rhythm = 30,
@@ -58,7 +59,7 @@ public enum LocalEventIdentifier
 }
 
 /// <summary>
-/// Contains possible section headers enclosed as [Name] in a .chart file.
+/// Contains possible section headers enclosed as [Name] in a .chart/.penguin file.
 /// Identifiers follow a pattern based on instrument parsing needs. Metadata/tempo has values 10^0, Five-fret is 10^1, Drums is 10^2, GHL is 10^3, Vox is 10^4.
 /// Difficulties: E = 0, M = 1, H = 2, X = 3
 /// <para> Example: Song = 0, EasySingle (Easy Guitar) = 10, MediumDrums = 101 </para>
@@ -68,6 +69,7 @@ public enum HeaderType
     Song = 0,
     SyncTrack = 1,
     Events = 2,
+    Starpower = 3,
 
     EasySingle = 10,
     MediumSingle = 11,

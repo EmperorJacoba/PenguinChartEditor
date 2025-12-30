@@ -206,7 +206,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             if (Input.GetKey(KeyCode.LeftShift) || !UserSettings.ExtSustains)
             {
-                ParentInstrument.ShiftClickSelect(Tick, true);
+                ParentInstrument.ShiftClickSelect(Tick);
                 return;
             }
             Selection.Add(Tick);

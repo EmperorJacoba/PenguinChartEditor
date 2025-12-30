@@ -196,6 +196,16 @@ public class Lanes<T> where T : IEventData
         return ticks;
     }
 
+    public int GetTotalSelectionCount()
+    {
+        var sum = 0;
+        for (int i = 0; i < Count; i++)
+        {
+            sum += selections[i].Count;
+        }
+        return sum;
+    }
+
     public bool IsSelectionEmpty()
     {
         for (int i = 0; i < Count; i++)
@@ -221,6 +231,16 @@ public class Lanes<T> where T : IEventData
         {
             selections[i].Clear();
         }
+        Chart.Refresh();
+    }
+
+    public void ClearTickFromAllSelections(int tick)
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            selections[i].Remove(tick);
+        }
+        Chart.Refresh();
     }
 
     public void RemoveTickFromTotalSelection(int tick)
@@ -229,6 +249,7 @@ public class Lanes<T> where T : IEventData
         {
             selections[i].Remove(tick);
         }
+        Chart.Refresh();
     }
 
     public void SelectAll()
@@ -247,6 +268,61 @@ public class Lanes<T> where T : IEventData
             selections[i].PopSelectedTicksFromLane();
         }
     }
+
+    public void ShiftClickSelect(int start, int end)
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            selections[i].ShiftClickSelectInRange(start, end);
+        }
+    }
+
+    public SortedDictionary<int, T>[] PopAllEventsAtTick(int tick)
+    {
+        SortedDictionary<int, T>[] poppedOutput = InitializeEmptyPopContainer();
+
+        for (int i = 0; i < Count; i++)
+        {
+            var lane = lanes[i];
+            if (lane.Contains(tick))
+            {
+                poppedOutput[tick] = lane.PopSingle(tick);
+            }
+        }
+
+        Chart.Refresh();
+        return poppedOutput;
+    }
+
+    public SortedDictionary<int, T>[] PopTickFromLane(int tick, int lane)
+    {
+        if (!lanes[lane].Contains(tick)) return null;
+
+        var poppedOutput = InitializeEmptyPopContainer();
+
+        var poppedTick = lanes[lane].PopSingle(tick);
+        if (poppedTick == null) return null; // future proofing in case a protected tick is ever needed for FFN
+
+        poppedOutput[lane] = poppedTick;
+
+        selections[lane].Remove(tick);
+
+        Chart.Refresh();
+        return poppedOutput;
+    }
+
+    SortedDictionary<int, T>[] InitializeEmptyPopContainer()
+    {
+        var output = new SortedDictionary<int, T>[Count];
+
+        for (int i = 0; i < Count; i++)
+        {
+            output[i] = new();
+        }
+
+        return output;
+    }
+
     public int Count => lanes.Length;
 }
 
