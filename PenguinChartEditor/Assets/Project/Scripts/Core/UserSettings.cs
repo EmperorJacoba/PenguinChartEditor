@@ -50,4 +50,6 @@ public static class UserSettings
     public static float DefaultPreviewLength { get; set; } = 3000.0f;
 
     public static bool OpenNoteAsFret { get; set; } = false;
+
+    public static bool SoloPlacingAllowed { get; set; } = true;
 }
