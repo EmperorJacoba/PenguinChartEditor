@@ -44,19 +44,50 @@ public class FiveFretInstrument : IInstrument
     InputMap inputMap;
 
     /// <summary>
-    /// Corresponds to this lane's position in Lanes.
+    /// Corresponds to this lane's ID in Lanes.
     /// </summary>
+
     public enum LaneOrientation
     {
-        green = 0,
-        red = 1,
-        yellow = 2,
-        blue = 3,
-        orange = 4,
-        open = 5
+        open = 0,
+        green = 1,
+        red = 2,
+        yellow = 3,
+        blue = 4,
+        orange = 5,
     }
 
-    public List<int> UniqueTicks => Lanes.UniqueTicks;
+    public static int MatchLaneOrientationToChartID(LaneOrientation lane)
+    {
+        return lane switch
+        {
+            LaneOrientation.open => 7,
+            LaneOrientation.green => 0,
+            LaneOrientation.red => 1,
+            LaneOrientation.yellow => 2,
+            LaneOrientation.blue => 3,
+            LaneOrientation.orange => 4,
+            _ => throw new ArgumentNullException($"{lane} is not one of the LaneOrientation options.")
+        };
+    }
+
+    public static LaneOrientation MatchChartIDToLaneOrientation(int chartID)
+    {
+        return chartID switch
+        {
+            0 => LaneOrientation.green,
+            1 => LaneOrientation.red,
+            2 => LaneOrientation.yellow,
+            3 => LaneOrientation.blue,
+            4 => LaneOrientation.orange,
+            5 => throw new ArgumentException($"Tried to read forced modifier (id: 5) as a note."),
+            6 => throw new ArgumentException($"Tried to read tap modifier (id: 6) as a note."),
+            7 => LaneOrientation.open,
+            _ => throw new ArgumentException($"Passed in note ID (id : {chartID}) is unknown.")
+        };
+    }
+
+    public List<int> UniqueTicks => Lanes.GetUniqueTickSet();
 
     #endregion
 
@@ -72,14 +103,13 @@ public class FiveFretInstrument : IInstrument
 
         AddChartFormattedEventsToInstrument(instrumentInfo);
 
-        for (int i = 0; i < Lanes.Count; i++)
+        foreach (var lane in Lanes.LaneKeys)
         {
-            var laneIndex = i;
             // add Lanes update needed
             // change to generic validateblic
-            Lanes.GetLane(laneIndex).UpdatesNeededInRange += (startTick, endTick) =>
+            Lanes.GetLane(lane).UpdatesNeededInRange += (startTick, endTick) =>
             {
-                if (startTick == endTick) CheckForHopos((LaneOrientation)laneIndex, startTick);
+                if (startTick == endTick) CheckForHopos((LaneOrientation)lane, startTick);
                 else CheckForHoposInRange(startTick, endTick);
             };
             Lanes.UpdatesNeededInRange += (startTick, endTick) =>
@@ -161,7 +191,7 @@ public class FiveFretInstrument : IInstrument
         }
         if (!(tickMovement || laneMovement)) return;
 
-        Lanes.SetLaneData(moveData.preMoveData);
+        Lanes.OverwriteLaneData(moveData.preMoveData);
 
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
         var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
@@ -224,7 +254,11 @@ public class FiveFretInstrument : IInstrument
         Chart.Refresh();
     }
 
-    public void DeleteTickInLane(int tick, int lane) => Lanes.PopTickFromLane(tick, lane);
+    public void DeleteTickInLane(int tick, int lane)
+    {
+        Lanes.PopTickFromLane(tick, lane);
+        Chart.Refresh();
+    }
 
     public void DeleteAllEventsAtTick(int tick)
     {
@@ -232,6 +266,7 @@ public class FiveFretInstrument : IInstrument
 
         Lanes.PopAllEventsAtTick(tick);
         Lanes.ClearAllSelections();
+        Chart.Refresh();
     }
 
     public void AddData(int tick, LaneOrientation lane, FiveFretNoteData data)
@@ -278,6 +313,7 @@ public class FiveFretInstrument : IInstrument
     {
         Lanes.ClearTickFromAllSelections(tick);
         SoloData.RemoveTickFromAllSelections(tick);
+        Chart.Refresh();
     }
 
     public void CheckForSelectionClear()
@@ -359,27 +395,9 @@ public class FiveFretInstrument : IInstrument
 
     public void SetSelectionToNewLane(LaneOrientation destinationLane)
     {
-        var currentSelection = Lanes.GetTotalSelectionByLane();
-        var targetLane = Lanes.GetLane((int)destinationLane);
-        var targetLaneSelection = Lanes.GetLaneSelection((int)destinationLane);
-
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            if (i == (int)destinationLane) continue;
-
-            var laneSelection = currentSelection[i];
-            if (laneSelection.Count == 0) continue;
-
-            var changingLane = Lanes.GetLane(i);
-
-            foreach (var selectedNote in laneSelection)
-            {
-                targetLane[selectedNote] = changingLane[selectedNote];
-                changingLane.Remove(selectedNote);
-                targetLaneSelection.Add(selectedNote);
-            }
-        }
-
+        var selectionMinMax = Lanes.GetSelectionBounds();
+        Lanes.SetSelectionToNewLane((int)destinationLane);
+        CheckForHoposInRange(selectionMinMax.min, selectionMinMax.max);
         Chart.Refresh();
     }
 
@@ -712,7 +730,7 @@ public class FiveFretInstrument : IInstrument
 
     public void ValidateSustainsInRange(int startTick, int endTick)
     {
-        var uniqueTicks = Lanes.UniqueTicks;
+        var uniqueTicks = UniqueTicks;
         var uniqueTicksInRange = uniqueTicks.Where(tick => tick >= startTick && tick <= endTick).ToList();
 
         if (UserSettings.ExtSustains)
@@ -842,7 +860,7 @@ public class FiveFretInstrument : IInstrument
 
     public void CheckForHoposInRange(int startTick, int endTick)
     {
-        var uniqueTicks = Lanes.UniqueTicks;
+        var uniqueTicks = UniqueTicks;
 
         int startIndex = uniqueTicks.BinarySearch(startTick);
 
@@ -1042,10 +1060,7 @@ public class FiveFretInstrument : IInstrument
                             continue;
                         }
 
-                        LaneOrientation lane;
-                        if (noteIdentifier != OPEN_IDENTIFIER) // 5 (forced) & 6 (tap) IDs already cleared
-                            lane = (LaneOrientation)noteIdentifier;
-                        else lane = LaneOrientation.open; // open identifier is not the same as lane orientation (index of lane dictionary)
+                        LaneOrientation lane = MatchChartIDToLaneOrientation(noteIdentifier);
 
                         bool defaultOrientation = true; // somewhat equivilent to forced
 

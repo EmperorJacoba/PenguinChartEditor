@@ -16,12 +16,12 @@ public class UniversalMoveData<T> where T : IEventData
     /// <summary>
     /// Contains the original (normalized) set of data that is being moved.
     /// </summary>
-    readonly SortedDictionary<int, T>[] originalMovingDataSet;
+    readonly Dictionary<int, SortedDictionary<int, T>> originalMovingDataSet;
 
     /// <summary>
     /// Contains the original chart data with the data being moved deleted.
     /// </summary>
-    public readonly SortedDictionary<int, T>[] preMoveData;
+    public readonly Dictionary<int, SortedDictionary<int, T>> preMoveData;
 
     public int lastGhostStartTick;
     public int lastGhostEndTick
@@ -31,7 +31,7 @@ public class UniversalMoveData<T> where T : IEventData
             HashSet<int> maxTicks = new();
             foreach (var lane in originalMovingDataSet)
             {
-                if (lane.Count > 0) maxTicks.Add(lane.Keys.Max());
+                if (lane.Value.Count > 0) maxTicks.Add(lane.Value.Keys.Max());
             }
             return lastGhostStartTick + maxTicks.Max();
         }
@@ -48,14 +48,14 @@ public class UniversalMoveData<T> where T : IEventData
     public UniversalMoveData(
         int currentMouseTick,
         int currentLane,
-        SortedDictionary<int, T>[] laneData,
-        SortedDictionary<int, T>[] selectionData,
+        Dictionary<int, SortedDictionary<int, T>> laneData,
+        Dictionary<int, SortedDictionary<int, T>> selectionData,
         int firstSelectionTick
         )
     {
         firstMouseTick = currentMouseTick;
         lastMouseTick = currentMouseTick;
-        this.firstLane = currentLane;
+        firstLane = currentLane;
 
         this.firstSelectionTick = firstSelectionTick;
         if (firstSelectionTick == SelectionSet<T>.NONE_SELECTED) return;
@@ -66,11 +66,11 @@ public class UniversalMoveData<T> where T : IEventData
         preMoveData = laneData;
         originalMovingDataSet = selectionData;
 
-        for (int i = 0; i < preMoveData.Length; i++)
+        foreach (var preMoveLane in preMoveData)
         {
-            foreach (var tick in originalMovingDataSet[i].Keys)
+            foreach (var tick in originalMovingDataSet[preMoveLane.Key].Keys)
             {
-                preMoveData[i].Remove(tick + firstSelectionTick, out T data);
+                preMoveLane.Value.Remove(tick + firstSelectionTick);
             }
         }
 
@@ -97,13 +97,13 @@ public class UniversalMoveData<T> where T : IEventData
 
         lastGhostStartTick = firstSelectionTick;
 
-        preMoveData = new SortedDictionary<int, T>[1]
+        preMoveData = new Dictionary<int, SortedDictionary<int, T>>
         {
-            laneSet.ExportData()
+            { 0, laneSet.ExportData() }
         };
-        originalMovingDataSet = new SortedDictionary<int, T>[1]
+        originalMovingDataSet = new Dictionary<int, SortedDictionary<int, T>>
         {
-            selection.ExportNormalizedData()
+            { 0,  selection.ExportNormalizedData() }
         };
 
         foreach (var tick in laneSet.protectedTicks)
@@ -130,77 +130,51 @@ public class UniversalMoveData<T> where T : IEventData
         lastLane = int.MinValue;
     }
 
-    public SortedDictionary<int, T>[] OneDGetMoveData()
+    public Dictionary<int, SortedDictionary<int, T>> OneDGetMoveData()
     {
-        SortedDictionary<int, T>[] boundsCorrectedData = new SortedDictionary<int, T>[originalMovingDataSet.Length];
+        var boundsCorrectedData = MakeEmptyDataSet();
 
-        for (int i = 0; i < originalMovingDataSet.Length; i++)
+        foreach (var movingLane in originalMovingDataSet)
         {
-            var data = new SortedDictionary<int, T>(originalMovingDataSet[i]);
-            boundsCorrectedData[i] = data;
+            var laneID = movingLane.Key;
+
+            var data = new SortedDictionary<int, T>(originalMovingDataSet[laneID]);
+            boundsCorrectedData[laneID] = data;
+
             foreach (var item in new SortedDictionary<int, T>(data))
             {
                 if (item.Key + lastGhostStartTick < 0)
                 {
-                    boundsCorrectedData[i].Remove(item.Key);
-                    boundsCorrectedData[i][0] = item.Value;
+                    boundsCorrectedData[laneID].Remove(item.Key);
+                    boundsCorrectedData[laneID][0] = item.Value;
                     continue;
                 }
 
                 if (item.Key + lastGhostStartTick > SongTime.SongLengthTicks)
                 {
-                    boundsCorrectedData[i].Remove(item.Key);
-                    boundsCorrectedData[i][SongTime.SongLengthTicks] = item.Value;
+                    boundsCorrectedData[laneID].Remove(item.Key);
+                    boundsCorrectedData[laneID][SongTime.SongLengthTicks] = item.Value;
                     continue;
                 }
-
             }
         }
 
         return boundsCorrectedData;
     }
 
-    public SortedDictionary<int, T>[] GetMoveData(int laneShift)
+    public Dictionary<int, SortedDictionary<int, T>> GetMoveData(int laneShift)
     {
         var boundsCorrectedData = OneDGetMoveData();
 
         if (laneShift == 0) return boundsCorrectedData;
 
-        // soooooo open note data is in the last array position
-        // even though in THEORY open notes should have a lower pitch
-        // than green, so put open note in the lowest position
-        // for correct moving between lanes via pitch
-        // this is done because in every other part of Penguin it makes
-        // vastly more sense for green to be 0 and not open,
-        // because in a .chart file N 0 0 means a green note (makes parsing/exporting more intuitive)
-        SortedDictionary<int, T>[] sequentialMoveData = new SortedDictionary<int, T>[originalMovingDataSet.Length];
+        var laneIDs = originalMovingDataSet.Keys.ToList();
+        laneIDs.Sort();
 
-        if (Chart.instance.SceneDetails.currentScene == SceneType.fiveFretChart)
+        var laneSmooshOutput = MakeEmptyDataSet();
+        foreach (var id in laneIDs)
         {
-            sequentialMoveData[0] = boundsCorrectedData[^1];
-            for (int i = 1; i < sequentialMoveData.Length; i++)
-            {
-                sequentialMoveData[i] = boundsCorrectedData[i - 1];
-            }
-        }
-        else sequentialMoveData = originalMovingDataSet;
-
-        SortedDictionary<int, T>[] pitchWrappedOutput = new SortedDictionary<int, T>[originalMovingDataSet.Length];
-
-        for (int i = 0; i < pitchWrappedOutput.Length; i++)
-        {
-            // this loop is here to make sure no dicts end up as
-            // null (which happens due to some lanes getting skipped
-            // by a lane shift, which will cause errors down the line)
-            // this cannot be implicitly done in the loop below
-            // because that loop is based on the cached move data,
-            // not the output data (to allow for lane "smooshing" (I have no better word to describe this))
-            pitchWrappedOutput[i] = new();
-        }
-
-        for (int i = 0; i < sequentialMoveData.Length; i++)
-        {
-            int outputTargetIndex = i + laneShift;
+            int targetLaneID = id + laneShift;
 
             // This loop is structured this way so that there is no data
             // loss when users decide to shift the lane of a selection
@@ -208,49 +182,45 @@ public class UniversalMoveData<T> where T : IEventData
             // was orange, and laneShift = +1, orange would be deleted (as it is the highest lane in this context))
             // then instead of destroying it, tell the LINQ call below to forward the data to either
             // the lowest or highest dictionary in the output.
-            if (laneShift < 0 && i < Mathf.Abs(laneShift))
+            if (laneShift < 0 && id < Mathf.Abs(laneShift))
             {
-                outputTargetIndex = 0;
+                targetLaneID = 0;
             }
-            else if (laneShift > 0 && outputTargetIndex >= pitchWrappedOutput.Length)
+            else if (laneShift > 0 && targetLaneID >= boundsCorrectedData.Count)
             {
-                outputTargetIndex = pitchWrappedOutput.Length - 1;
+                targetLaneID = boundsCorrectedData.Count - 1;
             }
 
             // taken from https://stackoverflow.com/questions/294138/merging-dictionaries-in-c-sharp (second answer)
-            sequentialMoveData[i].ToList().ForEach(item => pitchWrappedOutput[outputTargetIndex][item.Key] = item.Value);
+            boundsCorrectedData[id].ToList().ForEach(item => laneSmooshOutput[targetLaneID][item.Key] = item.Value);
         }
 
-        // undo the lane shift in the very first loop to export correct data
-        SortedDictionary<int, T>[] correctedOutput = new SortedDictionary<int, T>[originalMovingDataSet.Length];
-        if (Chart.instance.SceneDetails.currentScene == SceneType.fiveFretChart)
-        {
-            correctedOutput[^1] = pitchWrappedOutput[0];
-            for (int i = 0; i < correctedOutput.Length - 1; i++)
-            {
-                correctedOutput[i] = pitchWrappedOutput[i + 1];
-            }
-        }
-        else correctedOutput = pitchWrappedOutput;
-
-        return correctedOutput;
+        return laneSmooshOutput;
     }
 
-    public SortedDictionary<int, T>[] GetOriginalDataSet()
+    public Dictionary<int, SortedDictionary<int, T>> GetOriginalDataSet()
     {
-        SortedDictionary<int, T>[] output = new SortedDictionary<int, T>[preMoveData.Length];
-        for (int i = 0; i < preMoveData.Length; i++)
+        var output = MakeEmptyDataSet();
+        foreach (var lane in preMoveData)
         {
-            output[i] = preMoveData[i];
-        }
+            output[lane.Key] = lane.Value;
 
-        for (int i = 0; i < output.Length; i++)
-        {
-            foreach (var tick in originalMovingDataSet[i].Keys)
+            foreach (var tick in originalMovingDataSet[lane.Key].Keys)
             {
-                output[i].Add(tick + firstSelectionTick, originalMovingDataSet[i][tick]);
+                output[lane.Key].Add(tick + firstSelectionTick, originalMovingDataSet[lane.Key][tick]);
             }
         }
+
         return output;
+    }
+
+    Dictionary<int, SortedDictionary<int, T>> MakeEmptyDataSet()
+    {
+        Dictionary<int, SortedDictionary<int, T>> outputSet = new();
+        foreach (var set in originalMovingDataSet)
+        {
+            outputSet[set.Key] = new();
+        }
+        return outputSet;
     }
 }

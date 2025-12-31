@@ -1,21 +1,36 @@
+using Penguin.Debug;
 using System.Collections.Generic;
 using System.Linq;
 
 public class Lanes<T> where T : IEventData
 {
-    LaneSet<T>[] lanes;
-    SelectionSet<T>[] selections;
+    public const int NO_TICK_EVENT = -1;
+    public List<int> LaneKeys => lanes.Keys.ToList();
+    Dictionary<int, LaneSet<T>> lanes;
+    Dictionary<int, SelectionSet<T>> selections;
     public HashSet<int> TempSustainTicks = new();
 
     public Lanes(int laneCount)
     {
-        lanes = new LaneSet<T>[laneCount];
-        selections = new SelectionSet<T>[laneCount];
+        lanes = new();
+        selections = new();
 
         for (int i = 0; i < laneCount; i++)
         {
             lanes[i] = new();
             selections[i] = new(lanes[i]);
+        }
+    }
+
+    public Lanes(List<int> laneIDs)
+    {
+        lanes = new();
+        selections = new();
+
+        foreach (var id in laneIDs)
+        {
+            lanes[id] = new();
+            selections[id] = new(lanes[id]);
         }
     }
 
@@ -27,6 +42,16 @@ public class Lanes<T> where T : IEventData
     /// </summary>
     public event UpdateNeededDelegate UpdatesNeededInRange;
 
+    Dictionary<int, SortedDictionary<int, T>> MakeEmptyDataSet()
+    {
+        Dictionary<int, SortedDictionary<int, T>> outputSet = new();
+        foreach (var set in lanes)
+        {
+            outputSet[set.Key] = new();
+        }
+        return outputSet;
+    }
+
     public LaneSet<T> GetLane(int lane) => lanes[lane];
     public void SetLane(int lane, SortedDictionary<int, T> newData) => lanes[lane].Update(newData);
     public SelectionSet<T> GetLaneSelection(int lane) => selections[lane];
@@ -34,9 +59,9 @@ public class Lanes<T> where T : IEventData
     public bool IsTickChord(int tick)
     {
         int noteCount = 0;
-        for (int i = 0; i < Count; i++)
+        foreach (var lane in lanes.Values)
         {
-            if (lanes[i].ContainsKey(tick)) noteCount++;
+            if (lane.Contains(tick)) noteCount++;
             if (noteCount >= 2) return true;
         }
         return false;
@@ -45,63 +70,75 @@ public class Lanes<T> where T : IEventData
     public int GetTickCountAtTick(int tick)
     {
         int noteCount = 0;
-        for (int i = 0; i < Count; i++)
+        foreach (var lane in lanes.Values)
         {
-            if (lanes[i].ContainsKey(tick)) noteCount++;
+            if (lane.Contains(tick)) noteCount++;
         }
         return noteCount;
     }
 
-    public List<int> UniqueTicks
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>Sorted List of all ticks present in the lane data defined in this object.</returns>
+    public List<int> GetUniqueTickSet()
     {
-        get
+        HashSet<int> receiver = new();
+        foreach (var lane in lanes.Values)
         {
-            HashSet<int> receiver = new();
-            for (int i = 0; i < Count; i++)
-            {
-                receiver.UnionWith(lanes[i].Keys);
-            }
-            List<int> sortedTicks = new(receiver);
-            sortedTicks.Sort();
-            return sortedTicks;
+            receiver.UnionWith(lane.Keys);
         }
+        List<int> sortedTicks = new(receiver);
+        sortedTicks.Sort();
+        return sortedTicks;
     }
 
     public int GetFirstSelectionTick()
     {
         HashSet<int> minSelectionTicks = new();
-        for (int i = 0; i < Count; i++)
+        foreach (var selection in selections.Values)
         {
-            if (selections[i].Count > 0) minSelectionTicks.Add(selections[i].Min());
+            if (selection.Count > 0) minSelectionTicks.Add(selection.Min());
         }
         return minSelectionTicks.Count > 0 ? minSelectionTicks.Min() : SelectionSet<T>.NONE_SELECTED;
     }
 
-    public SortedDictionary<int, T>[] ExportNormalizedSelection()
+    public MinMaxTicks GetSelectionBounds()
     {
-        SortedDictionary<int, T>[] normalizedData = new SortedDictionary<int, T>[Count];
-        for (int i = 0; i < Count; i++)
+        MinMaxTracker minMaxTracker = new(Count);
+
+        foreach (var selection in selections.Values)
         {
-            normalizedData[i] = selections[i].ExportNormalizedData(GetFirstSelectionTick());
+            if (selection.Count > 0) minMaxTracker.AddTickMinMax(selection.Min(), selection.Max());
         }
-        // need code here to add relative lane-by-lane offset to preserve lane-by-lane spacing
-        return normalizedData;
+
+        return minMaxTracker.GetAbsoluteMinMax();
+    }
+
+    public Dictionary<int, SortedDictionary<int, T>> ExportNormalizedSelection()
+    {
+        var normalizedOutputSet = MakeEmptyDataSet();
+        var firstSelectionTick = GetFirstSelectionTick();
+        foreach (var selection in selections)
+        {
+            normalizedOutputSet[selection.Key] = selection.Value.ExportNormalizedData(firstSelectionTick);
+        }
+        return normalizedOutputSet;
     }
 
     public bool AnyLaneContainsTick(int tick)
     {
-        for (int i = 0; i < Count; i++)
+        foreach (var lane in lanes.Values)
         {
-            if (lanes[i].Contains(tick)) return true;
+            if (lane.Contains(tick)) return true;
         }
         return false;
     }
 
-    public const int NO_TICK_EVENT = -1;
-
     public TickBounds GetTickEventBounds(int tick)
     {
-        var ticks = UniqueTicks;
+        var ticks = GetUniqueTickSet();
+
         int prev;
         int next;
 
@@ -121,33 +158,34 @@ public class Lanes<T> where T : IEventData
         return new TickBounds(prev, next);
     }
 
-    public SortedDictionary<int, T>[] ExportData()
+    public Dictionary<int, SortedDictionary<int, T>> ExportData()
     {
-        SortedDictionary<int, T>[] saveData = new SortedDictionary<int, T>[lanes.Length];
-        for (int i = 0; i < Count; i++)
+        var exportedData = MakeEmptyDataSet();
+        foreach (var lane in lanes)
         {
-            saveData[i] = lanes[i].ExportData();
+            exportedData[lane.Key] = lane.Value.ExportData();
         }
-        return saveData;
+        return exportedData;
     }
 
-    public void SetLaneData(SortedDictionary<int, T>[] newData)
-    {
-        for (int i = 0; i < Count; i++)
+    public void OverwriteLaneData(Dictionary<int, SortedDictionary<int, T>> newData)
+    { 
+        foreach (var newDataLane in newData)
         {
-            lanes[i].OverwriteLaneDataWith(newData[i]);
-        }    
+            lanes[newDataLane.Key].OverwriteLaneDataWith(newDataLane.Value);
+        }
     }
 
-    public void OverwriteLaneDataWithOffset(SortedDictionary<int, T>[] newData, int offset)
+    public void OverwriteLaneDataWithOffset(Dictionary<int, SortedDictionary<int, T>> newData, int offset)
     {
         MinMaxTracker tracker = new(Count);
 
-        for (int i = 0; i < Count; i++)
+        foreach(var newDataLane in newData)
         {
-            lanes[i].OverwriteDataWithOffset(newData[i], offset);
-            if (newData[i].Count == 0) continue;
-            var keys = newData[i].Keys;
+            if (newDataLane.Value.Count == 0) continue;
+
+            lanes[newDataLane.Key].OverwriteDataWithOffset(newDataLane.Value, offset);
+            var keys = newDataLane.Value.Keys;
             tracker.AddTickMinMax(keys.Min(), keys.Max());
         }
 
@@ -155,32 +193,34 @@ public class Lanes<T> where T : IEventData
         UpdatesNeededInRange?.Invoke(ticks.min, ticks.max);
     }
 
-    public void OverwriteTicksFromSet(SortedDictionary<int, T>[] newData, HashSet<int>[] ticks)
+    public void OverwriteTicksFromSet(Dictionary<int, SortedDictionary<int, T>> newData, Dictionary<int, HashSet<int>> ticks)
     {
         MinMaxTracker tracker = new(Count);
-        for (int i = 0; i < Count; i++)
+        foreach (var newDataLane in newData)
         {
-            lanes[i].OverwriteTicksFromSet(ticks[i], newData[i]);
-            tracker.AddTickMinMax(ticks[i].Min(), ticks[i].Max());
+            if (ticks[newDataLane.Key].Count == 0) continue;
+
+            lanes[newDataLane.Key].OverwriteTicksFromSet(ticks[newDataLane.Key], newDataLane.Value);
+            tracker.AddTickMinMax(ticks[newDataLane.Key].Min(), ticks[newDataLane.Key].Max());
         }
         var endTicks = tracker.GetAbsoluteMinMax();
         UpdatesNeededInRange?.Invoke(endTicks.min, endTicks.max);
     }
 
-    public void ApplyScaledSelection(SortedDictionary<int, T>[] movingData, int lastPasteStartTick)
+    public void ApplyScaledSelection(Dictionary<int, SortedDictionary<int, T>> movingData, int lastPasteStartTick)
     {
-        for (int i = 0; i < Count; i++)
+        foreach (var selection in selections)
         {
-            selections[i].ApplyScaledSelection(movingData[i], lastPasteStartTick);
+            selection.Value.ApplyScaledSelection(movingData[selection.Key], lastPasteStartTick);
         }
     }
 
-    public SortedDictionary<int, T>[] PopDataInRange(int startTick, int endTick)
+    public Dictionary<int, SortedDictionary<int, T>> PopDataInRange(int startTick, int endTick)
     {
-        SortedDictionary<int, T>[] subtractedData = new SortedDictionary<int,T>[lanes.Length];
-        for (int i = 0; i < Count; i++)
+        var subtractedData = MakeEmptyDataSet();
+        foreach (var lane in lanes)
         {
-            subtractedData[i] = lanes[i].PopTicksInRange(startTick, endTick);
+            subtractedData[lane.Key] = lane.Value.PopTicksInRange(startTick, endTick);
         }
         return subtractedData;
     }
@@ -188,9 +228,9 @@ public class Lanes<T> where T : IEventData
     public HashSet<int> GetTotalSelection()
     {
         HashSet<int> ticks = new();
-        for (int i = 0; i < Count; i++)
+        foreach (var selection in selections.Values)
         {
-            ticks.UnionWith(selections[i]);
+            ticks.UnionWith(selection);
         }
 
         return ticks;
@@ -199,131 +239,135 @@ public class Lanes<T> where T : IEventData
     public int GetTotalSelectionCount()
     {
         var sum = 0;
-        for (int i = 0; i < Count; i++)
+        foreach (var selection in selections.Values)
         {
-            sum += selections[i].Count;
+            sum += selection.Count;
         }
         return sum;
     }
 
     public bool IsSelectionEmpty()
     {
-        for (int i = 0; i < Count; i++)
+        foreach (var selection in selections.Values)
         {
-            if (selections[i].Count > 0) return false;
+            if (selection.Count > 0) return false;
         }
         return true;
     }
 
-    public HashSet<int>[] GetTotalSelectionByLane()
+    public Dictionary<int, HashSet<int>> GetTotalSelectionByLane()
     {
-        HashSet<int>[] ticks = new HashSet<int>[Count];
-        for (int i = 0; i < Count; i++)
+        Dictionary<int, HashSet<int>> ticks = new();
+        foreach (var selection in selections)
         {
-            ticks[i] = selections[i].GetSelectedTicks();
+            ticks[selection.Key] = selection.Value.GetSelectedTicks();
         }
         return ticks;
     }
 
     public void ClearAllSelections()
     {
-        for (int i = 0; i < Count; i++)
+        foreach (var selection in selections.Values)
         {
-            selections[i].Clear();
+            selection.Clear();
         }
-        Chart.Refresh();
     }
 
     public void ClearTickFromAllSelections(int tick)
     {
-        for (int i = 0; i < Count; i++)
+        foreach (var selection in selections.Values)
         {
-            selections[i].Remove(tick);
+            selection.Remove(tick);
         }
-        Chart.Refresh();
     }
 
     public void RemoveTickFromTotalSelection(int tick)
     {
-        for (int i = 0; i < Count; i++)
+        foreach (var selection in selections.Values)
         {
-            selections[i].Remove(tick);
+            selection.Remove(tick);
         }
-        Chart.Refresh();
     }
 
     public void SelectAll()
     {
-        for (int i = 0; i < Count; i++)
+        foreach (var selection in selections.Values)
         {
-            selections[i].SelectAllInLane();
+            selection.SelectAllInLane();
         }
         Chart.Refresh();
     }
 
     public void DeleteAllTicksInSelection()
     {
-        for (int i = 0; i < Count; i++)
+        foreach (var selection in selections.Values)
         {
-            selections[i].PopSelectedTicksFromLane();
+            selection.PopSelectedTicksFromLane();
         }
     }
 
     public void ShiftClickSelect(int start, int end)
     {
-        for (int i = 0; i < Count; i++)
+        foreach (var selection in selections.Values)
         {
-            selections[i].ShiftClickSelectInRange(start, end);
+            selection.ShiftClickSelectInRange(start, end);
         }
     }
 
-    public SortedDictionary<int, T>[] PopAllEventsAtTick(int tick)
+    public Dictionary<int, SortedDictionary<int, T>> PopAllEventsAtTick(int tick)
     {
-        SortedDictionary<int, T>[] poppedOutput = InitializeEmptyPopContainer();
+        var poppedOutput = MakeEmptyDataSet();
 
-        for (int i = 0; i < Count; i++)
+        foreach (var lane in lanes)
         {
-            var lane = lanes[i];
-            if (lane.Contains(tick))
+            if (lane.Value.Contains(tick))
             {
-                poppedOutput[tick] = lane.PopSingle(tick);
+                poppedOutput[lane.Key] = lane.Value.PopSingle(tick);
             }
         }
 
-        Chart.Refresh();
         return poppedOutput;
     }
 
-    public SortedDictionary<int, T>[] PopTickFromLane(int tick, int lane)
+    public Dictionary<int, SortedDictionary<int, T>> PopTickFromLane(int tick, int lane)
     {
         if (!lanes[lane].Contains(tick)) return null;
 
-        var poppedOutput = InitializeEmptyPopContainer();
+        var poppedOutput = MakeEmptyDataSet();
 
         var poppedTick = lanes[lane].PopSingle(tick);
-        if (poppedTick == null) return null; // future proofing in case a protected tick is ever needed for FFN
+        if (poppedTick == null) return null;
 
         poppedOutput[lane] = poppedTick;
 
         selections[lane].Remove(tick);
 
-        Chart.Refresh();
         return poppedOutput;
     }
 
-    SortedDictionary<int, T>[] InitializeEmptyPopContainer()
+    public void SetSelectionToNewLane(int destinationLane)
     {
-        var output = new SortedDictionary<int, T>[Count];
+        var selection = GetTotalSelectionByLane();
+        var targetLane = lanes[destinationLane];
+        var targetLaneSelection = selections[destinationLane];
 
-        for (int i = 0; i < Count; i++)
+        foreach (var lane in lanes)
         {
-            output[i] = new();
-        }
+            if (lane.Key == destinationLane) continue;
 
-        return output;
+            var laneSelection = selection[lane.Key];
+            if (laneSelection.Count == 0) continue;
+            
+            foreach (var selectedNote in laneSelection)
+            {
+                targetLane[selectedNote] = lane.Value[selectedNote];
+                lane.Value.Remove(selectedNote);
+                targetLaneSelection.Add(selectedNote);
+            }
+        }
     }
 
-    public int Count => lanes.Length;
+    public int Count => lanes.Count;
 }
 
 public struct TickBounds

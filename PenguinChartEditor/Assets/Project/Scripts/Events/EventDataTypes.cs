@@ -118,7 +118,7 @@ public struct FiveFretNoteData : IEventData, ISustainable, IEquatable<FiveFretNo
     public override string ToString() => $"(FFN: {Flag}, defaultOrientation = {Default}. {Sustain}T sustain)";
     public string[] ToChartFormat(int lane)
     {
-        int laneIdentifier = lane != 5 ? lane : 7;
+        int laneIdentifier = FiveFretInstrument.MatchLaneOrientationToChartID((FiveFretInstrument.LaneOrientation)lane);
         return new string[1] { $"N {laneIdentifier} {Sustain}" };
     }
 
