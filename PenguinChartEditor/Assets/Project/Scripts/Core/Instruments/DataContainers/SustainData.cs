@@ -6,9 +6,9 @@ public class SustainData<T> where T : IEventData
     public bool sustainInProgress = false;
     public int lastMouseTick;
     public int firstMouseTick;
-    public HashSet<int>[] sustainingTicks;
+    public Dictionary<int, HashSet<int>> sustainingTicks;
 
-    public SustainData(HashSet<int>[] selection, int mouseTick)
+    public SustainData(Dictionary<int, HashSet<int>> selection, int mouseTick)
     {
         lastMouseTick = mouseTick;
         firstMouseTick = mouseTick;

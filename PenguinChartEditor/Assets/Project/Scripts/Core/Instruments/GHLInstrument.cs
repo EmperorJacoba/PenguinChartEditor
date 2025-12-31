@@ -10,7 +10,7 @@ public class GHLInstrument : IInstrument
 
     public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
-    public List<int> UniqueTicks => Lanes.UniqueTicks;
+    public List<int> UniqueTicks => Lanes.GetUniqueTickSet();
 
 
     public int NoteSelectionCount => throw new System.NotImplementedException();

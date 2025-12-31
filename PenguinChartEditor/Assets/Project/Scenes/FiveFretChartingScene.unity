@@ -1511,9 +1511,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  laneIdentifier: 0
+  laneIdentifier: 1
   lanePooler: {fileID: 1844158015}
-  previewer: {fileID: 0}
 --- !u!4 &143122576
 Transform:
   m_ObjectHideFlags: 0
@@ -1946,7 +1945,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lane: 2
+  lane: 3
 --- !u!1 &183943801
 GameObject:
   m_ObjectHideFlags: 0
@@ -2561,7 +2560,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lane: 4
+  lane: 5
 --- !u!1001 &252960650
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2617,6 +2616,10 @@ PrefabInstance:
     - target: {fileID: 2198911481680659657, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645161314564661813, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
+      propertyPath: lane
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3325,7 +3328,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 372a3af51381021449083e55ec60298b, type: 2}
     - target: {fileID: 5645161314564661813, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: lane
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4301,9 +4304,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  laneIdentifier: 4
+  laneIdentifier: 5
   lanePooler: {fileID: 1417207405}
-  previewer: {fileID: 0}
 --- !u!4 &536290879
 Transform:
   m_ObjectHideFlags: 0
@@ -5286,7 +5288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lane: 1
+  lane: 2
 --- !u!1 &682007387
 GameObject:
   m_ObjectHideFlags: 0
@@ -6326,7 +6328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lane: 3
+  lane: 4
 --- !u!1 &764433763
 GameObject:
   m_ObjectHideFlags: 0
@@ -6779,7 +6781,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 6fdab26df1d6caf49a173a70a065805c, type: 2}
     - target: {fileID: 5645161314564661813, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: lane
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -8320,7 +8322,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 563f86fbb2c654d4e8897110a5fcd0ca, type: 2}
     - target: {fileID: 5645161314564661813, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: lane
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9118,9 +9120,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  laneIdentifier: 1
+  laneIdentifier: 2
   lanePooler: {fileID: 1432554526}
-  previewer: {fileID: 0}
 --- !u!4 &1158524637
 Transform:
   m_ObjectHideFlags: 0
@@ -10060,9 +10061,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  laneIdentifier: 5
+  laneIdentifier: 0
   lanePooler: {fileID: 1907842689}
-  previewer: {fileID: 0}
 --- !u!4 &1292801094
 Transform:
   m_ObjectHideFlags: 0
@@ -10980,7 +10980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lane: 5
+  lane: 0
 --- !u!1 &1454501874
 GameObject:
   m_ObjectHideFlags: 0
@@ -11524,9 +11524,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  laneIdentifier: 3
+  laneIdentifier: 4
   lanePooler: {fileID: 1255020706}
-  previewer: {fileID: 0}
 --- !u!4 &1482099734
 Transform:
   m_ObjectHideFlags: 0
@@ -14106,7 +14105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee9442510bdf344abac9da03b3b7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lane: 0
+  lane: 1
 --- !u!1 &1794188386
 GameObject:
   m_ObjectHideFlags: 0
@@ -14954,9 +14953,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
-  laneIdentifier: 2
+  laneIdentifier: 3
   lanePooler: {fileID: 1233862335}
-  previewer: {fileID: 0}
 --- !u!4 &1933190198
 Transform:
   m_ObjectHideFlags: 0
@@ -15302,7 +15300,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 9b4b664a22f05924a8efae8be3a593a0, type: 2}
     - target: {fileID: 5645161314564661813, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
       propertyPath: lane
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

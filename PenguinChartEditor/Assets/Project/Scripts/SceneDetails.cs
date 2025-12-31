@@ -45,6 +45,8 @@ public class SceneDetails : MonoBehaviour
  
         if (currentScene == SceneType.fiveFretChart)
         {
+            // This is to make up for the fact that LaneOrientation sets open to position 0
+            // for pitch reasons. Green is effectively lane zero but pitch says otherwise
             var laneZeroCenterCoordinate = highwayLeftEndCoordinate + (laneWidth / 2);
 
             // open notes are weird...
@@ -55,11 +57,11 @@ public class SceneDetails : MonoBehaviour
             if (UserSettings.OpenNoteAsFret)
             {
                 if (lane == (int)FiveFretInstrument.LaneOrientation.open) return laneZeroCenterCoordinate;
-                lane = lane + 1;
             }
             else // center is 0 for the bar note
             {
                 if (lane == (int)FiveFretInstrument.LaneOrientation.open) return 0;
+                lane--;
             }
 
             return laneZeroCenterCoordinate + (laneWidth * lane);

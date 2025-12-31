@@ -38,6 +38,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     {
         xCoordinate = Chart.instance.SceneDetails.GetCenterXCoordinateFromLane((int)laneIdentifier);
     }
+
     public float xCoordinate;
 
 

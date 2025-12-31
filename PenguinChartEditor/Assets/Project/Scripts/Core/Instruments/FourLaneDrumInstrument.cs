@@ -12,7 +12,7 @@ public class FourLaneDrumInstrument : IInstrument
     public DifficultyType Difficulty { get; set; }
 
     public int NoteSelectionCount => throw new System.NotImplementedException();
-    public List<int> UniqueTicks => Lanes.UniqueTicks;
+    public List<int> UniqueTicks => Lanes.GetUniqueTickSet();
 
 
     public enum LaneOrientation

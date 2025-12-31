@@ -16,7 +16,7 @@ public class StarpowerInstrument : IInstrument
 
     public int NoteSelectionCount => Lanes.GetTotalSelectionCount();
 
-    public List<int> UniqueTicks => Lanes.UniqueTicks;
+    public List<int> UniqueTicks => Lanes.GetUniqueTickSet();
 
     public StarpowerInstrument(List<KeyValuePair<int, string>> starpowerEvents)
     {
@@ -66,9 +66,18 @@ public class StarpowerInstrument : IInstrument
         throw new System.NotImplementedException();
     }
 
-    public void DeleteAllEventsAtTick(int tick) => Lanes.PopAllEventsAtTick(tick);
+    public void DeleteAllEventsAtTick(int tick) 
+    {
+        Lanes.PopAllEventsAtTick(tick);
+        Chart.Refresh();
+    }
 
-    public void DeleteTickInLane(int tick, int lane) => Lanes.PopTickFromLane(tick, lane);
+
+    public void DeleteTickInLane(int tick, int lane) 
+    { 
+        Lanes.PopTickFromLane(tick, lane);
+        Chart.Refresh();
+    }
 
     public void DeleteTicksInSelection() => Lanes.DeleteAllTicksInSelection();
 
