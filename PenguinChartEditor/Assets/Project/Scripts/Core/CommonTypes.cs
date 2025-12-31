@@ -9,6 +9,15 @@ public enum DifficultyType
     expert = 3
 }
 
+public enum InstrumentCategory
+{
+    None = 1,
+    FiveFret = 10,
+    FourLaneDrums = 100,
+    GHL = 1000,
+    Vox = 10000
+}
+
 /// <summary>
 /// The instrument that a given chunk of track data belongs to (guitar, bass, drums, etc.)
 /// <para>Parallel to HeaderType numbering.</para>
