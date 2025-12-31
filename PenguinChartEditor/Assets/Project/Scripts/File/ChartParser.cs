@@ -265,15 +265,15 @@ public class ChartParser
     {
         switch (chartEventGroup.GetInstrumentGroup())
         {
-            case ChartEventGroup.InstrumentGroup.FiveFret:
+            case InstrumentCategory.FiveFret:
                 return new FiveFretInstrument(chartEventGroup.EventGroupIdentifier, chartEventGroup.data);
-            case ChartEventGroup.InstrumentGroup.FourLaneDrums:
+            case InstrumentCategory.FourLaneDrums:
                 // parse drums
                 break;
-            case ChartEventGroup.InstrumentGroup.GHL:
+            case InstrumentCategory.GHL:
                 // parse GHL
                 break;
-            case ChartEventGroup.InstrumentGroup.Vox:
+            case InstrumentCategory.Vox:
                 // parse vox
                 break;
         }
@@ -292,24 +292,15 @@ public class ChartParser
 /// </summary>
 class ChartEventGroup
 {
-    public enum InstrumentGroup
-    {
-        None,
-        FiveFret,
-        FourLaneDrums,
-        GHL,
-        Vox,
-    }
-
-    public InstrumentGroup GetInstrumentGroup()
+    public InstrumentCategory GetInstrumentGroup()
     {
         return (int)EventGroupIdentifier switch
         {
-            < 10 => InstrumentGroup.None,
-            < 100 => InstrumentGroup.FiveFret,
-            < 1000 => InstrumentGroup.FourLaneDrums,
-            < 10000 => InstrumentGroup.GHL,
-            < 100000 => InstrumentGroup.Vox,
+            < 10 => InstrumentCategory.None,
+            < 100 => InstrumentCategory.FiveFret,
+            < 1000 => InstrumentCategory.FourLaneDrums,
+            < 10000 => InstrumentCategory.GHL,
+            < 100000 => InstrumentCategory.Vox,
             _ => throw new ArgumentException("Tried to get invalid instrument group.")
         };
     }
