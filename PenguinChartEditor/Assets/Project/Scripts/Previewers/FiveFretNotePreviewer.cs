@@ -5,6 +5,7 @@ public class FiveFretNotePreviewer : Previewer
 {
     FiveFretNote note; // use Previewer.Tick, not note.tick for any tick related actions
     FiveFretLane lane;
+    FiveFretInstrument parentFiveFretInstrument => (FiveFretInstrument)lane.parentGameInstrument.representedInstrument;
     float laneCenterPosition => note.xCoordinate;
 
     public static int defaultSustain = 0;
@@ -58,7 +59,7 @@ public class FiveFretNotePreviewer : Previewer
         if (currentPlacementMode == NoteOption.natural)
         {
             previewFlag =
-                Chart.GetActiveInstrument<FiveFretInstrument>().PreviewTickHopo(lane.laneIdentifier, Tick) ?
+                parentFiveFretInstrument.PreviewTickHopo(lane.laneIdentifier, Tick) ?
                 FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
         }
         else
@@ -137,7 +138,7 @@ public class FiveFretNotePreviewer : Previewer
             Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(Tick + AppliedSustain) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(Tick) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
             0 : AppliedSustain;
 
-        Chart.GetActiveInstrument<FiveFretInstrument>().AddData(
+        parentFiveFretInstrument.AddData(
             Tick,
             note.laneIdentifier,
             new FiveFretNoteData(

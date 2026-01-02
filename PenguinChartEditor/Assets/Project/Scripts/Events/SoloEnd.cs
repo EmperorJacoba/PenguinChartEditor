@@ -4,19 +4,24 @@ using UnityEngine.EventSystems;
 
 public class SoloEnd : Event<SoloEventData>
 {
-    public override int Lane => 0;
+    public override int Lane => int.MinValue;
+    public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
 
-    public override SelectionSet<SoloEventData> Selection => Chart.LoadedInstrument.SoloData.SelectedEndEvents;
+    SoloSectionLane ParentLane { get; set; }
 
-    public override LaneSet<SoloEventData> LaneData => Chart.LoadedInstrument.SoloData.SoloEvents;
+    public override SelectionSet<SoloEventData> Selection => ParentInstrument.SoloData.SelectedEndEvents;
 
-    public override IInstrument ParentInstrument => Chart.LoadedInstrument;
+    public override LaneSet<SoloEventData> LaneData => ParentInstrument.SoloData.SoloEvents;
+
+    public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
 
     public override void CreateEvent(int newTick, SoloEventData newData) { } // unused - please remove from top-level
 
     public int representedTick;
-    public void InitializeEvent(int startTick, int endTick)
+    public void InitializeEvent(SoloSectionLane parentLane, int startTick, int endTick)
     {
+        ParentLane = parentLane;
+
         double ratio = Waveform.GetWaveformRatio(endTick);
         if (ratio > 1)
         {
@@ -40,18 +45,18 @@ public class SoloEnd : Event<SoloEventData>
     {
         if (Input.GetMouseButton(1) && eventData.button == PointerEventData.InputButton.Left)
         {
-            var targetEvent = Chart.LoadedInstrument.SoloData.SoloEvents.Where(x => x.Value.EndTick == representedTick).ToList();
+            var targetEvent = LaneData.Where(x => x.Value.EndTick == representedTick).ToList();
             if (targetEvent.Count == 0) return;
 
             var endTick = SongTime.SongLengthTicks - targetEvent[0].Value.StartTick;
-            var nextSoloEvent = Chart.LoadedInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick > representedTick);
+            var nextSoloEvent = LaneData.Where(x => x.Value.StartTick > representedTick);
 
             if (nextSoloEvent.Count() > 0) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
 
             var replacingEvent = new SoloEventData(targetEvent[0].Value.StartTick, endTick);
 
-            Chart.LoadedInstrument.SoloData.SoloEvents.Remove(targetEvent[0]);
-            Chart.LoadedInstrument.SoloData.SoloEvents.Add(replacingEvent.StartTick, replacingEvent);
+            LaneData.Remove(targetEvent[0]);
+            LaneData.Add(replacingEvent.StartTick, replacingEvent);
 
             return;
         }
@@ -59,5 +64,5 @@ public class SoloEnd : Event<SoloEventData>
         CalculateSelectionStatus(eventData);
     }
 
-    public override void RefreshLane() => SoloSectionSpawner.instance.UpdateEvents();
+    public override void RefreshLane() => ParentLane.UpdateEvents();
 }

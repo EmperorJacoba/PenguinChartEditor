@@ -99,13 +99,6 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
         UpdatePreviewer?.Invoke();
     }
 
-    void ActivateCustomInput()
-    {
-        var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
-
-
-    }
-
     public void SetSelectionLane(FiveFretInstrument.LaneOrientation lane)
     {
         var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();

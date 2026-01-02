@@ -20,11 +20,11 @@ public class SoloSection : MonoBehaviour, IPoolable
     public int Tick { get; set; }
     public Coroutine destructionCoroutine { get; set; }
 
-    public void UpdateProperties(int startTick, int endTick)
+    public void UpdateProperties(SoloSectionLane parentLane, int startTick, int endTick)
     {
         UpdateOverlayProperties(startTick, endTick);
-        platehead.InitializeEvent(startTick, endTick);
-        plateheadReceiver.InitializeEvent(startTick, endTick);
+        platehead.InitializeEvent(parentLane, startTick, endTick);
+        plateheadReceiver.InitializeEvent(parentLane, startTick, endTick);
     }
 
     private void UpdateOverlayProperties(int startTick, int endTick)

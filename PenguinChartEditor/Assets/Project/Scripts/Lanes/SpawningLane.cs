@@ -34,6 +34,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour where TEvent : IPoola
     protected virtual bool HasPreviewer() => true;
 
     public GameInstrument parentGameInstrument;
+    public IInstrument parentInstrument => parentGameInstrument.representedInstrument;
     protected virtual void Awake()
     {
         if (transform.parent.name == "Lanes")

@@ -5,7 +5,7 @@ using UnityEngine;
 public class NoteReceiver : MonoBehaviour
 {
     Animator animator;
-    [SerializeField] FiveFretInstrument.LaneOrientation lane;
+    [SerializeField] int lane;
     bool firstLoop = true;
 
     void PlayNoSustain()
