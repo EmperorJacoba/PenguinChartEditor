@@ -14,7 +14,7 @@ public class GameInstrument : MonoBehaviour
     public Vector3 GetCursorHighwayPosition() => highway.GetCursorHighwayPosition();
     public float GetCursorHighwayProportion() => highway.GetCursorHighwayProportion();
 
-    void Start()
+    void Awake()
     {
         representedInstrument = Chart.LoadedInstrument;
     }

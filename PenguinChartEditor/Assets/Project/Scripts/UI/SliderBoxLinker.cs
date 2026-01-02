@@ -35,7 +35,7 @@ public class SliderBoxLinker : MonoBehaviour
     void Awake()
     {
         slider.onValueChanged.AddListener(x => SliderChange(x));
-        entryBox.onEndEdit.AddListener(x => EntryBoxChange(x));
+        entryBox.onValueChanged.AddListener(x => EntryBoxChange(x));
     }
 
     void Start()
@@ -85,18 +85,7 @@ public class SliderBoxLinker : MonoBehaviour
     /// <param name="newValue"></param>
     void EntryBoxChange(string newValue)
     {
-        // Entry boxes should be decimal numerical only
-        var valueAsFloat = float.Parse(newValue);
-
-        // Anything >10000 seems to make unity die so let's not do that
-        // I like insane customizability but I really don't want someone to lose their work because they set hyperspeed to 100,000,000
-        if (valueAsFloat > VARIABLE_SAFETY_UPPER_BOUND)
-        {
-            valueAsFloat = VARIABLE_SAFETY_UPPER_BOUND;
-        }
-
-        // This will cause div by zero errors if not here
-        if (valueAsFloat == 0)
+        if (!float.TryParse(newValue, out var valueAsFloat) && (valueAsFloat <= 0 || valueAsFloat > VARIABLE_SAFETY_UPPER_BOUND))
         {
             return;
         }
@@ -140,9 +129,7 @@ public class SliderBoxLinker : MonoBehaviour
                 AudioManager.ChangeAudioSpeed(newValue);
                 break;
             case WaveformProperties.highwayLength:
-                highway.localScale = new(highway.localScale.x, highway.localScale.y, newValue);
-                Waveform.GenerateWaveformPoints();
-                Chart.Refresh();
+                Highway3D.highwayLength = newValue;
                 break;
 
         } 

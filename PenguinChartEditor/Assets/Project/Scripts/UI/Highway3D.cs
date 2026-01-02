@@ -49,6 +49,8 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
     void UpdateLength()
     {
         Length = _hL;
+        Waveform.GenerateWaveformPoints();
+        Chart.Refresh();
     }
 
     public float LeftEndCoordinate => -(transform.localScale.x / 2);
