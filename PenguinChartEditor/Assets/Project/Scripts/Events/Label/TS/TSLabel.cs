@@ -7,7 +7,6 @@ public class TSLabel : Label<TSData>, IPoolable
     public override SelectionSet<TSData> Selection => Chart.SyncTrackInstrument.tsSelection;
     public override LaneSet<TSData> LaneData => Chart.SyncTrackInstrument.TimeSignatureEvents;
     public override void RefreshLane() => TSLane.instance.UpdateEvents();
-    public override IPreviewer EventPreviewer => TSPreviewer.instance;
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
     public Coroutine destructionCoroutine { get; set; }
     [SerializeField] Warning tsWarningAlert;

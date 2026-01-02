@@ -395,6 +395,7 @@ public class FiveFretInstrument : IInstrument
 
     public void SetSelectionToNewLane(LaneOrientation destinationLane)
     {
+        if (IsNoteSelectionEmpty()) return;
         var selectionMinMax = Lanes.GetSelectionBounds();
         Lanes.SetSelectionToNewLane((int)destinationLane);
         CheckForHoposInRange(selectionMinMax.min, selectionMinMax.max);

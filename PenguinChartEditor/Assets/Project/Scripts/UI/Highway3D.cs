@@ -10,7 +10,6 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
 {
     public InstrumentCategory highwayDisplayType;
     public int laneWidth;
-    public Transform highwayComponentTransform;
     public float Length
     {
         get
@@ -41,16 +40,6 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
     public void Awake()
     {
         HighwayLengthChanged += UpdateLength;
-        highwayComponentTransform = transform.GetChild(0);
-        if (highwayComponentTransform.name != "BaseHighwayComponents")
-        {
-            Debug.LogWarning(
-                $"Please check to make sure that all present highways are structured properly. " +
-                $"Expected the first child to be \"BaseHighwayComponents\", " +
-                $"found {highwayComponentTransform.name} instead. " +
-                $"This could cause raycasting issues when pinpointing " +
-                $"cursor positions if not fixed. Please make sure the highway component structure is correct.");
-        }
     }
 
     void UpdateLength()
@@ -112,7 +101,7 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
 
         if (results.Count == 0) return new Vector3(int.MinValue, int.MinValue, int.MinValue);
 
-        var relevantResult = results.Find(x => x.gameObject.transform.IsChildOf(highwayComponentTransform));
+        var relevantResult = results.Find(x => x.gameObject.transform.IsChildOf(transform));
         return relevantResult.worldPosition;
     }
 
@@ -134,12 +123,6 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
 
         return results[0].worldPosition.z / Length;
     }
-
-    void Update()
-    {
-        GetCursorHighwayPosition();
-    }
-
     public void OnPointerDown(PointerEventData eventData)
     {
         Chart.LoadedInstrument.ClearAllSelections();

@@ -14,7 +14,6 @@ public interface IEvent
     ILaneData GetLaneData();
 
     IInstrument ParentInstrument { get; }
-    IPreviewer EventPreviewer { get; }
 
     void RefreshLane();
     bool IsPreviewEvent { get; set; }
@@ -82,7 +81,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
     public abstract LaneSet<T> LaneData { get; }
     public ILaneData GetLaneData() => LaneData;
 
-    public abstract IPreviewer EventPreviewer { get; }
     public abstract IInstrument ParentInstrument { get; }
 
     /// <summary>

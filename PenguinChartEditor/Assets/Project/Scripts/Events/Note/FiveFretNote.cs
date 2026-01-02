@@ -45,18 +45,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     // starts as -1 so the redundancy check in laneIdentifier.set does not return true when setting lane to 0
     FiveFretInstrument.LaneOrientation _li = (FiveFretInstrument.LaneOrientation)(-1);
 
-    public override IPreviewer EventPreviewer => LanePreviewer;
-    public IPreviewer LanePreviewer
-    {
-        get => _prevobj;
-        set
-        {
-            if (_prevobj == value) return;
-            _prevobj = value;
-        }
-    } // define in pooler
-    IPreviewer _prevobj;
-
     FiveFretLane parentLane
     {
         get
@@ -117,7 +105,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     {
         _tick = tick;
         laneIdentifier = lane;
-        LanePreviewer = previewer;
         representedData = LaneData[tick];
 
         InitializeNote(!asSustainOnly);

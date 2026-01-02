@@ -10,18 +10,6 @@ public class SoloEnd : Event<SoloEventData>
 
     public override LaneSet<SoloEventData> LaneData => Chart.LoadedInstrument.SoloData.SoloEvents;
 
-    public override IPreviewer EventPreviewer => (IPreviewer)previewer;
-    public SoloPreviewer previewer
-    {
-        get => _prevobj;
-        set
-        {
-            if (_prevobj == value) return;
-            _prevobj = value;
-        }
-    } // define in pooler
-    SoloPreviewer _prevobj;
-
     public override IInstrument ParentInstrument => Chart.LoadedInstrument;
 
     public override void CreateEvent(int newTick, SoloEventData newData) { } // unused - please remove from top-level

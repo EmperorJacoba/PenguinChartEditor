@@ -79,6 +79,8 @@ public class FiveFretNotePreviewer : Previewer
 
     bool IsWithinRange(Vector3 hitPosition)
     {
+        if (lane == null) return false;
+
         // add code here to block open note from placing note if the cursor is above another note
         if (lane.laneIdentifier == FiveFretInstrument.LaneOrientation.open)
         {
@@ -94,10 +96,12 @@ public class FiveFretNotePreviewer : Previewer
 
     public override void Hide()
     {
+        if (note == null) return;
         if (note.Visible) note.Visible = false;
     }
     public override void Show()
     {
+        if (note == null) return;
         if (!note.Visible) note.Visible = true;
     }
 
@@ -113,7 +117,6 @@ public class FiveFretNotePreviewer : Previewer
         lane = GetComponentInParent<FiveFretLane>();
 
         note = GetComponent<FiveFretNote>();
-        note.LanePreviewer = this;
         note.laneIdentifier = lane.laneIdentifier;
     }
 

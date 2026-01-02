@@ -96,7 +96,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     {
         LabelEntryBox.gameObject.SetActive(false);
 
-        EventPreviewer.Show();
+        Chart.showPreviewers = true;
         SongTime.EnableChartingInputMap();
     }
 

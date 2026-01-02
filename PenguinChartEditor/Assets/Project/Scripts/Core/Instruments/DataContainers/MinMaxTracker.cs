@@ -20,6 +20,7 @@ public class MinMaxTracker
 
     public MinMaxTicks GetAbsoluteMinMax()
     {
+        
         return new(minTicks.Min(), maxTicks.Max());
     }
 }

@@ -43,7 +43,6 @@ public class SoloPlate : Event<SoloEventData>
 
     public override LaneSet<SoloEventData> LaneData => Chart.LoadedInstrument.SoloData.SoloEvents;
 
-    public override IPreviewer EventPreviewer => (IPreviewer)previewer;
     public SoloPreviewer previewer
     {
         get => _prevobj;

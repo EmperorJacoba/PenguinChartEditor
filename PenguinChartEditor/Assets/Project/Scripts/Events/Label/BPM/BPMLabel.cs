@@ -18,7 +18,6 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     public override SelectionSet<BPMData> Selection => Chart.SyncTrackInstrument.bpmSelection;
     public override LaneSet<BPMData> LaneData => Chart.SyncTrackInstrument.TempoEvents;
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
-    public override IPreviewer EventPreviewer => BPMPreviewer.instance;
 
 
     [SerializeField] Anchor anchorIcon;
