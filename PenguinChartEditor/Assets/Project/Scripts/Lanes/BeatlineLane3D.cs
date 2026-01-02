@@ -8,7 +8,7 @@ public class BeatlineLane3D : BaseBeatlineLane<Beatline3D>
 
     protected override IPooler<Beatline3D> Pooler => (IPooler<Beatline3D>)pooler;
 
-    protected void Awake()
+    protected override void Awake()
     {
         // do not call base - no concrete event type to process requests for
         instance = this;

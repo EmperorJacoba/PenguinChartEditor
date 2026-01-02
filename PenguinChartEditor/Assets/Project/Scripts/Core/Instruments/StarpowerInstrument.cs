@@ -6,6 +6,8 @@ using System.Collections.Generic;
 public class StarpowerInstrument : IInstrument
 {
     private Lanes<StarpowerEventData> Lanes;
+    ILaneData IInstrument.GetLaneData(int lane) => Lanes.GetLane(lane);
+    ISelection IInstrument.GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
     public SoloDataSet SoloData
     {
         get { throw new NotImplementedException("Starpower does not have solo events. If you are using the SoloEvent suite, it is not required."); }

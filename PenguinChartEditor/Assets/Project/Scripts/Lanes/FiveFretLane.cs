@@ -15,8 +15,9 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
     protected override IPooler<FiveFretNote> Pooler => (IPooler<FiveFretNote>)lanePooler;
     protected override IPreviewer Previewer => previewer;
 
-    protected void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         previewer = transform.GetChild(0).gameObject.GetComponent<FiveFretNotePreviewer>();
         Chart.ChartTabUpdated += UpdateEvents;
         AudioManager.PlaybackStateChanged += playing => { if (!playing) UpdateEvents(); };
@@ -67,6 +68,6 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
     int sustainOnlyTick = -1;
     protected override void InitializeEvent(FiveFretNote @event, int tick)
     {
-        @event.InitializeEvent(tick, laneIdentifier, previewer, asSustainOnly: tick == sustainOnlyTick);
+        @event.InitializeEvent(this, tick, tick == sustainOnlyTick);
     }
 }

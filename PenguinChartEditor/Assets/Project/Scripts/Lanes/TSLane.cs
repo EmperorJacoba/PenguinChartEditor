@@ -11,7 +11,7 @@ public class TSLane : SpawningLane<TSLabel>
     protected override IPooler<TSLabel> Pooler => (IPooler<TSLabel>)pooler;
     protected override IPreviewer Previewer => TSPreviewer.instance;
 
-    protected void Awake()
+    protected override void Awake()
     {
         instance = this;
     }

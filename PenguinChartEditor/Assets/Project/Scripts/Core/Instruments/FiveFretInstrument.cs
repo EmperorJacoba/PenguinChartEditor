@@ -30,8 +30,10 @@ public class FiveFretInstrument : IInstrument
     #region Data
 
     private Lanes<FiveFretNoteData> Lanes { get; set; }
+    ILaneData IInstrument.GetLaneData(int lane) => Lanes.GetLane(lane);
     public LaneSet<FiveFretNoteData> GetLaneData(int lane) => Lanes.GetLane(lane);
     public LaneSet<FiveFretNoteData> GetLaneData(LaneOrientation lane) => Lanes.GetLane((int)lane);
+    ISelection IInstrument.GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
     public SelectionSet<FiveFretNoteData> GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
     public SelectionSet<FiveFretNoteData> GetLaneSelection(LaneOrientation lane) => Lanes.GetLaneSelection((int)lane);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+/*
 public class GHLInstrument : IInstrument
 {
     public Lanes<GHLNoteData> Lanes;
@@ -100,4 +101,4 @@ public class GHLInstrument : IInstrument
     {
         throw new NotImplementedException();
     }
-}
+} */

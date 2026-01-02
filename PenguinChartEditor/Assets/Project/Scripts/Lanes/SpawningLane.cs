@@ -32,6 +32,16 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour where TEvent : IPoola
     protected abstract void InitializeEvent(TEvent @event, int tick);
 
     protected virtual bool HasPreviewer() => true;
+
+    public GameInstrument parentGameInstrument;
+    protected virtual void Awake()
+    {
+        if (transform.parent.name == "Lanes")
+        {
+            var laneDetails = GetComponentInParent<LaneDetails>();
+            parentGameInstrument = laneDetails.parentGameInstrument;
+        }
+    }
 }
 
 [System.Serializable]

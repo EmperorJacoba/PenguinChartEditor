@@ -11,7 +11,7 @@ public class BPMLane : SpawningLane<BPMLabel>
     protected override IPooler<BPMLabel> Pooler => (IPooler<BPMLabel>)pooler;
     protected override IPreviewer Previewer => BPMPreviewer.instance;
 
-    protected void Awake()
+    protected override void Awake()
     {
         instance = this;
     }

@@ -9,7 +9,7 @@ public class FiveFretNotePreviewer : Previewer
 
     public static int defaultSustain = 0;
 
-    int AppliedSustain => note.chartInstrument.CalculateSustainClamp(defaultSustain, Tick, lane.laneIdentifier);
+    int AppliedSustain => note.ParentFiveFretInstrument.CalculateSustainClamp(defaultSustain, Tick, lane.laneIdentifier);
 
     public static bool openNoteEditing = false;
     public bool OpenNoteEditing
@@ -72,7 +72,7 @@ public class FiveFretNotePreviewer : Previewer
             defaultOrientation: currentPlacementMode == NoteOption.natural
             );
 
-        note.InitializeEventAsPreviewer(Tick, previewData);
+        note.InitializeEventAsPreviewer(lane, Tick, previewData);
 
         Show();
     }
@@ -117,7 +117,6 @@ public class FiveFretNotePreviewer : Previewer
         lane = GetComponentInParent<FiveFretLane>();
 
         note = GetComponent<FiveFretNote>();
-        note.laneIdentifier = lane.laneIdentifier;
     }
 
     FiveFretNoteData.FlagType MapPlacementModeToFlag()

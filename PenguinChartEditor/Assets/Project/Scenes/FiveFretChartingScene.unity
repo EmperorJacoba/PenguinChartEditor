@@ -1400,6 +1400,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
+  parentGameInstrument: {fileID: 0}
   laneIdentifier: 1
   lanePooler: {fileID: 1844158015}
 --- !u!4 &143122576
@@ -4166,8 +4167,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 516075230}
+  - component: {fileID: 516075231}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Instrument
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4193,6 +4195,19 @@ Transform:
   - {fileID: 1754544328}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &516075231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 516075229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97be40e3d9c26ba4b91df495007cfec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highway: {fileID: 2069553716}
 --- !u!1 &536290877
 GameObject:
   m_ObjectHideFlags: 0
@@ -4224,6 +4239,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
+  parentGameInstrument: {fileID: 0}
   laneIdentifier: 5
   lanePooler: {fileID: 1417207405}
 --- !u!4 &536290879
@@ -6258,6 +6274,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 764433764}
+  - component: {fileID: 764433765}
   m_Layer: 0
   m_Name: Lanes
   m_TagString: Untagged
@@ -6286,6 +6303,19 @@ Transform:
   - {fileID: 1292801094}
   m_Father: {fileID: 183943802}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &764433765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764433763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45cd42a576a8a7f499ca6171c6017530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentGameInstrument: {fileID: 516075231}
 --- !u!1 &768539106
 GameObject:
   m_ObjectHideFlags: 0
@@ -8947,6 +8977,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
+  parentGameInstrument: {fileID: 0}
   laneIdentifier: 2
   lanePooler: {fileID: 1432554526}
 --- !u!4 &1158524637
@@ -9883,6 +9914,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
+  parentGameInstrument: {fileID: 0}
   laneIdentifier: 0
   lanePooler: {fileID: 1907842689}
 --- !u!4 &1292801094
@@ -11341,6 +11373,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
+  parentGameInstrument: {fileID: 0}
   laneIdentifier: 4
   lanePooler: {fileID: 1255020706}
 --- !u!4 &1482099734
@@ -13392,6 +13425,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 0
+  parentGameInstrument: {fileID: 0}
   pooler: {fileID: 1110686253}
   previewer: {fileID: 1969598577}
 --- !u!4 &1666396268
@@ -13608,6 +13642,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
+  parentGameInstrument: {fileID: 0}
   pooler: {fileID: 1636806883}
 --- !u!4 &1708384033
 Transform:
@@ -14753,6 +14788,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     is3D: 1
+  parentGameInstrument: {fileID: 0}
   laneIdentifier: 3
   lanePooler: {fileID: 1233862335}
 --- !u!4 &1933190198

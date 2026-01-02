@@ -7,7 +7,7 @@ public class BeatlineLane : BaseBeatlineLane<Beatline> // BPMData is not acted u
 
     protected override IPooler<Beatline> Pooler => (IPooler<Beatline>)pooler;
 
-    protected void Awake()
+    protected override void Awake()
     {
         // do not call base - no concrete event type to process requests for
         instance = this;

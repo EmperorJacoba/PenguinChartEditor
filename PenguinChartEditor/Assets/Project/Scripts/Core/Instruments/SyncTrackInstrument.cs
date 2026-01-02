@@ -32,6 +32,26 @@ public class SyncTrackInstrument : IInstrument
     public SelectionSet<BPMData> bpmSelection;
     public SelectionSet<TSData> tsSelection;
 
+    public ILaneData GetLaneData(int lane)
+    {
+        var laneAsOrientation = (LaneOrientation)lane;
+        if (laneAsOrientation == LaneOrientation.bpm)
+        {
+            return TempoEvents;
+        }
+        return TimeSignatureEvents;
+    }
+
+    public ISelection GetLaneSelection(int lane)
+    {
+        var laneAsOrientation = (LaneOrientation)lane;
+        if (laneAsOrientation == LaneOrientation.bpm)
+        {
+            return bpmSelection;
+        }
+        return tsSelection;
+    }
+
     public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SoloDataSet SoloData
     {

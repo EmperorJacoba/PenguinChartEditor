@@ -7,8 +7,10 @@ using UnityEngine.EventSystems;
 
 public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 {
-    public override LaneSet<FiveFretNoteData> LaneData => chartInstrument.GetLaneData(laneIdentifier);
-    public override SelectionSet<FiveFretNoteData> Selection => chartInstrument.GetLaneSelection(laneIdentifier);
+    public override LaneSet<FiveFretNoteData> LaneData => _cachedDataRef;
+    private LaneSet<FiveFretNoteData> _cachedDataRef;
+    public override SelectionSet<FiveFretNoteData> Selection => _cachedSelectionRef;
+    private SelectionSet<FiveFretNoteData> _cachedSelectionRef;
 
     private const float PREVIEWER_Y_OFFSET = 0.00001f;
 
@@ -30,13 +32,20 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             notePieces.ChangeColor(value, IsTap);
 
             _li = value;
+            CacheDataReferences();
             CacheXCoordinate();
         }
     }
 
     void CacheXCoordinate()
     {
-        xCoordinate = Chart.instance.SceneDetails.GetCenterXCoordinateFromLane((int)laneIdentifier);
+        xCoordinate = parentGameInstrument.GetCenterXCoordinateFromLane((int)laneIdentifier);
+    }
+
+    void CacheDataReferences()
+    {
+        _cachedDataRef = (LaneSet<FiveFretNoteData>)ParentInstrument.GetLaneData((int)laneIdentifier);
+        _cachedSelectionRef = (SelectionSet<FiveFretNoteData>)ParentInstrument.GetLaneSelection((int)laneIdentifier);
     }
 
     public float xCoordinate;
@@ -45,7 +54,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     // starts as -1 so the redundancy check in laneIdentifier.set does not return true when setting lane to 0
     FiveFretInstrument.LaneOrientation _li = (FiveFretInstrument.LaneOrientation)(-1);
 
-    FiveFretLane parentLane
+    FiveFretLane ParentLane
     {
         get
         {
@@ -54,6 +63,11 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
                 _lane = GetComponentInParent<FiveFretLane>();
             }
             return _lane;
+        }
+        set
+        {
+            if (_lane == value) return;
+            _lane = value;
         }
     }
     FiveFretLane _lane;
@@ -97,14 +111,18 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
     bool _isDefault = true;
 
-    public override IInstrument ParentInstrument => chartInstrument;
+    public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
+    public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
+    public FiveFretInstrument ParentFiveFretInstrument => (FiveFretInstrument)ParentInstrument;
 
     public FiveFretNoteData representedData;
 
-    public void InitializeEvent(int tick, FiveFretInstrument.LaneOrientation lane, IPreviewer previewer, bool asSustainOnly)
+    public void InitializeEvent(FiveFretLane parentLane, int tick, bool asSustainOnly)
     {
+        ParentLane = parentLane;
         _tick = tick;
-        laneIdentifier = lane;
+
+        laneIdentifier = ParentLane.laneIdentifier;
         representedData = LaneData[tick];
 
         InitializeNote(!asSustainOnly);
@@ -118,8 +136,11 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         SetVisualProperties(representedData);
     }
 
-    public void InitializeEventAsPreviewer(int previewTick, FiveFretNoteData previewData)
+    public void InitializeEventAsPreviewer(FiveFretLane parentLane, int previewTick, FiveFretNoteData previewData)
     {
+        ParentLane = parentLane;
+        laneIdentifier = ParentLane.laneIdentifier;
+
         // do not use this with the previewer, use previewer's tick instead
         // but this is here just in case & for the functions below
         _tick = previewTick;
@@ -136,7 +157,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         IsDefault = data.Default;
     }
 
-    public override void RefreshLane() => parentLane.UpdateEvents();
+    public override void RefreshLane() => ParentLane.UpdateEvents();
     void InitializeNote(bool includeNoteHead)
     {
         if (!includeNoteHead)
@@ -156,11 +177,10 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public void UpdatePosition(double percentOfTrack) => UpdatePosition(percentOfTrack, xCoordinate);
     public void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
     {
-        var trackProportion = (float)percentOfTrack * Chart.instance.SceneDetails.HighwayLength;
+        var trackProportion = (float)percentOfTrack * parentGameInstrument.HighwayLength;
         transform.position = new Vector3(xPosition, yPosition, trackProportion);
     }
 
-    public FiveFretInstrument chartInstrument => (FiveFretInstrument)Chart.LoadedInstrument;
 
     public override void OnPointerDown(PointerEventData pointerEventData)
     {
@@ -197,5 +217,5 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     // used on sustain trail itself when click happens on trail
     // click on sustain trail + drag activates SustainSelection() within the previewer object
-    public void ClampSustain(int tickLength) => chartInstrument.UpdateSustain(Tick, laneIdentifier, tickLength);
+    public void ClampSustain(int tickLength) => ParentFiveFretInstrument.UpdateSustain(Tick, laneIdentifier, tickLength);
 }

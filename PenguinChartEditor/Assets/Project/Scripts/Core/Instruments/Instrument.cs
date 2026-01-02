@@ -28,6 +28,8 @@ public interface IInstrument
     void DeleteTicksInSelection();
     void DeleteTickInLane(int tick, int lane);
     void DeleteAllEventsAtTick(int tick);
-       
+
+    public ILaneData GetLaneData(int lane);
+    public ISelection GetLaneSelection(int lane);
 }
 

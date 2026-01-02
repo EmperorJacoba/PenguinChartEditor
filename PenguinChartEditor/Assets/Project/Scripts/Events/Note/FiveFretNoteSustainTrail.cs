@@ -15,12 +15,12 @@ public class FiveFretNoteSustainTrail : MonoBehaviour, IPointerDownHandler, IPoi
         FiveFretInstrument.resetSustains = false;
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
-            parentNote.chartInstrument.ClearAllSelections();
+            parentNote.ParentInstrument.ClearAllSelections();
             var sustainClamp = FiveFretInstrument.GetCurrentMouseTick() - parentNote.Tick;
             if (Input.GetKey(KeyCode.LeftShift) || !UserSettings.ExtSustains)
             {
-                parentNote.chartInstrument.ShiftClickSelect(parentNote.Tick);
-                parentNote.chartInstrument.ShiftClickSustainClamp(parentNote.Tick, sustainClamp);
+                parentNote.ParentInstrument.ShiftClickSelect(parentNote.Tick);
+                parentNote.ParentFiveFretInstrument.ShiftClickSustainClamp(parentNote.Tick, sustainClamp);
             }
             parentNote.AddToSelection();
             parentNote.ClampSustain(sustainClamp);

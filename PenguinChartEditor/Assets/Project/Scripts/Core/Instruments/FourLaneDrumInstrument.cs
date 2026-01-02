@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+/*
 public class FourLaneDrumInstrument : IInstrument
 {
     public Lanes<FourLaneDrumNoteData> Lanes;
@@ -96,4 +97,4 @@ public class FourLaneDrumInstrument : IInstrument
     {
         throw new NotImplementedException();
     }
-}
+} */

@@ -12,8 +12,9 @@ public class SoloSectionSpawner : SpawningLane<SoloSection>
 
     protected override IPreviewer Previewer => (IPreviewer)previewer;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         instance = this;
         Chart.ChartTabUpdated += UpdateEvents;
     }
