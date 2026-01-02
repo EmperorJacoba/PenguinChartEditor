@@ -34,7 +34,7 @@ public class SoloEnd : Event<SoloEventData>
         _tick = startTick;
         representedTick = endTick;
 
-        float zPosition = (float)(Waveform.GetWaveformRatio(endTick) * Chart.instance.SceneDetails.HighwayLength);
+        float zPosition = (float)(Waveform.GetWaveformRatio(endTick) * Highway3D.highwayLength);
         transform.position = new(transform.position.x, transform.position.y, zPosition);
 
         CheckForSelection();

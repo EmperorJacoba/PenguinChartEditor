@@ -1402,6 +1402,7 @@ MonoBehaviour:
     is3D: 1
   parentGameInstrument: {fileID: 0}
   laneIdentifier: 1
+  readOnly: 0
   lanePooler: {fileID: 1844158015}
 --- !u!4 &143122576
 Transform:
@@ -1865,7 +1866,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1708384033}
   - {fileID: 764433764}
   - {fileID: 473643696}
   m_Father: {fileID: 516075230}
@@ -4209,6 +4209,7 @@ MonoBehaviour:
   highway: {fileID: 2069553716}
   strikeline: {fileID: 1936119447}
   waveform: {fileID: 1754544326}
+  instrumentType: 0
 --- !u!1 &536290877
 GameObject:
   m_ObjectHideFlags: 0
@@ -4242,6 +4243,7 @@ MonoBehaviour:
     is3D: 1
   parentGameInstrument: {fileID: 0}
   laneIdentifier: 5
+  readOnly: 0
   lanePooler: {fileID: 1417207405}
 --- !u!4 &536290879
 Transform:
@@ -6296,6 +6298,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1708384033}
   - {fileID: 1292801094}
   - {fileID: 143122576}
   - {fileID: 1158524637}
@@ -8981,6 +8984,7 @@ MonoBehaviour:
     is3D: 1
   parentGameInstrument: {fileID: 0}
   laneIdentifier: 2
+  readOnly: 0
   lanePooler: {fileID: 1432554526}
 --- !u!4 &1158524637
 Transform:
@@ -9918,6 +9922,7 @@ MonoBehaviour:
     is3D: 1
   parentGameInstrument: {fileID: 0}
   laneIdentifier: 0
+  readOnly: 0
   lanePooler: {fileID: 1907842689}
 --- !u!4 &1292801094
 Transform:
@@ -11377,6 +11382,7 @@ MonoBehaviour:
     is3D: 1
   parentGameInstrument: {fileID: 0}
   laneIdentifier: 4
+  readOnly: 0
   lanePooler: {fileID: 1255020706}
 --- !u!4 &1482099734
 Transform:
@@ -13429,7 +13435,7 @@ MonoBehaviour:
     is3D: 0
   parentGameInstrument: {fileID: 0}
   pooler: {fileID: 1110686253}
-  previewer: {fileID: 1969598577}
+  readOnly: 0
 --- !u!4 &1666396268
 Transform:
   m_ObjectHideFlags: 0
@@ -13443,8 +13449,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1110686254}
   - {fileID: 1969598576}
+  - {fileID: 1110686254}
   m_Father: {fileID: 764433764}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1683187647
@@ -13654,12 +13660,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1708384031}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 183943802}
+  m_Father: {fileID: 764433764}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1713649338 stripped
 MonoBehaviour:
@@ -14793,6 +14799,7 @@ MonoBehaviour:
     is3D: 1
   parentGameInstrument: {fileID: 0}
   laneIdentifier: 3
+  readOnly: 0
   lanePooler: {fileID: 1233862335}
 --- !u!4 &1933190198
 Transform:
@@ -15332,7 +15339,7 @@ GameObject:
   - component: {fileID: 1969598576}
   - component: {fileID: 1969598577}
   m_Layer: 6
-  m_Name: SoloPlatePreview
+  m_Name: SoloSectionPreviewer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

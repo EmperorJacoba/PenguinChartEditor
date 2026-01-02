@@ -5,7 +5,10 @@ using UnityEngine;
 public class SoloSectionLane : SpawningLane<SoloSection>
 {
     [SerializeField] SoloSectionPooler pooler;
-    [SerializeField] SoloPreviewer previewer;
+    SoloPreviewer previewer;
+    [SerializeField] bool readOnly;
+
+    protected override bool HasPreviewer() => !readOnly;
 
     protected override IPooler<SoloSection> Pooler => pooler;
 
@@ -14,6 +17,7 @@ public class SoloSectionLane : SpawningLane<SoloSection>
     protected override void Awake()
     {
         base.Awake();
+        if (!readOnly) previewer = transform.GetChild(0).GetComponent<SoloPreviewer>();
         Chart.ChartTabUpdated += UpdateEvents;
     }
 

@@ -7,6 +7,7 @@ public class SoloPreviewer : Previewer
     [SerializeField] SoloEnd previewEndPlate;
     SoloSectionLane ParentLane { get; set; }
     IInstrument ParentInstrument => ParentLane.parentGameInstrument.representedInstrument;
+    GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
 
     protected override void Awake()
     {
@@ -37,13 +38,13 @@ public class SoloPreviewer : Previewer
 
     protected override void UpdatePreviewer()
     {
-        if (Chart.instance.SceneDetails.GetCursorHighwayPosition().x < Chart.instance.SceneDetails.highwayRightEndCoordinate || !UserSettings.SoloPlacingAllowed)
+        if (Chart.instance.SceneDetails.GetCursorHighwayPosition().x < parentGameInstrument.HighwayRightEndCoordinate || !UserSettings.SoloPlacingAllowed)
         {
             Hide();
             return;
         }
 
-        var highwayProportion = Chart.instance.SceneDetails.GetCursorHighwayProportion();
+        var highwayProportion = parentGameInstrument.GetCursorHighwayProportion();
 
         if (highwayProportion == 0)
         {
@@ -53,7 +54,7 @@ public class SoloPreviewer : Previewer
 
         Tick = SongTime.CalculateGridSnappedTick(highwayProportion);
         var percentOfTrack = Waveform.GetWaveformRatio(Tick);
-        var zPosition = (float)percentOfTrack * Chart.instance.SceneDetails.HighwayLength;
+        var zPosition = (float)percentOfTrack * Highway3D.highwayLength;
 
         var activeSoloEvents = ParentInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick <= Tick && x.Value.EndTick >= Tick);
 

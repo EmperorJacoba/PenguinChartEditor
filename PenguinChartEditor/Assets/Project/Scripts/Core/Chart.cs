@@ -174,11 +174,14 @@ public class Chart : MonoBehaviour
         AudioManager.InitializeBassPlugin();
 
         LoadFile();
-        LoadedInstrument = Instruments.
-            Where(
-            item => item.InstrumentName == InstrumentType.guitar). // for testing only
-            ToList()[0];
+        Instruments.Add(new StarpowerInstrument(new()));
+
+        // LoadedInstrument = Instruments.
+        //    Where(
+        //    item => item.InstrumentName == InstrumentType.guitar). // for testing only
+        //    ToList()[0];
         // LoadedInstrument = SyncTrackInstrument;
+        LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.starpower).ToList()[0];
 
         inputMap = new();
         inputMap.Enable();
@@ -203,7 +206,6 @@ public class Chart : MonoBehaviour
                 TSLane.instance.UpdateEvents();
                 break;
             case TabType.Chart:
-                BeatlineLane3D.instance.UpdateEvents();
                 ChartTabUpdated?.Invoke(); // shortcut for all lanes to update
                 break;
         }

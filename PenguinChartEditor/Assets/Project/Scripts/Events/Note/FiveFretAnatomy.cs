@@ -64,16 +64,16 @@ public struct FiveFretAnatomy
         var sustainEndPointTicks = tick + sustainLength;
 
         var endProportion = Waveform.GetWaveformRatio(sustainEndPointTicks);
-        var trackPosition = endProportion * Chart.instance.SceneDetails.HighwayLength;
+        var trackPosition = endProportion * Highway3D.highwayLength;
 
         var noteProportion = Waveform.GetWaveformRatio(tick);
-        var notePosition = noteProportion * Chart.instance.SceneDetails.HighwayLength;
+        var notePosition = noteProportion * Highway3D.highwayLength;
 
         var localScaleZ = (float)(trackPosition - notePosition);
 
         // stop it from appearing past the end of the highway
-        if (localScaleZ + noteLocalTransformPosition > Chart.instance.SceneDetails.HighwayLength)
-            localScaleZ = Chart.instance.SceneDetails.HighwayLength - noteLocalTransformPosition;
+        if (localScaleZ + noteLocalTransformPosition > Highway3D.highwayLength)
+            localScaleZ = Highway3D.highwayLength - noteLocalTransformPosition;
 
         if (localScaleZ < 0) localScaleZ = 0; // box collider negative size issues??
 

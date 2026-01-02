@@ -16,15 +16,15 @@ public class SoloPlate : Event<SoloEventData>
         float zPosition;
         if (SongTime.SongPositionTicks < startTick)
         {
-            zPosition = (float)(Waveform.GetWaveformRatio(startTick) * Chart.instance.SceneDetails.HighwayLength);
+            zPosition = (float)(Waveform.GetWaveformRatio(startTick) * Highway3D.highwayLength);
         }
         else if (SongTime.SongPositionTicks > endTick)
         {
-            zPosition = (float)(Waveform.GetWaveformRatio(endTick) * Chart.instance.SceneDetails.HighwayLength);
+            zPosition = (float)(Waveform.GetWaveformRatio(endTick) * Highway3D.highwayLength);
         }
         else
         {
-            zPosition = Mathf.Floor((float)Waveform.GetWaveformRatio(SongTime.SongPositionTicks) * Chart.instance.SceneDetails.HighwayLength);
+            zPosition = Mathf.Floor((float)Waveform.GetWaveformRatio(SongTime.SongPositionTicks) * Highway3D.highwayLength);
         }
         _tick = startTick;
 

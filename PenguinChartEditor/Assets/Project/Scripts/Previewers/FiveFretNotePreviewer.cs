@@ -140,7 +140,7 @@ public class FiveFretNotePreviewer : Previewer
 
         parentFiveFretInstrument.AddData(
             Tick,
-            note.laneIdentifier,
+            note.laneID,
             new FiveFretNoteData(
                 sustain,
                 MapPlacementModeToFlag(),

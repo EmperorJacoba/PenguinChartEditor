@@ -18,8 +18,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public Coroutine destructionCoroutine { get; set; }
 
-    public override int Lane => (int)laneIdentifier;
-    public FiveFretInstrument.LaneOrientation laneIdentifier
+    public override int Lane => (int)laneID;
+    public FiveFretInstrument.LaneOrientation laneID
     {
         get
         {
@@ -37,22 +37,21 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
     }
 
+    // starts as -1 so the redundancy check in laneIdentifier.set does not return true when setting lane to 0
+    FiveFretInstrument.LaneOrientation _li = (FiveFretInstrument.LaneOrientation)(-1);
+
     void CacheXCoordinate()
     {
-        xCoordinate = parentGameInstrument.GetCenterXCoordinateFromLane((int)laneIdentifier);
+        xCoordinate = parentGameInstrument.GetCenterXCoordinateFromLane((int)laneID);
     }
 
     void CacheDataReferences()
     {
-        _cachedDataRef = (LaneSet<FiveFretNoteData>)ParentInstrument.GetLaneData((int)laneIdentifier);
-        _cachedSelectionRef = (SelectionSet<FiveFretNoteData>)ParentInstrument.GetLaneSelection((int)laneIdentifier);
+        _cachedDataRef = (LaneSet<FiveFretNoteData>)ParentInstrument.GetLaneData((int)laneID);
+        _cachedSelectionRef = (SelectionSet<FiveFretNoteData>)ParentInstrument.GetLaneSelection((int)laneID);
     }
 
-    public float xCoordinate;
-
-
-    // starts as -1 so the redundancy check in laneIdentifier.set does not return true when setting lane to 0
-    FiveFretInstrument.LaneOrientation _li = (FiveFretInstrument.LaneOrientation)(-1);
+    [HideInInspector] public float xCoordinate;
 
     FiveFretLane ParentLane
     {
@@ -92,7 +91,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             if (_isTap == value) return;
 
-            notePieces.ChangeTap(laneIdentifier, value);
+            notePieces.ChangeTap(laneID, value);
             _isTap = value;
         }
     }
@@ -120,12 +119,13 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public void InitializeEvent(FiveFretLane parentLane, int tick, bool asSustainOnly)
     {
         ParentLane = parentLane;
-        _tick = tick;
+        laneID = ParentLane.laneIdentifier;
 
-        laneIdentifier = ParentLane.laneIdentifier;
+        _tick = tick;
         representedData = LaneData[tick];
 
-        InitializeNote(!asSustainOnly);
+        notePieces.SetVisibility(!asSustainOnly);
+        if (!readOnly) CheckForSelection();
 
         UpdatePosition(
             tick: asSustainOnly ? SongTime.SongPositionTicks : tick
@@ -139,7 +139,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public void InitializeEventAsPreviewer(FiveFretLane parentLane, int previewTick, FiveFretNoteData previewData)
     {
         ParentLane = parentLane;
-        laneIdentifier = ParentLane.laneIdentifier;
+        laneID = ParentLane.laneIdentifier;
 
         // do not use this with the previewer, use previewer's tick instead
         // but this is here just in case & for the functions below
@@ -158,18 +158,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
 
     public override void RefreshLane() => ParentLane.UpdateEvents();
-    void InitializeNote(bool includeNoteHead)
-    {
-        if (!includeNoteHead)
-        {
-            notePieces.SetVisibility(false);
-        }
-        else
-        {
-            notePieces.SetVisibility(true);
-            CheckForSelection();
-        }
-    }
 
     public void UpdatePositionAsPreviewer() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate, PREVIEWER_Y_OFFSET);
     public void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate);
@@ -178,13 +166,15 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
     {
         var trackProportion = (float)percentOfTrack * parentGameInstrument.HighwayLength;
-        transform.position = new Vector3(xPosition, yPosition, trackProportion);
+        transform.localPosition = new Vector3(xPosition, yPosition, trackProportion);
     }
 
 
     public override void OnPointerDown(PointerEventData pointerEventData)
     {
         base.OnPointerDown(pointerEventData);
+
+        if (readOnly) return;
 
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
@@ -217,5 +207,5 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     // used on sustain trail itself when click happens on trail
     // click on sustain trail + drag activates SustainSelection() within the previewer object
-    public void ClampSustain(int tickLength) => ParentFiveFretInstrument.UpdateSustain(Tick, laneIdentifier, tickLength);
+    public void ClampSustain(int tickLength) => ParentFiveFretInstrument.UpdateSustain(Tick, laneID, tickLength);
 }

@@ -13,5 +13,5 @@ public class BeatlineLane : BaseBeatlineLane<Beatline> // BPMData is not acted u
         instance = this;
     }
 
-    protected override void InitializeEvent(Beatline @event, int tick) => @event.InitializeEvent(tick);
+    protected override void InitializeEvent(Beatline @event, int tick) => @event.InitializeEvent(tick, Chart.instance.SceneDetails.HighwayLength, null);
 }

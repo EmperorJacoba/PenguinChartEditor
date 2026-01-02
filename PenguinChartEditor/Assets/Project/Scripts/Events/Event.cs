@@ -26,6 +26,7 @@ public interface IEvent
 // Use the interfaces guaranteed in IEvent above to access necessary functions/properties (add as needed)
 public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler where T : IEventData
 {
+    public bool readOnly = false;
     public abstract int Lane { get; }
     protected static float doubleClickTime = 0.3f;
     #region Properties
@@ -117,7 +118,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
     public bool IsPreviewEvent { get; set; } = false;
     public virtual void OnPointerDown(PointerEventData pointerEventData)
     {
-        if (IsPreviewEvent) return;
+        if (IsPreviewEvent || readOnly) return;
 
         // used for right click + left click delete functionality
         if (Input.GetMouseButton(RMB_ID) && pointerEventData.button == PointerEventData.InputButton.Left)

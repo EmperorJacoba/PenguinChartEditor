@@ -6,6 +6,7 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
 {
     [HideInInspector] public FiveFretInstrument.LaneOrientation laneIdentifier;
 
+    [SerializeField] bool readOnly;
     [SerializeField] FiveFretNotePooler lanePooler;
     FiveFretNotePreviewer previewer;
 
@@ -15,10 +16,12 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
     protected override IPooler<FiveFretNote> Pooler => (IPooler<FiveFretNote>)lanePooler;
     protected override IPreviewer Previewer => previewer;
 
+    protected override bool HasPreviewer() => !readOnly;
+
     protected override void Awake()
     {
         base.Awake();
-        previewer = transform.GetChild(0).gameObject.GetComponent<FiveFretNotePreviewer>();
+        if (!readOnly) previewer = transform.GetChild(0).gameObject.GetComponent<FiveFretNotePreviewer>();
         Chart.ChartTabUpdated += UpdateEvents;
         AudioManager.PlaybackStateChanged += playing => { if (!playing) UpdateEvents(); };
     }
