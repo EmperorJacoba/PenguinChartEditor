@@ -34,6 +34,7 @@ public class SongTime : MonoBehaviour
             if (_songPos == value) return;
             _songPos = value;
 
+            Waveform.GenerateWaveformPoints();
             TimeChanged?.Invoke();
         }
     }
@@ -71,6 +72,7 @@ public class SongTime : MonoBehaviour
 
     void Start()
     {
+        Waveform.GenerateWaveformPoints();
         TimeChanged?.Invoke();
     }
 

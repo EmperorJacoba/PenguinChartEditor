@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 [RequireComponent(typeof(LineRenderer))]
 public class Waveform : MonoBehaviour
@@ -63,7 +64,7 @@ public class Waveform : MonoBehaviour
         {
             if (_shrinkFactor == value) return;
             _shrinkFactor = value;
-            instance.GenerateWaveformPoints();
+            GenerateWaveformPoints();
         }
     }
     private static float _shrinkFactor = 0.005f;
@@ -82,7 +83,7 @@ public class Waveform : MonoBehaviour
         {
             if (_amplitude == value) return;
             _amplitude = value;
-            instance.GenerateWaveformPoints();
+            GenerateWaveformPoints();
         }
     }
     private static float _amplitude = 1;
@@ -107,12 +108,10 @@ public class Waveform : MonoBehaviour
 
     protected virtual void Awake()
     {
-        instance = this;
         lineRendererMain = GetComponent<LineRenderer>();
         lineRendererMirror = gameObject.transform.GetChild(0).GetComponent<LineRenderer>();
-        
-        // Initial waveform state is made possible by STLM's initial fire
-        SongTime.TimeChanged += GenerateWaveformPoints;
+
+        PointUpdateNeeded += x => ApplyGeneratedPositions(x);
     }
 
     private void Start()
@@ -122,6 +121,7 @@ public class Waveform : MonoBehaviour
 
     void Init2D()
     {
+        instance = this;
         var boundsRectTransform = (RectTransform)Chart.instance.SceneDetails.highway;
         rt_2DOnly.pivot = boundsRectTransform.pivot;
     }
@@ -154,17 +154,17 @@ public class Waveform : MonoBehaviour
 
     #region Properties
 
-    protected virtual int GetSampleCapacity()
+    static int GetSampleCapacity()
     {
         return Chart.instance.SceneDetails.is2D ?
             (int)Mathf.Round(instance.rtHeight / ShrinkFactor) :
-            (int)Mathf.Round(Chart.instance.SceneDetails.HighwayLength / (ShrinkFactor));
+            (int)Mathf.Round(Highway3D.highwayLength / (ShrinkFactor));
     }
-    protected int GetStrikelineSamplePosition()
+    static int GetStrikelineSamplePosition()
     {
         return Chart.instance.SceneDetails.is2D ?
             (int)Math.Ceiling(GetSampleCapacity() * Strikeline.instance.GetStrikelineProportion()) :
-            (int)Math.Ceiling(GetSampleCapacity() * parentGameInstrument.GetStrikelineHighwayProportion());
+            (int)Math.Ceiling(GetSampleCapacity() * Strikeline3D.GetStrikelineProportion());
     }
 
     public static int ticksShown;
@@ -189,7 +189,9 @@ public class Waveform : MonoBehaviour
 
     #region Point Generation
 
-    public void GenerateWaveformPoints()
+    delegate void WaveformDataUpdated(Vector3[] positions);
+    static event WaveformDataUpdated PointUpdateNeeded;
+    public static void GenerateWaveformPoints()
     {
         // This can use an implicit cast because song position is always rounded to 3 decimal places
         var currentWaveformDataPosition = (int)(SongTime.SongPositionSeconds * AudioManager.SAMPLES_PER_SECOND);
@@ -198,7 +200,6 @@ public class Waveform : MonoBehaviour
         if (WaveformData.ContainsKey(CurrentWaveform))
         {
             waveformData = WaveformData[CurrentWaveform].volumeData;
-            Visible = true;
         }
         else
         {
@@ -209,15 +210,11 @@ public class Waveform : MonoBehaviour
             // the if statement in that loop is always true when an empty float[] exists in waveformData,
             // so it accurately represents no data (even though the "waveform" is actually behind the track)
             waveformData = new float[0];
-            Visible = false;
         }
 
         var sampleCount = GetSampleCapacity();
         var startSampleIndex = currentWaveformDataPosition - GetStrikelineSamplePosition();
 
-        // each line renderer point is a sample
-        lineRendererMain.positionCount = sampleCount;
-        lineRendererMirror.positionCount = sampleCount;
         Vector3[] lineRendererPositions = new Vector3[sampleCount];
 
         for (int lineRendererIndex = 0; lineRendererIndex < lineRendererPositions.Length; lineRendererIndex++)
@@ -243,23 +240,36 @@ public class Waveform : MonoBehaviour
             }
         }
 
-        lineRendererMain.SetPositions(lineRendererPositions);
-
-        // mirror all x positions of every point
-        lineRendererPositions = Array.ConvertAll(lineRendererPositions, pos => new Vector3(-pos.x, pos.y, pos.z));
-
-        lineRendererMirror.SetPositions(lineRendererPositions);
-
         CacheWaveformDetails(
             startTimeSeconds: startSampleIndex * AudioManager.ARRAY_RESOLUTION,
             positionTimeSeconds: currentWaveformDataPosition * AudioManager.ARRAY_RESOLUTION,
             endTimeSeconds: (startSampleIndex + sampleCount) * AudioManager.ARRAY_RESOLUTION
             );
 
+        PointUpdateNeeded?.Invoke(lineRendererPositions);
+
         Chart.Refresh();
     }
 
-    public void CacheWaveformDetails(double startTimeSeconds, double positionTimeSeconds, double endTimeSeconds)
+    public void ApplyGeneratedPositions(Vector3[] positions)
+    {
+        if (!WaveformData.ContainsKey(CurrentWaveform))
+        {
+            Visible = false;
+            return;
+        }
+
+        Visible = true;
+
+        lineRendererMain.positionCount = lineRendererMirror.positionCount = positions.Length;
+        lineRendererMain.SetPositions(positions);
+
+        // mirror all x positions of every point
+        positions = Array.ConvertAll(positions, pos => new Vector3(-pos.x, pos.y, pos.z));
+        lineRendererMirror.SetPositions(positions);
+    }
+
+    public static void CacheWaveformDetails(double startTimeSeconds, double positionTimeSeconds, double endTimeSeconds)
     {
         startTime = startTimeSeconds;
         endTime = endTimeSeconds;

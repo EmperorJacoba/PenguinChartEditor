@@ -16,7 +16,7 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
         {
             return transform.localScale.z;
         }
-        set
+        private set
         {
             if (transform.localScale.z == value) return;
             transform.localScale = new(transform.localScale.x, transform.localScale.y, value);
@@ -27,6 +27,10 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
     public static event LengthUpdateDelegate HighwayLengthChanged;
     public static float highwayLength
     {
+        get
+        {
+            return _hL;
+        }
         set 
         {
             if (_hL == value) return;
@@ -35,7 +39,7 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
         }
     }
 
-    private static float _hL;
+    private static float _hL = 75;
 
     public void Awake()
     {

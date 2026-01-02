@@ -13,7 +13,6 @@ public class GameInstrument : MonoBehaviour
     public int MatchXCoordinateToLane(float xCoordinate) => highway.MatchXCoordinateToLane(xCoordinate);
     public Vector3 GetCursorHighwayPosition() => highway.GetCursorHighwayPosition();
     public float GetCursorHighwayProportion() => highway.GetCursorHighwayProportion();
-    public float GetStrikelineHighwayProportion() => strikeline.GetStrikelineProportion(); // todo: cache this
 
     void Start()
     {
