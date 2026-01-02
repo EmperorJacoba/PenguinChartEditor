@@ -4207,6 +4207,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highway: {fileID: 2069553716}
+  strikeline: {fileID: 1936119447}
+  waveform: {fileID: 1754544326}
 --- !u!1 &536290877
 GameObject:
   m_ObjectHideFlags: 0
@@ -13700,6 +13702,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738d9bc210d45aa4b81e6a3e70d082a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentGameInstrument: {fileID: 516075231}
   rt_2DOnly: {fileID: 0}
 --- !u!120 &1754544327
 LineRenderer:
@@ -14933,7 +14936,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 758286d6f122a104a8f11681c532cc9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highway: {fileID: 543450653712637668}
+  parentGameInstrument: {fileID: 516075231}
 --- !u!1 &1945028650
 GameObject:
   m_ObjectHideFlags: 0

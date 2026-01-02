@@ -4,10 +4,13 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class NoteReceiver : MonoBehaviour
 {
-    Animator animator;
-    [SerializeField] int lane;
-    bool firstLoop = true;
+    #region Animation Management
 
+    Animator animator;
+
+    // 0, 0 arguments make it possible for restarting animations
+    // without cooldowns for sections with lots of notes back-to-back.
+    // Please do not mess with these unless you absolutely have to.
     void PlayNoSustain()
     {
         animator.Play("Punch", 0, 0);
@@ -29,15 +32,22 @@ public class NoteReceiver : MonoBehaviour
         animator.Play("SustainFall", 0, 0);
     }
 
+    #endregion
+
+    [SerializeField] int lane;
+    Strikeline3D strikeline;
+    IInstrument ParentInstrument => strikeline.parentGameInstrument.representedInstrument;
+    bool firstLoop = true;
     IEnumerator StopSustainAfterLength(int tick, int sustainLength)
     {
-        var lengthSeconds = Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick + sustainLength) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(SongTime.SongPositionTicks);
+        var lengthSeconds = Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(SongTime.SongPositionTicks, tick + sustainLength);
         yield return new WaitForSeconds((float)lengthSeconds);
         if (AudioManager.AudioPlaying) PlayFall();
     }
 
     private void Awake()
     {
+        strikeline = GetComponentInParent<Strikeline3D>();
         animator = GetComponent<Animator>();
         AudioManager.PlaybackStateChanged += x => ToggleNoteReceivers(x);
     }
@@ -57,7 +67,7 @@ public class NoteReceiver : MonoBehaviour
     }
 
     int nextPromisedNoteHit = -1;
-    bool nextIsOpen = false;
+    bool nextIsBar = false;
     void CheckForNoteHit()
     {
         if (firstLoop)
@@ -68,10 +78,10 @@ public class NoteReceiver : MonoBehaviour
 
         if (SongTime.SongPositionTicks >= nextPromisedNoteHit)
         {
-            var laneData = nextIsOpen ? Chart.GetActiveInstrument<FiveFretInstrument>().GetLaneData(FiveFretInstrument.LaneOrientation.open) :
-                Chart.GetActiveInstrument<FiveFretInstrument>().GetLaneData(lane);
+            var laneData = nextIsBar ? ParentInstrument.GetBarLaneData() :
+                ParentInstrument.GetLaneData(lane);
 
-            var tickSustain = laneData[nextPromisedNoteHit].Sustain;
+            var tickSustain = laneData.GetTickSustain(nextPromisedNoteHit);
             if (tickSustain > 0)
             {
                 PlaySustain(nextPromisedNoteHit, tickSustain);
@@ -87,26 +97,24 @@ public class NoteReceiver : MonoBehaviour
 
     int GetNextNoteHit()
     {
-        nextIsOpen = false;
+        nextIsBar = false;
 
-        var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
-        var activeLaneTick = instrument.GetLaneData(lane).GetNextRelevantTick();
-        var openLaneTick = instrument.GetLaneData(FiveFretInstrument.LaneOrientation.open).GetNextRelevantTick();
+        var activeLaneTick = ParentInstrument.GetLaneData(lane).GetNextRelevantTick();
+        var openLaneTick = ParentInstrument.GetBarLaneData().GetNextRelevantTick();
 
         var relevantTick = Mathf.Min(activeLaneTick, openLaneTick);
 
-        if (relevantTick == openLaneTick) nextIsOpen = true;
+        if (relevantTick == openLaneTick) nextIsBar = true;
 
         return relevantTick;
     }
 
     int GetStartingNote()
     {
-        nextIsOpen = false;
+        nextIsBar = false;
 
-        var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
-        var activeLaneTick = instrument.GetLaneData(lane).GetFirstRelevantTick<FiveFretNoteData>();
-        var openLaneTick = instrument.GetLaneData(FiveFretInstrument.LaneOrientation.open).GetFirstRelevantTick<FiveFretNoteData>();
+        var activeLaneTick = ParentInstrument.GetLaneData(lane).GetFirstRelevantTick();
+        var openLaneTick = ParentInstrument.GetBarLaneData().GetFirstRelevantTick();
 
         int relevantTick;
         if (activeLaneTick < SongTime.SongPositionTicks && openLaneTick < SongTime.SongPositionTicks)
@@ -115,7 +123,7 @@ public class NoteReceiver : MonoBehaviour
         }
         relevantTick = Mathf.Min(activeLaneTick, openLaneTick);
 
-        if (relevantTick == openLaneTick) nextIsOpen = true;
+        if (relevantTick == openLaneTick) nextIsBar = true;
 
         return relevantTick;
     }

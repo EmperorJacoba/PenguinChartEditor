@@ -31,6 +31,7 @@ public class FiveFretInstrument : IInstrument
 
     private Lanes<FiveFretNoteData> Lanes { get; set; }
     ILaneData IInstrument.GetLaneData(int lane) => Lanes.GetLane(lane);
+    ILaneData IInstrument.GetBarLaneData() => GetLaneData(LaneOrientation.open);
     public LaneSet<FiveFretNoteData> GetLaneData(int lane) => Lanes.GetLane(lane);
     public LaneSet<FiveFretNoteData> GetLaneData(LaneOrientation lane) => Lanes.GetLane((int)lane);
     ISelection IInstrument.GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);

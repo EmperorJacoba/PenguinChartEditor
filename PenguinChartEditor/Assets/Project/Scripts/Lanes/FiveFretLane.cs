@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FiveFretLane : SpawningLane<FiveFretNote>
 {
-    public FiveFretInstrument.LaneOrientation laneIdentifier;
+    [HideInInspector] public FiveFretInstrument.LaneOrientation laneIdentifier;
 
     [SerializeField] FiveFretNotePooler lanePooler;
     FiveFretNotePreviewer previewer;

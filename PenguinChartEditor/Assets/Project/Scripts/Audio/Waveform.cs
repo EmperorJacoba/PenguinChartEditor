@@ -10,6 +10,8 @@ public class Waveform : MonoBehaviour
     private const float THREE_D_Y_POSITION_OFFSET = 0.01f;
     public static Waveform instance;
 
+    public GameInstrument parentGameInstrument;
+
     /// <summary>
     /// Dictionary that contains waveform point data for each song stem.
     /// <para>StemType is the audio stem the data belongs to</para>
@@ -162,7 +164,7 @@ public class Waveform : MonoBehaviour
     {
         return Chart.instance.SceneDetails.is2D ?
             (int)Math.Ceiling(GetSampleCapacity() * Strikeline.instance.GetStrikelineProportion()) :
-            (int)Math.Ceiling(GetSampleCapacity() * Strikeline3D.instance.GetStrikelineProportion());
+            (int)Math.Ceiling(GetSampleCapacity() * parentGameInstrument.GetStrikelineHighwayProportion());
     }
 
     public static int ticksShown;

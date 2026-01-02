@@ -30,6 +30,7 @@ public interface IInstrument
     void DeleteAllEventsAtTick(int tick);
 
     public ILaneData GetLaneData(int lane);
+    public ILaneData GetBarLaneData();
     public ISelection GetLaneSelection(int lane);
 }
 

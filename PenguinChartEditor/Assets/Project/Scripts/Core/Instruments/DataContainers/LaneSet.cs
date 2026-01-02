@@ -5,6 +5,9 @@ using System.Linq;
 public interface ILaneData
 {
     bool Contains(int tick);
+    int GetNextRelevantTick();
+    int GetFirstRelevantTick();
+    int GetTickSustain(int tick);
 }
 
 
@@ -282,8 +285,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         return Keys.ToList().Where(x => x >= startPasteTick && x <= endPasteTick).ToHashSet();
     }
 
-    public int GetFirstRelevantTick<TSustain>() where TSustain : ISustainable
-        => GetFirstRelevantTick<TSustain>(SongTime.SongPositionTicks);
+    public int GetFirstRelevantTick() => GetFirstRelevantTick(SongTime.SongPositionTicks);
 
     /// <summary>
     /// 
@@ -293,7 +295,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     /// <returns>The next tick in this lane that needs to show feedback. 
     /// Returns the previous tick in the lane if the sustain of that note 
     /// is in progress at targetTick, which will need to show feedback.</returns>
-    public int GetFirstRelevantTick<TSustain>(int targetTick) where TSustain : ISustainable
+    public int GetFirstRelevantTick(int targetTick)
     {
         // validate next and not previous tick because there is no need to
         // validate the previous tick in this scenario
@@ -306,9 +308,8 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         var previousTick = GetPreviousTickEventInLane(targetTick);
         var nextTick = ValidateEvent(GetNextTickEventInLane(targetTick, inclusive: true));
 
-        if (Contains(previousTick)) 
+        if (Contains(previousTick) && this[previousTick] is ISustainable sustainDataContainer)
         {
-            var sustainDataContainer = (ISustainable)this[previousTick];
             var prevSustainLength = sustainDataContainer.Sustain;
 
             var prevSustainEndPoint = previousTick + prevSustainLength;
@@ -323,6 +324,15 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     public int GetNextRelevantTick(int targetTick) => ValidateEvent(GetNextTickEventInLane(targetTick));
 
     int ValidateEvent(int tickEvent) => tickEvent == NO_TICK_EVENT ? SongTime.SongLengthTicks + 1 : tickEvent;
+
+    public int GetTickSustain(int tick)
+    {
+        if (Contains(tick) && this[tick] is ISustainable sustainData)
+        {
+            return sustainData.Sustain;
+        }
+        return 0;
+    }
 
     #region Unmodified IDictionary Implementations
 

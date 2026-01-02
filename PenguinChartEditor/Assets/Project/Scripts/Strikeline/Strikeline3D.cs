@@ -2,18 +2,11 @@ using UnityEngine;
 
 public class Strikeline3D : MonoBehaviour, IStrikeline
 {
-    public static Strikeline3D instance;
-
-    // highway.localScale = length of track
-    [SerializeField] Transform highway;
-
-    void Awake()
-    {
-        instance = this;
-    }
+    // set with GameInstrument
+    public GameInstrument parentGameInstrument;
 
     public float GetStrikelineProportion()
     {
-        return transform.localPosition.z / highway.localScale.z;
+        return transform.localPosition.z / parentGameInstrument.HighwayLength;
     }
 }

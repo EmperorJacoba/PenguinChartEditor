@@ -7,6 +7,10 @@ public class StarpowerInstrument : IInstrument
 {
     private Lanes<StarpowerEventData> Lanes;
     ILaneData IInstrument.GetLaneData(int lane) => Lanes.GetLane(lane);
+    ILaneData IInstrument.GetBarLaneData()
+    {
+        throw new NotImplementedException($"Starpower does not have a bar lane. Please format the note receivers to access your intended instrument instead of the loaded instrument.");
+    }
     ISelection IInstrument.GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
     public SoloDataSet SoloData
     {

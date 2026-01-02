@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class SyncTrackInstrument : IInstrument
 {
@@ -41,6 +42,8 @@ public class SyncTrackInstrument : IInstrument
         }
         return TimeSignatureEvents;
     }
+
+    public ILaneData GetBarLaneData() => throw new NullReferenceException("SyncTrackInstrument does not have a bar lane, as it does not use traditional instrument lanes.");
 
     public ISelection GetLaneSelection(int lane)
     {
@@ -472,6 +475,15 @@ public class SyncTrackInstrument : IInstrument
         // Formula from .chart format specifications
         return ((ticktime - lastTickEvent) / (double)Chart.Resolution * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].BPMChange) + TempoEvents[lastTickEvent].Timestamp;
     }
+
+    // This may seem weird at first, but because the duration of a tick varies from tick to tick based on BPM changes,
+    // to accurately convert a tick duration to seconds, you must subtract the end time from the start time.
+    public double ConvertTickDurationToSeconds(int startTick, int endTick)
+    {
+        return ConvertTickTimeToSeconds(endTick) - ConvertTickTimeToSeconds(startTick);
+    }
+
+    public double ConvertTickDurationToSeconds(int startTick, ISustainable sustainData) => ConvertTickDurationToSeconds(startTick, startTick + sustainData.Sustain);
 
     #endregion
 
