@@ -34,13 +34,13 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
         // perhaps get the keys and then binary search?
         if (AudioManager.AudioPlaying)
         {
-            var events = GetPlaybackTickRange(workingLane, SongTime.SongPositionTicks);
-
+            //var events = GetPlaybackTickRange(workingLane, SongTime.SongPositionTicks);
+            var events = workingLane.GetRelevantTicksInRange(SongTime.SongPositionTicks, Waveform.endTick).ToList();
             if (events.Count > 0)
             {
                 var sustainCandidate = events[0];
                 if (
-                    sustainCandidate + workingLane[sustainCandidate].Sustain > SongTime.SongPositionTicks && 
+                    sustainCandidate + workingLane[sustainCandidate].Sustain > SongTime.SongPositionTicks &&
                     sustainCandidate < SongTime.SongPositionTicks
                     )
                 {
@@ -57,7 +57,7 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
         else
         {
             sustainOnlyTick = -1;
-            return GetPlaybackTickRange(workingLane, Waveform.startTick);
+            return workingLane.GetRelevantTicksInRange(Waveform.startTick, Waveform.endTick).ToList();
         }
     }
 

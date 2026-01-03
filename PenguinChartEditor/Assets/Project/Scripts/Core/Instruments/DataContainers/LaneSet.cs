@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ public interface ILaneData
     int GetNextRelevantTick();
     int GetFirstRelevantTick();
     int GetTickSustain(int tick);
+    int[] GetRelevantTicksInRange(int startTick, int endTick);
 }
 
 
@@ -89,7 +91,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         // startRange + 1 for an exclusive range
         var index = keyList.BinarySearch(startRange + 1);
 
-        if (index > 0) index = ~index;
+        if (index < 0) index = ~index;
 
         // Index will either be the index of startRange + 1 (extremely unlikely)
         // or the next element larger than the start of the range.
@@ -242,37 +244,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         }
     }
 
-    /// <summary>
-    /// Get the tick event before a specified tick. Returns -1 (LaneSet.NO_TICK_EVENT) if there is none.
-    /// </summary>
-    /// <param name="currentTick"></param>
-    /// <returns></returns>
-    public int GetPreviousTickEventInLane(int currentTick, bool inclusive = false)
-    {
-        int index = BinarySearchForTick(currentTick, out var tickTimeKeys);
 
-        // bitwise complement is negative
-        if (index > 0) return inclusive ? tickTimeKeys[index] : tickTimeKeys[index - 1];
-
-        if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
-        else index = ~index - 1;
-
-        if (index < 0) return NO_TICK_EVENT;
-        return tickTimeKeys[index];
-    }
-
-    public int GetNextTickEventInLane(int currentTick, bool inclusive = false)
-    {
-        int index = BinarySearchForTick(currentTick, out var tickTimeKeys);
-
-        if (~index == tickTimeKeys.Count || index >= tickTimeKeys.Count - 1) return NO_TICK_EVENT;
-
-        // bitwise complement is negative
-        if (index >= 0) return inclusive ? tickTimeKeys[index] : tickTimeKeys[index + 1];
-        else index = ~index;
-
-        return tickTimeKeys[index];
-    }
 
     int BinarySearchForTick(int currentTick, out List<int> tickTimeKeys)
     {
@@ -333,6 +305,71 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         }
         return 0;
     }
+
+    /// <summary>
+    /// Get the tick event before a specified tick. Returns -1 (LaneSet.NO_TICK_EVENT) if there is none.
+    /// </summary>
+    /// <param name="currentTick"></param>
+    /// <returns></returns>
+    public int GetPreviousTickEventInLane(int currentTick, bool inclusive = false)
+    {
+        int index = BinarySearchForTick(currentTick, out var tickTimeKeys);
+
+        // bitwise complement is negative
+        if (index > 0) return inclusive ? tickTimeKeys[index] : tickTimeKeys[index - 1];
+
+        if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
+        else index = ~index - 1;
+
+        if (index < 0) return NO_TICK_EVENT;
+        return tickTimeKeys[index];
+    }
+
+    public int GetNextTickEventInLane(int currentTick, bool inclusive = false)
+    {
+        int index = BinarySearchForTick(currentTick, out var tickTimeKeys);
+
+        if (~index == tickTimeKeys.Count || index >= tickTimeKeys.Count - 1) return NO_TICK_EVENT;
+
+        // bitwise complement is negative
+        if (index >= 0) return inclusive ? tickTimeKeys[index] : tickTimeKeys[index + 1];
+        else index = ~index;
+
+        return tickTimeKeys[index];
+    }
+
+    // Uses array and not list for easy range segmenting
+    public int[] GetRelevantTicksInRange(int startTick, int endTick)
+    {
+        if (Count == 0) return new int[0];
+
+        var tickList = Keys.ToArray();
+
+        var startIndex = Array.BinarySearch(tickList, startTick);
+        var endIndex = Array.BinarySearch(tickList, endTick);
+
+        if (startIndex < 0) startIndex = ~startIndex;
+        if (endIndex < 0) endIndex = ~endIndex - 1;
+
+        if (startIndex == tickList.Length || endIndex < 0)
+        {
+            return new int[0];
+        }
+
+        int sustainCandidateTick = startIndex == 0 ? tickList[startIndex] : tickList[startIndex - 1];
+
+        if (this[sustainCandidateTick] is ISustainable tickSustainData)
+        {
+            if (sustainCandidateTick + tickSustainData.Sustain > startTick)
+            {
+                startIndex = startIndex == 0 ? startIndex : startIndex - 1;
+            }
+        }
+
+        var finalList = tickList[startIndex..(endIndex + 1)];
+        return finalList;
+    }
+
 
     #region Unmodified IDictionary Implementations
 

@@ -251,7 +251,7 @@ public class Waveform : MonoBehaviour
         Chart.Refresh();
     }
 
-    public void ApplyGeneratedPositions(Vector3[] positions)
+    private void ApplyGeneratedPositions(Vector3[] positions)
     {
         if (!WaveformData.ContainsKey(CurrentWaveform))
         {
