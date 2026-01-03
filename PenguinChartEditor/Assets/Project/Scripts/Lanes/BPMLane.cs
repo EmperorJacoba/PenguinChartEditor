@@ -16,9 +16,9 @@ public class BPMLane : SpawningLane<BPMLabel>
         instance = this;
     }
 
-    protected override List<int> GetEventsToDisplay()
+    protected override int[] GetEventsToDisplay()
     {
-        return Chart.SyncTrackInstrument.TempoEvents.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
+        return Chart.SyncTrackInstrument.TempoEvents.GetRelevantTicksInRange(Waveform.startTick, Waveform.endTick); 
     }
 
     protected override void InitializeEvent(BPMLabel @event, int tick) => @event.InitializeEvent(tick);

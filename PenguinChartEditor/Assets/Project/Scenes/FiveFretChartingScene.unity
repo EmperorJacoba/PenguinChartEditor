@@ -4209,7 +4209,7 @@ MonoBehaviour:
   highway: {fileID: 2069553716}
   strikeline: {fileID: 1936119447}
   waveform: {fileID: 1754544326}
-  instrumentType: 0
+  instrumentType: 10
 --- !u!1 &536290877
 GameObject:
   m_ObjectHideFlags: 0

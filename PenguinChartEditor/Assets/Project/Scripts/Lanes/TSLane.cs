@@ -16,8 +16,9 @@ public class TSLane : SpawningLane<TSLabel>
         instance = this;
     }
 
-    protected override List<int> GetEventsToDisplay() =>
-        Chart.SyncTrackInstrument.TimeSignatureEvents.Keys.Where(tick => tick >= Waveform.startTick && tick <= Waveform.endTick).ToList();
-
+    protected override int[] GetEventsToDisplay()
+    {
+        return Chart.SyncTrackInstrument.TimeSignatureEvents.GetRelevantTicksInRange(Waveform.startTick, Waveform.endTick);
+    }
     protected override void InitializeEvent(TSLabel @event, int tick) => @event.InitializeEvent(tick);
 }

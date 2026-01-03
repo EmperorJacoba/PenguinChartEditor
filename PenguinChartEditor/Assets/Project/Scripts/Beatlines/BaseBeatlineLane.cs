@@ -6,7 +6,7 @@ public abstract class BaseBeatlineLane<T> : SpawningLane<T> where T : IPoolable 
     protected override bool HasPreviewer() => false;
     protected override IPreviewer Previewer => null;
 
-    protected override List<int> GetEventsToDisplay()
+    protected override int[] GetEventsToDisplay()
     {
         List<int> beatlineEvents = new();
         var firstTick = Chart.SyncTrackInstrument.GetNextBeatlineEvent(Waveform.startTick);
@@ -19,6 +19,6 @@ public abstract class BaseBeatlineLane<T> : SpawningLane<T> where T : IPoolable 
         {
             beatlineEvents.Add(currentTick);
         }
-        return beatlineEvents;
+        return beatlineEvents.ToArray();
     }
 }

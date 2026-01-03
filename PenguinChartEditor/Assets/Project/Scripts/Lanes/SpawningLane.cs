@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public abstract class SpawningLane<TEvent> : MonoBehaviour where TEvent : IPoolable
 {
     [SerializeField] protected LaneProperties properties;
-    protected abstract List<int> GetEventsToDisplay();
+    protected abstract int[] GetEventsToDisplay();
     protected abstract IPooler<TEvent> Pooler { get; }
     protected abstract IPreviewer Previewer { get; }
 
@@ -19,7 +19,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour where TEvent : IPoola
         var events = GetEventsToDisplay();
 
         int i;
-        for (i = 0; i < events.Count; i++)
+        for (i = 0; i < events.Length; i++)
         {
             TEvent @event = Pooler.GetObject(i);
             InitializeEvent(@event, events[i]);

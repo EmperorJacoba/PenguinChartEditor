@@ -26,21 +26,22 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
         AudioManager.PlaybackStateChanged += playing => { if (!playing) UpdateEvents(); };
     }
 
-    protected override List<int> GetEventsToDisplay()
+    protected override int[] GetEventsToDisplay()
     {
-        var workingLane = (LaneSet<FiveFretNoteData>)parentGameInstrument.representedInstrument.GetLaneData((int)laneIdentifier);
+        var workingLane = parentGameInstrument.representedInstrument.GetLaneData((int)laneIdentifier);
 
         // creating the events list is incredibly slow
         // perhaps get the keys and then binary search?
         if (AudioManager.AudioPlaying)
         {
             //var events = GetPlaybackTickRange(workingLane, SongTime.SongPositionTicks);
-            var events = workingLane.GetRelevantTicksInRange(SongTime.SongPositionTicks, Waveform.endTick).ToList();
-            if (events.Count > 0)
+            var events = workingLane.GetRelevantTicksInRange(SongTime.SongPositionTicks, Waveform.endTick);
+            if (events.Length > 0)
             {
                 var sustainCandidate = events[0];
+                var lane = (LaneSet<FiveFretNoteData>)workingLane;
                 if (
-                    sustainCandidate + workingLane[sustainCandidate].Sustain > SongTime.SongPositionTicks &&
+                    sustainCandidate + lane[sustainCandidate].Sustain > SongTime.SongPositionTicks &&
                     sustainCandidate < SongTime.SongPositionTicks
                     )
                 {
@@ -57,7 +58,7 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
         else
         {
             sustainOnlyTick = -1;
-            return workingLane.GetRelevantTicksInRange(Waveform.startTick, Waveform.endTick).ToList();
+            return workingLane.GetRelevantTicksInRange(Waveform.startTick, Waveform.endTick);
         }
     }
 
