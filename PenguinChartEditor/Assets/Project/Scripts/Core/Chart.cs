@@ -180,8 +180,8 @@ public class Chart : MonoBehaviour
             Where(
             item => item.InstrumentName == InstrumentType.guitar). // for testing only
             ToList()[0]; */
-        // LoadedInstrument = SyncTrackInstrument;
-        LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.starpower).ToList()[0];
+        LoadedInstrument = SyncTrackInstrument;
+        // LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.starpower).ToList()[0];
 
         inputMap = new();
         inputMap.Enable();

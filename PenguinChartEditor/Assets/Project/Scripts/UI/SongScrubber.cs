@@ -27,5 +27,6 @@ public class SongScrubber : MonoBehaviour
     {
         // Don't worry about dual updates for a scroll - SongPositionSeconds will not update the scene unless the passed in value is different
         SongTime.SongPositionSeconds = AudioManager.SongLength * scrubber.value;
+        Chart.InPlaceRefresh();
     }
 }

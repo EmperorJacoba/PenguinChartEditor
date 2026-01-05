@@ -8,6 +8,7 @@ using UnityEngine.Rendering.Universal;
 [RequireComponent(typeof(LineRenderer))]
 public class Waveform : MonoBehaviour
 {
+    [SerializeField] bool is2D = false;
     private const float THREE_D_Y_POSITION_OFFSET = 0.01f;
     public static Waveform instance;
 
@@ -38,12 +39,23 @@ public class Waveform : MonoBehaviour
     /// <summary>
     /// RectTransform attached to the waveform container.
     /// </summary>
-    [SerializeField] RectTransform rt_2DOnly;
+    RectTransform TwoDRectTransform
+    {
+        get
+        {
+            if (_rt == null)
+            {
+                _rt = GetComponent<RectTransform>();
+            }
+            return _rt;
+        }
+    }
+    RectTransform _rt;
 
     /// <summary>
     /// Height of the RectTransform component attached to the waveform's container GameObject.
     /// </summary>
-    private float rtHeight => rt_2DOnly.rect.height;
+    private float TwoDReferenceHeight => TwoDRectTransform.rect.height;
 
     #endregion
 
@@ -112,18 +124,8 @@ public class Waveform : MonoBehaviour
         lineRendererMirror = gameObject.transform.GetChild(0).GetComponent<LineRenderer>();
 
         PointUpdateNeeded += x => ApplyGeneratedPositions(x);
-    }
 
-    private void Start()
-    {
-        if (Chart.instance.SceneDetails.is2D) Init2D();
-    }
-
-    void Init2D()
-    {
-        instance = this;
-        var boundsRectTransform = (RectTransform)Chart.instance.SceneDetails.highway;
-        rt_2DOnly.pivot = boundsRectTransform.pivot;
+        if (is2D) instance = this;
     }
 
     #endregion
@@ -157,7 +159,7 @@ public class Waveform : MonoBehaviour
     static int GetSampleCapacity()
     {
         return Chart.instance.SceneDetails.is2D ?
-            (int)Mathf.Round(instance.rtHeight / ShrinkFactor) :
+            (int)Mathf.Round(instance.TwoDReferenceHeight / ShrinkFactor) :
             (int)Mathf.Round(Highway3D.highwayLength / (ShrinkFactor));
     }
     static int GetStrikelineSamplePosition()

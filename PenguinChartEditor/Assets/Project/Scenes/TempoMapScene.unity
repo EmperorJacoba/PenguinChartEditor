@@ -1506,9 +1506,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a01a1ac9e19f2fc428171da8c074f972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
   properties:
     is3D: 0
-  eventBoundary: {fileID: 1489170079}
+  parentGameInstrument: {fileID: 0}
   pooler: {fileID: 113968235}
 --- !u!1 &291849582
 GameObject:
@@ -3324,9 +3325,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb81d2aaee7d964da5af12c2995737d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
   properties:
     is3D: 0
-  eventBoundary: {fileID: 1489170079}
+  parentGameInstrument: {fileID: 0}
   pooler: {fileID: 950550349}
 --- !u!1 &586949409
 GameObject:
@@ -7464,9 +7466,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b53604da01237e6449a775f270ae7e72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
   properties:
     is3D: 0
-  eventBoundary: {fileID: 72448263}
+  parentGameInstrument: {fileID: 0}
   pooler: {fileID: 853507101}
 --- !u!1 &1508943702
 GameObject:
@@ -9424,8 +9427,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5cf94416ef33b046a171528a302b951, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayUIRaycaster: {fileID: 1606916091}
-  eventRaycaster: {fileID: 1814809336}
   tsLabel: {fileID: 1993092259}
   boundaryReference: {fileID: 1489170079}
 --- !u!1 &1995261592
@@ -9540,8 +9541,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 695db4bd8c26acc45a6ac98f3aceb30b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayUIRaycaster: {fileID: 1606916091}
-  eventRaycaster: {fileID: 1814809336}
   bpmLabel: {fileID: 2011355158}
   boundaryReference: {fileID: 1489170079}
 --- !u!114 &2011355158 stripped
@@ -10260,6 +10259,10 @@ PrefabInstance:
       value: Waveform
       objectReference: {fileID: 0}
     - target: {fileID: 4045013100665676562, guid: add925d0cbfc55d4398d4741c3f66b35, type: 3}
+      propertyPath: is2D
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4045013100665676562, guid: add925d0cbfc55d4398d4741c3f66b35, type: 3}
       propertyPath: rt_2DOnly
       value: 
       objectReference: {fileID: 1067001788}
@@ -10277,7 +10280,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4765939004455367100, guid: add925d0cbfc55d4398d4741c3f66b35, type: 3}
       propertyPath: m_Pivot.y
-      value: 0.000000055879354
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4765939004455367100, guid: add925d0cbfc55d4398d4741c3f66b35, type: 3}
       propertyPath: m_AnchorMax.x

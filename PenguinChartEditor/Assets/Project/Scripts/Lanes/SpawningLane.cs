@@ -17,11 +17,14 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     protected abstract List<int> GetEventsToDisplay();
     protected abstract int GetNextEvent(int tick);
     protected abstract int GetPreviousEvent(int tick);
+    protected abstract void InitializeEvent(TEvent @event, int tick);
+    // protected abstract void UpdateEventPosition(TEvent @event, int tick);
+
     protected abstract IPooler<TEvent> Pooler { get; }
     protected abstract IPreviewer Previewer { get; }
 
     List<int> eventsToDisplay;
-    public void UpdateEvents()
+    protected void UpdateEvents()
     {
         var objectPool = Pooler.GetObjectPool(eventsToDisplay.Count, this);
         for (int i = 0; i < eventsToDisplay.Count; i++)
@@ -31,6 +34,18 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         }
 
         if (!isReadOnly) Previewer.UpdatePosition();
+    }
+
+    public void UpdateEventAsPlaying()
+    {
+        var objectPool = Pooler.GetObjectPool(eventsToDisplay.Count, this);
+        for (int i = 0; i < eventsToDisplay.Count; i++)
+        {
+            if (objectPool[i].Tick == eventsToDisplay[i])
+            {
+
+            }
+        }
     }
 
     protected void RefreshEventsToDisplay()
@@ -155,7 +170,6 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         UpdateEvents();
     }
 
-    protected abstract void InitializeEvent(TEvent @event, int tick);
 
     // Set through parent Lanes object. 
     [HideInInspector] public GameInstrument parentGameInstrument;
