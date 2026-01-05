@@ -16,6 +16,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     protected int GetListStartRefreshPoint() => cullAtStrikelineOnPlay && AudioManager.AudioPlaying ? SongTime.SongPositionTicks : Waveform.startTick;
     protected abstract List<int> GetEventsToDisplay();
     protected abstract int GetNextEvent(int tick);
+    protected abstract int GetPreviousEvent(int tick);
     protected abstract IPooler<TEvent> Pooler { get; }
     protected abstract IPreviewer Previewer { get; }
 
@@ -42,62 +43,117 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     {
         RefreshEventsToDisplay();
         UpdateEvents();
-        startCullTick = -1;
-        endAddTick = -1;
+        startUpdateTick = -1;
+        endUpdateTick = -1;
     }
 
-    int startCullTick = -1;
-    int endAddTick = -1;
-    protected virtual void TimeRefresh()
+    bool directionIsPositive;
+    int startUpdateTick = -1;
+    int endUpdateTick = -1;
+    protected virtual void PositiveTimeRefresh()
     {
-        // TimeDiagnoser time = new("Lane TimeRefresh");
         if (eventsToDisplay == null)
         {
             RefreshEventsToDisplay();
-            UpdateEvents();
         }
 
-        if (startCullTick == -1)
+        if (!directionIsPositive)
+        {
+            startUpdateTick = -1;
+            endUpdateTick = -1;
+            directionIsPositive = true;
+        }
+
+        if (startUpdateTick == -1)
         {
             if (eventsToDisplay.Count == 0)
             {
-                startCullTick = GetNextEvent(GetListStartRefreshPoint());
+                startUpdateTick = GetNextEvent(GetListStartRefreshPoint());
             }
             else
             {
-                startCullTick = eventsToDisplay[0];
+                startUpdateTick = eventsToDisplay[0];
             }
         }
 
-        if (endAddTick == -1)
+        if (endUpdateTick == -1)
         {
             if (eventsToDisplay.Count == 0)
             {
-                endAddTick = GetNextEvent(GetListStartRefreshPoint());
+                endUpdateTick = GetNextEvent(GetListStartRefreshPoint());
             }
             else
             {
-                endAddTick = eventsToDisplay[^1];
+                endUpdateTick = eventsToDisplay[^1];
             }
         }
 
-        if (GetListStartRefreshPoint() > startCullTick)
+        if (GetListStartRefreshPoint() > startUpdateTick)
         {
             RefreshEventsToDisplay();
-            startCullTick = GetNextEvent(startCullTick);
+            startUpdateTick = GetNextEvent(startUpdateTick);
         }
 
-        if (Waveform.endTick >= endAddTick)
+        if (Waveform.endTick >= endUpdateTick)
         {
             RefreshEventsToDisplay();
-            endAddTick = GetNextEvent(endAddTick);
+            endUpdateTick = GetNextEvent(endUpdateTick);
         }
-        // time.RecordTime("Finished refresh.");
 
         UpdateEvents();
+    }
 
-        // time.RecordTime("Applied changes.");
-        // print(time.Report());
+    protected virtual void NegativeTimeRefresh()
+    {
+        if (eventsToDisplay == null)
+        {
+            RefreshEventsToDisplay();
+        }
+
+        if (directionIsPositive)
+        {
+            startUpdateTick = -1;
+            endUpdateTick = -1;
+            directionIsPositive = false;
+        }
+
+        if (startUpdateTick == -1)
+        {
+            if (eventsToDisplay.Count == 0)
+            {
+                startUpdateTick = GetPreviousEvent(GetListStartRefreshPoint());
+            }
+            else
+            {
+                startUpdateTick = eventsToDisplay[^1];
+            }
+        }
+        
+        if (endUpdateTick == -1)
+        {
+            if (eventsToDisplay.Count == 0)
+            {
+                endUpdateTick = GetPreviousEvent(GetListStartRefreshPoint());
+            }
+            else
+            {
+                endUpdateTick = eventsToDisplay[0];
+            }
+        }
+
+        if (GetListStartRefreshPoint() < startUpdateTick)
+        {
+            RefreshEventsToDisplay();
+            startUpdateTick = GetPreviousEvent(startUpdateTick);
+        }
+
+        if (Waveform.endTick <= endUpdateTick)
+        {
+            RefreshEventsToDisplay();
+            endUpdateTick = GetPreviousEvent(endUpdateTick);
+        }
+
+        UpdateEvents();
     }
 
     protected abstract void InitializeEvent(TEvent @event, int tick);
@@ -113,7 +169,8 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
             parentGameInstrument = laneDetails.parentGameInstrument;
         }
         Chart.InPlaceRefreshNeeded += InPlaceRefresh;
-        Chart.TimeChangeRefreshNeeded += TimeRefresh;
+        SongTime.PositiveTimeChange += PositiveTimeRefresh;
+        SongTime.NegativeTimeChange += NegativeTimeRefresh;
         AudioManager.PlaybackStateChanged += x => RefreshOnStop(x);
     }
 

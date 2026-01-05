@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class TSLane : SpawningLane<TSLabel>
 {
-
     [SerializeField] TSPooler pooler;
     protected override bool cullAtStrikelineOnPlay => false;
 
@@ -18,5 +17,9 @@ public class TSLane : SpawningLane<TSLabel>
     protected override int GetNextEvent(int tick)
     {
         return Chart.SyncTrackInstrument.TimeSignatureEvents.GetNextTickEventInLane(tick);
+    }
+    protected override int GetPreviousEvent(int tick)
+    {
+        return Chart.SyncTrackInstrument.TimeSignatureEvents.GetPreviousTickEventInLane(tick);
     }
 }

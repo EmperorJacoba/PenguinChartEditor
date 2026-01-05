@@ -31,7 +31,13 @@ public class SoloSectionLane : SpawningLane<SoloSection>
     }
 
     protected override int GetNextEvent(int tick) => throw new System.NotImplementedException();
-    protected override void TimeRefresh()
+    protected override void PositiveTimeRefresh()
+    {
+        RefreshEventsToDisplay();
+        UpdateEvents();
+    }
+
+    protected override void NegativeTimeRefresh()
     {
         RefreshEventsToDisplay();
         UpdateEvents();
@@ -42,5 +48,10 @@ public class SoloSectionLane : SpawningLane<SoloSection>
         @event.UpdateProperties(
             parentInstrument.SoloData.SoloEvents[tick].StartTick, 
             parentInstrument.SoloData.SoloEvents[tick].EndTick);
+    }
+
+    protected override int GetPreviousEvent(int tick)
+    {
+        throw new System.NotImplementedException();
     }
 }

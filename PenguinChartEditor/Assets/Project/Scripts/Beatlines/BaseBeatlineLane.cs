@@ -28,4 +28,9 @@ public abstract class BaseBeatlineLane<T> : SpawningLane<T> where T : IPoolable 
     {
         return Chart.SyncTrackInstrument.GetNextBeatlineEventExclusive(tick);
     }
+
+    protected override int GetPreviousEvent(int tick)
+    {
+        return Chart.SyncTrackInstrument.GetPreviousBeatlineEventExclusive(tick);
+    }
 }

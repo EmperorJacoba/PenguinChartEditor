@@ -188,23 +188,14 @@ public class Chart : MonoBehaviour
         inputMap.Charting.Copy.performed += x => Clipboard.Copy();
         inputMap.Charting.Paste.performed += x => Clipboard.Paste();
         inputMap.Charting.Cut.performed += x => Clipboard.Cut();
-
-        SongTime.TimeChanged += TimeChangeRefresh;
     }
 
     public delegate void InPlaceUpdatedDelegate();
     public static event InPlaceUpdatedDelegate InPlaceRefreshNeeded;
-    public delegate void TimeChangeUpdateDelegate();
-    public static event TimeChangeUpdateDelegate TimeChangeRefreshNeeded;
 
     public static void InPlaceRefresh()
     {
         InPlaceRefreshNeeded?.Invoke(); // shortcut for all lanes to update
-    }
-
-    public static void TimeChangeRefresh()
-    {
-        TimeChangeRefreshNeeded?.Invoke();
     }
 
     public enum SelectionMode

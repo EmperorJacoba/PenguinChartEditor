@@ -203,10 +203,9 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     void UpdateSustain(bool headOnly)
     {
-        if (!headOnly)
+        if (!headOnly && AudioManager.AudioPlaying)
         {
-            int headDespawnTick = AudioManager.AudioPlaying ? SongTime.SongPositionTicks : Waveform.startTick;
-            notePieces.UpdateSustainLength(headDespawnTick, Tick + representedData.Sustain - headDespawnTick, transform.localPosition.z);
+            notePieces.UpdateSustainLength(SongTime.SongPositionTicks, Tick + representedData.Sustain - SongTime.SongPositionTicks, transform.localPosition.z);
         }
         else
         {

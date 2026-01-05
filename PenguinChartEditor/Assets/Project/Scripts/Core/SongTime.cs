@@ -56,6 +56,12 @@ public class SongTime : MonoBehaviour
 
     public static void InvokeTimeChanged() => TimeChanged?.Invoke();
 
+
+    public delegate void PositiveTimeChangeDelegate();
+    public delegate void NegativeTimeChangeDelegate();
+    public static event PositiveTimeChangeDelegate PositiveTimeChange;
+    public static event NegativeTimeChangeDelegate NegativeTimeChange;
+
     #endregion
 
     #region Unity Functions
@@ -88,6 +94,8 @@ public class SongTime : MonoBehaviour
         if (AudioManager.AudioPlaying)
         {
             SongPositionSeconds = AudioManager.GetCurrentAudioPosition();
+            TimeChanged?.Invoke();
+            PositiveTimeChange?.Invoke();
         }
     }
 
@@ -138,6 +146,8 @@ public class SongTime : MonoBehaviour
         }
 
         SongPositionSeconds = newTimeCandidate;
+        if (scrollChange > 0) PositiveTimeChange?.Invoke();
+        else NegativeTimeChange?.Invoke();
     }
 
     public static int CalculateGridSnappedTick(float percentOfHighway)

@@ -20,4 +20,8 @@ public class BPMLane : SpawningLane<BPMLabel>
     {
         return Chart.SyncTrackInstrument.TempoEvents.GetNextTickEventInLane(tick);
     }
+    protected override int GetPreviousEvent(int tick)
+    {
+        return Chart.SyncTrackInstrument.TempoEvents.GetPreviousTickEventInLane(tick);
+    }
 }

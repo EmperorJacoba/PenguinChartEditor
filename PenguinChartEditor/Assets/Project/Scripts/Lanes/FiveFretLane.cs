@@ -41,4 +41,9 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
     {
         return parentGameInstrument.representedInstrument.GetLaneData((int)laneIdentifier).GetNextTickEventInLane(tick);
     }
+
+    protected override int GetPreviousEvent(int tick)
+    {
+        return parentGameInstrument.representedInstrument.GetLaneData((int)laneIdentifier).GetPreviousTickEventInLane(tick);
+    }
 }

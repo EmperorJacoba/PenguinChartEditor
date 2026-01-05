@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +9,7 @@ public interface ILaneData
     int GetFirstRelevantTick();
     int GetTickSustain(int tick);
     int GetNextTickEventInLane(int currentTick, bool inclusive = false);
+    int GetPreviousTickEventInLane(int currentTick, bool inclusive = false);
     List<int> GetRelevantTicksInRange(int startTick, int endTick);
 }
 

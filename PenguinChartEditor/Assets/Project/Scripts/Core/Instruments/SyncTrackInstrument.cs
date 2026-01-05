@@ -549,6 +549,32 @@ public class SyncTrackInstrument : IInstrument
         return (int)(ts + numIntervals * tickInterval);
     }
 
+    public int GetPreviousBeatlineEvent(int currentTick)
+    {
+        var ts = TimeSignatureEvents.GetPreviousTickEventInLane(currentTick);
+        if (ts < 0) ts = 0;
+
+        var tickDiff = currentTick - ts;
+        var tickInterval = GetHalfDivisionStep(ts);
+        int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
+
+        return (int)(ts + (numIntervals * tickInterval - 2));
+    }
+
+    public int GetPreviousBeatlineEventExclusive(int currentTick)
+    {
+        currentTick--;
+        var proposedPrevious = GetPreviousBeatlineEvent(currentTick);
+
+        var middleTSEvent = TimeSignatureEvents.GetPreviousTickEventInLane(proposedPrevious);
+
+        if (middleTSEvent != TimeSignatureEvents.GetPreviousTickEventInLane(currentTick))
+        {
+            return middleTSEvent;
+        }
+        return proposedPrevious;
+    }
+
     public int GetNextDivisionEvent(int currentTick)
     {
         var ts = TimeSignatureEvents.GetPreviousTickEventInLane(currentTick);
