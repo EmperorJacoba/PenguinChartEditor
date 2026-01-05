@@ -3,7 +3,7 @@ using UnityEngine;
 
 public abstract class BaseBeatlineLane<T> : SpawningLane<T> where T : IPoolable // BPMData is not acted upon here - any calls to it happen in base.Awake()
 {
-    protected override bool HasPreviewer() => false;
+    [HideInInspector] public override bool isReadOnly => true;
     protected override IPreviewer Previewer => null;
 
     protected override int[] GetEventsToDisplay()

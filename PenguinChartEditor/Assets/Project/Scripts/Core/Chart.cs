@@ -176,12 +176,12 @@ public class Chart : MonoBehaviour
         LoadFile();
         Instruments.Add(new StarpowerInstrument(new()));
 
-        // LoadedInstrument = Instruments.
-        //    Where(
-        //    item => item.InstrumentName == InstrumentType.guitar). // for testing only
-        //    ToList()[0];
+        LoadedInstrument = Instruments.
+            Where(
+            item => item.InstrumentName == InstrumentType.guitar). // for testing only
+            ToList()[0];
         // LoadedInstrument = SyncTrackInstrument;
-        LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.starpower).ToList()[0];
+        // LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.starpower).ToList()[0];
 
         inputMap = new();
         inputMap.Enable();
@@ -190,25 +190,19 @@ public class Chart : MonoBehaviour
         inputMap.Charting.Cut.performed += x => Clipboard.Cut();
     }
 
-    public delegate void ChartUpdatedDelegate();
-    public static event ChartUpdatedDelegate ChartTabUpdated;
+    public delegate void InPlaceUpdatedDelegate();
+    public static event InPlaceUpdatedDelegate InPlaceRefreshNeeded;
+    public delegate void TimeChangeUpdateDelegate();
+    public static event TimeChangeUpdateDelegate TimeChangeRefreshNeeded;
 
-    public static void Refresh()
+    public static void InPlaceRefresh()
     {
-        switch (instance.currentTab)
-        {
-            case TabType.SongSetup:
-                Debug.LogWarning("Song setup tab does not have an update function.");
-                break;
-            case TabType.TempoMap:
-                BeatlineLane.instance.UpdateEvents();
-                BPMLane.instance.UpdateEvents();
-                TSLane.instance.UpdateEvents();
-                break;
-            case TabType.Chart:
-                ChartTabUpdated?.Invoke(); // shortcut for all lanes to update
-                break;
-        }
+        InPlaceRefreshNeeded?.Invoke(); // shortcut for all lanes to update
+    }
+
+    public static void TimeChangeRefresh()
+    {
+        TimeChangeRefreshNeeded?.Invoke();
     }
 
     public enum SelectionMode

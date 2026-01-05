@@ -24,7 +24,7 @@ public class FiveFretNoteSustainTrail : MonoBehaviour, IPointerDownHandler, IPoi
             }
             parentNote.AddToSelection();
             parentNote.ClampSustain(sustainClamp);
-            Chart.Refresh();
+            Chart.InPlaceRefresh();
         }
     }
 }

@@ -4,17 +4,10 @@ using UnityEngine;
 
 public class BPMLane : SpawningLane<BPMLabel>
 {
-    public static BPMLane instance;
-
     [SerializeField] BPMPooler pooler;
+    protected override IPooler<BPMLabel> Pooler => pooler;
 
-    protected override IPooler<BPMLabel> Pooler => (IPooler<BPMLabel>)pooler;
     protected override IPreviewer Previewer => BPMPreviewer.instance;
-
-    protected override void Awake()
-    {
-        instance = this;
-    }
 
     protected override int[] GetEventsToDisplay()
     {

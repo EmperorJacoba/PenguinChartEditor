@@ -15,7 +15,6 @@ public interface IEvent
 
     IInstrument ParentInstrument { get; }
 
-    void RefreshLane();
     bool IsPreviewEvent { get; set; }
 }
 
@@ -84,11 +83,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
 
     public abstract IInstrument ParentInstrument { get; }
 
-    /// <summary>
-    /// Update the events corresponding to this event's lane.
-    /// </summary>
-    public abstract void RefreshLane();
-
     #endregion
 
     #region CreateEvent
@@ -108,7 +102,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         }
         LaneData.Add(newTick, newData);
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     #endregion
@@ -161,7 +155,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
             var minNum = Math.Min(lastTickSelection, Tick);
             var maxNum = Math.Max(lastTickSelection, Tick);
             ParentInstrument.ShiftClickSelect(minNum, maxNum);
-            Chart.Refresh();
         }
         else if (Input.GetKey(KeyCode.LeftControl))
         {
@@ -173,7 +166,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
             {
                 Selection.Add(Tick);
             }
-            RefreshLane();
         }
         // Regular click, no extra significant keybinds
         else
@@ -183,8 +175,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
                 ParentInstrument.ClearAllSelections();
             }
             Selection.Add(Tick);
-            Chart.Refresh();
         }
+        Chart.InPlaceRefresh();
 
         // Record the last selection data for shift-click selection
         if (Selection.Contains(Tick)) lastTickSelection = Tick;

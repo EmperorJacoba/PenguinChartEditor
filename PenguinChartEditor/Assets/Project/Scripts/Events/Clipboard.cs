@@ -16,13 +16,13 @@ public static class Clipboard
         var offset = Previewer.previewTick;
 
         Chart.LoadedInstrument.AddChartFormattedEventsToInstrument(userText, offset);
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public static void Cut()
     {
         Copy();
         Chart.LoadedInstrument.DeleteTicksInSelection();
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 }

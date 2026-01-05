@@ -157,8 +157,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         IsDefault = data.Default;
     }
 
-    public override void RefreshLane() => ParentLane.UpdateEvents();
-
     public void UpdatePositionAsPreviewer() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate, PREVIEWER_Y_OFFSET);
     public void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate);
     public void UpdatePosition(int tick) => UpdatePosition(Waveform.GetWaveformRatio(tick), xCoordinate);
@@ -184,7 +182,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
                 return;
             }
             Selection.Add(Tick);
-            Chart.Refresh();
+            Chart.InPlaceRefresh();
         }
     }
 

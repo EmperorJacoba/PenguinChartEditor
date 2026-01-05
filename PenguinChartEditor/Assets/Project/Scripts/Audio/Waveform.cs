@@ -248,7 +248,7 @@ public class Waveform : MonoBehaviour
 
         PointUpdateNeeded?.Invoke(lineRendererPositions);
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     private void ApplyGeneratedPositions(Vector3[] positions)

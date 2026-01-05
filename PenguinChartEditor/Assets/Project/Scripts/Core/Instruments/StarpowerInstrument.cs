@@ -75,14 +75,14 @@ public class StarpowerInstrument : IInstrument
     public void DeleteAllEventsAtTick(int tick) 
     {
         Lanes.PopAllEventsAtTick(tick);
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
 
     public void DeleteTickInLane(int tick, int lane) 
     { 
         Lanes.PopTickFromLane(tick, lane);
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void DeleteTicksInSelection() => Lanes.DeleteAllTicksInSelection();

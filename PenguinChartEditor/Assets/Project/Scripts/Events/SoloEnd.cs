@@ -63,6 +63,4 @@ public class SoloEnd : Event<SoloEventData>
 
         CalculateSelectionStatus(eventData);
     }
-
-    public override void RefreshLane() => ParentLane.UpdateEvents();
 }

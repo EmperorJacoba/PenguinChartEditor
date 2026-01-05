@@ -1,18 +1,12 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 public abstract class SpawningLane<TEvent> : MonoBehaviour where TEvent : IPoolable
 {
+    [field: SerializeField] public virtual bool isReadOnly { get; set; } = false;
     [SerializeField] protected LaneProperties properties;
     protected abstract int[] GetEventsToDisplay();
     protected abstract IPooler<TEvent> Pooler { get; }
     protected abstract IPreviewer Previewer { get; }
-
-    // Leverages scene structure to access event actions
-    // WITHOUT needing a selections flag to make sure
-    // only one label manages event actions at a time
-    // this variable references the Event script on the previewer
-    protected IEvent eventAccessor;
 
     public void UpdateEvents()
     {
@@ -26,12 +20,10 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour where TEvent : IPoola
         }
         Pooler.DeactivateUnused(i);
 
-        if (HasPreviewer()) Previewer.UpdatePosition();
+        if (!isReadOnly) Previewer.UpdatePosition();
     }
 
     protected abstract void InitializeEvent(TEvent @event, int tick);
-
-    protected virtual bool HasPreviewer() => true;
 
     public GameInstrument parentGameInstrument;
     public IInstrument parentInstrument => parentGameInstrument.representedInstrument;
@@ -42,6 +34,9 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour where TEvent : IPoola
             var laneDetails = GetComponentInParent<LaneDetails>();
             parentGameInstrument = laneDetails.parentGameInstrument;
         }
+        Chart.InPlaceRefreshNeeded += UpdateEvents;
+        Chart.TimeChangeRefreshNeeded += UpdateEvents;
+        // possible playback state change refresh needed?
     }
 }
 

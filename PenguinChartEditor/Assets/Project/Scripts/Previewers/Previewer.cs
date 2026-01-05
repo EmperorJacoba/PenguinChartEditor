@@ -19,7 +19,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected InputMap inputMap;
 
-    IEvent previewerEventReference;
+    protected IEvent previewerEventReference;
 
     public virtual void CreateEvent()
     {
@@ -29,7 +29,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         AddCurrentEventDataToLaneSet(); // implemented locally
 
         RemoveTickFromSelection();
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     protected virtual bool IsPreviewerVisible()

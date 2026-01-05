@@ -50,7 +50,7 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
     {
         Length = _hL;
         Waveform.GenerateWaveformPoints();
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public float LeftEndCoordinate => -(transform.localScale.x / 2);

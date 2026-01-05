@@ -4,21 +4,20 @@ using UnityEngine;
 public class SoloSectionLane : SpawningLane<SoloSection>
 {
     [SerializeField] SoloSectionPooler pooler;
-    SoloPreviewer previewer;
-    [SerializeField] bool readOnly;
-
-    protected override bool HasPreviewer() => !readOnly;
-
     protected override IPooler<SoloSection> Pooler => pooler;
 
-    protected override IPreviewer Previewer => (IPreviewer)previewer;
-
-    protected override void Awake()
+    protected override IPreviewer Previewer
     {
-        base.Awake();
-        if (!readOnly) previewer = transform.GetChild(0).GetComponent<SoloPreviewer>();
-        Chart.ChartTabUpdated += UpdateEvents;
+        get
+        {
+            if (previewer == null)
+            {
+                previewer = transform.GetChild(0).GetComponent<SoloPreviewer>();
+            }
+            return previewer;
+        }
     }
+    SoloPreviewer previewer;
 
     protected override int[] GetEventsToDisplay()
     {

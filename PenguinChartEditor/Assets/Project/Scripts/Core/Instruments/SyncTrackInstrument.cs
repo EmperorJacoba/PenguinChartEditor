@@ -197,7 +197,7 @@ public class SyncTrackInstrument : IInstrument
         if (typeof(T) == typeof(BPMData)) RecalculateTempoEventDictionary();
 
         SongTime.InvokeTimeChanged();
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void CompleteMove()
@@ -207,7 +207,7 @@ public class SyncTrackInstrument : IInstrument
         CompleteMove(ref bpmMoveData, bpmSelection);
         CompleteMove(ref tsMoveData, tsSelection);
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void CompleteMove<T>(ref UniversalMoveData<T> moveData, SelectionSet<T> selection) where T : IEventData
@@ -782,7 +782,7 @@ public class SyncTrackInstrument : IInstrument
             lines.Add(new(tick + offset, parts[1]));
         }
         AddChartFormattedEventsToInstrument(lines);
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     #endregion

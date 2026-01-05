@@ -36,13 +36,12 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
     // Overriden to make sure faulty/inaccurate data is not in Tempo dict after any large modifications
     public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
-    public override void RefreshLane() => BPMLane.instance.UpdateEvents();
 
     void ExecuteWithRecalculate(Action action)
     {
         action();
         Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     #endregion
@@ -144,7 +143,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         SongTime.InvokeTimeChanged();
 
         // Display the changes
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     #endregion

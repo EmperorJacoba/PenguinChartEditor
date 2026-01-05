@@ -208,7 +208,7 @@ public class FiveFretInstrument : IInstrument
 
         CheckForHoposInRange(moveData.lastGhostStartTick, moveData.lastGhostEndTick);
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     void CompleteMove()
@@ -254,13 +254,13 @@ public class FiveFretInstrument : IInstrument
             Lanes.ClearAllSelections();
         }
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void DeleteTickInLane(int tick, int lane)
     {
         Lanes.PopTickFromLane(tick, lane);
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void DeleteAllEventsAtTick(int tick)
@@ -269,7 +269,7 @@ public class FiveFretInstrument : IInstrument
 
         Lanes.PopAllEventsAtTick(tick);
         Lanes.ClearAllSelections();
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void AddData(int tick, LaneOrientation lane, FiveFretNoteData data)
@@ -283,7 +283,7 @@ public class FiveFretInstrument : IInstrument
         ClampSustainsBefore(tick, lane);
         ClearAllSelections();
 
-        Chart.Refresh();
+        //Chart.InPlaceRefresh();
     }
 
     #endregion
@@ -316,7 +316,7 @@ public class FiveFretInstrument : IInstrument
     {
         Lanes.ClearTickFromAllSelections(tick);
         SoloData.RemoveTickFromAllSelections(tick);
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void CheckForSelectionClear()
@@ -402,7 +402,7 @@ public class FiveFretInstrument : IInstrument
         var selectionMinMax = Lanes.GetSelectionBounds();
         Lanes.SetSelectionToNewLane((int)destinationLane);
         CheckForHoposInRange(selectionMinMax.min, selectionMinMax.max);
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void NaturalizeSelection()
@@ -435,7 +435,7 @@ public class FiveFretInstrument : IInstrument
         // off-chance that it was missed somewhere down the line)
         CheckForHoposInRange(totalSelectionSet.Min(), totalSelectionSet.Max());
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void SetSelectionToFlag(FiveFretNoteData.FlagType flag)
@@ -456,7 +456,7 @@ public class FiveFretInstrument : IInstrument
             }
         }
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void SetSelectionSustain(int ticks)
@@ -476,7 +476,7 @@ public class FiveFretInstrument : IInstrument
             }
         }
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void SetEqualSpacing()
@@ -516,7 +516,7 @@ public class FiveFretInstrument : IInstrument
         CheckForHoposInRange(firstTick, lastTick);
         ValidateSustainsInRange(firstTick, lastTick);
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     #endregion
@@ -643,7 +643,7 @@ public class FiveFretInstrument : IInstrument
             }
         }
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
         sustainData.lastMouseTick = currentMouseTick;
     }
 
@@ -651,7 +651,7 @@ public class FiveFretInstrument : IInstrument
     {
         // parameterless new() = flag as empty 
         sustainData = new();
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public static int GetCurrentMouseTick()
@@ -763,7 +763,7 @@ public class FiveFretInstrument : IInstrument
             }
         }
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void ClampSustainsBefore(int tick, LaneOrientation lane)
@@ -938,7 +938,7 @@ public class FiveFretInstrument : IInstrument
 
         if (!toggleToTaps) CheckForHoposInRange(allTicksSelected.Min(), allTicksSelected.Max());
 
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public bool IsTickTap(int tick)

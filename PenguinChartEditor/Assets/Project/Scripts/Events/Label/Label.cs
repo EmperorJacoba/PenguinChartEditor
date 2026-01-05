@@ -149,7 +149,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
             clickCount == 2)
         {
             ActivateManualInput();
-            RefreshLane();
+            Chart.InPlaceRefresh();
 
             // if you click too fast, clickCount will exceed 2
             // at some point and will never be able to reset

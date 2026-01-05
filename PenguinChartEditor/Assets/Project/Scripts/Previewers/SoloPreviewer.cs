@@ -16,9 +16,9 @@ public class SoloPreviewer : Previewer
         inputMap = new();
         inputMap.Enable();
 
+        previewSoloPlate.ParentLane = ParentLane;
         previewEndPlate.IsPreviewEvent = true;
         previewSoloPlate.IsPreviewEvent = true;
-        // event reference removed - there are multiple references
 
         inputMap.Charting.PreviewMousePos.performed += position =>
             UpdatePosition();
@@ -33,6 +33,7 @@ public class SoloPreviewer : Previewer
 
     protected override void RemoveTickFromSelection()
     {
+        // Gets called before the selection is actually assigned sometimes.
         previewSoloPlate.Selection.Remove(Tick);
     }
 

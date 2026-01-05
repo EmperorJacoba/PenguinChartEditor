@@ -295,7 +295,7 @@ public class Lanes<T> where T : IEventData
         {
             selection.SelectAllInLane();
         }
-        Chart.Refresh();
+        Chart.InPlaceRefresh();
     }
 
     public void DeleteAllTicksInSelection()
