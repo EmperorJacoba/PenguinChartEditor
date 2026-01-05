@@ -141,6 +141,17 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         SetVisualProperties(representedData);
     }
 
+    void IPoolable.UpdatePosition()
+    {
+        bool isHeadVisible = CalculateHeadVisibility();
+        notePieces.SetVisibility(isHeadVisible);
+
+        UpdatePosition(
+            tick: AudioManager.AudioPlaying && !isHeadVisible ? SongTime.SongPositionTicks : Tick
+            );
+        UpdateSustain(isHeadVisible);
+    }
+
     public void InitializeEventAsPreviewer(FiveFretLane parentLane, int previewTick, FiveFretNoteData previewData)
     {
         ParentLane = parentLane;

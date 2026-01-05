@@ -26,8 +26,12 @@ public class SoloSection : MonoBehaviour, IPoolable
         this.parentLane = (SoloSectionLane)parentLane;
     }
 
-    public void UpdateProperties(int startTick, int endTick)
+    public void InitializeEvent(int tick)
     {
+        var soloData = parentLane.parentInstrument.SoloData.SoloEvents[tick];
+        int startTick = soloData.StartTick;
+        int endTick = soloData.EndTick;
+
         UpdateOverlayProperties(startTick, endTick);
         platehead.InitializeEvent(parentLane, startTick, endTick);
         plateheadReceiver.InitializeEvent(parentLane, startTick, endTick);
@@ -52,5 +56,9 @@ public class SoloSection : MonoBehaviour, IPoolable
         overlay.transform.localScale = new(parentLane.parentGameInstrument.HighwayLocalScaleProperties.x, 1f, localScaleZ);
     }
 
-
+    void IPoolable.UpdatePosition()
+    {
+        platehead.UpdatePosition(plateheadReceiver.representedTick);
+        plateheadReceiver.UpdatePosition();
+    }
 }

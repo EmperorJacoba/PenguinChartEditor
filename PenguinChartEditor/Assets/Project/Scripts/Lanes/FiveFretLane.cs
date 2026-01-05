@@ -32,11 +32,6 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
         return workingLane.GetRelevantTicksInRange(spawnStartTick, Waveform.endTick);
     }
 
-    protected override void InitializeEvent(FiveFretNote @event, int tick)
-    {
-        @event.InitializeEvent(tick);
-    }
-
     protected override int GetNextEvent(int tick)
     {
         return parentGameInstrument.representedInstrument.GetLaneData((int)laneIdentifier).GetNextTickEventInLane(tick);
@@ -44,6 +39,7 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
 
     protected override int GetPreviousEvent(int tick)
     {
-        return parentGameInstrument.representedInstrument.GetLaneData((int)laneIdentifier).GetPreviousTickEventInLane(tick);
+        var lane = parentGameInstrument.representedInstrument.GetLaneData((int)laneIdentifier);
+        return Mathf.Max(lane.GetPreviousTickEventInLane(tick), lane.GetFirstRelevantTick(tick));
     }
 }

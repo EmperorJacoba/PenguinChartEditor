@@ -3,7 +3,7 @@ using UnityEngine;
 public abstract class BaseBeatline : MonoBehaviour, IPoolable
 {
     protected InputMap inputMap;
-    public int Tick { get; set; }
+    public int Tick { get; set; } = -1;
 
     public bool Visible
     {
@@ -20,6 +20,7 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
     public Coroutine destructionCoroutine { get; set; }
 
     public abstract void UpdateBeatlinePosition(double percentOfHighway);
+    void UpdateBeatlinePosition() => UpdateBeatlinePosition(Waveform.GetWaveformRatio(Tick));
 
     #region Components
 
@@ -85,8 +86,14 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
     public void InitializeEvent(int tick)
     {
         if (tick < 0) return;
-        UpdateBeatlinePosition(Waveform.GetWaveformRatio(tick));
-        Type = Chart.SyncTrackInstrument.CalculateBeatlineType(tick);
+        Tick = tick;
+        UpdateBeatlinePosition(Waveform.GetWaveformRatio(Tick));
+        Type = Chart.SyncTrackInstrument.CalculateBeatlineType(Tick);
+    }
+
+    void IPoolable.UpdatePosition()
+    {
+        UpdateBeatlinePosition();
     }
 
     public abstract void InitializeProperties(ILane parentLane);

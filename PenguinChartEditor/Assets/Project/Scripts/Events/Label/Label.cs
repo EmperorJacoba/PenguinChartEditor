@@ -8,7 +8,7 @@ public interface ILabel
     string LabelText { get; set; }
 }
 
-public abstract class Label<T> : Event<T>, ILabel where T : IEventData
+public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventData
 {
     #region Components
 
@@ -31,7 +31,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
     #endregion
 
     #region Setup
-
+    public Coroutine destructionCoroutine { get; set; }
     void Start()
     {
         if (LabelEntryBox != null)
@@ -47,6 +47,13 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
 
     protected abstract string ConvertDataToPreviewString();
     protected abstract T ProcessUnsafeLabelString(string newVal);
+    public abstract void InitializeEvent(int tick);
+    public abstract void InitializeProperties(ILane lane);
+
+    void IPoolable.UpdatePosition()
+    {
+        UpdatePosition();
+    }
 
     public void ActivateManualInput()
     {
@@ -116,6 +123,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         if (editTick != _tick) DeactivateManualInput();
     }
 
+    public void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(Tick), Chart.instance.SceneDetails.HighwayLength);
     public void UpdatePosition(double percentOfScreen, float screenHeight)
     {
         var yScreenProportion = (float)percentOfScreen * screenHeight;

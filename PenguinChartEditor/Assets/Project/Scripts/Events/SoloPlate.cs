@@ -13,10 +13,26 @@ public class SoloPlate : Event<SoloEventData>
     {
         ParentLane = parentLane;
 
+        _tick = startTick;
+
+        UpdatePosition(endTick);
+
+        List<int> ticks = ParentInstrument.UniqueTicks;
+        var totalNotes = ticks.Where(x => x >= startTick && x <= endTick).Count();
+        var notesHit = ticks.Where(x => x >= startTick && x <= SongTime.SongPositionTicks).Count();
+
+        percentage.text = $"{Mathf.Floor((notesHit / (float)totalNotes) * 100)}%";
+        counter.text = $"{notesHit} / {totalNotes}";
+
+        CheckForSelection();
+    }
+
+    public void UpdatePosition(int endTick)
+    {
         float zPosition;
-        if (SongTime.SongPositionTicks < startTick)
+        if (SongTime.SongPositionTicks < Tick)
         {
-            zPosition = (float)(Waveform.GetWaveformRatio(startTick) * Highway3D.highwayLength);
+            zPosition = (float)(Waveform.GetWaveformRatio(Tick) * Highway3D.highwayLength);
         }
         else if (SongTime.SongPositionTicks > endTick)
         {
@@ -26,17 +42,8 @@ public class SoloPlate : Event<SoloEventData>
         {
             zPosition = Mathf.Floor((float)Waveform.GetWaveformRatio(SongTime.SongPositionTicks) * Highway3D.highwayLength);
         }
-        _tick = startTick;
-
-        List<int> ticks = ParentInstrument.UniqueTicks;
-        var totalNotes = ticks.Where(x => x >= startTick && x <= endTick).Count();
-        var notesHit = ticks.Where(x => x >= startTick && x <= SongTime.SongPositionTicks).Count();
 
         transform.position = new(transform.position.x, transform.position.y, zPosition);
-        percentage.text = $"{Mathf.Floor((notesHit / (float)totalNotes) * 100)}%";
-        counter.text = $"{notesHit} / {totalNotes}";
-
-        CheckForSelection();
     }
 
     public override int Lane => 0;

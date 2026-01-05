@@ -20,20 +20,19 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     public override LaneSet<BPMData> LaneData => Chart.SyncTrackInstrument.TempoEvents;
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
 
-
     [SerializeField] Anchor anchorIcon;
-    public Coroutine destructionCoroutine { get; set; }
+
 
     #endregion
 
-    public void InitializeEvent(int tick)
+    public override void InitializeEvent(int tick)
     {
         base.InitializeLabel(tick);
         if (Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor) anchorIcon.Opacity = 1f;
         else anchorIcon.Opacity = 0f;
     }
 
-    public void InitializeProperties(ILane parentLane)
+    public override void InitializeProperties(ILane parentLane)
     {
         this.parentLane = (BPMLane)parentLane;
     }

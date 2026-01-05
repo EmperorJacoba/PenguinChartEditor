@@ -22,23 +22,28 @@ public class SoloEnd : Event<SoloEventData>
     {
         ParentLane = parentLane;
 
-        double ratio = Waveform.GetWaveformRatio(endTick);
-        if (ratio > 1)
-        {
-            Visible = false;
-            return;
-        }
-
         // Selection uses the startTick as the ID for all solo events.
         // The tick this represents is the end tick, but the selection depends on the start tick for continuity.
         _tick = startTick;
         representedTick = endTick;
 
-        float zPosition = (float)(Waveform.GetWaveformRatio(endTick) * Highway3D.highwayLength);
-        transform.position = new(transform.position.x, transform.position.y, zPosition);
+        UpdatePosition();
 
         CheckForSelection();
+    }
+
+    public void UpdatePosition()
+    {
+        double ratio = Waveform.GetWaveformRatio(representedTick);
+        if (ratio > 1)
+        {
+            Visible = false;
+            return;
+        }
         Visible = true;
+
+        float zPosition = (float)(ratio * Highway3D.highwayLength);
+        transform.position = new(transform.position.x, transform.position.y, zPosition);
     }
 
     public override void OnPointerDown(PointerEventData eventData)

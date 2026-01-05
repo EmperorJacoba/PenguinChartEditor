@@ -1,7 +1,6 @@
-﻿using NUnit.Framework;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using Penguin.Debug;
+using System.Linq;
 
 public interface ILane
 {
@@ -17,7 +16,6 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     protected abstract List<int> GetEventsToDisplay();
     protected abstract int GetNextEvent(int tick);
     protected abstract int GetPreviousEvent(int tick);
-    protected abstract void InitializeEvent(TEvent @event, int tick);
     // protected abstract void UpdateEventPosition(TEvent @event, int tick);
 
     protected abstract IPooler<TEvent> Pooler { get; }
@@ -29,24 +27,52 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         var objectPool = Pooler.GetObjectPool(eventsToDisplay.Count, this);
         for (int i = 0; i < eventsToDisplay.Count; i++)
         {
-            TEvent @event = objectPool[i];
-            InitializeEvent(@event, eventsToDisplay[i]);
+            objectPool[i].InitializeEvent(eventsToDisplay[i]);
         }
 
         if (!isReadOnly) Previewer.UpdatePosition();
     }
 
-    public void UpdateEventAsPlaying()
+    /*
+    public void UpdateEventsAsPlaying()
     {
         var objectPool = Pooler.GetObjectPool(eventsToDisplay.Count, this);
-        for (int i = 0; i < eventsToDisplay.Count; i++)
-        {
-            if (objectPool[i].Tick == eventsToDisplay[i])
-            {
 
+        if (eventsToDisplay.Count == 0) return;
+
+        Dictionary<int, TEvent> tickToIndexMatch = new();
+        HashSet<int> freeObjectIndeces = new();
+
+        for (int i = 0; i < objectPool.Count; i++)
+        {
+            var tick = objectPool[i].Tick;
+            if (tick == -1 || tick < eventsToDisplay[0] || tick > eventsToDisplay[^1] || tickToIndexMatch.ContainsKey(tick)) // uninitialized event
+            {
+                freeObjectIndeces.Add(i);
+            }
+            else
+            {
+                tickToIndexMatch[tick] = objectPool[i];
             }
         }
-    }
+
+        for (int i = 0; i < eventsToDisplay.Count; i++)
+        {
+            var tick = eventsToDisplay[i];
+            if (tickToIndexMatch.ContainsKey(tick))
+            {
+                tickToIndexMatch[tick].UpdatePosition();
+            }
+            else
+            {
+                var attackTick = freeObjectIndeces.First();
+                objectPool[attackTick].InitializeEvent(tick);
+                freeObjectIndeces.Remove(attackTick);
+            }
+        }
+
+        Pooler.DeactivateUnused(freeObjectIndeces);
+    } */
 
     protected void RefreshEventsToDisplay()
     {
@@ -69,6 +95,8 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         if (eventsToDisplay == null)
         {
             RefreshEventsToDisplay();
+            UpdateEvents();
+            return;
         }
 
         if (!directionIsPositive)
@@ -80,14 +108,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
 
         if (startUpdateTick == -1)
         {
-            if (eventsToDisplay.Count == 0)
-            {
-                startUpdateTick = GetNextEvent(GetListStartRefreshPoint());
-            }
-            else
-            {
-                startUpdateTick = eventsToDisplay[0];
-            }
+            startUpdateTick = GetNextEvent(GetListStartRefreshPoint());
         }
 
         if (endUpdateTick == -1)
@@ -98,20 +119,20 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
             }
             else
             {
-                endUpdateTick = eventsToDisplay[^1];
+                endUpdateTick = GetNextEvent(eventsToDisplay[^1]);
             }
         }
 
         if (GetListStartRefreshPoint() > startUpdateTick)
         {
             RefreshEventsToDisplay();
-            startUpdateTick = GetNextEvent(startUpdateTick);
+            startUpdateTick = eventsToDisplay.Count > 0 ? eventsToDisplay[0] : GetNextEvent(GetListStartRefreshPoint());
         }
 
         if (Waveform.endTick >= endUpdateTick)
         {
             RefreshEventsToDisplay();
-            endUpdateTick = GetNextEvent(endUpdateTick);
+            endUpdateTick = GetNextEvent(eventsToDisplay.Count > 0 ? eventsToDisplay[^1] : GetListStartRefreshPoint());
         }
 
         UpdateEvents();
@@ -122,6 +143,8 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         if (eventsToDisplay == null)
         {
             RefreshEventsToDisplay();
+            UpdateEvents();
+            return;
         }
 
         if (directionIsPositive)
@@ -139,7 +162,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
             }
             else
             {
-                startUpdateTick = eventsToDisplay[^1];
+                startUpdateTick = GetPreviousEvent(eventsToDisplay[0]);
             }
         }
         
@@ -151,17 +174,17 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
             }
             else
             {
-                endUpdateTick = eventsToDisplay[0];
+                endUpdateTick = eventsToDisplay[^1];
             }
         }
 
-        if (GetListStartRefreshPoint() < startUpdateTick)
+        if (GetListStartRefreshPoint() <= startUpdateTick)
         {
             RefreshEventsToDisplay();
             startUpdateTick = GetPreviousEvent(startUpdateTick);
         }
 
-        if (Waveform.endTick <= endUpdateTick)
+        if (Waveform.endTick < endUpdateTick)
         {
             RefreshEventsToDisplay();
             endUpdateTick = GetPreviousEvent(endUpdateTick);
@@ -169,7 +192,6 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
 
         UpdateEvents();
     }
-
 
     // Set through parent Lanes object. 
     [HideInInspector] public GameInstrument parentGameInstrument;

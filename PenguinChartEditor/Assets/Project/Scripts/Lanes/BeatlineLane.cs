@@ -5,6 +5,4 @@ public class BeatlineLane : BaseBeatlineLane<Beatline> // BPMData is not acted u
     [SerializeField] BeatlinePooler pooler;
 
     protected override IPooler<Beatline> Pooler => pooler;
-
-    protected override void InitializeEvent(Beatline @event, int tick) => @event.InitializeEvent(tick);
 }

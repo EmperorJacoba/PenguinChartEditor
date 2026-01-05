@@ -7,6 +7,7 @@ public interface ILaneData
     bool Contains(int tick);
     int GetNextRelevantTick();
     int GetFirstRelevantTick();
+    int GetFirstRelevantTick(int targetTick);
     int GetTickSustain(int tick);
     int GetNextTickEventInLane(int currentTick, bool inclusive = false);
     int GetPreviousTickEventInLane(int currentTick, bool inclusive = false);

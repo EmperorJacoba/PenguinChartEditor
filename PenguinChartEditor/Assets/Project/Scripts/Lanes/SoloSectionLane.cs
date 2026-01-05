@@ -43,13 +43,6 @@ public class SoloSectionLane : SpawningLane<SoloSection>
         UpdateEvents();
     }
 
-    protected override void InitializeEvent(SoloSection @event, int tick)
-    {
-        @event.UpdateProperties(
-            parentInstrument.SoloData.SoloEvents[tick].StartTick, 
-            parentInstrument.SoloData.SoloEvents[tick].EndTick);
-    }
-
     protected override int GetPreviousEvent(int tick)
     {
         throw new System.NotImplementedException();

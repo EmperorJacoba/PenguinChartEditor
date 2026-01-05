@@ -13,7 +13,6 @@ public class TSLane : SpawningLane<TSLabel>
     {
         return Chart.SyncTrackInstrument.TimeSignatureEvents.GetRelevantTicksInRange(Waveform.startTick, Waveform.endTick);
     }
-    protected override void InitializeEvent(TSLabel @event, int tick) => @event.InitializeEvent(tick);
     protected override int GetNextEvent(int tick)
     {
         return Chart.SyncTrackInstrument.TimeSignatureEvents.GetNextTickEventInLane(tick);

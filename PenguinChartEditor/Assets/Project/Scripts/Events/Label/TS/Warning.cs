@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPoolable
+public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] RectTransform rectTransform;
     public void OnPointerEnter(PointerEventData eventData) => Tooltip.NewTooltip(warningDescriptions[type]);
@@ -50,6 +50,4 @@ public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
         var yScreenProportion = (float)percentOfScreen * screenHeight;
         transform.localPosition = new Vector3(transform.localPosition.x, yScreenProportion - (rectTransform.rect.height / 2));
     }
-
-    public void InitializeProperties(ILane parentLane) { } // ??
 }

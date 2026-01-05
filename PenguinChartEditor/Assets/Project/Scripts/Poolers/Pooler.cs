@@ -9,6 +9,8 @@ public interface IPoolable
     int Tick { get; }
     Coroutine destructionCoroutine { get; set; }
     void InitializeProperties(ILane parentLane);
+    void InitializeEvent(int tick);
+    void UpdatePosition();
 }
 
 public interface IPooler<T>
@@ -16,6 +18,7 @@ public interface IPooler<T>
     T GetObject(int index, ILane parentLane);
     List<T> GetObjectPool(int objectCount, ILane parentLane);
     void DeactivateUnused(int lastIndex);
+    void DeactivateUnused(HashSet<int> unusedIndexes);
 }
 
 // Adapted from Unity's intro to object pooling
@@ -100,6 +103,15 @@ public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehavi
         {
             eventObjects[i].Visible = false;
             eventObjects[i].destructionCoroutine = StartCoroutine(DestructionTimer(eventObjects[i]));
+        }
+    }
+
+    public void DeactivateUnused(HashSet<int> unusedIndexes)
+    {
+        foreach (var index in unusedIndexes)
+        {
+            eventObjects[index].Visible = false;
+            eventObjects[index].destructionCoroutine = StartCoroutine(DestructionTimer(eventObjects[index]));
         }
     }
 

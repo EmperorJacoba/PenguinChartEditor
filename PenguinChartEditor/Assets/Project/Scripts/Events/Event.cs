@@ -36,7 +36,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
             return _tick;
         }
     }
-    protected int _tick;
+    protected int _tick = -1;
 
     public bool Selected
     {

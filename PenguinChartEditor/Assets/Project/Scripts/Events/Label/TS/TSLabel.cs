@@ -1,21 +1,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TSLabel : Label<TSData>, IPoolable
+public class TSLabel : Label<TSData>
 {
     TSLane parentLane;
     #region Event Sets
     public override SelectionSet<TSData> Selection => Chart.SyncTrackInstrument.tsSelection;
     public override LaneSet<TSData> LaneData => Chart.SyncTrackInstrument.TimeSignatureEvents;
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
-    public Coroutine destructionCoroutine { get; set; }
     [SerializeField] Warning tsWarningAlert;
 
     #endregion
 
     public override int Lane => (int)SyncTrackInstrument.LaneOrientation.timeSignature;
 
-    public void InitializeEvent(int tick)
+    public override void InitializeEvent(int tick)
     {
         base.InitializeLabel(tick);
         tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsEventValid(tick);
@@ -50,7 +49,7 @@ public class TSLabel : Label<TSData>, IPoolable
 
     #endregion
 
-    public void InitializeProperties(ILane parentLane)
+    public override void InitializeProperties(ILane parentLane)
     {
         this.parentLane = (TSLane)parentLane;
     }
