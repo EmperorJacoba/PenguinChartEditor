@@ -21,9 +21,13 @@ public class SoloSection : MonoBehaviour, IPoolable
     public int Tick { get; set; }
     public Coroutine destructionCoroutine { get; set; }
 
-    public void UpdateProperties(SoloSectionLane parentLane, int startTick, int endTick)
+    public void InitializeProperties(ILane parentLane)
     {
-        this.parentLane = parentLane;
+        this.parentLane = (SoloSectionLane)parentLane;
+    }
+
+    public void UpdateProperties(int startTick, int endTick)
+    {
         UpdateOverlayProperties(startTick, endTick);
         platehead.InitializeEvent(parentLane, startTick, endTick);
         plateheadReceiver.InitializeEvent(parentLane, startTick, endTick);
@@ -47,5 +51,6 @@ public class SoloSection : MonoBehaviour, IPoolable
 
         overlay.transform.localScale = new(parentLane.parentGameInstrument.HighwayLocalScaleProperties.x, 1f, localScaleZ);
     }
+
 
 }

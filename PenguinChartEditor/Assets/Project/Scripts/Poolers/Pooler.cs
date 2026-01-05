@@ -8,11 +8,12 @@ public interface IPoolable
     bool Visible { get; set; }
     int Tick { get; }
     Coroutine destructionCoroutine { get; set; }
+    void InitializeProperties(ILane parentLane);
 }
 
 public interface IPooler<T>
 {
-    T GetObject(int index);
+    T GetObject(int index, ILane parentLane);
     void DeactivateUnused(int lastIndex);
 }
 
@@ -28,10 +29,12 @@ public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehavi
 
     protected List<T> eventObjects = new();
 
-    protected void CreateNew()
+    protected void CreateNew(ILane parentLane)
     {
         GameObject tmp = Instantiate(objectPrefab, parentObject.transform);
-        eventObjects.Add(tmp.GetComponent<T>());
+        T eventScript = tmp.GetComponent<T>();
+        eventScript.InitializeProperties(parentLane);
+        eventObjects.Add(eventScript);
     }
 
     /// <summary>
@@ -39,11 +42,11 @@ public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehavi
     /// </summary>
     /// <param name="index">The target object number.</param>
     /// <returns>The requested object.</returns>
-    public virtual T GetObject(int index)
+    public virtual T GetObject(int index, ILane parentLane)
     {
         while (eventObjects.Count <= index)
         {
-            CreateNew();
+            CreateNew(parentLane);
         }
         T @object = eventObjects[index];
 

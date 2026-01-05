@@ -50,4 +50,6 @@ public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
         var yScreenProportion = (float)percentOfScreen * screenHeight;
         transform.localPosition = new Vector3(transform.localPosition.x, yScreenProportion - (rectTransform.rect.height / 2));
     }
+
+    public void InitializeProperties(ILane parentLane) { } // ??
 }

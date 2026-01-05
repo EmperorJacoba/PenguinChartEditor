@@ -9,7 +9,8 @@ public interface ILaneData
     int GetNextRelevantTick();
     int GetFirstRelevantTick();
     int GetTickSustain(int tick);
-    int[] GetRelevantTicksInRange(int startTick, int endTick);
+    int GetNextTickEventInLane(int currentTick, bool inclusive = false);
+    List<int> GetRelevantTicksInRange(int startTick, int endTick);
 }
 
 
@@ -339,21 +340,21 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     }
 
     // Uses array and not list for easy range segmenting
-    public int[] GetRelevantTicksInRange(int startTick, int endTick)
+    public List<int> GetRelevantTicksInRange(int startTick, int endTick)
     {
-        if (Count == 0) return new int[0];
+        if (Count == 0) return new();
 
-        var tickList = Keys.ToArray();
+        var tickList = Keys.ToList();
 
-        var startIndex = Array.BinarySearch(tickList, startTick);
-        var endIndex = Array.BinarySearch(tickList, endTick);
+        var startIndex = tickList.BinarySearch(startTick);
+        var endIndex = tickList.BinarySearch(endTick);
 
         if (startIndex < 0) startIndex = ~startIndex;
         if (endIndex < 0) endIndex = ~endIndex - 1;
 
-        if (startIndex == tickList.Length || endIndex < 0)
+        if (startIndex == tickList.Count || endIndex < 0)
         {
-            return new int[0];
+            return new();
         }
 
         int sustainCandidateTick = startIndex == 0 ? tickList[startIndex] : tickList[startIndex - 1];
@@ -366,7 +367,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
             }
         }
 
-        var finalList = tickList[startIndex..(endIndex + 1)];
+        var finalList = tickList.GetRange(startIndex, (endIndex + 1) - startIndex);
         return finalList;
     }
 

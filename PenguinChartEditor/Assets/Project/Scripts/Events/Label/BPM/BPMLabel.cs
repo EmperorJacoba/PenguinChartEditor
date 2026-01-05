@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 
 public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 {
+    BPMLane parentLane;
     #region Constants
 
     private const int SECONDS_PER_MINUTE = 60;
@@ -31,6 +32,12 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         if (Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor) anchorIcon.Opacity = 1f;
         else anchorIcon.Opacity = 0f;
     }
+
+    public void InitializeProperties(ILane parentLane)
+    {
+        this.parentLane = (BPMLane)parentLane;
+    }
+
 
     #region Event Handlers
 

@@ -1,16 +1,22 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TSLane : SpawningLane<TSLabel>
 {
 
     [SerializeField] TSPooler pooler;
+    protected override bool cullAtStrikelineOnPlay => false;
 
     protected override IPooler<TSLabel> Pooler => (IPooler<TSLabel>)pooler;
     protected override IPreviewer Previewer => TSPreviewer.instance;
 
-    protected override int[] GetEventsToDisplay()
+    protected override List<int> GetEventsToDisplay()
     {
         return Chart.SyncTrackInstrument.TimeSignatureEvents.GetRelevantTicksInRange(Waveform.startTick, Waveform.endTick);
     }
     protected override void InitializeEvent(TSLabel @event, int tick) => @event.InitializeEvent(tick);
+    protected override int GetNextEvent(int tick)
+    {
+        return Chart.SyncTrackInstrument.TimeSignatureEvents.GetNextTickEventInLane(tick);
+    }
 }

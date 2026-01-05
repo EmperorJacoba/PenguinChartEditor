@@ -19,7 +19,7 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
 
     public Coroutine destructionCoroutine { get; set; }
 
-    public abstract void UpdateBeatlinePosition(double percentOfHighway, float highwayLength, GameInstrument parentGameInstrument);
+    public abstract void UpdateBeatlinePosition(double percentOfHighway, float highwayLength);
 
     #region Components
 
@@ -82,12 +82,16 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
         line.endWidth = thickness;
     }
 
-    public void InitializeEvent(int tick, float highwayLength, GameInstrument parentGameInstrument)
+    public void InitializeEvent(int tick, float highwayLength)
     {
         if (tick < 0) return;
-        UpdateBeatlinePosition(Waveform.GetWaveformRatio(tick), highwayLength, parentGameInstrument);
+        UpdateBeatlinePosition(Waveform.GetWaveformRatio(tick), highwayLength);
         Type = Chart.SyncTrackInstrument.CalculateBeatlineType(tick);
     }
 
+    public abstract void InitializeProperties(ILane parentLane);
+
     #endregion
+
+
 }

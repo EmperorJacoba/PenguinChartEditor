@@ -116,11 +116,14 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public FiveFretNoteData representedData;
 
-    public void InitializeEvent(FiveFretLane parentLane, int tick)
+    public void InitializeProperties(ILane parentLane)
     {
-        ParentLane = parentLane;
+        ParentLane = (FiveFretLane)parentLane;
         laneID = ParentLane.laneIdentifier;
+    }
 
+    public void InitializeEvent(int tick)
+    {
         _tick = tick;
         representedData = LaneData[tick];
 

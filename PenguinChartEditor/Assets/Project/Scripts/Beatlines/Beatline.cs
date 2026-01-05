@@ -7,6 +7,7 @@ using UnityEngine;
 /// </summary>
 public class Beatline : BaseBeatline
 {
+    BeatlineLane parentLane;
     /// <summary>
     /// Line renderer thicknesses corresponding to each beatline type in the BeatlineType enum. 
     /// </summary>
@@ -26,7 +27,7 @@ public class Beatline : BaseBeatline
     /// Update the position of the beatline to a specified proportion up the screen.
     /// </summary>
     /// <param name="percentOfScreen">The percent of the screen that should exist between the bottom and the beatline.</param>
-    public override void UpdateBeatlinePosition(double percentOfScreen, float screenHeight, GameInstrument parentGameInstrument)
+    public override void UpdateBeatlinePosition(double percentOfScreen, float screenHeight)
     {
         // use screen ref to calculate percent of screen -> scale is 1:1 in the line renderer (scale must be 1, 1, 1)
         yScreenProportion = (float)(percentOfScreen * screenHeight);
@@ -37,5 +38,12 @@ public class Beatline : BaseBeatline
         line.SetPositions(newPos);
     }
 
+
+
     #endregion
+
+    public override void InitializeProperties(ILane parentLane)
+    {
+        this.parentLane = (BeatlineLane)parentLane;
+    }
 }

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class FiveFretLane : SpawningLane<FiveFretNote>
 {
+    protected override bool cullAtStrikelineOnPlay => true;
     public FiveFretInstrument.LaneOrientation laneIdentifier;
 
     [SerializeField] FiveFretNotePooler lanePooler;
@@ -25,7 +25,7 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
         }
     }
 
-    protected override int[] GetEventsToDisplay()
+    protected override List<int> GetEventsToDisplay()
     {
         var workingLane = parentGameInstrument.representedInstrument.GetLaneData((int)laneIdentifier);
         var spawnStartTick = AudioManager.AudioPlaying ? SongTime.SongPositionTicks : Waveform.startTick;
@@ -34,6 +34,11 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
 
     protected override void InitializeEvent(FiveFretNote @event, int tick)
     {
-        @event.InitializeEvent(this, tick);
+        @event.InitializeEvent(tick);
+    }
+
+    protected override int GetNextEvent(int tick)
+    {
+        return parentGameInstrument.representedInstrument.GetLaneData((int)laneIdentifier).GetNextTickEventInLane(tick);
     }
 }
