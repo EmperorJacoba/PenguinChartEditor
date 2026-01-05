@@ -14,6 +14,7 @@ public interface IPoolable
 public interface IPooler<T>
 {
     T GetObject(int index, ILane parentLane);
+    List<T> GetObjectPool(int objectCount, ILane parentLane);
     void DeactivateUnused(int lastIndex);
 }
 
@@ -42,7 +43,7 @@ public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehavi
     /// </summary>
     /// <param name="index">The target object number.</param>
     /// <returns>The requested object.</returns>
-    public virtual T GetObject(int index, ILane parentLane)
+    public T GetObject(int index, ILane parentLane)
     {
         while (eventObjects.Count <= index)
         {
@@ -50,13 +51,42 @@ public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehavi
         }
         T @object = eventObjects[index];
 
+        ActivateObject(@object);
+
+        // initialize in lane!
+        return @object;
+    }
+
+    void ActivateObject(T @object)
+    {
+        if (@object.Visible) return;
+
         if (@object.destructionCoroutine != null)
             StopCoroutine(@object.destructionCoroutine);
 
         @object.Visible = true;
+    }
 
-        // initialize in lane!
-        return @object;
+    public List<T> GetObjectPool(int objectCount, ILane parentLane)
+    {
+        if (eventObjects.Count > objectCount)
+        {
+            DeactivateUnused(objectCount);
+        }
+        if (eventObjects.Count < objectCount)
+        {
+            for (int i = 0; i < objectCount; i++)
+            {
+                CreateNew(parentLane);
+            }
+        }
+
+        for (int i = 0; i < objectCount; i++)
+        {
+            ActivateObject(eventObjects[i]);
+        }
+
+        return eventObjects;
     }
 
     /// <summary>

@@ -23,13 +23,12 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     List<int> eventsToDisplay;
     public void UpdateEvents()
     {
-        int i;
-        for (i = 0; i < eventsToDisplay.Count; i++)
+        var objectPool = Pooler.GetObjectPool(eventsToDisplay.Count, this);
+        for (int i = 0; i < eventsToDisplay.Count; i++)
         {
-            TEvent @event = Pooler.GetObject(i, this);
+            TEvent @event = objectPool[i];
             InitializeEvent(@event, eventsToDisplay[i]);
         }
-        Pooler.DeactivateUnused(i);
 
         if (!isReadOnly) Previewer.UpdatePosition();
     }
