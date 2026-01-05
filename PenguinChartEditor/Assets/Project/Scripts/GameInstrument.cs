@@ -4,7 +4,9 @@ using System.Linq;
 public class GameInstrument : MonoBehaviour
 {
     [SerializeField] Highway3D highway;
-    [SerializeField] Strikeline3D strikeline;
+    
+    // inject via strikeline script itself
+    public IStrikeline strikeline;
     [SerializeField] Waveform waveform;
 
     [SerializeField] InstrumentType instrumentType;

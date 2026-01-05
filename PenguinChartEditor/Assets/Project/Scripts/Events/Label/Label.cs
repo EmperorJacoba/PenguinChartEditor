@@ -78,7 +78,7 @@ public abstract class Label<T> : Event<T>, ILabel where T : IEventData
         if (typeof(T) == typeof(BPMData)) Chart.SyncTrackInstrument.RecalculateTempoEventDictionary(_tick);
 
         ConcludeManualEdit();
-        SongTime.InvokeTimeChanged();
+        Chart.SyncTrackInPlaceRefresh();
     }
 
     public void HandleEntryBoxDeselect()

@@ -196,8 +196,7 @@ public class SyncTrackInstrument : IInstrument
 
         if (typeof(T) == typeof(BPMData)) RecalculateTempoEventDictionary();
 
-        SongTime.InvokeTimeChanged();
-        Chart.InPlaceRefresh();
+        Chart.SyncTrackInPlaceRefresh();
     }
 
     public void CompleteMove()
@@ -207,7 +206,7 @@ public class SyncTrackInstrument : IInstrument
         CompleteMove(ref bpmMoveData, bpmSelection);
         CompleteMove(ref tsMoveData, tsSelection);
 
-        Chart.InPlaceRefresh();
+        Chart.SyncTrackInPlaceRefresh();
     }
 
     public void CompleteMove<T>(ref UniversalMoveData<T> moveData, SelectionSet<T> selection) where T : IEventData
@@ -238,7 +237,7 @@ public class SyncTrackInstrument : IInstrument
             tsSelection.Clear();
         }
 
-        SongTime.InvokeTimeChanged();
+        Chart.SyncTrackInPlaceRefresh();
     }
 
     public void DeleteTickInLane(int tick, int lane)
@@ -259,7 +258,7 @@ public class SyncTrackInstrument : IInstrument
             if (poppedTick == null) return;
         }
 
-        SongTime.InvokeTimeChanged();
+        Chart.SyncTrackInPlaceRefresh();
     }
 
     public void DeleteAllEventsAtTick(int tick)
@@ -267,7 +266,7 @@ public class SyncTrackInstrument : IInstrument
         if (TempoEvents.Contains(tick)) TempoEvents.PopSingle(tick);
         if (TimeSignatureEvents.Contains(tick)) TempoEvents.PopSingle(tick);
 
-        SongTime.InvokeTimeChanged();
+        Chart.SyncTrackInPlaceRefresh();
     }
 
     #endregion

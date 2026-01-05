@@ -165,8 +165,8 @@ public class Waveform : MonoBehaviour
     static int GetStrikelineSamplePosition()
     {
         return Chart.instance.SceneDetails.is2D ?
-            (int)Math.Ceiling(GetSampleCapacity() * Strikeline.instance.GetStrikelineProportion()) :
-            (int)Math.Ceiling(GetSampleCapacity() * Strikeline3D.GetStrikelineProportion());
+            (int)Math.Ceiling(GetSampleCapacity() * Strikeline2D.instance.GetStrikelineProportion()) :
+            (int)Math.Ceiling(GetSampleCapacity() * Strikeline3D.GetAnyStrikelineProportion());
     }
 
     public static int ticksShown;

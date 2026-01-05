@@ -11,9 +11,9 @@ public class Beatline3D : BaseBeatline
 
     float[] _thicknesses = { 0, 0.3f, 0.1f, 0.02f };
 
-    public override void UpdateBeatlinePosition(double percentOfHighway, float highwayLength)
+    public override void UpdateBeatlinePosition(double percentOfHighway)
     {
-        var zPos = (float)percentOfHighway * highwayLength;
+        var zPos = (float)percentOfHighway * parentGameInstrument.HighwayLength;
 
         Vector3[] newPos = new Vector3[2];
         newPos[0] = new Vector3(parentGameInstrument.HighwayLeftEndCoordinate + parentGameInstrument.transform.position.x, line.GetPosition(0).y, (float)zPos);

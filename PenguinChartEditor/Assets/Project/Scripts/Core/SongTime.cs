@@ -48,23 +48,16 @@ public class SongTime : MonoBehaviour
     public static int SongLengthTicks => Chart.SyncTrackInstrument.ConvertSecondsToTickTime(AudioManager.SongLength);
 
     public delegate void TimeChangedDelegate();
-
-    /// <summary>
-    /// Event that fires whenever the song position changes.
-    /// </summary>
-    public static event TimeChangedDelegate TimeChanged;
-
-    public static void InvokeTimeChanged() => TimeChanged?.Invoke();
-
-
     public delegate void PositiveTimeChangeDelegate();
     public delegate void NegativeTimeChangeDelegate();
+    public static event TimeChangedDelegate TimeChanged;
     public static event PositiveTimeChangeDelegate PositiveTimeChange;
     public static event NegativeTimeChangeDelegate NegativeTimeChange;
 
     #endregion
 
     #region Unity Functions
+
     void Awake()
     {
         inputMap = new();

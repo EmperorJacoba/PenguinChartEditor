@@ -147,10 +147,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         // Update rest of dictionary to account for the time change. Anchors are not moved, so no need to update.
         if (!anchorNextEvent) Chart.SyncTrackInstrument.RecalculateTempoEventDictionary(Tick, (float)timeChange);
 
-        SongTime.InvokeTimeChanged();
-
-        // Display the changes
-        Chart.InPlaceRefresh();
+        Chart.SyncTrackInPlaceRefresh();
     }
 
     #endregion

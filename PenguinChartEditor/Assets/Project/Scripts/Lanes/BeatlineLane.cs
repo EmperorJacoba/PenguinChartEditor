@@ -6,5 +6,5 @@ public class BeatlineLane : BaseBeatlineLane<Beatline> // BPMData is not acted u
 
     protected override IPooler<Beatline> Pooler => pooler;
 
-    protected override void InitializeEvent(Beatline @event, int tick) => @event.InitializeEvent(tick, Chart.instance.SceneDetails.HighwayLength);
+    protected override void InitializeEvent(Beatline @event, int tick) => @event.InitializeEvent(tick);
 }

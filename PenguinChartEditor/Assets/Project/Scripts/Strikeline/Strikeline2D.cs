@@ -8,15 +8,17 @@ public interface IStrikeline
 /// <summary>
 /// Class attached to the Strikeline container game object. 
 /// </summary>
-public class Strikeline : MonoBehaviour, IStrikeline
+public class Strikeline2D : MonoBehaviour, IStrikeline
 {
+    public static Strikeline2D instance;
+    [SerializeField] GameInstrument parentGameInstrument;
     [SerializeField] RectTransform strikelineRt;
-    public static Strikeline instance;
     [SerializeField] RectTransform boundaryReference;
 
     void Awake()
     {
         instance = this;
+        parentGameInstrument.strikeline = this;
     }
     
     /// <summary>

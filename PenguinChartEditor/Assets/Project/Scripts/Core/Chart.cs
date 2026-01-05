@@ -193,6 +193,15 @@ public class Chart : MonoBehaviour
     public delegate void InPlaceUpdatedDelegate();
     public static event InPlaceUpdatedDelegate InPlaceRefreshNeeded;
 
+    /// <summary>
+    /// When BPM events change, the time value of a tick changes, so the waveform must refresh to update the cached info in waveform that dictates event spawning.
+    /// </summary>
+    public static void SyncTrackInPlaceRefresh()
+    {
+        Waveform.GenerateWaveformPoints();
+        InPlaceRefreshNeeded?.Invoke();
+    }
+
     public static void InPlaceRefresh()
     {
         InPlaceRefreshNeeded?.Invoke(); // shortcut for all lanes to update
