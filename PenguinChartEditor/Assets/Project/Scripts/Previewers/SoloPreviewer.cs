@@ -20,6 +20,8 @@ public class SoloPreviewer : Previewer
         previewEndPlate.IsPreviewEvent = true;
         previewSoloPlate.IsPreviewEvent = true;
 
+        previewerEventReference = previewSoloPlate;
+
         inputMap.Charting.PreviewMousePos.performed += position =>
             UpdatePosition();
 
@@ -29,12 +31,6 @@ public class SoloPreviewer : Previewer
     protected override bool IsPreviewerVisible()
     {
         return previewEndPlate.Visible || previewSoloPlate.Visible;
-    }
-
-    protected override void RemoveTickFromSelection()
-    {
-        // Gets called before the selection is actually assigned sometimes.
-        previewSoloPlate.Selection.Remove(Tick);
     }
 
     protected override void UpdatePreviewer()

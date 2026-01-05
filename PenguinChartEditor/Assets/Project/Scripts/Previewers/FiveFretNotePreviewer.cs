@@ -116,7 +116,6 @@ public class FiveFretNotePreviewer : Previewer
     protected void Start()
     {
         lane = GetComponentInParent<FiveFretLane>();
-
         note = GetComponent<FiveFretNote>();
     }
 

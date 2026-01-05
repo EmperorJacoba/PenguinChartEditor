@@ -25,7 +25,8 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour where TEvent : IPoola
 
     protected abstract void InitializeEvent(TEvent @event, int tick);
 
-    public GameInstrument parentGameInstrument;
+    // Set through parent Lanes object. 
+    [HideInInspector] public GameInstrument parentGameInstrument;
     public IInstrument parentInstrument => parentGameInstrument.representedInstrument;
     protected virtual void Awake()
     {

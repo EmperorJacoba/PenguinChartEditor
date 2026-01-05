@@ -116,7 +116,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public FiveFretNoteData representedData;
 
-    public void InitializeEvent(FiveFretLane parentLane, int tick, bool asSustainOnly)
+    public void InitializeEvent(FiveFretLane parentLane, int tick)
     {
         ParentLane = parentLane;
         laneID = ParentLane.laneIdentifier;
@@ -124,14 +124,16 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         _tick = tick;
         representedData = LaneData[tick];
 
-        notePieces.SetVisibility(!asSustainOnly);
+        bool isHeadVisible = CalculateHeadVisibility();
+        notePieces.SetVisibility(isHeadVisible);
+
         if (!readOnly) CheckForSelection();
 
         UpdatePosition(
-            tick: asSustainOnly ? SongTime.SongPositionTicks : tick
+            tick: AudioManager.AudioPlaying && !isHeadVisible ? SongTime.SongPositionTicks : tick 
         );
 
-        UpdateSustain(asSustainOnly);
+        UpdateSustain(isHeadVisible);
 
         SetVisualProperties(representedData);
     }
@@ -155,6 +157,16 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         IsHopo = (data.Flag == FiveFretNoteData.FlagType.hopo);
         IsTap = (data.Flag == FiveFretNoteData.FlagType.tap);
         IsDefault = data.Default;
+    }
+
+    bool CalculateHeadVisibility()
+    {
+        int headDespawnTick = AudioManager.AudioPlaying ? SongTime.SongPositionTicks : Waveform.startTick;
+        if (Tick <= headDespawnTick)
+        {
+            return false;
+        }
+        return true;
     }
 
     public void UpdatePositionAsPreviewer() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate, PREVIEWER_Y_OFFSET);
@@ -186,15 +198,16 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
     }
 
-    void UpdateSustain(bool sustainOnly)
+    void UpdateSustain(bool headOnly)
     {
-        if (sustainOnly)
+        if (!headOnly)
         {
-            notePieces.UpdateSustainLength(SongTime.SongPositionTicks, Tick + LaneData[Tick].Sustain - SongTime.SongPositionTicks, transform.localPosition.z);
+            int headDespawnTick = AudioManager.AudioPlaying ? SongTime.SongPositionTicks : Waveform.startTick;
+            notePieces.UpdateSustainLength(headDespawnTick, Tick + representedData.Sustain - headDespawnTick, transform.localPosition.z);
         }
         else
         {
-            notePieces.UpdateSustainLength(Tick, LaneData[Tick].Sustain, transform.localPosition.z);
+            notePieces.UpdateSustainLength(Tick, representedData.Sustain, transform.localPosition.z);
         }
     }
 
