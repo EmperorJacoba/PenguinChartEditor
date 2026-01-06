@@ -306,15 +306,13 @@ public class Waveform : MonoBehaviour
         if (tick < startTick) return 0;
         if (tick > endTick) return 1;
 
-        int key = tickPositions[0];
-        int index = 0;
-        while (tick > key)
+        int i = 0;
+        while (i + 1 < tickPositions.Length && tickPositions[i+1] <= tick)
         {
-            index++;
-            if (index >= tickPositions.Length) break;
-
-            key = tickPositions[index];
+            i++;
         }
+
+        int key = tickPositions[i];
         var activeData = tickSecondValueMatch[key];
 
         return (activeData.accumulatedSeconds + (activeData.secondsPerTick * (tick - key))) / timeShown;

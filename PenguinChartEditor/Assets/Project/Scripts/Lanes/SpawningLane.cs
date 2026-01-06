@@ -32,47 +32,6 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         if (!isReadOnly) Previewer.UpdatePosition();
     }
 
-    /*
-    public void UpdateEventsAsPlaying()
-    {
-        var objectPool = Pooler.GetObjectPool(eventsToDisplay.Count, this);
-
-        if (eventsToDisplay.Count == 0) return;
-
-        Dictionary<int, TEvent> tickToIndexMatch = new();
-        HashSet<int> freeObjectIndeces = new();
-
-        for (int i = 0; i < objectPool.Count; i++)
-        {
-            var tick = objectPool[i].Tick;
-            if (tick == -1 || tick < eventsToDisplay[0] || tick > eventsToDisplay[^1] || tickToIndexMatch.ContainsKey(tick)) // uninitialized event
-            {
-                freeObjectIndeces.Add(i);
-            }
-            else
-            {
-                tickToIndexMatch[tick] = objectPool[i];
-            }
-        }
-
-        for (int i = 0; i < eventsToDisplay.Count; i++)
-        {
-            var tick = eventsToDisplay[i];
-            if (tickToIndexMatch.ContainsKey(tick))
-            {
-                tickToIndexMatch[tick].UpdatePosition();
-            }
-            else
-            {
-                var attackTick = freeObjectIndeces.First();
-                objectPool[attackTick].InitializeEvent(tick);
-                freeObjectIndeces.Remove(attackTick);
-            }
-        }
-
-        Pooler.DeactivateUnused(freeObjectIndeces);
-    } */
-
     protected void RefreshEventsToDisplay()
     {
         eventsToDisplay = GetEventsToDisplay();
