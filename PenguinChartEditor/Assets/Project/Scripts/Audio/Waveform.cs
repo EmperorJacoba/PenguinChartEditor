@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
 [RequireComponent(typeof(LineRenderer))]
 public class Waveform : MonoBehaviour
@@ -169,7 +168,6 @@ public class Waveform : MonoBehaviour
             (int)Math.Ceiling(GetSampleCapacity() * Strikeline3D.GetAnyStrikelineProportion());
     }
 
-    public static int ticksShown;
     public static int startTick;
     public static int songPositionTicks;
     public static int endTick;
@@ -177,15 +175,7 @@ public class Waveform : MonoBehaviour
     public static double startTime;
     public static double endTime;
 
-    // This uses seconds, not ticks, because ticks cannot account for positions before/after the waveform's true start.
-    // There is effectively no resolution <0 or >SongLengthTicks, and calculations get funky.
-    // Plus the inherent inaccuracy of using ticks in place of time (ticks are discrete, but time is continuous)
-    // Any precision issues from time are much less than that of ticks,
-    // and even then, it's calculated as a double. Which I think makes it better?
-    public static double GetWaveformRatio(int tick)
-    {
-        return (Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick) - startTime) / timeShown;
-    }
+
 
     #endregion
 
@@ -269,7 +259,7 @@ public class Waveform : MonoBehaviour
         lineRendererMirror.SetPositions(positions);
     }
 
-    public static void CacheWaveformDetails(double startTimeSeconds, double positionTimeSeconds, double endTimeSeconds)
+    static void CacheWaveformDetails(double startTimeSeconds, double positionTimeSeconds, double endTimeSeconds)
     {
         startTime = startTimeSeconds;
         endTime = endTimeSeconds;
@@ -278,7 +268,61 @@ public class Waveform : MonoBehaviour
         startTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)startTimeSeconds);
         songPositionTicks = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)positionTimeSeconds);
         endTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)endTimeSeconds);
-        ticksShown = endTick - startTick;
+
+        CacheTimeDetails();
+    }
+
+    static void CacheTimeDetails()
+    {
+        tickSecondValueMatch.Clear();
+        tickSecondValueMatch[startTick] = new(Chart.SyncTrackInstrument.GetSecondsPerTickAtTick(startTick), accumulatedSeconds: 0);
+
+        var activeEventTick = Chart.SyncTrackInstrument.TempoEvents.GetNextTickEventInLane(startTick, inclusive: false);
+        var lastActiveTick = startTick;
+
+        while (activeEventTick < endTick)
+        {
+            if (activeEventTick == LaneSet<BPMData>.NO_TICK_EVENT)
+            {
+                break;
+            }
+            tickSecondValueMatch[activeEventTick] =
+                new(Chart.SyncTrackInstrument.GetSecondsPerTickAtTick(activeEventTick),
+                accumulatedSeconds: tickSecondValueMatch[lastActiveTick].secondsPerTick * (activeEventTick - lastActiveTick) + tickSecondValueMatch[lastActiveTick].accumulatedSeconds
+                );
+
+            lastActiveTick = activeEventTick;
+            activeEventTick = Chart.SyncTrackInstrument.TempoEvents.GetNextTickEventInLane(activeEventTick, inclusive: false);
+        }
+
+        tickPositions = tickSecondValueMatch.Keys.ToArray();
+    }
+    
+    // Key: Tick start point.
+    static SortedDictionary<int, CachedTimestampPosition> tickSecondValueMatch = new();
+    static int[] tickPositions;
+    public static double GetWaveformRatio(int tick)
+    {
+        if (tick < startTick) return 0;
+        if (tick > endTick) return 1;
+
+        int key = tickPositions[0];
+        int index = 0;
+        while (tick > key)
+        {
+            index++;
+            if (index >= tickPositions.Length) break;
+
+            key = tickPositions[index];
+        }
+        var activeData = tickSecondValueMatch[key];
+
+        return (activeData.accumulatedSeconds + (activeData.secondsPerTick * (tick - key))) / timeShown;
+    }
+
+    public static double GetWaveformRatio(int tick, int tickDuration)
+    {
+        return GetWaveformRatio(tick + tickDuration) - GetWaveformRatio(tick);
     }
 
     /// <summary>
@@ -303,5 +347,17 @@ public class StemWaveformData
     {
         this.volumeData = volumeData;
         this.bytesPerSample = bytesPerSample;
+    }
+}
+
+public struct CachedTimestampPosition
+{
+    public double secondsPerTick;
+    public double accumulatedSeconds;
+
+    public CachedTimestampPosition(double secondsPerTick, double accumulatedSeconds)
+    {
+        this.secondsPerTick = secondsPerTick;
+        this.accumulatedSeconds = accumulatedSeconds;
     }
 }

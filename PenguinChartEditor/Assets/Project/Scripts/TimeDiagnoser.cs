@@ -15,20 +15,20 @@ namespace Penguin.Debug
         public TimeDiagnoser(string name)
         {
             diagnosticName = name;
-            lastRecord = Time.realtimeSinceStartup * 1000;
+            lastRecord = Time.realtimeSinceStartup;
             firstRecord = lastRecord;
             timeString = new();
         }
 
-        public string Report()
+        public void Report()
         {
-            return $"{diagnosticName}:\n" + timeString.ToString() + $"\nTotal time: {(Time.realtimeSinceStartup * 1000) - firstRecord}";
+            MonoBehaviour.print($"{diagnosticName}:\n" + timeString.ToString() + $"\nTotal time: {(Time.realtimeSinceStartup - firstRecord) * 1000}ms");
         }
 
         public void RecordTime(string id)
         {
-            timeString.AppendLine($"{id}: {(Time.realtimeSinceStartup * 1000) - lastRecord}ms");
-            lastRecord = Time.realtimeSinceStartup * 1000;
+            timeString.AppendLine($"{id}: {(Time.realtimeSinceStartup - lastRecord) * 1000}ms");
+            lastRecord = Time.realtimeSinceStartup;
         }
     }
 }

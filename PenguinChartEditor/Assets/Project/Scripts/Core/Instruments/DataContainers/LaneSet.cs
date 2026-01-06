@@ -315,6 +315,8 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     /// <returns></returns>
     public int GetPreviousTickEventInLane(int currentTick, bool inclusive = false)
     {
+        if (inclusive && Contains(currentTick)) return currentTick;
+
         int index = BinarySearchForTick(currentTick, out var tickTimeKeys);
 
         // bitwise complement is negative

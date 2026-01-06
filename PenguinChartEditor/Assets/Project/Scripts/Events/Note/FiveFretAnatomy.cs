@@ -61,22 +61,14 @@ public struct FiveFretAnatomy
 
     public void UpdateSustainLength(int tick, int sustainLength, float noteLocalTransformPosition)
     {
-        var sustainEndPointTicks = tick + sustainLength;
+        var sustainTrackLength = Waveform.GetWaveformRatio(tick, sustainLength) * Highway3D.highwayLength;
+        if (sustainTrackLength < 0) sustainTrackLength = 0;
 
-        var endProportion = Waveform.GetWaveformRatio(sustainEndPointTicks);
-        var trackPosition = endProportion * Highway3D.highwayLength;
+        sustainTail.localScale = new Vector3(sustainTail.localScale.x, sustainTail.localScale.y, (float)sustainTrackLength);
+    }
 
-        var noteProportion = Waveform.GetWaveformRatio(tick);
-        var notePosition = noteProportion * Highway3D.highwayLength;
-
-        var localScaleZ = (float)(trackPosition - notePosition);
-
-        // stop it from appearing past the end of the highway
-        if (localScaleZ + noteLocalTransformPosition > Highway3D.highwayLength)
-            localScaleZ = Highway3D.highwayLength - noteLocalTransformPosition;
-
-        if (localScaleZ < 0) localScaleZ = 0; // box collider negative size issues??
-
-        sustainTail.localScale = new Vector3(sustainTail.localScale.x, sustainTail.localScale.y, localScaleZ);
+    public void SetSustainZero()
+    {
+        sustainTail.localScale = new Vector3(sustainTail.localScale.x, sustainTail.localScale.y, 0);
     }
 }

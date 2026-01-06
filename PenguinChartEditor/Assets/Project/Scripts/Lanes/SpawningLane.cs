@@ -29,7 +29,6 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         {
             objectPool[i].InitializeEvent(eventsToDisplay[i]);
         }
-
         if (!isReadOnly) Previewer.UpdatePosition();
     }
 

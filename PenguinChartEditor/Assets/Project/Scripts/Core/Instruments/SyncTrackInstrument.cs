@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Penguin.Debug;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -201,6 +202,8 @@ public class SyncTrackInstrument : IInstrument
 
     public void CompleteMove()
     {
+        if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
+
         Chart.showPreviewers = true;
 
         CompleteMove(ref bpmMoveData, bpmSelection);
@@ -430,32 +433,27 @@ public class SyncTrackInstrument : IInstrument
         if (timestamp <= 0)
             return 0;
 
-        else if (timestamp > AudioManager.SongLength)
+        if (timestamp > AudioManager.SongLength)
             return SongTime.SongLengthTicks;
 
-        // Get parallel lists of the tick-time events and time-second values so that value found with seconds can be converted to a tick-time event
         var tempoTickTimeEvents = TempoEvents.Keys.ToList();
         var tempoTimeSecondEvents = TempoEvents.Values.Select(x => x.Timestamp).ToList();
 
-        // Attempt a binary search for the current timestamp, 
-        // which will return a bitwise complement of the index of the next highest timesecond value 
-        // OR tempoTimeSecondEvents.Count if there are no more elements
         var index = tempoTimeSecondEvents.BinarySearch(timestamp);
 
         int lastTickEvent;
-        if (index <= 0) // bitwise complement is negative or zero
+        if (index < 0) // bitwise complement is negative or zero
         {
-            // modify index if the found timestamp is at the end of the array (last tempo event)
             if (~index == tempoTimeSecondEvents.Count) index = tempoTimeSecondEvents.Count - 1;
-            // else just get the index proper 
-            else index = ~index - 1; // -1 because ~index is the next timestamp AFTER the start of the window, but we need the one before to properly render beatlines
-            try
+            else index = ~index - 1;
+
+            if (index < 0)
+            {
+                lastTickEvent = tempoTickTimeEvents[0];
+            }
+            else
             {
                 lastTickEvent = tempoTickTimeEvents[index];
-            }
-            catch
-            {
-                lastTickEvent = tempoTickTimeEvents[0]; // if ~index - 1 is -1, then the index should be itself
             }
         }
         else
@@ -463,16 +461,27 @@ public class SyncTrackInstrument : IInstrument
             lastTickEvent = tempoTickTimeEvents[index];
         }
 
+        var dataRef = TempoEvents[lastTickEvent];
         // Rearranging of .chart format specification distance between two ticks - thanks, algebra class!
-        return Mathf.RoundToInt((Chart.Resolution * TempoEvents[lastTickEvent].BPMChange * (float)(timestamp - TempoEvents[lastTickEvent].Timestamp) / SECONDS_PER_MINUTE) + lastTickEvent);
+        return Mathf.RoundToInt((Chart.Resolution * dataRef.BPMChange * (float)(timestamp - dataRef.Timestamp) / SECONDS_PER_MINUTE) + lastTickEvent);
     }
 
     public double ConvertTickTimeToSeconds(int ticktime)
     {
         if (ticktime == 0) return 0;
-        var lastTickEvent = Chart.SyncTrackInstrument.TempoEvents.GetPreviousTickEventInLane(ticktime, inclusive: true);
+
+        var lastTickEvent = TempoEvents.GetPreviousTickEventInLane(ticktime, inclusive: true);
+
         // Formula from .chart format specifications
-        return ((ticktime - lastTickEvent) / (double)Chart.Resolution * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].BPMChange) + TempoEvents[lastTickEvent].Timestamp;
+        var dataRef = TempoEvents[lastTickEvent];
+        return ((ticktime - lastTickEvent) / (double)Chart.Resolution * SECONDS_PER_MINUTE / dataRef.BPMChange) + dataRef.Timestamp;
+    }
+
+    public double GetSecondsPerTickAtTick(int tick)
+    {
+        var lastTickEvent = TempoEvents.GetPreviousTickEventInLane(tick, inclusive: true);
+
+        return 1 / (double)Chart.Resolution * SECONDS_PER_MINUTE / TempoEvents[lastTickEvent].BPMChange;
     }
 
     // This may seem weird at first, but because the duration of a tick varies from tick to tick based on BPM changes,

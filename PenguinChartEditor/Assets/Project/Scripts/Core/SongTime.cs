@@ -119,7 +119,7 @@ public class SongTime : MonoBehaviour
     /// <param name="middleClick"></param>
     public static void ChangeTime(float scrollChange, bool middleClick = false)
     {
-        if (float.IsNaN(scrollChange)) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
+        if (float.IsNaN(scrollChange) || scrollChange == 0) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
 
         double newTimeCandidate;
 

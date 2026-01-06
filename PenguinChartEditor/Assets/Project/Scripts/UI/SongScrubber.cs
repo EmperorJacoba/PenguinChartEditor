@@ -21,12 +21,25 @@ public class SongScrubber : MonoBehaviour
     void UpdateSongScrubber()
     {
         scrubber.value = (float)SongTime.SongPositionSeconds / AudioManager.SongLength;
+        
+        // onValueChanged is still invocated when this function is called and will
+        // cause a dual refresh on the same frame from UpdateSongTimeFromScrubber.
+        // this doubles compute time needed and thus must be prevented.
+        disableNextUpdate = true;
     }
-
+    bool disableNextUpdate = false;
     void UpdateSongTimeFromScrubber(float newPos)
     {
-        // Don't worry about dual updates for a scroll - SongPositionSeconds will not update the scene unless the passed in value is different
-        SongTime.SongPositionSeconds = AudioManager.SongLength * scrubber.value;
+        if (disableNextUpdate)
+        {
+            disableNextUpdate = false;
+            return;
+        }
+
+        var newTime = AudioManager.SongLength * scrubber.value;
+        if (SongTime.SongPositionSeconds == newTime) return;
+
+        SongTime.SongPositionSeconds = newTime;
         Chart.InPlaceRefresh();
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Penguin.Debug;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 // Each lane has its own set of notes and selections (EventData)
@@ -128,6 +129,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         representedData = LaneData[tick];
 
         bool isHeadVisible = CalculateHeadVisibility();
+
         notePieces.SetVisibility(isHeadVisible);
 
         if (!readOnly) CheckForSelection();
@@ -214,6 +216,12 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     void UpdateSustain(bool headOnly)
     {
+        // No math needed at all if sustain is 0
+        if (representedData.Sustain == 0)
+        {
+            notePieces.SetSustainZero();
+        }
+
         if (!headOnly && AudioManager.AudioPlaying)
         {
             notePieces.UpdateSustainLength(SongTime.SongPositionTicks, Tick + representedData.Sustain - SongTime.SongPositionTicks, transform.localPosition.z);
