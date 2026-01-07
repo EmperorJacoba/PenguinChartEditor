@@ -35,6 +35,7 @@ public class Chart : MonoBehaviour
     public static IInstrument LoadedInstrument { get; set; }
     public static T GetActiveInstrument<T>() where T : IInstrument => (T)LoadedInstrument;
     public static SyncTrackInstrument SyncTrackInstrument { get; set; }
+    public static StarpowerInstrument StarpowerInstrument { get; set; }
 
     #endregion
 
@@ -45,16 +46,33 @@ public class Chart : MonoBehaviour
         ChartWriter.WriteChart();
     }
 
-    public void LoadFile()
+    public static void ApplyFileInformation(
+        Metadata metadata,
+        List<IInstrument> traditionalInstruments,
+        SyncTrackInstrument syncTrack,
+        StarpowerInstrument starpower
+        )
+    {
+        Metadata = metadata;
+        Instruments = traditionalInstruments;
+        SyncTrackInstrument = syncTrack;
+        StarpowerInstrument = starpower;
+
+        SyncTrackInstrument.SetUpInputMap();
+        StarpowerInstrument.SetUpInputMap();
+        foreach (var instrument in Instruments)
+        {
+            instrument.SetUpInputMap();
+        }
+    }
+
+    public static void LoadFile()
     {
         var pathCandidates = StandaloneFileBrowser.OpenFilePanel($"Open .chart file to load from.", "", new[] { new ExtensionFilter(".chart files ", "chart") }, false);
 
         ChartPath = pathCandidates[0];
         FolderPath = ChartPath[..ChartPath.LastIndexOf("\\")];
-
-        ChartParser chartParser = new(ChartPath);
-
-        Metadata = chartParser.metadata;
+        ChartParser.ParseChart(ChartPath);
 
         // also need to parse chart stems
         // find properly named files - add to stems
@@ -70,15 +88,6 @@ public class Chart : MonoBehaviour
         }
         AudioManager.InitializeAudio();
         Waveform.InitializeWaveformData();
-
-        SyncTrackInstrument = chartParser.syncTrackInstrument;
-        SyncTrackInstrument.SetUpInputMap();
-
-        Instruments = chartParser.instruments;
-        foreach (var instrument in Instruments)
-        {
-            instrument.SetUpInputMap();
-        }
     }
 
     #endregion

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-public class ChartParser
+public static class ChartParser
 {
     #region Metadata Constants
 
@@ -17,42 +17,37 @@ public class ChartParser
     #region Sync Track Constants
     const string HELPFUL_REMINDER = "Please check the file and try again.";
 
-    // Note: When creating new chart file, make sure [SyncTrack] starts with a BPM and TS declaration!
-    const int DEFAULT_TS_DENOMINATOR = 4;
-    const string TEMPO_EVENT_INDICATOR = "B";
-    const string TIME_SIGNATURE_EVENT_INDICATOR = "TS";
-    const string ANCHOR_INDICATOR = "A";
-    const string SYNC_TRACK_ERROR = "[SyncTrack] has invalid tempo event:";
-    const float BPM_FORMAT_CONVERSION = 1000.0f;
-    const int TS_POWER_CONVERSION_NUMBER = 2;
-    const float SECONDS_PER_MINUTE = 60;
-
-    #endregion
-
-    #region Accessors 
-    public SyncTrackInstrument syncTrackInstrument;
-    public Metadata metadata;
-    public List<IInstrument> instruments = new();
-
     #endregion
 
     #region Setup
 
-    public ChartParser(string filePath)
-    {
-        chartAsLines = File.ReadAllLines(filePath);
-        ParseChartData();
-    }
-    string[] chartAsLines;
+    static SyncTrackInstrument syncTrackInstrument;
+    static StarpowerInstrument starpower;
+    static Metadata metadata;
+    static List<IInstrument> instruments = new();
 
-    void ParseChartData()
+    // note: chart resolution is set within FormatEventSections so that SyncTrack can use it via Chart.Resolution
+    public static void ParseChart(string filePath)
     {
-        var eventGroups = FormatEventSections();
+        syncTrackInstrument = null;
+        starpower = new(new());
+        metadata = null;
+        instruments = new();
+
+        string[] chartAsLines = File.ReadAllLines(filePath);
+        var eventGroups = FormatEventSections(chartAsLines);
 
         Parallel.ForEach(eventGroups, item => ProcessEventGroup(item));
+
+        Chart.ApplyFileInformation(
+            metadata,
+            instruments,
+            syncTrackInstrument,
+            starpower
+            );
     }
 
-    void ProcessEventGroup(ChartEventGroup eventGroup)
+    static void ProcessEventGroup(ChartEventGroup eventGroup)
     {
         if (eventGroup == null) return;
         switch (eventGroup.EventGroupIdentifier)
@@ -74,7 +69,7 @@ public class ChartParser
 
     #region Event Section Setup
 
-    List<ChartEventGroup> FormatEventSections()
+    static List<ChartEventGroup> FormatEventSections(string[] chartAsLines)
     {
         // "[" begins a section header => begins a section of interest to parse (details are validated later)
         List<int> sectionHeaderCandidates = Enumerable.Range(0, chartAsLines.Length).Where(i => chartAsLines[i].Contains("[")).ToList();
@@ -90,21 +85,14 @@ public class ChartParser
         {
             sectionHeaderCandidates.Remove(SONG_HEADER_LOCATION);
 
-            var songData = InitializeSongGroup(SONG_HEADER_LOCATION);
+            var songData = InitializeSongGroup(SONG_HEADER_LOCATION, chartAsLines);
             Chart.Resolution = GetChartResolution(songData);
             metadata = ParseSongMetadata(songData);
         }
 
-        Parallel.ForEach(sectionHeaderCandidates, item => identifiedSections.Add(FormatEventSection(item)));
+        Parallel.ForEach(sectionHeaderCandidates, item => identifiedSections.Add(InitializeEventGroup(item, chartAsLines)));
 
         return identifiedSections;
-    }
-
-    ChartEventGroup FormatEventSection(int lineIndex)
-    {
-        var eventGroup = InitializeEventGroup(lineIndex);
-        if (eventGroup != null) return eventGroup;
-        return null;
     }
 
     /// <summary>
@@ -113,7 +101,7 @@ public class ChartParser
     /// <param name="lineIndex">The index of the section header</param>
     /// <returns>ChartEventGroup with Identifier SectionName and data { ... }</returns>
     /// <exception cref="ArgumentException"></exception>
-    ChartEventGroup InitializeEventGroup(int lineIndex)
+    static ChartEventGroup InitializeEventGroup(int lineIndex, string[] chartAsLines)
     {
         var identifierLine = chartAsLines[lineIndex];
         var cleanIdentifier = identifierLine.Replace("[", "").Replace("]", "");
@@ -155,7 +143,7 @@ public class ChartParser
     /// </summary>
     /// <param name="iniPath">File path of the .ini file.</param>
     /// <returns>ChartEventGroup with data from .ini file.</returns>
-    SongDataGroup InitializeIniGroup(string iniPath)
+    static SongDataGroup InitializeIniGroup(string iniPath)
     {
         var iniData = File.ReadAllLines(iniPath);
 
@@ -174,7 +162,7 @@ public class ChartParser
         return iniGroup;
     }
 
-    SongDataGroup InitializeSongGroup(int lineIndex)
+    static SongDataGroup InitializeSongGroup(int lineIndex, string[] chartAsLines)
     {
         if (chartAsLines[lineIndex + 1] != "{") // line with { to mark beginning of section
             throw new ArgumentException($"[Song] is not enclosed properly. {HELPFUL_REMINDER}");
@@ -207,7 +195,7 @@ public class ChartParser
     /// <param name="songEventGroup">ChartEventGroup object with [Song] header.</param>
     /// <returns>Constructed Metadata, resolution</returns>
     /// <exception cref="ArgumentException"></exception>
-    Metadata ParseSongMetadata(SongDataGroup songEventGroup)
+    static Metadata ParseSongMetadata(SongDataGroup songEventGroup)
     {
         Metadata metadata = new();
         if (File.Exists($"{Chart.FolderPath}/song.ini")) // read from ini if exists (most reliable scenario)
@@ -247,21 +235,23 @@ public class ChartParser
         return metadata;
     }
 
-    int GetChartResolution(SongDataGroup songEventGroup)
+    static int GetChartResolution(SongDataGroup songEventGroup)
     {
         var resolutionData = songEventGroup.data.Where(list => list.Key == "Resolution").ToList();
 
         if (resolutionData.Count == 0)
             throw new ArgumentException("No resolution data found within chart file. Please add the correct resolution and try again.");
+
         if (!int.TryParse(resolutionData[0].Value, out int resolutionValue))
             throw new ArgumentException($"Resolution data is not valid. {HELPFUL_REMINDER}");
+
         return resolutionValue;
     }
 
     #endregion
 
     #region Instruments
-    IInstrument ParseInstrumentGroup(ChartEventGroup chartEventGroup)
+    static IInstrument ParseInstrumentGroup(ChartEventGroup chartEventGroup)
     {
         switch (chartEventGroup.GetInstrumentGroup())
         {
