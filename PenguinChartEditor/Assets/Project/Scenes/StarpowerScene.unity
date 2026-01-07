@@ -2857,8 +2857,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738d9bc210d45aa4b81e6a3e70d082a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  is2D: 0
   parentGameInstrument: {fileID: 1211949448}
-  rt_2DOnly: {fileID: 0}
 --- !u!120 &221877127
 LineRenderer:
   serializedVersion: 2
@@ -5952,7 +5952,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highway: {fileID: 624363561}
-  strikeline: {fileID: 1687238295}
   waveform: {fileID: 1178886515}
   instrumentType: 40
 --- !u!4 &554437995
@@ -7807,7 +7806,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highway: {fileID: 618046053}
-  strikeline: {fileID: 1643437594}
   waveform: {fileID: 1025512042}
   instrumentType: 50
 --- !u!4 &744302406
@@ -11741,8 +11739,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738d9bc210d45aa4b81e6a3e70d082a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  is2D: 0
   parentGameInstrument: {fileID: 744302405}
-  rt_2DOnly: {fileID: 0}
 --- !u!120 &1025512043
 LineRenderer:
   serializedVersion: 2
@@ -13754,8 +13752,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738d9bc210d45aa4b81e6a3e70d082a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  is2D: 0
   parentGameInstrument: {fileID: 554437994}
-  rt_2DOnly: {fileID: 0}
 --- !u!120 &1178886516
 LineRenderer:
   serializedVersion: 2
@@ -14839,7 +14837,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highway: {fileID: 437408615}
-  strikeline: {fileID: 898477194}
   waveform: {fileID: 221877126}
   instrumentType: 10
 --- !u!4 &1211949449
@@ -19162,6 +19159,91 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1568991022}
   m_CullTransparentMesh: 1
+--- !u!1001 &1571698315
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -6.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.86
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.95105654
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.309017
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -6055574400320242532, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 012df9cb33546f54b84753bf14a620de, type: 2}
+    - target: {fileID: -2859109400176981367, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c9ea49d8024d3f043a0296a6e48bd4f3, type: 2}
+    - target: {fileID: -1493488069526962914, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 791ab52ad107a6f4190844571261443a, type: 2}
+    - target: {fileID: 919132149155446097, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: m_Name
+      value: StarpowerGem
+      objectReference: {fileID: 0}
+    - target: {fileID: 1898272445544690798, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c9ea49d8024d3f043a0296a6e48bd4f3, type: 2}
+    - target: {fileID: 6317578925029434746, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c9ea49d8024d3f043a0296a6e48bd4f3, type: 2}
+    - target: {fileID: 8123322236738107862, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b24a9a1e46735fe4b9ea9672d5632b93, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 28ec05e7b527593468d70f1bd25bb154, type: 3}
 --- !u!1 &1572837300
 GameObject:
   m_ObjectHideFlags: 0
@@ -26693,3 +26775,4 @@ SceneRoots:
   - {fileID: 744302406}
   - {fileID: 554437995}
   - {fileID: 1465900806}
+  - {fileID: 1571698315}

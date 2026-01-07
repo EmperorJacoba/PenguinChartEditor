@@ -175,13 +175,13 @@ public class Chart : MonoBehaviour
 
         LoadFile();
         Instruments.Add(new StarpowerInstrument(new()));
-
+        /*
         LoadedInstrument = Instruments.
             Where(
             item => item.InstrumentName == InstrumentType.guitar). // for testing only
-            ToList()[0];
+            ToList()[0]; */
         // LoadedInstrument = SyncTrackInstrument;
-        // LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.starpower).ToList()[0];
+        LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.starpower).ToList()[0];
 
         inputMap = new();
         inputMap.Enable();

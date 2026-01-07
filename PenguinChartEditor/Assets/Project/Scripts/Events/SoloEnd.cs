@@ -35,7 +35,7 @@ public class SoloEnd : Event<SoloEventData>
     public void UpdatePosition()
     {
         double ratio = Waveform.GetWaveformRatio(representedTick);
-        if (ratio > 1)
+        if (ratio >= 1)
         {
             Visible = false;
             return;
