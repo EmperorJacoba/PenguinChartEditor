@@ -16,13 +16,15 @@ public static class ChartParser
 
     #region Sync Track Constants
     const string HELPFUL_REMINDER = "Please check the file and try again.";
+    private const string SPECIAL_INDICATOR = "S";
+    private const int INDENTIFIER_INDEX = 0;
 
     #endregion
 
     #region Setup
 
     static SyncTrackInstrument syncTrackInstrument;
-    static StarpowerInstrument starpower;
+    static List<RawStarpowerEvent> rawStarpowerEvents = new();
     static Metadata metadata;
     static List<IInstrument> instruments = new();
 
@@ -30,7 +32,6 @@ public static class ChartParser
     public static void ParseChart(string filePath)
     {
         syncTrackInstrument = null;
-        starpower = new(new());
         metadata = null;
         instruments = new();
 
@@ -38,6 +39,8 @@ public static class ChartParser
         var eventGroups = FormatEventSections(chartAsLines);
 
         Parallel.ForEach(eventGroups, item => ProcessEventGroup(item));
+
+        var starpower = new StarpowerInstrument(rawStarpowerEvents);
 
         Chart.ApplyFileInformation(
             metadata,
@@ -117,7 +120,7 @@ public static class ChartParser
 
         lineIndex += 2; // line with first bit of data
 
-        List<KeyValuePair<int,string>> eventData = new();
+        List<KeyValuePair<int, string>> eventData = new();
         string workingLine = chartAsLines[lineIndex];
 
         while (workingLine != "}" && lineIndex < chartAsLines.Length - 1)
@@ -128,7 +131,16 @@ public static class ChartParser
                 throw new ArgumentException($"Problem parsing tick {parts[0].Trim()}");
             }
 
-            eventData.Add(new(tick, parts[1]));
+            var formattedKVP = new KeyValuePair<int, string>(tick, parts[1]);
+
+            if (TryGetStarpowerEvent(formattedKVP, identifiedSection.EventGroupIdentifier, out RawStarpowerEvent @event))
+            {
+                rawStarpowerEvents.Add(@event);
+            }
+            else
+            {
+                eventData.Add(formattedKVP);
+            }
 
             lineIndex++;
             workingLine = chartAsLines[lineIndex];
@@ -136,6 +148,28 @@ public static class ChartParser
 
         identifiedSection.data = eventData;
         return identifiedSection;
+    }
+
+    static RawStarpowerEvent defaultRawSPEvent = new((HeaderType)(-1), -1, "");
+    static readonly string[] validStarpowerEvents = new string[2] { "2", "64" };
+    static bool TryGetStarpowerEvent(KeyValuePair<int, string> @event, HeaderType targetInstrument, out RawStarpowerEvent rawStarpowerEvent)
+    {
+        rawStarpowerEvent = defaultRawSPEvent;
+
+        if (!@event.Value.Contains('S'))
+        {
+            return false;
+        }
+
+        var values = @event.Value.Split(' ');
+
+        if (values[INDENTIFIER_INDEX] != SPECIAL_INDICATOR) return false;
+
+        // Used to avoid drum S 65 and S 66 for drum rolls (and other future unimplemented events)
+        if (!validStarpowerEvents.Contains(values[1])) return false;
+
+        rawStarpowerEvent = new(targetInstrument, @event.Key, @event.Value);
+        return true;
     }
 
     /// <summary>
@@ -325,6 +359,20 @@ class SongDataGroup
 
     public SongDataGroup(List<KeyValuePair<string, string>> data)
     {
+        this.data = data;
+    }
+}
+
+public struct RawStarpowerEvent
+{
+    public HeaderType header;
+    public int tick;
+    public string data;
+
+    public RawStarpowerEvent(HeaderType header, int tick, string data)
+    {
+        this.header = header;
+        this.tick = tick;
         this.data = data;
     }
 }

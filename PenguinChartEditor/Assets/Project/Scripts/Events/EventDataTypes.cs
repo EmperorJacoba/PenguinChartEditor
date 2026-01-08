@@ -262,44 +262,52 @@ public struct SpecialData
 
 public struct StarpowerEventData : IEventData, IEquatable<StarpowerEventData>, ISustainable
 {
-    public enum EventType
-    {
-        standard = 2,
-        drumFill = 64,
-        drumRoll = 65
-    }
-
-    public EventType eventType;
+    public bool IsFill;
     public int Sustain { get; set; }
+
+    public StarpowerEventData(bool isFill, int sustain)
+    {
+        IsFill = isFill;
+        Sustain = sustain;
+    }
 
     public string[] ToChartFormat(int lane)
     {
-        throw new NotImplementedException();
+        string @event = "";
+        if (IsFill)
+        {
+            @event = $"S 64 {Sustain}";
+        }
+        else
+        {
+            @event = $"S 2 {Sustain}";
+        }
+        return new string[1] { @event };
     }
 
     public bool Equals(StarpowerEventData other)
     {
         return 
-           eventType == other.eventType &&
+           IsFill == other.IsFill &&
            Sustain == other.Sustain;
     }
 
     public bool Equals(IEventData other)
     {
         return other is StarpowerEventData data &&
-               eventType == data.eventType &&
+               IsFill == data.IsFill &&
                Sustain == data.Sustain;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(eventType, Sustain);
+        return HashCode.Combine(IsFill, Sustain);
     }
 
     public override bool Equals(object obj)
     {
         return obj is StarpowerEventData data &&
-               eventType == data.eventType &&
+               IsFill == data.IsFill &&
                Sustain == data.Sustain;
     }
 

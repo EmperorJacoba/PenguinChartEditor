@@ -72,6 +72,7 @@ public class Chart : MonoBehaviour
 
         ChartPath = pathCandidates[0];
         FolderPath = ChartPath[..ChartPath.LastIndexOf("\\")];
+
         ChartParser.ParseChart(ChartPath);
 
         // also need to parse chart stems
@@ -183,14 +184,13 @@ public class Chart : MonoBehaviour
         AudioManager.InitializeBassPlugin();
 
         LoadFile();
-        Instruments.Add(new StarpowerInstrument(new()));
         /*
         LoadedInstrument = Instruments.
             Where(
             item => item.InstrumentName == InstrumentType.guitar). // for testing only
             ToList()[0]; */
         // LoadedInstrument = SyncTrackInstrument;
-        LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.starpower).ToList()[0];
+        LoadedInstrument = StarpowerInstrument;
 
         inputMap = new();
         inputMap.Enable();

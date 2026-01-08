@@ -1,10 +1,14 @@
-
-
 using System;
 using System.Collections.Generic;
 
 public class StarpowerInstrument : IInstrument
 {
+    private const int EVENT_TYPE_IDENTIFIER_INDEX = 1;
+    private const int SUSTAIN_INDEX = 2;
+
+    /// <summary>
+    /// Access instrument data with GetLane(int), where int is casted version of HeaderType, since each traditional instrument has its own set of starpower events.
+    /// </summary>
     private Lanes<StarpowerEventData> Lanes;
     ILaneData IInstrument.GetLaneData(int lane) => Lanes.GetLane(lane);
     ILaneData IInstrument.GetBarLaneData()
@@ -24,16 +28,42 @@ public class StarpowerInstrument : IInstrument
 
     public List<int> UniqueTicks => Lanes.GetUniqueTickSet();
 
-    public StarpowerInstrument(List<KeyValuePair<int, string>> starpowerEvents)
+    void SetUpLanes()
     {
-        int instrumentCount = 0;
+        List<int> headerTypeIDs = new();
         foreach (var instrumentType in Enum.GetValues(typeof(HeaderType)))
         {
             // instruments begin at 10^1. Refer to HeaderType for specifics.
             if ((int)instrumentType < 10) continue;
-            instrumentCount++;
+            headerTypeIDs.Add((int)instrumentType);
         }
-        Lanes = new(instrumentCount);
+        Lanes = new(headerTypeIDs);
+    }
+
+    public StarpowerInstrument(List<RawStarpowerEvent> starpowerEvents)
+    {
+        SetUpLanes();
+        ParseRawStarpowerEvents(starpowerEvents);
+    }
+
+    void ParseRawStarpowerEvents(List<RawStarpowerEvent> starpowerEvents)
+    {
+        foreach (var @event in starpowerEvents)
+        {
+            var data = @event.data.Split(" ");
+
+            // S identifier should already be checked by ChartParser
+
+            var fill = data[EVENT_TYPE_IDENTIFIER_INDEX] == "64";
+
+            if (!int.TryParse(data[SUSTAIN_INDEX], out int sustain))
+            {
+                throw new ArgumentException($"Invalid sustain @ tick {@event.tick} for instrument {@event.header}. Expected integer, given {data[2]}.");
+            }
+            StarpowerEventData parsedData = new(fill, sustain);
+
+            Lanes.GetLane((int)@event.header).Add(@event.tick, parsedData);
+        }
     }
 
     public void AddChartFormattedEventsToInstrument(string lines, int offset)
