@@ -184,13 +184,13 @@ public class Chart : MonoBehaviour
         AudioManager.InitializeBassPlugin();
 
         LoadFile();
-        /*
+        
         LoadedInstrument = Instruments.
             Where(
             item => item.InstrumentName == InstrumentType.guitar). // for testing only
-            ToList()[0]; */
+            ToList()[0];
         // LoadedInstrument = SyncTrackInstrument;
-        LoadedInstrument = StarpowerInstrument;
+        // LoadedInstrument = StarpowerInstrument;
 
         inputMap = new();
         inputMap.Enable();

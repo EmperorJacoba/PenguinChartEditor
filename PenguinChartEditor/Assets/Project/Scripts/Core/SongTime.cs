@@ -73,6 +73,7 @@ public class SongTime : MonoBehaviour
     {
         Waveform.GenerateWaveformPoints();
         TimeChanged?.Invoke();
+        Chart.InPlaceRefresh();
     }
 
     void Update()

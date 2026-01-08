@@ -20,14 +20,16 @@ public class SongScrubber : MonoBehaviour
     // Diagnostic: This function takes <0.05ms on average per frame during song playback.
     void UpdateSongScrubber()
     {
+        disableNextUpdate = true;
+
         scrubber.value = (float)SongTime.SongPositionSeconds / AudioManager.SongLength;
         
         // onValueChanged is still invocated when this function is called and will
         // cause a dual refresh on the same frame from UpdateSongTimeFromScrubber.
         // this doubles compute time needed and thus must be prevented.
-        disableNextUpdate = true;
     }
     bool disableNextUpdate = false;
+
     void UpdateSongTimeFromScrubber(float newPos)
     {
         if (disableNextUpdate)

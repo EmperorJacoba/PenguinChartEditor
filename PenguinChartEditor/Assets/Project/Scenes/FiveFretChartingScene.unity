@@ -1398,12 +1398,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
   parentGameInstrument: {fileID: 0}
-  laneIdentifier: 1
-  readOnly: 0
   lanePooler: {fileID: 1844158015}
+  laneIdentifier: 1
 --- !u!4 &143122576
 Transform:
   m_ObjectHideFlags: 0
@@ -4207,7 +4207,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highway: {fileID: 2069553716}
-  strikeline: {fileID: 1936119447}
   waveform: {fileID: 1754544326}
   instrumentType: 10
 --- !u!1 &536290877
@@ -4239,12 +4238,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
   parentGameInstrument: {fileID: 0}
-  laneIdentifier: 5
-  readOnly: 0
   lanePooler: {fileID: 1417207405}
+  laneIdentifier: 5
 --- !u!4 &536290879
 Transform:
   m_ObjectHideFlags: 0
@@ -8980,12 +8979,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
   parentGameInstrument: {fileID: 0}
-  laneIdentifier: 2
-  readOnly: 0
   lanePooler: {fileID: 1432554526}
+  laneIdentifier: 2
 --- !u!4 &1158524637
 Transform:
   m_ObjectHideFlags: 0
@@ -9918,12 +9917,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
   parentGameInstrument: {fileID: 0}
-  laneIdentifier: 0
-  readOnly: 0
   lanePooler: {fileID: 1907842689}
+  laneIdentifier: 0
 --- !u!4 &1292801094
 Transform:
   m_ObjectHideFlags: 0
@@ -11378,12 +11377,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
   parentGameInstrument: {fileID: 0}
-  laneIdentifier: 4
-  readOnly: 0
   lanePooler: {fileID: 1255020706}
+  laneIdentifier: 4
 --- !u!4 &1482099734
 Transform:
   m_ObjectHideFlags: 0
@@ -13431,11 +13430,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f47b77efbb4b0d40be54ccf917731d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
   properties:
     is3D: 0
   parentGameInstrument: {fileID: 0}
   pooler: {fileID: 1110686253}
-  readOnly: 0
 --- !u!4 &1666396268
 Transform:
   m_ObjectHideFlags: 0
@@ -13648,6 +13647,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8feb50f7f5234c48b55ea839941beab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
   parentGameInstrument: {fileID: 0}
@@ -13708,8 +13708,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738d9bc210d45aa4b81e6a3e70d082a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  is2D: 0
   parentGameInstrument: {fileID: 516075231}
-  rt_2DOnly: {fileID: 0}
 --- !u!120 &1754544327
 LineRenderer:
   serializedVersion: 2
@@ -14795,12 +14795,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e59f004d206674592908913daac1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
   parentGameInstrument: {fileID: 0}
-  laneIdentifier: 3
-  readOnly: 0
   lanePooler: {fileID: 1233862335}
+  laneIdentifier: 3
 --- !u!4 &1933190198
 Transform:
   m_ObjectHideFlags: 0

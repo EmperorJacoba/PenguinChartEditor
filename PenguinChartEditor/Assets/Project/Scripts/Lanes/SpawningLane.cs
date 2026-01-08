@@ -29,6 +29,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     List<int> eventsToDisplay;
     protected void UpdateEvents()
     {
+        print($"Running {typeof(TEvent)}. {Time.realtimeSinceStartup}");
         var objectPool = Pooler.GetObjectPool(eventsToDisplay.Count, this);
         for (int i = 0; i < eventsToDisplay.Count; i++)
         {
