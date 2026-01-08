@@ -68,6 +68,23 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         }
     }
 
+    public ILane ParentLane
+    {
+        get
+        {
+            _parLane ??= GetComponentInParent<ILane>();
+            return _parLane;
+        }
+        set
+        {
+            if (_parLane == value) return;
+            _parLane = value;
+        }
+    }
+    ILane _parLane;
+
+    public T representedData;
+
     #endregion
 
     #region Data Access

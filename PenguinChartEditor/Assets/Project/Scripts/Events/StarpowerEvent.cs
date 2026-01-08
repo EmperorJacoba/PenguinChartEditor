@@ -21,8 +21,8 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
 
     void CacheDataReferences()
     {
-        _cachedSelectionRef = ParentInstrument.GetLaneSelection((int)laneID) as SelectionSet<StarpowerEventData>;
-        _cachedDataRef = ParentInstrument.GetLaneData((int)laneID) as LaneSet<StarpowerEventData>;
+        _cachedSelectionRef = (SelectionSet<StarpowerEventData>)ParentInstrument.GetLaneSelection((int)laneID);
+        _cachedDataRef = (LaneSet<StarpowerEventData>)ParentInstrument.GetLaneData((int)laneID);
     }
 
     public override SelectionSet<StarpowerEventData> Selection => _cachedSelectionRef;
@@ -34,33 +34,15 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
     public override IInstrument ParentInstrument => Chart.StarpowerInstrument;
 
     public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
-    public StarpowerLane ParentLane
-    {
-        get
-        {
-            if (_lane == null)
-            {
-                _lane = GetComponentInParent<StarpowerLane>();
-            }
-            return _lane;
-        }
-        set
-        {
-            if (_lane == value) return;
-            _lane = value;
-        }
-    }
-    private StarpowerLane _lane;
 
     public Coroutine destructionCoroutine { get; set; }
 
     public void InitializeProperties(ILane parentLane)
     {
         ParentLane = (StarpowerLane)parentLane;
-        laneID = ParentLane.laneIdentifier;
+        laneID = (HeaderType)ParentLane.laneID;
     }
 
-    StarpowerEventData representedData;
     public void InitializeEvent(int tick)
     {
         _tick = tick;

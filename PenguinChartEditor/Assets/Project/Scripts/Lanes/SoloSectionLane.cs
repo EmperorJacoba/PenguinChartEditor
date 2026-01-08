@@ -8,6 +8,8 @@ public class SoloSectionLane : SpawningLane<SoloSection>
     protected override IPooler<SoloSection> Pooler => pooler;
     protected override bool cullAtStrikelineOnPlay => throw new System.NotImplementedException("Solo events do not use traditional event culling. See SoloSectionLane.cs for more details.");
 
+    public override int laneID => int.MaxValue;
+
     protected override IPreviewer Previewer
     {
         get

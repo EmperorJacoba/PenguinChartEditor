@@ -6,7 +6,9 @@ public class TSLane : SpawningLane<TSLabel>
     [SerializeField] TSPooler pooler;
     protected override bool cullAtStrikelineOnPlay => false;
 
-    protected override IPooler<TSLabel> Pooler => (IPooler<TSLabel>)pooler;
+    public override int laneID => (int)SyncTrackInstrument.LaneOrientation.timeSignature;
+
+    protected override IPooler<TSLabel> Pooler => pooler;
     protected override IPreviewer Previewer => TSPreviewer.instance;
 
     protected override List<int> GetEventsToDisplay()

@@ -7,8 +7,6 @@ public class SoloEnd : Event<SoloEventData>
     public override int Lane => int.MinValue;
     public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
 
-    SoloSectionLane ParentLane { get; set; }
-
     public override SelectionSet<SoloEventData> Selection => ParentInstrument.SoloData.SelectedEndEvents;
 
     public override LaneSet<SoloEventData> LaneData => ParentInstrument.SoloData.SoloEvents;

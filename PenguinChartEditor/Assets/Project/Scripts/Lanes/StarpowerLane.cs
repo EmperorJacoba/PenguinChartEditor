@@ -3,6 +3,7 @@ using UnityEngine;
 public class StarpowerLane : SpawningLane<StarpowerEvent>
 {
     public HeaderType laneIdentifier;
+    public override int laneID => (int)laneIdentifier;
     [SerializeField] StarpowerPooler pooler;
     protected override IPooler<StarpowerEvent> Pooler => pooler;
 

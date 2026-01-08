@@ -8,6 +8,8 @@ public class BPMLane : SpawningLane<BPMLabel>
     protected override IPooler<BPMLabel> Pooler => pooler;
     protected override bool cullAtStrikelineOnPlay => false;
 
+    public override int laneID => (int)SyncTrackInstrument.LaneOrientation.bpm;
+
     protected override IPreviewer Previewer => BPMPreviewer.instance;
 
     protected override List<int> GetEventsToDisplay()

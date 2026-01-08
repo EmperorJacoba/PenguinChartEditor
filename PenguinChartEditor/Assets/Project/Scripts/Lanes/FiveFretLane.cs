@@ -7,6 +7,7 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
     protected override IPooler<FiveFretNote> Pooler => lanePooler;
     protected override bool cullAtStrikelineOnPlay => true;
     public FiveFretInstrument.LaneOrientation laneIdentifier;
+    public override int laneID => (int)laneIdentifier;
 
     protected override List<int> GetEventsToDisplay()
     {

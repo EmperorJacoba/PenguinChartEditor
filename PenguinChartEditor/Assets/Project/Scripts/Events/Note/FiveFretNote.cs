@@ -1,8 +1,6 @@
-﻿using Penguin.Debug;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-// Each lane has its own set of notes and selections (EventData)
 // Lanes are defined with type T.
 // Notes are defined/calculated upon on a per-lane basis.
 
@@ -54,24 +52,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     [HideInInspector] public float xCoordinate;
 
-    FiveFretLane ParentLane
-    {
-        get
-        {
-            if (_lane == null)
-            {
-                _lane = GetComponentInParent<FiveFretLane>();
-            }
-            return _lane;
-        }
-        set
-        {
-            if (_lane == value) return;
-            _lane = value;
-        }
-    }
-    FiveFretLane _lane;
-
     public bool IsHopo
     {
         get => _isHopo;
@@ -115,12 +95,10 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
     public FiveFretInstrument ParentFiveFretInstrument => (FiveFretInstrument)ParentInstrument;
 
-    public FiveFretNoteData representedData;
-
     public void InitializeProperties(ILane parentLane)
     {
-        ParentLane = (FiveFretLane)parentLane;
-        laneID = ParentLane.laneIdentifier;
+        ParentLane = parentLane;
+        laneID = (FiveFretInstrument.LaneOrientation)ParentLane.laneID;
     }
 
     public void InitializeEvent(int tick)
@@ -143,12 +121,10 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         SetVisualProperties(representedData);
     }
 
-
-
     public void InitializeEventAsPreviewer(FiveFretLane parentLane, int previewTick, FiveFretNoteData previewData)
     {
         ParentLane = parentLane;
-        laneID = ParentLane.laneIdentifier;
+        laneID = (FiveFretInstrument.LaneOrientation)ParentLane.laneID;
 
         // do not use this with the previewer, use previewer's tick instead
         // but this is here just in case & for the functions below

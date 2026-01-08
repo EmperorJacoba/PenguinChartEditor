@@ -3,7 +3,8 @@ using UnityEngine;
 
 public interface ILane
 {
-
+    public int laneID { get; }
+    public GameInstrument parentGameInstrument { get; set; }
 }
 public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent : IPoolable
 {
@@ -11,6 +12,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     [SerializeField] protected LaneProperties properties;
     
     protected abstract bool cullAtStrikelineOnPlay { get; }
+    public abstract int laneID { get; }
     protected int GetListStartRefreshPoint() => cullAtStrikelineOnPlay && AudioManager.AudioPlaying ? SongTime.SongPositionTicks : Waveform.startTick;
     protected abstract List<int> GetEventsToDisplay();
     protected abstract int GetNextEventUpdate(int tick);
@@ -29,7 +31,6 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     List<int> eventsToDisplay;
     protected void UpdateEvents()
     {
-        print($"Running {typeof(TEvent)}. {Time.realtimeSinceStartup}");
         var objectPool = Pooler.GetObjectPool(eventsToDisplay.Count, this);
         for (int i = 0; i < eventsToDisplay.Count; i++)
         {
@@ -162,7 +163,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     #endregion
 
     // Set through parent Lanes object. 
-    [HideInInspector] public GameInstrument parentGameInstrument;
+    [HideInInspector] public GameInstrument parentGameInstrument { get; set; }
     public IInstrument parentInstrument => parentGameInstrument.representedInstrument;
     protected virtual void Awake()
     {

@@ -6,6 +6,8 @@ public abstract class BaseBeatlineLane<T> : SpawningLane<T> where T : IPoolable 
     [HideInInspector] public override bool isReadOnly => true;
     protected override IPreviewer Previewer => null;
 
+    public override int laneID => -1;
+
     protected override bool cullAtStrikelineOnPlay => false;
 
     protected override List<int> GetEventsToDisplay()

@@ -174,6 +174,7 @@ public class Waveform : MonoBehaviour
     public static double timeShown;
     public static double startTime;
     public static double endTime;
+    public static double negativeTimePercentageOffset;
 
 
 
@@ -264,6 +265,7 @@ public class Waveform : MonoBehaviour
         startTime = startTimeSeconds;
         endTime = endTimeSeconds;
         timeShown = endTimeSeconds - startTimeSeconds;
+        negativeTimePercentageOffset = startTime < 0 ? -startTime / timeShown : 0;
 
         startTick = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)startTimeSeconds);
         songPositionTicks = Chart.SyncTrackInstrument.ConvertSecondsToTickTime((float)positionTimeSeconds);
@@ -315,7 +317,12 @@ public class Waveform : MonoBehaviour
         int key = tickPositions[i];
         var activeData = tickSecondValueMatch[key];
 
-        return (activeData.accumulatedSeconds + (activeData.secondsPerTick * (tick - key))) / timeShown;
+        // If the waveform's startTick is negative (e.g. when at the beginning of the song)
+        // negativeTimePercentageOffset > 0 and this corrects for the void of data for the negative portions of the track]
+        // Basically stores the start point of data on the track.
+        // This formula w/o the offset will start generation at the beginning of the track and display incorrect data until startTime > 0.
+        // The negative time offset is cached in CacheWaveformDetails(), and will be 0 in any case not described above.
+        return (activeData.accumulatedSeconds + (activeData.secondsPerTick * (tick - key))) / timeShown + negativeTimePercentageOffset;
     }
 
     public static double GetWaveformRatio(int tick, int tickDuration)

@@ -47,8 +47,6 @@ public class SoloPlate : Event<SoloEventData>
     }
 
     public override int Lane => 0;
-
-    public SoloSectionLane ParentLane { get; set; }
     public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
     public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
 
