@@ -91,11 +91,6 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
         Type = Chart.SyncTrackInstrument.CalculateBeatlineType(Tick);
     }
 
-    void IPoolable.UpdatePosition()
-    {
-        UpdateBeatlinePosition();
-    }
-
     public abstract void InitializeProperties(ILane parentLane);
 
     #endregion

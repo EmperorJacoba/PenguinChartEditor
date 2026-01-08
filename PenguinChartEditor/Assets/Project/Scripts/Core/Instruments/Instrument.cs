@@ -8,6 +8,7 @@ public interface IInstrument
     SoloDataSet SoloData { get; set; }
     InstrumentType InstrumentName { get; set; }
     DifficultyType Difficulty { get; set; }
+    HeaderType InstrumentID { get; }
     List<string> ExportAllEvents();
 
     void ClearAllSelections();

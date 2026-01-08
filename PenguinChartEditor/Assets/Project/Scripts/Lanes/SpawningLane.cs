@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public interface ILane
 {
@@ -14,12 +13,18 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     protected abstract bool cullAtStrikelineOnPlay { get; }
     protected int GetListStartRefreshPoint() => cullAtStrikelineOnPlay && AudioManager.AudioPlaying ? SongTime.SongPositionTicks : Waveform.startTick;
     protected abstract List<int> GetEventsToDisplay();
-    protected abstract int GetNextEvent(int tick);
-    protected abstract int GetPreviousEvent(int tick);
-    // protected abstract void UpdateEventPosition(TEvent @event, int tick);
-
+    protected abstract int GetNextEventUpdate(int tick);
+    protected abstract int GetPreviousEventUpdate(int tick);
     protected abstract IPooler<TEvent> Pooler { get; }
-    protected abstract IPreviewer Previewer { get; }
+    protected virtual IPreviewer Previewer
+    {
+        get
+        {
+            previewer ??= transform.GetChild(0).gameObject.GetComponent<IPreviewer>();
+            return previewer;
+        }
+    }
+    private IPreviewer previewer;
 
     List<int> eventsToDisplay;
     protected void UpdateEvents()
@@ -36,6 +41,8 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     {
         eventsToDisplay = GetEventsToDisplay();
     }
+
+    #region Refresh
 
     void InPlaceRefresh()
     {
@@ -66,31 +73,31 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
 
         if (startUpdateTick == -1)
         {
-            startUpdateTick = GetNextEvent(GetListStartRefreshPoint());
+            startUpdateTick = GetNextEventUpdate(GetListStartRefreshPoint());
         }
 
         if (endUpdateTick == -1)
         {
             if (eventsToDisplay.Count == 0)
             {
-                endUpdateTick = GetNextEvent(GetListStartRefreshPoint());
+                endUpdateTick = GetNextEventUpdate(GetListStartRefreshPoint());
             }
             else
             {
-                endUpdateTick = GetNextEvent(eventsToDisplay[^1]);
+                endUpdateTick = GetNextEventUpdate(eventsToDisplay[^1]);
             }
         }
 
         if (GetListStartRefreshPoint() > startUpdateTick)
         {
             RefreshEventsToDisplay();
-            startUpdateTick = eventsToDisplay.Count > 0 ? eventsToDisplay[0] : GetNextEvent(GetListStartRefreshPoint());
+            startUpdateTick = eventsToDisplay.Count > 0 ? eventsToDisplay[0] : GetNextEventUpdate(GetListStartRefreshPoint());
         }
 
         if (Waveform.endTick >= endUpdateTick)
         {
             RefreshEventsToDisplay();
-            endUpdateTick = GetNextEvent(eventsToDisplay.Count > 0 ? eventsToDisplay[^1] : GetListStartRefreshPoint());
+            endUpdateTick = GetNextEventUpdate(eventsToDisplay.Count > 0 ? eventsToDisplay[^1] : GetListStartRefreshPoint());
         }
 
         UpdateEvents();
@@ -116,11 +123,11 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         {
             if (eventsToDisplay.Count == 0)
             {
-                startUpdateTick = GetPreviousEvent(GetListStartRefreshPoint());
+                startUpdateTick = GetPreviousEventUpdate(GetListStartRefreshPoint());
             }
             else
             {
-                startUpdateTick = GetPreviousEvent(eventsToDisplay[0]);
+                startUpdateTick = GetPreviousEventUpdate(eventsToDisplay[0]);
             }
         }
         
@@ -128,7 +135,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         {
             if (eventsToDisplay.Count == 0)
             {
-                endUpdateTick = GetPreviousEvent(GetListStartRefreshPoint());
+                endUpdateTick = GetPreviousEventUpdate(GetListStartRefreshPoint());
             }
             else
             {
@@ -139,17 +146,19 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         if (GetListStartRefreshPoint() <= startUpdateTick)
         {
             RefreshEventsToDisplay();
-            startUpdateTick = GetPreviousEvent(startUpdateTick);
+            startUpdateTick = GetPreviousEventUpdate(startUpdateTick);
         }
 
         if (Waveform.endTick < endUpdateTick)
         {
             RefreshEventsToDisplay();
-            endUpdateTick = GetPreviousEvent(endUpdateTick);
+            endUpdateTick = GetPreviousEventUpdate(endUpdateTick);
         }
 
         UpdateEvents();
     }
+
+    #endregion
 
     // Set through parent Lanes object. 
     [HideInInspector] public GameInstrument parentGameInstrument;

@@ -16,6 +16,10 @@ public class StarpowerInstrument : IInstrument
         throw new NotImplementedException($"Starpower does not have a bar lane. Please format the note receivers to access your intended instrument instead of the loaded instrument.");
     }
     ISelection IInstrument.GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
+    public LaneSet<StarpowerEventData> GetLaneData(HeaderType lane) => Lanes.GetLane((int)lane);
+    public LaneSet<StarpowerEventData> GetLaneData(int lane) => Lanes.GetLane(lane);
+    public SelectionSet<StarpowerEventData> GetLaneSelection(HeaderType lane) => Lanes.GetLaneSelection((int)lane);
+    public SelectionSet<StarpowerEventData> GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
     public SoloDataSet SoloData
     {
         get { throw new NotImplementedException("Starpower does not have solo events. If you are using the SoloEvent suite, it is not required."); }
@@ -23,6 +27,7 @@ public class StarpowerInstrument : IInstrument
     }
     public InstrumentType InstrumentName { get; set; } = InstrumentType.starpower;
     public DifficultyType Difficulty { get; set; } = DifficultyType.easy;
+    public HeaderType InstrumentID => HeaderType.Starpower;
 
     public int NoteSelectionCount => Lanes.GetTotalSelectionCount();
 

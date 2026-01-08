@@ -55,10 +55,4 @@ public class SoloSection : MonoBehaviour, IPoolable
 
         overlay.transform.localScale = new(parentLane.parentGameInstrument.HighwayLocalScaleProperties.x, 1f, localScaleZ);
     }
-
-    void IPoolable.UpdatePosition()
-    {
-        platehead.UpdatePosition(plateheadReceiver.representedTick);
-        plateheadReceiver.UpdatePosition();
-    }
 }

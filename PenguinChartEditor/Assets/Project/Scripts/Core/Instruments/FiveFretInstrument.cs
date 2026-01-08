@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
 public class FiveFretInstrument : IInstrument
 {
@@ -39,10 +38,10 @@ public class FiveFretInstrument : IInstrument
     public SelectionSet<FiveFretNoteData> GetLaneSelection(LaneOrientation lane) => Lanes.GetLaneSelection((int)lane);
 
 
-
     public SoloDataSet SoloData { get; set; }
     public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
+    public HeaderType InstrumentID => (HeaderType)((int)InstrumentName + (int)Difficulty);
 
     InputMap inputMap;
 

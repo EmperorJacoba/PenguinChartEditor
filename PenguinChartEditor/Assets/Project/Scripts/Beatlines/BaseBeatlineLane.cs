@@ -16,7 +16,7 @@ public abstract class BaseBeatlineLane<T> : SpawningLane<T> where T : IPoolable 
 
         for (int currentTick = firstTick;
             currentTick < waveformEndBound;
-            currentTick = GetNextEvent(currentTick)
+            currentTick = GetNextEventUpdate(currentTick)
             )
         {
             beatlineEvents.Add(currentTick);
@@ -24,12 +24,12 @@ public abstract class BaseBeatlineLane<T> : SpawningLane<T> where T : IPoolable 
         return beatlineEvents;
     }
 
-    protected override int GetNextEvent(int tick)
+    protected override int GetNextEventUpdate(int tick)
     {
         return Chart.SyncTrackInstrument.GetNextBeatlineEventExclusive(tick);
     }
 
-    protected override int GetPreviousEvent(int tick)
+    protected override int GetPreviousEventUpdate(int tick)
     {
         return Chart.SyncTrackInstrument.GetPreviousBeatlineEventExclusive(tick);
     }

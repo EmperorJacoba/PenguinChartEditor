@@ -143,16 +143,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         SetVisualProperties(representedData);
     }
 
-    void IPoolable.UpdatePosition()
-    {
-        bool isHeadVisible = CalculateHeadVisibility();
-        notePieces.SetVisibility(isHeadVisible);
 
-        UpdatePosition(
-            tick: AudioManager.AudioPlaying && !isHeadVisible ? SongTime.SongPositionTicks : Tick
-            );
-        UpdateSustain(isHeadVisible);
-    }
 
     public void InitializeEventAsPreviewer(FiveFretLane parentLane, int previewTick, FiveFretNoteData previewData)
     {
@@ -194,7 +185,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         var trackProportion = (float)percentOfTrack * parentGameInstrument.HighwayLength;
         transform.localPosition = new Vector3(xPosition, yPosition, trackProportion);
     }
-
 
     public override void OnPointerDown(PointerEventData pointerEventData)
     {
@@ -240,4 +230,16 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     // used on sustain trail itself when click happens on trail
     // click on sustain trail + drag activates SustainSelection() within the previewer object
     public void ClampSustain(int tickLength) => ParentFiveFretInstrument.UpdateSustain(Tick, laneID, tickLength);
+
+    /*
+    void IPoolable.UpdatePosition()
+    {
+        bool isHeadVisible = CalculateHeadVisibility();
+        notePieces.SetVisibility(isHeadVisible);
+
+        UpdatePosition(
+            tick: AudioManager.AudioPlaying && !isHeadVisible ? SongTime.SongPositionTicks : Tick
+            );
+        UpdateSustain(isHeadVisible);
+    } */
 }

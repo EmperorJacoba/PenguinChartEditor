@@ -30,7 +30,7 @@ public class SoloSectionLane : SpawningLane<SoloSection>
             ToList();
     }
 
-    protected override int GetNextEvent(int tick) => throw new System.NotImplementedException();
+    protected override int GetNextEventUpdate(int tick) => throw new System.NotImplementedException();
     protected override void PositiveTimeRefresh()
     {
         RefreshEventsToDisplay();
@@ -43,7 +43,7 @@ public class SoloSectionLane : SpawningLane<SoloSection>
         UpdateEvents();
     }
 
-    protected override int GetPreviousEvent(int tick)
+    protected override int GetPreviousEventUpdate(int tick)
     {
         throw new System.NotImplementedException();
     }

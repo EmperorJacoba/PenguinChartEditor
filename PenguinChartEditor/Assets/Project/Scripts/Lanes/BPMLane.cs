@@ -15,11 +15,11 @@ public class BPMLane : SpawningLane<BPMLabel>
         return Chart.SyncTrackInstrument.TempoEvents.GetRelevantTicksInRange(Waveform.startTick, Waveform.endTick); 
     }
 
-    protected override int GetNextEvent(int tick)
+    protected override int GetNextEventUpdate(int tick)
     {
         return Chart.SyncTrackInstrument.TempoEvents.GetNextTickEventInLane(tick);
     }
-    protected override int GetPreviousEvent(int tick)
+    protected override int GetPreviousEventUpdate(int tick)
     {
         return Chart.SyncTrackInstrument.TempoEvents.GetPreviousTickEventInLane(tick);
     }

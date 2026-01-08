@@ -10,7 +10,6 @@ public interface IPoolable
     Coroutine destructionCoroutine { get; set; }
     void InitializeProperties(ILane parentLane);
     void InitializeEvent(int tick);
-    void UpdatePosition();
 }
 
 public interface IPooler<T>

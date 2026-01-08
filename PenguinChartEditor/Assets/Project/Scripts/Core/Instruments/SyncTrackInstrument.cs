@@ -65,6 +65,7 @@ public class SyncTrackInstrument : IInstrument
 
     public InstrumentType InstrumentName { get; set; } = InstrumentType.synctrack;
     public DifficultyType Difficulty { get; set; } = DifficultyType.easy;
+    public HeaderType InstrumentID => HeaderType.SyncTrack;
 
     public List<int> UniqueTicks
     {

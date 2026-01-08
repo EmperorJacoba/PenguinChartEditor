@@ -50,11 +50,6 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     public abstract void InitializeEvent(int tick);
     public abstract void InitializeProperties(ILane lane);
 
-    void IPoolable.UpdatePosition()
-    {
-        UpdatePosition();
-    }
-
     public void ActivateManualInput()
     {
         if (LabelEntryBox == null) return;
