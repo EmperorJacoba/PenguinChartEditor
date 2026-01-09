@@ -592,12 +592,6 @@ public class FiveFretInstrument : IInstrument
 
     #region Sustains
 
-    // true = start sustain editing from the bottom of the note (sustain = 0)
-    // use when editing sustains from the note (root of sustain)
-    // false = start sustain editing from mouse cursor/current sustain positioning
-    // use when editing sustain from the sustain tail 
-    public static bool resetSustains = true;
-
     SustainData<FiveFretNoteData> sustainData = new();
 
     public void SustainSelection()

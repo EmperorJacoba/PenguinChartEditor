@@ -85,6 +85,11 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
             );
     }
 
+    public float GetStarpowerXCoordinate()
+    {
+        return LeftEndCoordinate - 1.5f;
+    }
+
     public int MatchXCoordinateToLane(float xCoordinate)
     {
         if (highwayDisplayType == InstrumentCategory.FiveFret)

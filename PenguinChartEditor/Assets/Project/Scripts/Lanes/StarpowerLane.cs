@@ -25,10 +25,8 @@ public class StarpowerLane : SpawningLane<StarpowerEvent>
         var lane = Chart.StarpowerInstrument.GetLaneData(laneIdentifier);
         return Mathf.Max(lane.GetPreviousTickEventInLane(tick), lane.GetFirstRelevantTick(tick));
     }
-
-    protected override void Awake()
+    protected void Start()
     {
-        base.Awake();
         laneIdentifier = parentGameInstrument.representedInstrument.InstrumentID;
     }
 }

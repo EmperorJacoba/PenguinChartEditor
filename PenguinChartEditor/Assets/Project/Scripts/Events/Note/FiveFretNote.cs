@@ -127,7 +127,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         laneID = (FiveFretInstrument.LaneOrientation)ParentLane.laneID;
 
         // do not use this with the previewer, use previewer's tick instead
-        // but this is here just in case & for the functions below
+        // but this is here for the functions below
         _tick = previewTick;
 
         UpdatePositionAsPreviewer();
@@ -152,11 +152,11 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         return true;
     }
 
-    public void UpdatePositionAsPreviewer() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate, PREVIEWER_Y_OFFSET);
-    public void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate);
-    public void UpdatePosition(int tick) => UpdatePosition(Waveform.GetWaveformRatio(tick), xCoordinate);
-    public void UpdatePosition(double percentOfTrack) => UpdatePosition(percentOfTrack, xCoordinate);
-    public void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
+    void UpdatePositionAsPreviewer() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate, PREVIEWER_Y_OFFSET);
+    void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate);
+    void UpdatePosition(int tick) => UpdatePosition(Waveform.GetWaveformRatio(tick), xCoordinate);
+    void UpdatePosition(double percentOfTrack) => UpdatePosition(percentOfTrack, xCoordinate);
+    void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
     {
         var trackProportion = (float)percentOfTrack * parentGameInstrument.HighwayLength;
         transform.localPosition = new Vector3(xPosition, yPosition, trackProportion);
@@ -190,17 +190,17 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
         if (!headOnly && AudioManager.AudioPlaying)
         {
-            notePieces.UpdateSustainLength(SongTime.SongPositionTicks, Tick + representedData.Sustain - SongTime.SongPositionTicks, transform.localPosition.z);
+            notePieces.UpdateSustainLength(SongTime.SongPositionTicks, Tick + representedData.Sustain - SongTime.SongPositionTicks);
         }
         else
         {
-            notePieces.UpdateSustainLength(Tick, representedData.Sustain, transform.localPosition.z);
+            notePieces.UpdateSustainLength(Tick, representedData.Sustain);
         }
     }
 
     void UpdateSustain(FiveFretNoteData data)
     {
-        notePieces.UpdateSustainLength(_tick, data.Sustain, transform.localPosition.z);
+        notePieces.UpdateSustainLength(_tick, data.Sustain);
     }
 
     // used on sustain trail itself when click happens on trail

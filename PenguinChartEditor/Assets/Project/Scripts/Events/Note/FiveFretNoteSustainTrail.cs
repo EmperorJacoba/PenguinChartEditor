@@ -1,18 +1,12 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class FiveFretNoteSustainTrail : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
-{
+public class FiveFretNoteSustainTrail : MonoBehaviour, IPointerDownHandler
+{ 
     [SerializeField] FiveFretNote parentNote;
-
-    public void OnPointerUp(PointerEventData pointerEventData)
-    {
-        FiveFretInstrument.resetSustains = true;
-    }
 
     public void OnPointerDown(PointerEventData pointerEventData)
     {
-        FiveFretInstrument.resetSustains = false;
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
             parentNote.ParentInstrument.ClearAllSelections();
