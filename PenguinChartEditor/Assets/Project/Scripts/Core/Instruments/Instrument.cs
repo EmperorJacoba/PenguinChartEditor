@@ -18,8 +18,7 @@ public interface IInstrument
     public void ShiftClickSelect(int tick);
     public void ClearTickFromAllSelections(int tick);
 
-    List<int> UniqueTicks { get; }
-
+    List<int> GetUniqueTickSet();
     void SetUpInputMap();
 
     string ConvertSelectionToString();
@@ -33,5 +32,10 @@ public interface IInstrument
     public ILaneData GetLaneData(int lane);
     public ILaneData GetBarLaneData();
     public ISelection GetLaneSelection(int lane);
+}
+
+public interface ISustainableInstrument
+{
+
 }
 

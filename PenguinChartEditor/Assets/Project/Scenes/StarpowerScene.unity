@@ -11047,6 +11047,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1282569102}
   m_CullTransparentMesh: 1
+--- !u!1001 &1296350973
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3086465253228726207, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -6.3522987
+      objectReference: {fileID: 0}
+    - target: {fileID: 3086465253228726207, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.009993553
+      objectReference: {fileID: 0}
+    - target: {fileID: 3086465253228726207, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.6942854
+      objectReference: {fileID: 0}
+    - target: {fileID: 3086465253228726207, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3086465253228726207, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3086465253228726207, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3086465253228726207, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3086465253228726207, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3086465253228726207, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3086465253228726207, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5029302309147462073, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+      propertyPath: m_Name
+      value: StarpowerEvent
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
 --- !u!1 &1303028514
 GameObject:
   m_ObjectHideFlags: 0
@@ -12769,7 +12826,6 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 1
   properties:
     is3D: 1
-  laneIdentifier: 0
   pooler: {fileID: 1783508471}
 --- !u!4 &1486604288
 Transform:
@@ -23299,3 +23355,4 @@ SceneRoots:
   - {fileID: 213702284}
   - {fileID: 5329738446675604874}
   - {fileID: 1465900806}
+  - {fileID: 1296350973}

@@ -31,7 +31,10 @@ public class StarpowerInstrument : IInstrument
 
     public int NoteSelectionCount => Lanes.GetTotalSelectionCount();
 
-    public List<int> UniqueTicks => Lanes.GetUniqueTickSet();
+    public List<int> GetUniqueTickSet()
+    {
+        return Lanes.GetUniqueTickSet();
+    }
 
     void SetUpLanes()
     {

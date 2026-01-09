@@ -17,7 +17,7 @@ public class SoloPlate : Event<SoloEventData>
 
         UpdatePosition(endTick);
 
-        List<int> ticks = ParentInstrument.UniqueTicks;
+        List<int> ticks = ParentInstrument.GetUniqueTickSet();
         var totalNotes = ticks.Where(x => x >= startTick && x <= endTick).Count();
         var notesHit = ticks.Where(x => x >= startTick && x <= SongTime.SongPositionTicks).Count();
 

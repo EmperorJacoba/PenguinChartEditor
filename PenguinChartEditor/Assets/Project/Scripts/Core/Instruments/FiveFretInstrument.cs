@@ -89,7 +89,10 @@ public class FiveFretInstrument : IInstrument
         };
     }
 
-    public List<int> UniqueTicks => Lanes.GetUniqueTickSet();
+    public List<int> GetUniqueTickSet()
+    {
+        return Lanes.GetUniqueTickSet();
+    }
 
     #endregion
 
@@ -220,7 +223,6 @@ public class FiveFretInstrument : IInstrument
         var movingDataSet = moveData.GetMoveData(moveData.lastLane - moveData.firstLane);
         for (int i = 0; i < Lanes.Count; i++)
         {
-            var lane = Lanes.GetLane(i);
             if (movingDataSet[i].Count > 0)
             {
                 var endTick = movingDataSet[i].Keys.Max() + moveData.lastGhostStartTick;
@@ -282,7 +284,7 @@ public class FiveFretInstrument : IInstrument
         ClampSustainsBefore(tick, lane);
         ClearAllSelections();
 
-        //Chart.InPlaceRefresh();
+        Chart.InPlaceRefresh();
     }
 
     #endregion
@@ -295,6 +297,7 @@ public class FiveFretInstrument : IInstrument
     {
         Lanes.ClearAllSelections();
         SoloData.ClearSelection();
+        Chart.InPlaceRefresh();
     }
     public bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
 
@@ -727,7 +730,7 @@ public class FiveFretInstrument : IInstrument
 
     public void ValidateSustainsInRange(int startTick, int endTick)
     {
-        var uniqueTicks = UniqueTicks;
+        var uniqueTicks = GetUniqueTickSet();
         var uniqueTicksInRange = uniqueTicks.Where(tick => tick >= startTick && tick <= endTick).ToList();
 
         if (UserSettings.ExtSustains)
@@ -857,7 +860,7 @@ public class FiveFretInstrument : IInstrument
 
     public void CheckForHoposInRange(int startTick, int endTick)
     {
-        var uniqueTicks = UniqueTicks;
+        var uniqueTicks = GetUniqueTickSet();
 
         int startIndex = uniqueTicks.BinarySearch(startTick);
 

@@ -35,7 +35,7 @@ public class SoloPreviewer : Previewer
 
     protected override void UpdatePreviewer()
     {
-        if (Chart.instance.SceneDetails.GetCursorHighwayPosition().x < parentGameInstrument.HighwayRightEndCoordinate || !UserSettings.SoloPlacingAllowed)
+        if (parentGameInstrument.GetCursorHighwayPosition().x < parentGameInstrument.HighwayRightEndCoordinate || !UserSettings.SoloPlacingAllowed)
         {
             Hide();
             return;

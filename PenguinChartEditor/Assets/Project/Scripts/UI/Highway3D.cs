@@ -100,6 +100,8 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
         throw new System.Exception("Error when matching X coordinate to a lane. Cursor is within highway bounds but not within a lane.");
     }
 
+    // Note: for these two functions (this and the one below)
+    // If highways are not centered at z = 0, then the worldPosition.z / Length will not be accurate
     public Vector3 GetCursorHighwayPosition()
     {
         PointerEventData pointerData = new(EventSystem.current)
@@ -116,10 +118,6 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
         return relevantResult.worldPosition;
     }
 
-    /// <summary>
-    /// Get the highway proportion but set the X value of the raycast to the center of the screen.
-    /// </summary>
-    /// <returns></returns>
     public float GetCursorHighwayProportion()
     {
         PointerEventData modifiedPointerData = new(EventSystem.current)
@@ -132,7 +130,9 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
 
         if (results.Count == 0) return 0;
 
-        return results[0].worldPosition.z / Length;
+        var relevantResult = results.Find(x => x.gameObject.transform.IsChildOf(transform));
+
+        return relevantResult.worldPosition.z / Length;
     }
     public void OnPointerDown(PointerEventData eventData)
     {

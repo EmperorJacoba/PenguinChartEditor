@@ -37,42 +37,6 @@ public class SceneDetails : MonoBehaviour
     public float highwayLeftEndCoordinate => -(highway.localScale.x / 2);
     public float highwayRightEndCoordinate => highway.localScale.x / 2;
 
-    public float GetCenterXCoordinateFromLane(int lane)
-    {
-        // add code to differentiate from open as sixth fret versus open as open note in this function
-
-        if (laneWidth == 0) throw new System.NullReferenceException("Lane width cannot be zero. Please set the lane width of this scene in this scene's SceneDetails game object.");
- 
-        if (currentScene == SceneType.fiveFretChart)
-        {
-            // This is to make up for the fact that LaneOrientation sets open to position 0
-            // for pitch reasons. Green is effectively lane zero but pitch says otherwise
-            var laneZeroCenterCoordinate = highwayLeftEndCoordinate + (laneWidth / 2);
-
-            // open notes are weird...
-            // if structured like 6-fret, open note is actually
-            // the lowest note (what should be lane 0), but
-            // open is lane 6 (lanes go from 0-6, green to open)
-            // so lanes need to be shifted when this mode is active
-            if (UserSettings.OpenNoteAsFret)
-            {
-                if (lane == (int)FiveFretInstrument.LaneOrientation.open) return laneZeroCenterCoordinate;
-            }
-            else // center is 0 for the bar note
-            {
-                if (lane == (int)FiveFretInstrument.LaneOrientation.open) return 0;
-                lane--;
-            }
-
-            return laneZeroCenterCoordinate + (laneWidth * lane);
-        }
-
-        throw new System.ArgumentException(
-            "You trying to get the center coordinate of a lane with a scene that has either a) not been set up properly or b) " +
-            "does not use traditional lanes (like TempoMap). Refer to SceneDetails.GetCenterXCoordinateFromLane() for more info."
-            );
-    }
-
     public int MatchXCoordinateToLane(float xCoordinate)
     {
         if (currentScene == SceneType.fiveFretChart)

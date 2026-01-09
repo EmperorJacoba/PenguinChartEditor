@@ -1401,7 +1401,6 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
-  parentGameInstrument: {fileID: 0}
   lanePooler: {fileID: 1844158015}
   laneIdentifier: 1
 --- !u!4 &143122576
@@ -4241,7 +4240,6 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
-  parentGameInstrument: {fileID: 0}
   lanePooler: {fileID: 1417207405}
   laneIdentifier: 5
 --- !u!4 &536290879
@@ -8982,7 +8980,6 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
-  parentGameInstrument: {fileID: 0}
   lanePooler: {fileID: 1432554526}
   laneIdentifier: 2
 --- !u!4 &1158524637
@@ -9920,7 +9917,6 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
-  parentGameInstrument: {fileID: 0}
   lanePooler: {fileID: 1907842689}
   laneIdentifier: 0
 --- !u!4 &1292801094
@@ -11380,7 +11376,6 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
-  parentGameInstrument: {fileID: 0}
   lanePooler: {fileID: 1255020706}
   laneIdentifier: 4
 --- !u!4 &1482099734
@@ -13433,7 +13428,6 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 0
   properties:
     is3D: 0
-  parentGameInstrument: {fileID: 0}
   pooler: {fileID: 1110686253}
 --- !u!4 &1666396268
 Transform:
@@ -13650,7 +13644,6 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
-  parentGameInstrument: {fileID: 0}
   pooler: {fileID: 1636806883}
 --- !u!4 &1708384033
 Transform:
@@ -14798,7 +14791,6 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 0
   properties:
     is3D: 1
-  parentGameInstrument: {fileID: 0}
   lanePooler: {fileID: 1233862335}
   laneIdentifier: 3
 --- !u!4 &1933190198

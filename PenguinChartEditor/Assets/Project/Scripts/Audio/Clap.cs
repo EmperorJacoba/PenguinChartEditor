@@ -42,7 +42,7 @@ public class Clap : MonoBehaviour
 
         if (firstLoop)
         {
-            cachedTicks = Chart.LoadedInstrument.UniqueTicks;
+            cachedTicks = Chart.LoadedInstrument.GetUniqueTickSet();
 
             nextPromisedClapHit = GetNextClipHit();
 

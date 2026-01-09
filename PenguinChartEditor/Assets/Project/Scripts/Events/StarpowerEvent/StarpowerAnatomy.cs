@@ -6,6 +6,7 @@ public struct StarpowerAnatomy
     [SerializeField] public bool isPreviewer;
 
     [SerializeField] public Transform sustainTail;
+    [SerializeField] public Transform trackOverlay;
 
     [SerializeField] public MeshRenderer colorMesh;
     [SerializeField] public MeshRenderer colorSphereTopperMesh;
@@ -16,5 +17,6 @@ public struct StarpowerAnatomy
         if (sustainTrackLength < 0) sustainTrackLength = 0;
 
         sustainTail.localScale = new(sustainTail.localScale.x, sustainTail.localScale.y, (float)sustainTrackLength);
+        trackOverlay.localScale = new(trackOverlay.localScale.x, trackOverlay.localScale.y, (float)sustainTrackLength);
     }
 }

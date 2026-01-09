@@ -2,7 +2,18 @@
 using UnityEngine;
 public class StarpowerLane : SpawningLane<StarpowerEvent>
 {
-    public HeaderType laneIdentifier;
+    public HeaderType laneIdentifier
+    {
+        get
+        {
+            if ((int)_li == -1)
+            {
+                _li = parentGameInstrument.representedInstrument.InstrumentID;
+            }
+            return _li;
+        }
+    }
+    private HeaderType _li = (HeaderType)(-1);
     public override int laneID => (int)laneIdentifier;
     [SerializeField] StarpowerPooler pooler;
     protected override IPooler<StarpowerEvent> Pooler => pooler;
@@ -27,6 +38,6 @@ public class StarpowerLane : SpawningLane<StarpowerEvent>
     }
     protected void Start()
     {
-        laneIdentifier = parentGameInstrument.representedInstrument.InstrumentID;
+        _li = parentGameInstrument.representedInstrument.InstrumentID;
     }
 }

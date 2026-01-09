@@ -38,7 +38,7 @@ public class FiveFretNotePreviewer : Previewer
 
     protected override void UpdatePreviewer()
     {
-        var hitPosition = Chart.instance.SceneDetails.GetCursorHighwayPosition();
+        var hitPosition = lane.parentGameInstrument.GetCursorHighwayPosition();
 
         if (!IsWithinRange(hitPosition))
         {
@@ -46,7 +46,7 @@ public class FiveFretNotePreviewer : Previewer
             return;
         }
 
-        var highwayProportion = Chart.instance.SceneDetails.GetCursorHighwayProportion();
+        var highwayProportion = lane.parentGameInstrument.GetCursorHighwayProportion();
 
         if (highwayProportion == 0)
         {
@@ -110,13 +110,9 @@ public class FiveFretNotePreviewer : Previewer
     {
         base.Awake();
 
-        FiveFretNoteKeybindManager.UpdatePreviewer += UpdatePosition;
-    }
-
-    protected void Start()
-    {
         lane = GetComponentInParent<FiveFretLane>();
         note = GetComponent<FiveFretNote>();
+        FiveFretNoteKeybindManager.UpdatePreviewer += UpdatePosition;
     }
 
     FiveFretNoteData.FlagType MapPlacementModeToFlag()

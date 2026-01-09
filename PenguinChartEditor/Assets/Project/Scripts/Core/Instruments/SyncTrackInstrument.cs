@@ -67,16 +67,13 @@ public class SyncTrackInstrument : IInstrument
     public DifficultyType Difficulty { get; set; } = DifficultyType.easy;
     public HeaderType InstrumentID => HeaderType.SyncTrack;
 
-    public List<int> UniqueTicks
+    public List<int> GetUniqueTickSet()
     {
-        get
-        {
-            var hashSet = Chart.SyncTrackInstrument.TempoEvents.ExportData().Keys.ToHashSet();
-            hashSet.UnionWith(TimeSignatureEvents.ExportData().Keys.ToHashSet());
-            List<int> list = new(hashSet);
-            list.Sort();
-            return list;
-        }
+        var hashSet = Chart.SyncTrackInstrument.TempoEvents.ExportData().Keys.ToHashSet();
+        hashSet.UnionWith(TimeSignatureEvents.ExportData().Keys.ToHashSet());
+        List<int> list = new(hashSet);
+        list.Sort();
+        return list;
     }
 
     public SyncTrackInstrument(LaneSet<BPMData> bpmEvents, LaneSet<TSData> tsEvents)
