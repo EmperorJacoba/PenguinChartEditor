@@ -305,8 +305,8 @@ public class Waveform : MonoBehaviour
     static int[] tickPositions;
     public static double GetWaveformRatio(int tick)
     {
-        if (tick < startTick) return 0;
-        if (tick > endTick) return 1;
+        if (tick < startTick) return -1; // spawn outside camera zone
+        if (tick >= endTick) return 1;
 
         int i = 0;
         while (i + 1 < tickPositions.Length && tickPositions[i+1] <= tick)
@@ -334,7 +334,7 @@ public class Waveform : MonoBehaviour
     /// Update the visible and calculated-upon waveform.
     /// </summary>
     /// <param name="stem">The stem to set to the active waveform.</param>
-    public void ChangeDisplayedWaveform(StemType stem)
+    public static void ChangeDisplayedWaveform(StemType stem)
     {
         CurrentWaveform = stem;
         GenerateWaveformPoints();

@@ -172,10 +172,23 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
             var laneDetails = GetComponentInParent<LaneDetails>();
             parentGameInstrument = laneDetails.parentGameInstrument;
         }
+
+    }
+
+    protected void OnEnable()
+    {
         Chart.InPlaceRefreshNeeded += InPlaceRefresh;
         SongTime.PositiveTimeChange += PositiveTimeRefresh;
         SongTime.NegativeTimeChange += NegativeTimeRefresh;
         AudioManager.PlaybackStateChanged += x => RefreshOnStop(x);
+    }
+
+    protected void OnDisable()
+    {
+        Chart.InPlaceRefreshNeeded -= InPlaceRefresh;
+        SongTime.PositiveTimeChange -= PositiveTimeRefresh;
+        SongTime.NegativeTimeChange -= NegativeTimeRefresh;
+        AudioManager.PlaybackStateChanged -= x => RefreshOnStop(x);
     }
 
     void RefreshOnStop(bool playing)

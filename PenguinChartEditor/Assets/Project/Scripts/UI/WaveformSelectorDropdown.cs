@@ -6,7 +6,6 @@ using UnityEngine;
 public class WaveformSelectorDropdown : MonoBehaviour
 {
     [SerializeField] TMP_Dropdown dropdown;
-    [SerializeField] Waveform waveformManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -56,11 +55,11 @@ public class WaveformSelectorDropdown : MonoBehaviour
         {
             // dropdownIndexes is used instead of just the index because the dropdown only contains stems the user has defined
             // so passed in index has to be converted to a StemType identifier 
-            waveformManager.ChangeDisplayedWaveform(dropdownIndexes[index]);
+            Waveform.ChangeDisplayedWaveform(dropdownIndexes[index]);
         }
         else
         {
-            waveformManager.ChangeDisplayedWaveform(0);
+            Waveform.ChangeDisplayedWaveform(0);
         }
     }
 }

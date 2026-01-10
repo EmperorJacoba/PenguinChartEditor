@@ -14,7 +14,6 @@ public class SliderBoxLinker : MonoBehaviour
 
     [SerializeField] Slider slider;
     [SerializeField] TMP_InputField entryBox;
-    [SerializeField] Transform highway;
 
     /// <summary>
     /// The data type that this slider + input field combo changes.
@@ -112,6 +111,7 @@ public class SliderBoxLinker : MonoBehaviour
         }
 
         UpdateValue(valueAsFloat);
+        Chart.SyncTrackInPlaceRefresh();
     }
 
     void UpdateValue(float newValue)
