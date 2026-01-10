@@ -10,14 +10,14 @@ public class GameInstrument : MonoBehaviour
     [SerializeField] Waveform waveform;
     [SerializeField] LaneDetails laneDetails;
 
-    [SerializeField] InstrumentType instrumentType;
+    [SerializeField] public HeaderType instrumentID;
     public IInstrument representedInstrument
     {
         get
         {
             if (_instRef == null)
             {
-                var instrumentCandidates = Chart.Instruments.Where(item => item.InstrumentName == instrumentType).ToList();
+                var instrumentCandidates = Chart.Instruments.Where(item => item.InstrumentID == instrumentID).ToList();
                 if (instrumentCandidates.Count == 0)
                 {
                     Debug.LogError("Instrument not found in instrument database.");

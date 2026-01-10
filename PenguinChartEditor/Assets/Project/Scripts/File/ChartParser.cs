@@ -53,7 +53,7 @@ public static class ChartParser
     static void ProcessEventGroup(ChartEventGroup eventGroup)
     {
         if (eventGroup == null) return;
-        switch (eventGroup.EventGroupIdentifier)
+        switch (eventGroup.InstrumentID)
         {
             case HeaderType.SyncTrack: // required (needs exception handling)
                 syncTrackInstrument = new SyncTrackInstrument(eventGroup.data);
@@ -116,7 +116,7 @@ public static class ChartParser
         ChartEventGroup identifiedSection = new((HeaderType)enumObject);
 
         if (chartAsLines[lineIndex + 1] != "{") // line with { to mark beginning of section
-            throw new ArgumentException($"{identifiedSection.EventGroupIdentifier} is not enclosed properly. {HELPFUL_REMINDER}");
+            throw new ArgumentException($"{identifiedSection.InstrumentID} is not enclosed properly. {HELPFUL_REMINDER}");
 
         lineIndex += 2; // line with first bit of data
 
@@ -133,7 +133,7 @@ public static class ChartParser
 
             var formattedKVP = new KeyValuePair<int, string>(tick, parts[1]);
 
-            if (TryGetStarpowerEvent(formattedKVP, identifiedSection.EventGroupIdentifier, out RawStarpowerEvent @event))
+            if (TryGetStarpowerEvent(formattedKVP, identifiedSection.InstrumentID, out RawStarpowerEvent @event))
             {
                 rawStarpowerEvents.Add(@event);
             }
@@ -287,10 +287,10 @@ public static class ChartParser
     #region Instruments
     static IInstrument ParseInstrumentGroup(ChartEventGroup chartEventGroup)
     {
-        switch (chartEventGroup.GetInstrumentGroup())
+        switch (InstrumentMetadata.GetInstrumentGroup(chartEventGroup.InstrumentID))
         {
             case InstrumentCategory.FiveFret:
-                return new FiveFretInstrument(chartEventGroup.EventGroupIdentifier, chartEventGroup.data);
+                return new FiveFretInstrument(chartEventGroup.InstrumentID, chartEventGroup.data);
             case InstrumentCategory.FourLaneDrums:
                 // parse drums
                 break;
@@ -316,39 +316,12 @@ public static class ChartParser
 /// </summary>
 class ChartEventGroup
 {
-    public InstrumentCategory GetInstrumentGroup()
-    {
-        return (int)EventGroupIdentifier switch
-        {
-            < 10 => InstrumentCategory.None,
-            < 100 => InstrumentCategory.FiveFret,
-            < 1000 => InstrumentCategory.FourLaneDrums,
-            < 10000 => InstrumentCategory.GHL,
-            < 100000 => InstrumentCategory.Vox,
-            _ => throw new ArgumentException("Tried to get invalid instrument group.")
-        };
-    }
-
-    public DifficultyType GetDifficulty() => GetDifficulty(EventGroupIdentifier);
-
-    public static DifficultyType GetDifficulty(HeaderType instrumentID)
-    {
-        return ((int)instrumentID % 10) switch
-        {
-            0 => DifficultyType.easy,
-            1 => DifficultyType.medium,
-            2 => DifficultyType.hard,
-            3 => DifficultyType.expert,
-            _ => throw new ArgumentException("Tried to get invalid instrument difficulty.")
-        };
-    }
-
-    public HeaderType EventGroupIdentifier;
+    public HeaderType InstrumentID;
     public List<KeyValuePair<int, string>> data;
 
     public ChartEventGroup(HeaderType identifier)
     {
-        EventGroupIdentifier = identifier;
+        InstrumentID = identifier;
     }
 }
 

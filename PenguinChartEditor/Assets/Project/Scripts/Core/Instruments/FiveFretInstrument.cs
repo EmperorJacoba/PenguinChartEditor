@@ -104,7 +104,7 @@ public class FiveFretInstrument : IInstrument
         SoloData = new();
 
         InstrumentName = IdentifyInstrument(instrumentID);
-        Difficulty = ChartEventGroup.GetDifficulty(instrumentID);
+        Difficulty = InstrumentMetadata.GetDifficulty(instrumentID);
 
         AddChartFormattedEventsToInstrument(instrumentInfo);
 
