@@ -36,6 +36,18 @@ public class StarpowerLane : SpawningLane<StarpowerEvent>
         var lane = Chart.StarpowerInstrument.GetLaneData(laneIdentifier);
         return Mathf.Max(lane.GetPreviousTickEventInLane(tick), lane.GetFirstRelevantTick(tick));
     }
+
+    // Use this instead of querying starpower's LaneSet<> to avoid making repeated (expensive) calls to GetNext
+    public bool IsTickWithinStarpowerNote(int tick)
+    {
+        foreach (var eventTick in eventsToDisplay)
+        {
+            var data = Chart.StarpowerInstrument.GetLaneData(laneIdentifier)[eventTick];
+            if (tick >= eventTick && tick < eventTick + data.Sustain) return true;
+        }
+        return false;
+    }
+
     protected void Start()
     {
         _li = parentGameInstrument.representedInstrument.InstrumentID;

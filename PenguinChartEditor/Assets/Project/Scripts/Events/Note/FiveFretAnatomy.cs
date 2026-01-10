@@ -21,12 +21,16 @@ public struct FiveFretAnatomy
     [SerializeField] public GameObject strumTopper;
     [SerializeField] public GameObject tapTopper;
 
-    public void ChangeColor(FiveFretInstrument.LaneOrientation newLane, bool isTap)
+    public void ChangeColor(FiveFretInstrument.LaneOrientation newLane, bool isTap, bool isStarpower)
     {
         if (colorPalette == null) return;
 
-        noteColorMesh.material = isPreviewer ? colorPalette.GetPreviewerMat(false) : colorPalette.GetNoteMaterial((int)newLane, isTap);
-        sustainColorMesh.material = isPreviewer ? colorPalette.GetPreviewerMat(false) : colorPalette.GetNoteMaterial((int)newLane, isTap);
+        noteColorMesh.material = isPreviewer ? colorPalette.GetPreviewerMat(false) : colorPalette.GetNoteMaterial((int)newLane, isTap, isStarpower);
+        sustainColorMesh.material = isPreviewer ? colorPalette.GetPreviewerMat(false) : colorPalette.GetNoteMaterial((int)newLane, isTap: false, isStarpower);
+        if (newLane == FiveFretInstrument.LaneOrientation.open)
+        {
+            hopoTopper.GetComponent<MeshRenderer>().material = isStarpower ? colorPalette.starpowerHopoColor : colorPalette.normalHopoColor;
+        }
     }
 
     public void ChangeHopo(bool status)
@@ -35,18 +39,18 @@ public struct FiveFretAnatomy
         hopoTopper.SetActive(status);
     }
 
-    public void ChangeTap(FiveFretInstrument.LaneOrientation lane, bool status)
+    public void ChangeTap(FiveFretInstrument.LaneOrientation lane, bool isTap, bool isStarpower)
     {
-        noteColorMesh.material = isPreviewer ? colorPalette.GetPreviewerMat(status) : colorPalette.GetNoteMaterial((int)lane, status);
+        noteColorMesh.material = isPreviewer ? colorPalette.GetPreviewerMat(isTap) : colorPalette.GetNoteMaterial((int)lane, isTap, isStarpower);
 
         // this script is also on opens
         // opens do not have head borders and thus borders will be null
         if (headBorderMesh != null)
         {
-            headBorderMesh.material = colorPalette.GetHeadColor(status);
+            headBorderMesh.material = colorPalette.GetHeadColor(isTap);
         }
-        strumTopper.SetActive(!status);
-        tapTopper.SetActive(status);
+        strumTopper.SetActive(!isTap);
+        tapTopper.SetActive(isTap);
     }
 
     public void ChangeDefault(bool status)

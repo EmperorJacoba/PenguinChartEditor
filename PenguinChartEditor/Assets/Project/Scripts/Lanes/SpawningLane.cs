@@ -28,7 +28,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     }
     private IPreviewer previewer;
 
-    List<int> eventsToDisplay;
+    protected List<int> eventsToDisplay { get; private set; }
     protected void UpdateEvents()
     {
         var objectPool = Pooler.GetObjectPool(eventsToDisplay.Count, this);

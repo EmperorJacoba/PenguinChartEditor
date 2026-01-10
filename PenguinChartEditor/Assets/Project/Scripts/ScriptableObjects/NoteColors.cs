@@ -5,11 +5,18 @@ using UnityEngine;
 public class NoteColors : ScriptableObject
 {
     [SerializeField] List<ColorPairing> noteColorMaterials = new();
-    public Material GetNoteMaterial(int lane, bool tap)
+    public Material GetNoteMaterial(int lane, bool isTap, bool isStarpower)
     {
         if (noteColorMaterials.Count > lane)
         {
-            return tap ? noteColorMaterials[lane].tapMat : noteColorMaterials[lane].normalMat;
+            if (isTap)
+            {
+                return isStarpower ? overdriveTapColor : noteColorMaterials[lane].tapMat;
+            }
+            else
+            {
+                return isStarpower ? overdriveColor : noteColorMaterials[lane].normalMat;
+            }
         }
         else
         {
@@ -28,6 +35,13 @@ public class NoteColors : ScriptableObject
     [SerializeField] Material previewerTapColor;
     [SerializeField] Material defaultBaseColor;
     [SerializeField] Material nonDefaultBaseColor;
+
+    [SerializeField] Material overdriveColor;
+    [SerializeField] Material overdriveTapColor;
+
+    // This is used exclusively for open notes, because their color and hopo identifying parts are the same.
+    public Material starpowerHopoColor;
+    public Material normalHopoColor;
 
     public Material GetHeadColor(bool tap)
     {

@@ -28,7 +28,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             if (_li == value) return;
 
-            notePieces.ChangeColor(value, IsTap);
+            notePieces.ChangeColor(value, IsTap, IsOverdrive);
 
             _li = value;
             CacheDataReferences();
@@ -70,10 +70,11 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         get => _isTap;
         set
         {
-            if (_isTap == value) return;
+            if (_isTap == value && !tapStarpowerColorRefreshNeeded) return;
 
-            notePieces.ChangeTap(laneID, value);
+            notePieces.ChangeTap(laneID, value, IsOverdrive);
             _isTap = value;
+            tapStarpowerColorRefreshNeeded = false;
         }
     }
     bool _isTap = false;
@@ -90,6 +91,25 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
     }
     bool _isDefault = true;
+
+    public bool IsOverdrive
+    {
+        get
+        {
+            return _isStarpower;
+        }
+        set
+        {
+            if (_isStarpower == value) return;
+
+            _isStarpower = value;
+            notePieces.ChangeColor(laneID, IsTap, IsOverdrive);
+
+            tapStarpowerColorRefreshNeeded = true;
+        }
+    }
+    bool _isStarpower = false;
+    bool tapStarpowerColorRefreshNeeded = false;
 
     public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
     public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
@@ -121,6 +141,15 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         SetVisualProperties(representedData);
     }
 
+
+    void SetVisualProperties(FiveFretNoteData data)
+    {
+        IsOverdrive = parentGameInstrument.IsTickStarpower(Tick);
+        IsHopo = (data.Flag == FiveFretNoteData.FlagType.hopo);
+        IsTap = (data.Flag == FiveFretNoteData.FlagType.tap);
+        IsDefault = data.Default;
+    }
+
     public void InitializeEventAsPreviewer(FiveFretLane parentLane, int previewTick, FiveFretNoteData previewData)
     {
         ParentLane = parentLane;
@@ -133,13 +162,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         UpdatePositionAsPreviewer();
         UpdateSustain(previewData);
         SetVisualProperties(previewData);
-    }
-
-    void SetVisualProperties(FiveFretNoteData data)
-    {
-        IsHopo = (data.Flag == FiveFretNoteData.FlagType.hopo);
-        IsTap = (data.Flag == FiveFretNoteData.FlagType.tap);
-        IsDefault = data.Default;
     }
 
     bool CalculateHeadVisibility()

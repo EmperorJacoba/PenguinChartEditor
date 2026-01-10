@@ -31,3 +31,7 @@ MonoBehaviour:
   previewerTapColor: {fileID: 2100000, guid: 223f6f4ffc56d7643b985e941a22c37f, type: 2}
   defaultBaseColor: {fileID: 2100000, guid: c9ea49d8024d3f043a0296a6e48bd4f3, type: 2}
   nonDefaultBaseColor: {fileID: 2100000, guid: 51b8ac8e455cf4c4688671b2fe069b0a, type: 2}
+  overdriveColor: {fileID: 2100000, guid: 322a366ae2ba41b40a69d7fb5cc9e353, type: 2}
+  overdriveTapColor: {fileID: 2100000, guid: 17a9bf206ca960d4a998edec0ad7cb71, type: 2}
+  starpowerHopoColor: {fileID: 2100000, guid: dfd85b05fad29454491e2b721611f5d6, type: 2}
+  normalHopoColor: {fileID: 2100000, guid: 5b97a6ca6efb0f54d9cd1082b40d71a9, type: 2}

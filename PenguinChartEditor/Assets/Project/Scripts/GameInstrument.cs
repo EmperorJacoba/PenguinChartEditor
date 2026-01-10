@@ -8,6 +8,7 @@ public class GameInstrument : MonoBehaviour
     // inject via strikeline script itself
     public IStrikeline strikeline;
     [SerializeField] Waveform waveform;
+    [SerializeField] LaneDetails laneDetails;
 
     [SerializeField] InstrumentType instrumentType;
     public IInstrument representedInstrument
@@ -29,6 +30,19 @@ public class GameInstrument : MonoBehaviour
     }
     IInstrument _instRef;
 
+    public StarpowerLane StarpowerLane
+    {
+        get
+        {
+            if (_sLane == null)
+            {
+                _sLane = laneDetails.transform.GetComponentsInChildren<StarpowerLane>()[0];
+            }
+            return _sLane;
+        }
+    }
+    StarpowerLane _sLane;
+
     public float HighwayLength => highway.Length;
     public float GetCenterXCoordinateFromLane(int lane) => highway.GetCenterXCoordinateFromLane(lane);
     public float GetStarpowerXCoordinate() => highway.GetStarpowerXCoordinate();
@@ -40,4 +54,10 @@ public class GameInstrument : MonoBehaviour
     public Vector3 HighwayTransformProperties => highway.transform.localPosition;
     public Vector3 HighwayGlobalTransformProperties => highway.transform.position;
     public Vector3 HighwayLocalScaleProperties => highway.transform.localScale;
+
+    public bool IsTickStarpower(int tick)
+    {
+        if (Chart.LoadedInstrument != Chart.StarpowerInstrument) return false;
+        return StarpowerLane.IsTickWithinStarpowerNote(tick);
+    }
 }
