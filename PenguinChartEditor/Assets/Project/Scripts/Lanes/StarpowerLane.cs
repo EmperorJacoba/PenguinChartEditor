@@ -23,12 +23,19 @@ public class StarpowerLane : SpawningLane<StarpowerEvent>
     protected override List<int> GetEventsToDisplay()
     {
         var workingLane = Chart.StarpowerInstrument.GetLaneData(laneIdentifier);
-        return workingLane.GetRelevantTicksInRange(Waveform.startTick, Waveform.endTick);
+        var @out =  workingLane.GetRelevantTicksInRange(Waveform.startTick, Waveform.endTick);
+        return @out;
     }
 
     protected override int GetNextEventUpdate(int tick)
     {
-        return Chart.StarpowerInstrument.GetLaneData(laneIdentifier).GetNextTickEventInLane(tick);
+        var targetLane = Chart.StarpowerInstrument.GetLaneData(laneIdentifier);
+        var targetTick = targetLane.GetNextTickEventInLane(tick, inclusive: true);
+        if (targetTick == tick)
+        {
+            return targetLane[targetTick].Sustain + tick;
+        }
+        return targetTick;
     }
 
     protected override int GetPreviousEventUpdate(int tick)

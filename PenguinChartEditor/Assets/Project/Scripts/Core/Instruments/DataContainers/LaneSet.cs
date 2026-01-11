@@ -355,11 +355,6 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         if (startIndex < 0) startIndex = ~startIndex;
         if (endIndex < 0) endIndex = ~endIndex - 1;
 
-        if (startIndex == tickList.Count || endIndex < 0)
-        {
-            return new();
-        }
-
         int sustainCandidateTick = startIndex == 0 ? tickList[startIndex] : tickList[startIndex - 1];
 
         if (this[sustainCandidateTick] is ISustainable tickSustainData)
@@ -368,6 +363,11 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
             {
                 startIndex = startIndex == 0 ? startIndex : startIndex - 1;
             }
+        }
+
+        if (startIndex == tickList.Count || endIndex < 0)
+        {
+            return new();
         }
 
         var finalList = tickList.GetRange(startIndex, (endIndex + 1) - startIndex);

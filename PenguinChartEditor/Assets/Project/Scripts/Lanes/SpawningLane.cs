@@ -93,13 +93,13 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         if (GetListStartRefreshPoint() > startUpdateTick)
         {
             RefreshEventsToDisplay();
-            startUpdateTick = eventsToDisplay.Count > 0 ? eventsToDisplay[0] : GetNextEventUpdate(GetListStartRefreshPoint());
+            startUpdateTick = eventsToDisplay.Count > 0 ? GetNextEventUpdate(eventsToDisplay[0]) : GetNextEventUpdate(GetListStartRefreshPoint());
         }
 
         if (Waveform.endTick >= endUpdateTick)
         {
             RefreshEventsToDisplay();
-            endUpdateTick = GetNextEventUpdate(eventsToDisplay.Count > 0 ? eventsToDisplay[^1] : GetListStartRefreshPoint());
+            endUpdateTick = GetNextEventUpdate(eventsToDisplay.Count > 0 ? GetNextEventUpdate(eventsToDisplay[^1]) : GetListStartRefreshPoint());
         }
 
         UpdateEvents();

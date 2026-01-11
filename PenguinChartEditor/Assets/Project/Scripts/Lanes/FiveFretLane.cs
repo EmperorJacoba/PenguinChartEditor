@@ -18,7 +18,13 @@ public class FiveFretLane : SpawningLane<FiveFretNote>
 
     protected override int GetNextEventUpdate(int tick)
     {
-        return parentGameInstrument.representedInstrument.GetLaneData((int)laneIdentifier).GetNextTickEventInLane(tick);
+        var targetLane = (LaneSet<FiveFretNoteData>)parentGameInstrument.representedInstrument.GetLaneData((int)laneIdentifier);
+        var targetTick = targetLane.GetNextTickEventInLane(tick, inclusive: true);
+        if (targetTick == tick)
+        {
+            return targetLane[targetTick].Sustain + tick;
+        }
+        return targetTick;
     }
 
     protected override int GetPreviousEventUpdate(int tick)
