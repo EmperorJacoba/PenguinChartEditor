@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 
 /// <summary>
 /// Difficulty choices for a given instrument (e.g. E, M, H, X)
@@ -19,6 +17,7 @@ public enum InstrumentCategory
     None = 1,
     FiveFret = 10,
     FourLaneDrums = 100,
+    EliteDrums = 110,
     GHL = 1000,
     Vox = 10000
 }
@@ -33,15 +32,17 @@ public enum InstrumentType
     starpower = 3,
     guitar = 10,
     coopGuitar = 20,
-    rhythm = 30,
-    bass = 40,
+    bass = 30,
+    rhythm = 40,
     keys = 50,
     drums = 100,
+    eliteDrums = 110,
     ghlGuitar = 1000,
-    ghlCoop = 1010,
-    ghlBass = 1020,
+    ghlBass = 1010,
+    ghlCoop = 1020,
     ghlRhythm = 1030,
-    vox = 10000
+    vox = 10000,
+    harmonies = 10010
 }
 
 /// <summary>
@@ -178,6 +179,20 @@ public enum HeaderType
 
     // ---- //
 
+    [InstrumentInformation("Easy Elite Drums")]
+    EasyEliteDrums = 110,
+
+    [InstrumentInformation("Medium Elite Drums")]
+    MediumEliteDrums = 111,
+
+    [InstrumentInformation("Hard Elite Drums")]
+    HardEliteDrums = 112,
+
+    [InstrumentInformation("Expert Elite Drums")]
+    ExpertEliteDrums = 113,
+
+    // ---- //
+
     [InstrumentInformation("Easy GHL Guitar")]
     EasyGHLGuitar = 1000,
 
@@ -265,7 +280,8 @@ public static class InstrumentMetadata
         {
             < 10 => InstrumentCategory.None,
             < 100 => InstrumentCategory.FiveFret,
-            < 1000 => InstrumentCategory.FourLaneDrums,
+            < 110 => InstrumentCategory.FourLaneDrums,
+            < 120 => InstrumentCategory.EliteDrums,
             < 10000 => InstrumentCategory.GHL,
             < 100000 => InstrumentCategory.Vox,
             _ => throw new ArgumentException("Tried to get invalid instrument group.")
@@ -281,6 +297,47 @@ public static class InstrumentMetadata
             2 => DifficultyType.hard,
             3 => DifficultyType.expert,
             _ => throw new ArgumentException("Tried to get invalid instrument difficulty.")
+        };
+    }
+
+    public static string GetDifficultyAbbreviation(DifficultyType difficultyType)
+    {
+        return (difficultyType) switch
+        {
+            DifficultyType.easy => "E",
+            DifficultyType.medium => "M",
+            DifficultyType.hard => "H",
+            DifficultyType.expert => "X",
+            _ => throw new ArgumentException("Tried to get invalid instrument difficulty string.")
+        };
+    }
+
+    public static string GetDifficultyAbbreviation(HeaderType header) => GetDifficultyAbbreviation(GetDifficulty(header));
+
+    public static InstrumentType GetInstrumentType(HeaderType instrumentID)
+    {
+        return ((int)instrumentID) switch
+        {
+            1 => InstrumentType.synctrack,
+            < 20 => InstrumentType.guitar,
+            < 30 => InstrumentType.coopGuitar,
+            < 40 => InstrumentType.rhythm,
+            < 50 => InstrumentType.bass,
+            < 60 => InstrumentType.keys,
+            < 110 => InstrumentType.drums,
+            < 120 => InstrumentType.eliteDrums,
+            < 1010 => InstrumentType.ghlGuitar,
+            < 1020 => InstrumentType.ghlBass,
+            < 1030 => InstrumentType.ghlCoop,
+            < 1040 => InstrumentType.ghlRhythm,
+            < 10010 => InstrumentType.vox,
+            < 10020 => InstrumentType.harmonies,
+            _ => throw new ArgumentException(
+            $"Tried to get invalid/uninitialized instrument type." +
+            $" Please ensure that InstrumentType, InstrumentCategory, " +
+            $"HeaderType, and InstrumentMetadata (and InstrumentIconMatchup) " +
+            $"are properly updated to support your new instrument. " +
+            $"Check Scripts/Core/CommonTypes.cs for more information.")
         };
     }
 }

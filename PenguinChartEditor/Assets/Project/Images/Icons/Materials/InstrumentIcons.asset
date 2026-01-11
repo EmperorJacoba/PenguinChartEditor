@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d445c55e241d37e4eb87a133c06d689d, type: 3}
+  m_Name: InstrumentIcons
+  m_EditorClassIdentifier: 
+  icons:
+  - instrumentID: 10
+    icon: {fileID: 2100000, guid: a452d6cdc517d79469e167fb05247750, type: 2}
+  - instrumentID: 20
+    icon: {fileID: 2100000, guid: 0466e3967d4d3a349b4ff13163339211, type: 2}
+  - instrumentID: 30
+    icon: {fileID: 2100000, guid: b4477adbab6988b40bb551292910bc75, type: 2}
+  - instrumentID: 40
+    icon: {fileID: 2100000, guid: caabeb1001648634e943ababdc01c21c, type: 2}
+  - instrumentID: 50
+    icon: {fileID: 2100000, guid: bfca212c1cb5e674bae3bd07fbfec162, type: 2}
+  - instrumentID: 100
+    icon: {fileID: 2100000, guid: edec7428e685a68449127ed6176e907f, type: 2}
+  - instrumentID: 110
+    icon: {fileID: 2100000, guid: 5d0deb0389c3e7e48aab334d41d4be40, type: 2}
+  - instrumentID: 10000
+    icon: {fileID: 2100000, guid: 5a93f5375a8e335489dcd4a8f7081912, type: 2}
+  - instrumentID: 10010
+    icon: {fileID: 2100000, guid: e1644ca6875a7cc4c85e2d25bd462034, type: 2}

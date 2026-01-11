@@ -258,8 +258,10 @@ public class AudioManager : MonoBehaviour
 
     #region Audio Editing
 
+    public static float currentAudioSpeed = 1;
     public static void ChangeAudioSpeed(float newSpeed)
     {
+        currentAudioSpeed = newSpeed;
         foreach (var stream in StemStreams)
         {
             Bass.BASS_ChannelSetAttribute(StemStreams[stream.Key], BASSAttribute.BASS_ATTRIB_FREQ, Bass.BASS_ChannelGetInfo(StemStreams[stream.Key]).freq * newSpeed);

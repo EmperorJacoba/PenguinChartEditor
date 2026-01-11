@@ -40,7 +40,7 @@ public class NoteReceiver : MonoBehaviour
     bool firstLoop = true;
     IEnumerator StopSustainAfterLength(int tick, int sustainLength)
     {
-        var lengthSeconds = Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(SongTime.SongPositionTicks, tick + sustainLength);
+        var lengthSeconds = Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(SongTime.SongPositionTicks, tick + sustainLength) * AudioManager.currentAudioSpeed;
         yield return new WaitForSeconds((float)lengthSeconds);
         if (AudioManager.AudioPlaying) PlayFall();
     }
