@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// An individual track selection line in InstrumentAddBox.
+/// </summary>
 public class InstrumentTrackAdder : MonoBehaviour
 {
     InstrumentAddBox parentBox;

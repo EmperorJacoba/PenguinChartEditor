@@ -1,6 +1,9 @@
 using UnityEngine;
 using TMPro;
 
+/// <summary>
+/// The label displaying the instrument & difficulty corresponding to a track in multi-track (starpower) mode.
+/// </summary>
 [RequireComponent(typeof(MeshRenderer))]
 public class GameInstrumentIconLabel : MonoBehaviour
 {

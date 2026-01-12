@@ -644,7 +644,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3692369567323168534}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 077775983fa163f42ac17b4e50f91a0d, type: 3}
+  m_Script: {fileID: 11500000, guid: 43b103d9fbfbcb64cab9453464125b7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentIconLabel: {fileID: 1252827855185764702}
@@ -770,7 +770,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4454792638849531929}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 566dd1f73b1594944a7f499000c39652, type: 3}
+  m_Script: {fileID: 11500000, guid: ef73d24335511344c947838af66e9f45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentIconLabel: {fileID: 1252827855185764702}
@@ -962,7 +962,7 @@ GameObject:
   - component: {fileID: 2386939277157761079}
   - component: {fileID: 3303407889302666860}
   - component: {fileID: 4611514576897519843}
-  - component: {fileID: 5028644798008032198}
+  - component: {fileID: 1659050284094272832}
   m_Layer: 8
   m_Name: MoveTrackLeftButton
   m_TagString: Untagged
@@ -1062,7 +1062,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &5028644798008032198
+--- !u!114 &1659050284094272832
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1071,7 +1071,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6114696716083570691}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 077775983fa163f42ac17b4e50f91a0d, type: 3}
+  m_Script: {fileID: 11500000, guid: 43b103d9fbfbcb64cab9453464125b7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentIconLabel: {fileID: 1252827855185764702}

@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Pop-up box when clicking the green plus in multi-track (starpower) mode. Singleton.
+/// </summary>
 public class InstrumentAddBox : MonoBehaviour
 {
     public static InstrumentAddBox instance;
