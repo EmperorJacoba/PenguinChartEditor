@@ -274,6 +274,11 @@ public static class InstrumentMetadata
         return GetAttributeOnInstrumentID(instrumentID).Name;
     }
 
+    public static HeaderType GetHeader(InstrumentType instrument, DifficultyType difficulty)
+    {
+        return (HeaderType)((int)instrument + (int)difficulty);
+    }
+
     public static InstrumentCategory GetInstrumentGroup(HeaderType headerType)
     {
         return (int)headerType switch
@@ -321,8 +326,8 @@ public static class InstrumentMetadata
             1 => InstrumentType.synctrack,
             < 20 => InstrumentType.guitar,
             < 30 => InstrumentType.coopGuitar,
-            < 40 => InstrumentType.rhythm,
-            < 50 => InstrumentType.bass,
+            < 40 => InstrumentType.bass,
+            < 50 => InstrumentType.rhythm,
             < 60 => InstrumentType.keys,
             < 110 => InstrumentType.drums,
             < 120 => InstrumentType.eliteDrums,

@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class InstrumentIcons : ScriptableObject
 {
-    [SerializeField] List<Penguin.InstrumentIconMatchup.InstrumentIcon> icons;
+    [SerializeField] List<Penguin.InstrumentIconMatchup.InstrumentIcon<Material>> icons;
 
     public Material GetInstrumentIcon(HeaderType instrumentID)
     {
@@ -17,10 +17,10 @@ public class InstrumentIcons : ScriptableObject
 namespace Penguin.InstrumentIconMatchup
 {
     [System.Serializable]
-    public struct InstrumentIcon
+    public struct InstrumentIcon<T>
     {
         public InstrumentType instrumentID;
-        public Material icon;
+        public T icon;
     }
 }
 

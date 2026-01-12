@@ -17,9 +17,9 @@ MonoBehaviour:
     icon: {fileID: 2100000, guid: a452d6cdc517d79469e167fb05247750, type: 2}
   - instrumentID: 20
     icon: {fileID: 2100000, guid: 0466e3967d4d3a349b4ff13163339211, type: 2}
-  - instrumentID: 30
-    icon: {fileID: 2100000, guid: b4477adbab6988b40bb551292910bc75, type: 2}
   - instrumentID: 40
+    icon: {fileID: 2100000, guid: b4477adbab6988b40bb551292910bc75, type: 2}
+  - instrumentID: 30
     icon: {fileID: 2100000, guid: caabeb1001648634e943ababdc01c21c, type: 2}
   - instrumentID: 50
     icon: {fileID: 2100000, guid: bfca212c1cb5e674bae3bd07fbfec162, type: 2}
