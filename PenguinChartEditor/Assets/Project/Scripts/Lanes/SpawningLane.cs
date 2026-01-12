@@ -175,20 +175,21 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
 
     }
 
+    AudioManager.PlayingDelegate playbackAction;
     protected void OnEnable()
     {
+        playbackAction = x => RefreshOnStop(x);
         Chart.InPlaceRefreshNeeded += InPlaceRefresh;
         SongTime.PositiveTimeChange += PositiveTimeRefresh;
         SongTime.NegativeTimeChange += NegativeTimeRefresh;
-        AudioManager.PlaybackStateChanged += x => RefreshOnStop(x);
+        AudioManager.PlaybackStateChanged += playbackAction;
     }
-
     protected void OnDisable()
     {
         Chart.InPlaceRefreshNeeded -= InPlaceRefresh;
         SongTime.PositiveTimeChange -= PositiveTimeRefresh;
         SongTime.NegativeTimeChange -= NegativeTimeRefresh;
-        AudioManager.PlaybackStateChanged -= x => RefreshOnStop(x);
+        AudioManager.PlaybackStateChanged -= playbackAction;
     }
 
     void RefreshOnStop(bool playing)

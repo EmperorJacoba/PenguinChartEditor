@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -146,19 +147,25 @@ public class Waveform : MonoBehaviour
     /// </summary>
     public static void InitializeWaveformData()
     {
-        WaveformData = new();
-        Parallel.ForEach(Chart.Metadata.StemPaths.Keys, item => UpdateWaveformData(item));
+        ConcurrentDictionary<StemType, StemWaveformData> threadSafeDict = new();
+        Parallel.ForEach(Chart.Metadata.StemPaths.Keys, item =>
+        {
+            var kvp = UpdateWaveformData(item);
+            threadSafeDict.AddOrUpdate(kvp.Key, kvp.Value, (key, value) => value);
+        });
+
+        WaveformData = threadSafeDict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
 
     /// <summary>
     /// Update waveform data to a new audio file.
     /// </summary>
     /// <param name="stem">The BASS stream to get audio samples of.</param>
-    static void UpdateWaveformData(StemType stem) // pass in file path here later
+    static KeyValuePair<StemType, StemWaveformData> UpdateWaveformData(StemType stem) // pass in file path here later
     {
         float[] stemWaveformData = AudioManager.GetAudioSamples(stem, out long bytesPerSample);
 
-        WaveformData.Add(stem, new(stemWaveformData, bytesPerSample));
+        return new(stem, new(stemWaveformData, bytesPerSample));
     }
 
     #endregion

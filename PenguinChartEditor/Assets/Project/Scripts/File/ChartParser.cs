@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,7 +27,7 @@ public static class ChartParser
     static SyncTrackInstrument syncTrackInstrument;
     static List<RawStarpowerEvent> rawStarpowerEvents = new();
     static Metadata metadata;
-    static List<IInstrument> instruments = new();
+    static ConcurrentBag<IInstrument> instruments = new();
 
     // note: chart resolution is set within FormatEventSections so that SyncTrack can use it via Chart.Resolution
     public static void ParseChart(string filePath)
@@ -44,7 +45,7 @@ public static class ChartParser
 
         Chart.ApplyFileInformation(
             metadata,
-            instruments,
+            instruments.ToList(),
             syncTrackInstrument,
             starpower
             );
@@ -72,7 +73,7 @@ public static class ChartParser
 
     #region Event Section Setup
 
-    static List<ChartEventGroup> FormatEventSections(string[] chartAsLines)
+    static ConcurrentBag<ChartEventGroup> FormatEventSections(string[] chartAsLines)
     {
         // "[" begins a section header => begins a section of interest to parse (details are validated later)
         List<int> sectionHeaderCandidates = Enumerable.Range(0, chartAsLines.Length).Where(i => chartAsLines[i].Contains("[")).ToList();
@@ -80,7 +81,6 @@ public static class ChartParser
         if (sectionHeaderCandidates.Count == 0)
             throw new ArgumentException("Invalid chart file. There are no event blocks within the file!");
 
-        List<ChartEventGroup> identifiedSections = new();
 
         // song data is processed seperately (string, string) vs (int, string) with all other sections
         // get it done first to get resolution handled => essential for sync track and others
@@ -92,6 +92,8 @@ public static class ChartParser
             Chart.Resolution = GetChartResolution(songData);
             metadata = ParseSongMetadata(songData);
         }
+
+        ConcurrentBag<ChartEventGroup> identifiedSections = new();
 
         Parallel.ForEach(sectionHeaderCandidates, item => identifiedSections.Add(InitializeEventGroup(item, chartAsLines)));
 

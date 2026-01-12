@@ -33,6 +33,8 @@ public class InstrumentAddBox : MonoBehaviour
             }
         }
 
+        instrumentData = instrumentData.OrderBy(x => (int)x.name).ToList();
+
         foreach (var foundInstrument in instrumentData)
         {
             var trackAdder = Instantiate(instrumentTrackAdderPrefab, scrollViewContentTransform);

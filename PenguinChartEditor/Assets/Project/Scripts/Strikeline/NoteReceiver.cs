@@ -24,7 +24,7 @@ public class NoteReceiver : MonoBehaviour
 
     void PlayIdle()
     {
-        animator.Play("Idle", 0, 0);
+        if (animator != null) animator.Play("Idle", 0, 0);
     }
 
     void PlayFall()
@@ -56,11 +56,15 @@ public class NoteReceiver : MonoBehaviour
     {
         activeDelegateAction = x => ToggleNoteReceivers(x);
         AudioManager.PlaybackStateChanged += activeDelegateAction;
+
+        ToggleNoteReceivers(AudioManager.AudioPlaying);
     }
 
     private void OnDisable()
     {
-        activeDelegateAction -= activeDelegateAction;
+        AudioManager.PlaybackStateChanged -= activeDelegateAction;
+        SongTime.TimeChanged -= CheckForNoteHit;
+        SongTime.TimeChanged -= CheckForNoteHit;
     }
 
     void ToggleNoteReceivers(bool state)
