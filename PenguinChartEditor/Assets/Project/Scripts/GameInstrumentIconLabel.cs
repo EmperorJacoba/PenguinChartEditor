@@ -4,7 +4,7 @@ using TMPro;
 [RequireComponent(typeof(MeshRenderer))]
 public class GameInstrumentIconLabel : MonoBehaviour
 {
-    [SerializeField] GameInstrument parentGameInstrument;
+    [SerializeField] public GameInstrument parentGameInstrument;
     [SerializeField] InstrumentIcons iconMatcher;
     MeshRenderer iconMesh;
     [SerializeField] TMP_Text difficultyText;

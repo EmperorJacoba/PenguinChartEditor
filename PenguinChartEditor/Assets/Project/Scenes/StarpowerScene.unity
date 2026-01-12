@@ -2051,6 +2051,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameInstrumentPackage: {fileID: 4206195670467757154, guid: 87253adb4e011cb49bedc16c9dc31f04, type: 3}
+  cameraController: {fileID: 420125509}
   leftButton: {fileID: 569939639}
   rightButton: {fileID: 725087498}
 --- !u!4 &638251979
@@ -11429,14 +11430,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Instrument
       objectReference: {fileID: 0}
-    - target: {fileID: 4206195670467757154, guid: 87253adb4e011cb49bedc16c9dc31f04, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4859883813102865908, guid: 87253adb4e011cb49bedc16c9dc31f04, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 2492e90b7ab4f3c429197cec5c5c9cfe, type: 2}
     - target: {fileID: 6728049931399594877, guid: 87253adb4e011cb49bedc16c9dc31f04, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -11476,14 +11469,6 @@ PrefabInstance:
     - target: {fileID: 6728049931399594877, guid: 87253adb4e011cb49bedc16c9dc31f04, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8434343983794267169, guid: 87253adb4e011cb49bedc16c9dc31f04, type: 3}
-      propertyPath: m_text
-      value: E
-      objectReference: {fileID: 0}
-    - target: {fileID: 8434343983794267169, guid: 87253adb4e011cb49bedc16c9dc31f04, type: 3}
-      propertyPath: m_fontStyle
-      value: 16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

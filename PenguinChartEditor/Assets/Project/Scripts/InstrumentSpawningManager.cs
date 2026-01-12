@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class InstrumentSpawningManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class InstrumentSpawningManager : MonoBehaviour
     public GameInstrument leftmostTrack => activeGameInstruments.First.Value;
     public GameInstrument rightmostTrack => activeGameInstruments.Last.Value;
 
+    [SerializeField] FocusCameraButtons cameraController;
     [SerializeField] InstrumentAddButton leftButton;
     [SerializeField] InstrumentAddButton rightButton;
 
@@ -31,7 +33,7 @@ public class InstrumentSpawningManager : MonoBehaviour
         instance = null;
     }
 
-    public void SpawnInstrumentOnRight(HeaderType instrumentType)
+    public void SpawnInstrumentOnRight(HeaderType instrumentID)
     {
         Vector3 newInstrumentPos;
         if (activeGameInstruments.Count == 0)
@@ -45,7 +47,7 @@ public class InstrumentSpawningManager : MonoBehaviour
             newInstrumentPos = activeGameInstruments.Last.Value.transform.position + rightSpawningOffset;
         }
 
-        var activeInstrument = CreateNewInstrument(instrumentType);
+        var activeInstrument = CreateNewInstrument(instrumentID);
         activeInstrument.transform.position = newInstrumentPos;
         activeGameInstruments.AddLast(activeInstrument);
 
@@ -54,9 +56,9 @@ public class InstrumentSpawningManager : MonoBehaviour
         Chart.InPlaceRefresh();
     }
 
-    public void SpawnInstrumentOnLeft(HeaderType instrumentType)
+    public void SpawnInstrumentOnLeft(HeaderType instrumentID)
     {
-        var activeInstrument = CreateNewInstrument(instrumentType);
+        var activeInstrument = CreateNewInstrument(instrumentID);
         activeInstrument.transform.position = activeGameInstruments.First.Value.transform.position + leftSpawningOffset;
         activeGameInstruments.AddFirst(activeInstrument);
 
@@ -65,11 +67,121 @@ public class InstrumentSpawningManager : MonoBehaviour
         Chart.InPlaceRefresh();
     }
 
-    public void RemoveInstrument(HeaderType instrumentType)
+    public void SwapInstrumentWithLeft(GameInstrument instrument)
     {
-        var targetInstrument = activeGameInstruments.Where(x => x.instrumentID == instrumentType).ToList()[0];
-        Destroy(targetInstrument);
-        activeGameInstruments.Remove(targetInstrument);
+        var movingNode = activeGameInstruments.Find(instrument);
+
+        if (movingNode == null)
+        {
+            Debug.LogWarning("Tried to find nonexistent GameInstrument object from spawning manager.");
+            return;
+        }
+
+        var leftNode = movingNode.Previous;
+        if (leftNode == null)
+        {
+            return;
+        }
+
+        var leftInstrument = leftNode.Value;
+
+        instrument.transform.position += leftSpawningOffset;
+        leftInstrument.transform.position += rightSpawningOffset;
+
+        movingNode.Value = leftNode.Value;
+        leftNode.Value = instrument;
+    }
+
+    public void SwapInstrumentWithRight(GameInstrument instrument)
+    {
+        var movingNode = activeGameInstruments.Find(instrument);
+
+        if (movingNode == null)
+        {
+            Debug.LogWarning("Tried to find nonexistent GameInstrument object from spawning manager.");
+            return;
+        }
+
+        var rightNode = movingNode.Next;
+        if (rightNode == null)
+        {
+            return;
+        }
+
+        var rightInstrument = rightNode.Value;
+
+        instrument.transform.position += rightSpawningOffset;
+        rightInstrument.transform.position += leftSpawningOffset;
+
+        movingNode.Value = rightNode.Value;
+        rightNode.Value = instrument;
+    }
+
+    public void RemoveInstrument(GameInstrument instrument)
+    {
+        var removingNode = activeGameInstruments.Find(instrument);
+        if (removingNode == null)
+        {
+            Debug.LogWarning("Tried to remove nonexistent GameInstrument object from spawning manager.");
+            return;
+        }
+
+        int index = 0;
+        LinkedListNode<GameInstrument> node = activeGameInstruments.First;
+        while (removingNode != node)
+        {
+            if (node.Next != null)
+            {
+                node = node.Next;
+                index++;
+            }
+            else break;
+        }
+
+        if (node.Previous != null)
+        {
+            node = node.Previous;
+        }
+
+        activeGameInstruments.Remove(removingNode);
+
+        if (activeGameInstruments.Count == 0)
+        {
+            leftButton.transform.position = Vector3.zero + BUTTON_Z_POSITION;
+            leftButton.gameObject.SetActive(false);
+
+            rightButton.transform.position = Vector3.zero + BUTTON_Z_POSITION;
+
+            cameraController.ResetCameraPosition();
+        }
+        else
+        {
+            if ((index + 1) / (float)(activeGameInstruments.Count + 1) > 0.5)
+            {
+                node = node.Next;
+                while (node != null)
+                {
+                    node.Value.transform.position += leftSpawningOffset;
+                    node = node.Next;
+                }
+                rightButton.transform.position += leftSpawningOffset;
+            }
+            else
+            {
+                var startIndex = 0;
+                node = activeGameInstruments.First;
+                while (startIndex < index)
+                {
+                    node.Value.transform.position += rightSpawningOffset;
+                    node = node.Next;
+                    startIndex++;
+                }
+                leftButton.transform.position += rightSpawningOffset;
+            }
+        }
+
+        Destroy(instrument.gameObject);
+        Chart.InPlaceRefresh();
     }
 
     private GameInstrument CreateNewInstrument(HeaderType instrumentType)

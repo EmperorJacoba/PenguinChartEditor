@@ -122,9 +122,19 @@ public class Waveform : MonoBehaviour
         lineRendererMain = GetComponent<LineRenderer>();
         lineRendererMirror = gameObject.transform.GetChild(0).GetComponent<LineRenderer>();
 
-        PointUpdateNeeded += x => ApplyGeneratedPositions(x);
-
         if (is2D) instance = this;
+    }
+
+    private WaveformDataUpdated pointUpdateDel;
+    private void OnEnable()
+    {
+        pointUpdateDel = x => ApplyGeneratedPositions(x);
+        PointUpdateNeeded += pointUpdateDel;
+    }
+
+    private void OnDisable()
+    {
+        PointUpdateNeeded -= pointUpdateDel;
     }
 
     #endregion

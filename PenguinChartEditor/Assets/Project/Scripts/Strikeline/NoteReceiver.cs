@@ -49,7 +49,18 @@ public class NoteReceiver : MonoBehaviour
     {
         strikeline = GetComponentInParent<Strikeline3D>();
         animator = GetComponent<Animator>();
-        AudioManager.PlaybackStateChanged += x => ToggleNoteReceivers(x);
+    }
+
+    AudioManager.PlayingDelegate activeDelegateAction;
+    private void OnEnable()
+    {
+        activeDelegateAction = x => ToggleNoteReceivers(x);
+        AudioManager.PlaybackStateChanged += activeDelegateAction;
+    }
+
+    private void OnDisable()
+    {
+        activeDelegateAction -= activeDelegateAction;
     }
 
     void ToggleNoteReceivers(bool state)

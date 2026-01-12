@@ -5,7 +5,7 @@ public class FocusCameraButtons : MonoBehaviour
 {
     [SerializeField] Button rightButton;
     [SerializeField] Button leftButton;
-    [SerializeField] Camera mainCamera;
+    [SerializeField] public Camera mainCamera;
 
     private void Awake()
     {
@@ -31,5 +31,10 @@ public class FocusCameraButtons : MonoBehaviour
         }
 
         mainCamera.transform.position += (Vector3.right * 10);
+    }
+
+    public void ResetCameraPosition()
+    {
+        mainCamera.transform.position = new Vector3(0, mainCamera.transform.position.y, mainCamera.transform.position.z);
     }
 }

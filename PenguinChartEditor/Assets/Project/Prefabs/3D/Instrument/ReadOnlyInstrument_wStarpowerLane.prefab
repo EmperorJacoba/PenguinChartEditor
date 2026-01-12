@@ -2941,13 +2941,41 @@ PrefabInstance:
       propertyPath: parentGameInstrument
       value: 
       objectReference: {fileID: 5904531191217681117}
+    - target: {fileID: 1345324983179231279, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 2382101529625002547, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
       propertyPath: m_Name
       value: InstrumentIcon
       objectReference: {fileID: 0}
+    - target: {fileID: 2382101529625002547, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2529605701682588122, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2531995488727272421, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3348707222014769568, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
       propertyPath: m_CastShadows
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3692369567323168534, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4454792638849531929, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4825986289084689505, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4988174024828685180, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2993,9 +3021,45 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 2492e90b7ab4f3c429197cec5c5c9cfe, type: 2}
+    - target: {fileID: 6114696716083570691, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 6669353361663613433, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
       propertyPath: m_CastShadows
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082291902333348360, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7122411488450975594, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_text
+      value: E
+      objectReference: {fileID: 0}
+    - target: {fileID: 7122411488450975594, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_fontStyle
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7405979325063118521, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Name
+      value: DifficultyDisplay
+      objectReference: {fileID: 0}
+    - target: {fileID: 7405979325063118521, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8468507946794317404, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8726219834972567913, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8830374096825032525, guid: 453991f778b07f541a6a0e48c2795cd2, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
