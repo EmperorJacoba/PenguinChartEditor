@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 
 public class SoloEnd : Event<SoloEventData>
 {
+    public override bool hasSustainTrail => false;
     public override int Lane => int.MinValue;
     public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
 

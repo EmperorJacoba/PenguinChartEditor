@@ -2,6 +2,7 @@
 
 public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
 {
+    public override bool hasSustainTrail => true;
     public override int Lane => (int)laneID;
     public HeaderType laneID
     {

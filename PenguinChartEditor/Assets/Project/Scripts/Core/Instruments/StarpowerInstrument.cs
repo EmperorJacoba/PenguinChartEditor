@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
-public class StarpowerInstrument : IInstrument
+public class StarpowerInstrument : IInstrument, ISustainableInstrument
 {
     private const int EVENT_TYPE_IDENTIFIER_INDEX = 1;
     private const int SUSTAIN_INDEX = 2;
@@ -46,6 +47,8 @@ public class StarpowerInstrument : IInstrument
             headerTypeIDs.Add((int)instrumentType);
         }
         Lanes = new(headerTypeIDs);
+
+        sustainer = new(this, Lanes, false);
     }
 
     public StarpowerInstrument(List<RawStarpowerEvent> starpowerEvents)
@@ -62,7 +65,33 @@ public class StarpowerInstrument : IInstrument
 
         inputMap.Charting.XYDrag.performed += x => MoveSelection();
         inputMap.Charting.LMB.canceled += x => CompleteMove();
+        inputMap.Charting.Delete.performed += x => DeleteSelection();
+        inputMap.Charting.SustainDrag.performed += x => sustainer.SustainSelection();
+        inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
+        inputMap.Charting.SelectAll.performed += x => Lanes.SelectAll();
     }
+
+    SustainHelper<StarpowerEventData> sustainer;
+
+    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
+
+    void CheckForSelectionClear()
+    {
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
+
+        ClearAllSelections();
+    }
+
+    void DeleteSelection()
+    {
+        if (Chart.LoadedInstrument != this) return;
+
+        Lanes.DeleteAllTicksInSelection();
+
+        Chart.InPlaceRefresh();
+    }
+
+    #region Moving
 
     MoveHelper<StarpowerEventData> mover = new();
     LinkedList<int> currentLaneOrdering = null;
@@ -89,7 +118,7 @@ public class StarpowerInstrument : IInstrument
         mover.Reset();
     }
 
-
+    #endregion
 
     void ParseRawStarpowerEvents(List<RawStarpowerEvent> starpowerEvents)
     {

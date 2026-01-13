@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 
 public class SoloPlate : Event<SoloEventData>
 {
+    public override bool hasSustainTrail => false;
     [SerializeField] TMP_Text percentage;
     [SerializeField] TMP_Text counter;
 

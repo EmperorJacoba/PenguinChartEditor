@@ -29,6 +29,7 @@ public interface IEvent
 // Use the interfaces guaranteed in IEvent above to access necessary functions/properties (add as needed)
 public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler where T : IEventData
 {
+    public abstract bool hasSustainTrail { get; }
     public bool readOnly = false;
     public abstract int Lane { get; }
     protected static float doubleClickTime = 0.3f;
@@ -147,6 +148,17 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         }
 
         CalculateSelectionStatus(pointerEventData);
+
+        if (hasSustainTrail && pointerEventData.button == PointerEventData.InputButton.Right)
+        {
+            if (Input.GetKey(KeyCode.LeftShift) || !UserSettings.ExtSustains)
+            {
+                ParentInstrument.ShiftClickSelect(Tick);
+                return;
+            }
+            Selection.Add(Tick);
+            Chart.InPlaceRefresh();
+        }
     }
 
     public void CheckForSelection()

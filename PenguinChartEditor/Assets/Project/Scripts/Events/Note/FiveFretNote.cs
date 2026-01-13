@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
 
-// Lanes are defined with type T.
-// Notes are defined/calculated upon on a per-lane basis.
 
 public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 {
+    public override bool hasSustainTrail => true;
     public override LaneSet<FiveFretNoteData> LaneData => _cachedDataRef;
     private LaneSet<FiveFretNoteData> _cachedDataRef;
     public override SelectionSet<FiveFretNoteData> Selection => _cachedSelectionRef;
@@ -28,7 +26,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             if (_li == value) return;
 
-            notePieces.ChangeColor(value, IsTap, IsOverdrive);
+            notePieces.ChangeColor(value, IsTap, IsStarpower);
 
             _li = value;
             CacheDataReferences();
@@ -72,7 +70,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             if (_isTap == value && !tapStarpowerColorRefreshNeeded) return;
 
-            notePieces.ChangeTap(laneID, value, IsOverdrive);
+            notePieces.ChangeTap(laneID, value, IsStarpower);
             _isTap = value;
             tapStarpowerColorRefreshNeeded = false;
         }
@@ -92,7 +90,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
     bool _isDefault = true;
 
-    public bool IsOverdrive
+    public bool IsStarpower
     {
         get
         {
@@ -103,7 +101,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             if (_isStarpower == value) return;
 
             _isStarpower = value;
-            notePieces.ChangeColor(laneID, IsTap, IsOverdrive);
+            notePieces.ChangeColor(laneID, IsTap, IsStarpower);
 
             tapStarpowerColorRefreshNeeded = true;
         }
@@ -144,7 +142,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     void SetVisualProperties(FiveFretNoteData data)
     {
-        IsOverdrive = parentGameInstrument.IsTickStarpower(Tick);
+        IsStarpower = parentGameInstrument.IsTickStarpower(Tick);
         IsHopo = (data.Flag == FiveFretNoteData.FlagType.hopo);
         IsTap = (data.Flag == FiveFretNoteData.FlagType.tap);
         IsDefault = data.Default;
@@ -184,24 +182,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         transform.localPosition = new Vector3(xPosition, yPosition, trackProportion);
     }
 
-    public override void OnPointerDown(PointerEventData pointerEventData)
-    {
-        base.OnPointerDown(pointerEventData);
-
-        if (readOnly) return;
-
-        if (pointerEventData.button == PointerEventData.InputButton.Right)
-        {
-            if (Input.GetKey(KeyCode.LeftShift) || !UserSettings.ExtSustains)
-            {
-                ParentInstrument.ShiftClickSelect(Tick);
-                return;
-            }
-            Selection.Add(Tick);
-            Chart.InPlaceRefresh();
-        }
-    }
-
     void UpdateSustain(bool headOnly)
     {
         // No math needed at all if sustain is 0
@@ -224,20 +204,4 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     {
         notePieces.UpdateSustainLength(_tick, data.Sustain);
     }
-
-    // used on sustain trail itself when click happens on trail
-    // click on sustain trail + drag activates SustainSelection() within the previewer object
-    public void ClampSustain(int tickLength) => ParentFiveFretInstrument.UpdateSustain(Tick, laneID, tickLength);
-
-    /*
-    void IPoolable.UpdatePosition()
-    {
-        bool isHeadVisible = CalculateHeadVisibility();
-        notePieces.SetVisibility(isHeadVisible);
-
-        UpdatePosition(
-            tick: AudioManager.AudioPlaying && !isHeadVisible ? SongTime.SongPositionTicks : Tick
-            );
-        UpdateSustain(isHeadVisible);
-    } */
 }

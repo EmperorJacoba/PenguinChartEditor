@@ -31,6 +31,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     #endregion
 
     #region Setup
+    public override bool hasSustainTrail => false;
     public Coroutine destructionCoroutine { get; set; }
     void Start()
     {
