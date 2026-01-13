@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class SustainHelper<T> where T : IEventData, ISustainable
 {
@@ -9,6 +10,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
     IInstrument parentInstrument;
 
     bool obeyExtendedSustainSetting;
+    bool independentLanes => UserSettings.ExtSustains || !obeyExtendedSustainSetting;
 
     public SustainHelper(IInstrument parentInstrument, Lanes<T> lanes, bool obeyExtended)
     {
@@ -20,6 +22,23 @@ public class SustainHelper<T> where T : IEventData, ISustainable
     public void ResetSustainChange()
     {
         sustainData = new();
+    }
+
+    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) 
+    {
+        if (pointerEventData.button == PointerEventData.InputButton.Right)
+        {
+            parentInstrument.ClearAllSelections();
+            var sustainClamp = GetCurrentMouseTick() - @event.Tick;
+            if (Input.GetKey(KeyCode.LeftShift) || !independentLanes)
+            {
+                parentInstrument.ShiftClickSelect(@event.Tick);
+                ShiftClickSustainClamp(@event.Tick, sustainClamp);
+            }
+            UpdateSustain(@event.Tick, @event.Lane, sustainClamp);
+            @event.AddToSelection();
+            Chart.InPlaceRefresh();
+        }
     }
 
     public static int GetCurrentMouseTick()
@@ -83,7 +102,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
     public void UpdateSustain(int tick, int lane, int newSustain)
     {
         // clamp based on this lane only (ignore other lane overlap)
-        if (UserSettings.ExtSustains || !obeyExtendedSustainSetting)
+        if (independentLanes)
         {
             var currentLane = laneData.GetLane(lane);
             if (!currentLane.Contains(tick)) return;
@@ -113,7 +132,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
     public int CalculateSustainClamp(int sustainLength, int tick, int lane)
     {
         int nextTick =
-            UserSettings.ExtSustains || !obeyExtendedSustainSetting ? 
+            independentLanes ? 
             laneData.GetLane(lane).GetNextTickEventInLane(tick) : 
             laneData.GetTickEventBounds(tick).next;
 
@@ -152,7 +171,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
 
     public void ValidateSustain(int tick, int lane)
     {
-        if (UserSettings.ExtSustains || !obeyExtendedSustainSetting)
+        if (independentLanes)
         {
             var extendedLaneRef = laneData.GetLane(lane);
             if (!extendedLaneRef.Contains(tick)) return;
@@ -181,7 +200,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         var uniqueTicks = laneData.GetUniqueTickSet();
         var uniqueTicksInRange = uniqueTicks.Where(tick => tick >= startTick && tick <= endTick).ToList();
 
-        if (UserSettings.ExtSustains || !obeyExtendedSustainSetting)
+        if (independentLanes)
         {
             foreach (var laneKey in laneData.LaneKeys)
             {
@@ -212,7 +231,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
 
     public void ClampSustainsBefore(int tick, int lane)
     {
-        if (UserSettings.ExtSustains)
+        if (independentLanes)
         {
             ClampLaneEventsBefore(tick, lane);
             return;

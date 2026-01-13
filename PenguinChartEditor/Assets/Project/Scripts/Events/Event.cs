@@ -8,6 +8,7 @@ public interface IEvent
 {
     int Tick { get; }
     bool Visible { get; set; }
+    int Lane { get; }
 
     // Used in previewer to check placement conditions
     ISelection GetSelection();
@@ -16,6 +17,9 @@ public interface IEvent
     IInstrument ParentInstrument { get; }
 
     bool IsPreviewEvent { get; set; }
+
+    void AddToSelection();
+    void RemoveFromSelection();
 }
 
 #endregion

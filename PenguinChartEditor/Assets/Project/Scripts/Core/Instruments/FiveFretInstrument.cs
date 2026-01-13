@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class FiveFretInstrument : IInstrument
+public class FiveFretInstrument : IInstrument, ISustainableInstrument
 {
     #region Constants 
 
@@ -150,8 +151,7 @@ public class FiveFretInstrument : IInstrument
         inputMap.Charting.XYDrag.performed += x => MoveSelection();
         inputMap.Charting.LMB.canceled += x => CompleteMove();
         inputMap.Charting.Delete.performed += x => DeleteSelection();
-        inputMap.Charting.SustainDrag.performed += x => SustainSelection();
-        inputMap.Charting.RMB.canceled += x => CompleteSustain();
+        inputMap.Charting.SustainDrag.performed += x => sustainer.SustainSelection();
         inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
         inputMap.Charting.SelectAll.performed += x => Lanes.SelectAll();
     }
@@ -524,14 +524,9 @@ public class FiveFretInstrument : IInstrument
 
     #region Sustains
 
-    SustainHelper<FiveFretNoteData> sustainer;
+    public SustainHelper<FiveFretNoteData> sustainer;
+    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
     public void SetSelectionSustain(int ticks) => sustainer.SetSelectionSustain(ticks);
-    public void SustainSelection() => sustainer.SustainSelection();
-    public void CompleteSustain()
-    {
-        sustainer.ResetSustainChange();
-        Chart.InPlaceRefresh();
-    }
     public void ShiftClickSustainClamp(int tick, int tickLength) => sustainer.ShiftClickSustainClamp(tick, tickLength);
     public void UpdateSustain(int tick, LaneOrientation lane, int newSustain) => sustainer.UpdateSustain(tick, (int)lane, newSustain);
     public void ValidateSustainsInRange(MinMaxTicks range) => ValidateSustainsInRange(range.min, range.max);

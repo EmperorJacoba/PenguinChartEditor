@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 // please please please do not add <T> to this
 // i have done this like 7 times and it makes chartparser really ugly
@@ -36,6 +37,6 @@ public interface IInstrument
 
 public interface ISustainableInstrument
 {
-
+    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event);
 }
 
