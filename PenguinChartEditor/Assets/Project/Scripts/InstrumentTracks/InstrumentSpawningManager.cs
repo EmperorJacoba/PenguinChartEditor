@@ -31,6 +31,20 @@ public class InstrumentSpawningManager : MonoBehaviour
         instance = null;
     }
 
+    public LinkedList<int> GetCurrentLaneOrdering()
+    {
+        LinkedList<int> outputLinkedList = new();
+        LinkedListNode<GameInstrument> activeNode = activeGameInstruments.First;
+
+        while (activeNode != null)
+        {
+            outputLinkedList.AddLast((int)activeNode.Value.instrumentID);
+            activeNode = activeNode.Next;
+        }
+
+        return outputLinkedList;
+    }
+
     public void SpawnInstrumentOnRight(HeaderType instrumentID)
     {
         Vector3 newInstrumentPos;

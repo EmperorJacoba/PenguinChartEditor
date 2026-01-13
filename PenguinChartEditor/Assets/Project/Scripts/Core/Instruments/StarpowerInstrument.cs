@@ -54,6 +54,42 @@ public class StarpowerInstrument : IInstrument
         ParseRawStarpowerEvents(starpowerEvents);
     }
 
+    InputMap inputMap;
+    public void SetUpInputMap()
+    {
+        inputMap = new();
+        inputMap.Enable();
+
+        inputMap.Charting.XYDrag.performed += x => MoveSelection();
+        inputMap.Charting.LMB.canceled += x => CompleteMove();
+    }
+
+    MoveHelper<StarpowerEventData> mover = new();
+    LinkedList<int> currentLaneOrdering = null;
+
+    void MoveSelection()
+    {
+        currentLaneOrdering ??= InstrumentSpawningManager.instance.GetCurrentLaneOrdering();
+        if (mover.Move2DSelection(this, Lanes, currentLaneOrdering))
+        {
+            Chart.InPlaceRefresh();
+        }
+    }
+
+    void CompleteMove()
+    {
+        if (this != Chart.LoadedInstrument) return;
+        Chart.showPreviewers = true;
+
+        if (!mover.MoveInProgress) return;
+        currentLaneOrdering = null;
+
+        // ValidateSustainsInRange(mover.GetFinalValidationRange(laneOrdering));
+        mover.Reset();
+    }
+
+
+
     void ParseRawStarpowerEvents(List<RawStarpowerEvent> starpowerEvents)
     {
         foreach (var @event in starpowerEvents)
@@ -133,7 +169,6 @@ public class StarpowerInstrument : IInstrument
 
     public void ClearTickFromAllSelections(int tick) => Lanes.ClearTickFromAllSelections(tick);
 
-    public void SetUpInputMap() { }
 
     public void ShiftClickSelect(int start, int end) => Lanes.ShiftClickSelect(start, end);
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class MoveHelper<T> where T : IEventData
 {
@@ -14,6 +15,13 @@ public class MoveHelper<T> where T : IEventData
         moveData = new();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="instrument"></param>
+    /// <param name="laneData"></param>
+    /// <param name="laneProgression"></param>
+    /// <returns>Were there any meaningful changes to the Lanes dataset?</returns>
     public bool Move2DSelection(IInstrument instrument, Lanes<T> laneData, LinkedList<int> laneProgression)
     {
         if (instrument != Chart.LoadedInstrument || !Chart.IsModificationAllowed()) return false;

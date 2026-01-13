@@ -20,7 +20,10 @@ public class MinMaxTracker
 
     public MinMaxTicks GetAbsoluteMinMax()
     {
-        
+        if (minTicks.Count == 0 || maxTicks.Count == 0)
+        {
+            return new(0, SongTime.SongLengthTicks);
+        }
         return new(minTicks.Min(), maxTicks.Max());
     }
 }

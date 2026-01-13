@@ -108,6 +108,6 @@ public class SceneDetails : MonoBehaviour
         cameraHighwayRaycaster.Raycast(modifiedPointerData, results);
 
         if (results.Count == 0) return 0;
-        return results[0].worldPosition.z / highway.localScale.z;
+        return results[0].worldPosition.z / Highway3D.highwayLength;
     }
 }

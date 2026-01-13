@@ -975,8 +975,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentScene: 2
   is2D: 0
-  highway: {fileID: 0}
-  laneWidth: 2
+  highway: {fileID: 1977597302}
+  laneWidth: 4
   overlayUIRaycaster: {fileID: 1465900803}
   eventRaycaster: {fileID: 1839177975}
   cameraHighwayRaycaster: {fileID: 1839177975}
@@ -9208,7 +9208,7 @@ MonoBehaviour:
   m_EventMask:
     serializedVersion: 2
     m_Bits: 448
-  m_MaxRayIntersections: 0
+  m_MaxRayIntersections: 999999
 --- !u!114 &1839177976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10231,7 +10231,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2000, y: 1, z: 75}
+  m_LocalScale: {x: 2000, y: 1, z: 1000}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1641345303}

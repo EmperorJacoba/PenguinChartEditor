@@ -166,7 +166,7 @@ public class UniversalMoveData<T> where T : IEventData
     public Dictionary<int, SortedDictionary<int, T>> GetMoveData(int laneShift, LinkedList<int> laneOrdering)
     {
         var boundsCorrectedData = OneDGetMoveData();
-        if (laneShift == 0) return boundsCorrectedData;
+        if (laneShift == 0 || laneOrdering.Count <= 1) return boundsCorrectedData;
 
         var laneSmooshOutput = MakeEmptyDataSet();
 
