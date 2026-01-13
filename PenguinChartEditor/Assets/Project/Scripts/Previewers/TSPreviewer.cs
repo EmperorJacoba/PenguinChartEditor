@@ -40,14 +40,6 @@ public class TSPreviewer : Previewer
             tsLabel.Visible = false;
         }
     }
-    public override void Hide()
-    {
-        if (tsLabel.Visible) tsLabel.Visible = false;
-    }
-    public override void Show()
-    {
-        if (!tsLabel.Visible) tsLabel.Visible = true;
-    }
 
     protected override void AddCurrentEventDataToLaneSet()
     {

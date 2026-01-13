@@ -7,7 +7,6 @@ public class SoloPreviewer : Previewer
     [SerializeField] SoloEnd previewEndPlate;
     SoloSectionLane ParentLane { get; set; }
     IInstrument ParentInstrument => ParentLane.parentGameInstrument.representedInstrument;
-    GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
 
     protected override void Awake()
     {

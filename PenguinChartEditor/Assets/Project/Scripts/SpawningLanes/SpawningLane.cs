@@ -4,7 +4,7 @@ using UnityEngine;
 public interface ILane
 {
     public int laneID { get; }
-    public GameInstrument parentGameInstrument { get; set; }
+    public GameInstrument parentGameInstrument { get; }
 }
 public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent : IPoolable
 {
@@ -163,17 +163,17 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     #endregion
 
     // Set through parent Lanes object. 
-    [HideInInspector] public GameInstrument parentGameInstrument { get; set; }
-    public IInstrument parentInstrument => parentGameInstrument.representedInstrument;
-    protected virtual void Awake()
+    [HideInInspector] public GameInstrument parentGameInstrument
     {
-        if (transform.parent.name == "Lanes")
+        get
         {
-            var laneDetails = GetComponentInParent<LaneDetails>();
-            parentGameInstrument = laneDetails.parentGameInstrument;
+            _gi ??= GetComponentInParent<LaneDetails>().parentGameInstrument;
+            return _gi;
         }
-
     }
+    private GameInstrument _gi;
+
+    public IInstrument parentInstrument => parentGameInstrument.representedInstrument;
 
     AudioManager.PlayingDelegate playbackAction;
     protected void OnEnable()

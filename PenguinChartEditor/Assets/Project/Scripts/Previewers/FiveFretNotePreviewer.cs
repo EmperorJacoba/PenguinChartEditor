@@ -3,21 +3,26 @@ using UnityEngine;
 [RequireComponent(typeof(FiveFretNote))]
 public class FiveFretNotePreviewer : Previewer
 {
-    FiveFretNote note; // use Previewer.Tick, not note.tick for any tick related actions
-    FiveFretLane lane;
+    #region Event References
+
+    FiveFretNote note => (FiveFretNote)previewerEventReference;
+    FiveFretLane lane => (FiveFretLane)parentLane;
     FiveFretInstrument parentFiveFretInstrument => (FiveFretInstrument)lane.parentGameInstrument.representedInstrument;
     float laneCenterPosition => note.xCoordinate;
+
+    #endregion
+
+    #region Sustain Controlling
 
     public static int defaultSustain = 0;
 
     int AppliedSustain => note.ParentFiveFretInstrument.CalculateSustainClamp(defaultSustain, Tick, lane.laneIdentifier);
 
+    #endregion
+
+    #region NoteOption
+
     public static bool openNoteEditing = false;
-    public bool OpenNoteEditing
-    {
-        get => openNoteEditing;
-        set => openNoteEditing = value;
-    }
 
     public enum NoteOption
     {
@@ -29,12 +34,19 @@ public class FiveFretNotePreviewer : Previewer
 
     public static NoteOption currentPlacementMode = NoteOption.natural;
 
-    // use as way to get dropdown to set mode
-    public int PlacementMode
+    FiveFretNoteData.FlagType MapPlacementModeToFlag()
     {
-        get => (int)currentPlacementMode;
-        set => currentPlacementMode = (NoteOption)value;
+        return currentPlacementMode switch
+        {
+            NoteOption.hopo => FiveFretNoteData.FlagType.hopo,
+            NoteOption.strum => FiveFretNoteData.FlagType.strum,
+            NoteOption.tap => FiveFretNoteData.FlagType.tap,
+            NoteOption.natural => FiveFretNoteData.FlagType.strum, // if dynamic, future algorithms will calculate the current type. Don't worry too much about it
+            _ => throw new System.ArgumentException("If you got this error, you don't know how dropdowns work. Congratulations!"),
+        };
     }
+
+    #endregion
 
     protected override void UpdatePreviewer()
     {
@@ -55,6 +67,7 @@ public class FiveFretNotePreviewer : Previewer
         }
 
         Tick = SongTime.CalculateGridSnappedTick(highwayProportion);
+
         FiveFretNoteData.FlagType previewFlag;
         if (currentPlacementMode == NoteOption.natural)
         {
@@ -95,36 +108,11 @@ public class FiveFretNotePreviewer : Previewer
         return true;
     }
 
-    public override void Hide()
-    {
-        if (note == null) return;
-        if (note.Visible) note.Visible = false;
-    }
-    public override void Show()
-    {
-        if (note == null) return;
-        if (!note.Visible) note.Visible = true;
-    }
-
     protected override void Awake()
     {
         base.Awake();
 
-        lane = GetComponentInParent<FiveFretLane>();
-        note = GetComponent<FiveFretNote>();
         FiveFretNoteKeybindManager.UpdatePreviewer += UpdatePosition;
-    }
-
-    FiveFretNoteData.FlagType MapPlacementModeToFlag()
-    {
-        return currentPlacementMode switch
-        {
-            NoteOption.hopo => FiveFretNoteData.FlagType.hopo,
-            NoteOption.strum => FiveFretNoteData.FlagType.strum,
-            NoteOption.tap => FiveFretNoteData.FlagType.tap,
-            NoteOption.natural => FiveFretNoteData.FlagType.strum, // if dynamic, future algorithms will calculate the current type. Don't worry too much about it
-            _ => throw new System.ArgumentException("If you got this error, you don't know how dropdowns work. Congratulations!"),
-        };
     }
 
     protected override void AddCurrentEventDataToLaneSet()

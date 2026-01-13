@@ -19,7 +19,36 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected InputMap inputMap;
 
-    protected IEvent previewerEventReference;
+    // Some Awakes run before other Awakes. That is why I have it set up like this. I am tired of null reference exceptions. So tired.
+    protected IEvent previewerEventReference
+    {
+        get
+        {
+            if (_pER == null)
+            {
+                _pER = GetComponent<IEvent>();
+                _pER.IsPreviewEvent = true;
+            }
+            return _pER;
+        }
+        set
+        {
+            _pER = value; // in case overriding what counts as the event reference is needed (solo previewer)
+        }
+    }
+    private IEvent _pER;
+
+    protected ILane parentLane
+    {
+        get
+        {
+            _pL ??= GetComponentInParent<ILane>();
+            return _pL;
+        }
+    }
+    private ILane _pL;
+
+    protected GameInstrument parentGameInstrument => parentLane.parentGameInstrument;
 
     public virtual void CreateEvent()
     {
@@ -28,7 +57,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
         AddCurrentEventDataToLaneSet(); // implemented locally
 
-        RemoveTickFromSelection();
+        previewerEventReference.RemoveFromSelection();
         Chart.InPlaceRefresh();
     }
 
@@ -37,14 +66,16 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         return previewerEventReference.Visible;
     }
 
-    protected virtual void RemoveTickFromSelection()
+    protected abstract void AddCurrentEventDataToLaneSet();
+    public virtual void Hide()
     {
-        previewerEventReference.GetSelection().Remove(Tick);
+        previewerEventReference.Visible = false;
     }
 
-    protected abstract void AddCurrentEventDataToLaneSet();
-    public abstract void Hide();
-    public abstract void Show();
+    public virtual void Show()
+    {
+        previewerEventReference.Visible = true;
+    }
 
     // this is done because there will never be a scenario where
     // two previewers have different ticks (at least not in any meaningful way)
@@ -61,10 +92,9 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     /// <summary>
     /// Refresh the previewer, with checks to ensure the previewer is allowed to be active.
     /// </summary>
-    public void UpdatePosition() => UpdatePosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
-    void UpdatePosition(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    public void UpdatePosition()
     {
-        if (!IsPreviewerActive(percentOfScreenVertical, percentOfScreenHorizontal))
+        if (!IsPreviewerActive())
         {
             Hide();
             return;
@@ -78,6 +108,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     /// </summary>
     protected abstract void UpdatePreviewer();
 
+    public static bool IsPreviewerActive() => IsPreviewerActive(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
     public static bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!Chart.showPreviewers || AudioManager.AudioPlaying ||
@@ -94,30 +125,23 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         }
         return true;
     }
-    public static bool IsPreviewerActive() => IsPreviewerActive(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
 
     protected virtual void Awake()
     {
         inputMap = new();
         inputMap.Enable();
 
-        // ignore this warning on GetComponent - this is overriden when the preview object does not meet this criteria
-        previewerEventReference = GetComponent<IEvent>();
-        previewerEventReference.IsPreviewEvent = true;
-
         inputMap.Charting.PreviewMousePos.performed += position =>
-            UpdatePosition(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
+            UpdatePosition();
 
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
     }
 
     protected void Update()
     {
-        // Rclick + Lclick deletion impossible without extra check here
         if (Input.GetMouseButton(0) && !Input.GetMouseButton(1) && IsPreviewerActive())
         {
             CreateEvent();
         }
     }
-
 }

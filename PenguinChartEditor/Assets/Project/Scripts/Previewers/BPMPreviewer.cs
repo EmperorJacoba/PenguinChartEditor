@@ -32,16 +32,6 @@ public class BPMPreviewer : Previewer
         else bpmLabel.Visible = false;
     }
 
-    public override void Hide()
-    {
-        if (bpmLabel.Visible) bpmLabel.Visible = false;
-    }
-
-    public override void Show()
-    {
-        if (!bpmLabel.Visible) bpmLabel.Visible = true;
-    }
-
     protected override void AddCurrentEventDataToLaneSet()
     {
         bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
