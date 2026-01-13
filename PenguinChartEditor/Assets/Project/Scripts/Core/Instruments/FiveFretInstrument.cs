@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 public class FiveFretInstrument : IInstrument
 {
@@ -58,6 +59,8 @@ public class FiveFretInstrument : IInstrument
         blue = 4,
         orange = 5,
     }
+
+    LinkedList<int> laneOrdering = new(Enumerable.Range(0, 6));
 
     public static int MatchLaneOrientationToChartID(LaneOrientation lane)
     {
@@ -155,84 +158,26 @@ public class FiveFretInstrument : IInstrument
 
     #region Moving
 
-    UniversalMoveData<FiveFretNoteData> moveData = new();
+    MoveHelper<FiveFretNoteData> mover = new();
 
     void MoveSelection()
     {
-        if (this != Chart.LoadedInstrument || !Chart.IsModificationAllowed()) return;
-
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress) return;
-        bool tickMovement = false;
-        bool laneMovement = false;
-
-        var currentMouseTick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
-        var currentMouseLane = Chart.instance.SceneDetails.MatchXCoordinateToLane(Chart.instance.SceneDetails.GetCursorHighwayPosition().x);
-
-        if (currentMouseTick != moveData.lastMouseTick)
+        if (mover.Move2DSelection(this, Lanes, laneOrdering))
         {
-            moveData.lastMouseTick = currentMouseTick;
-            tickMovement = true;
+            CheckForHoposInRange(mover.GetChangingValidationRange());
+            Chart.InPlaceRefresh();
         }
-        if (currentMouseLane != moveData.lastLane)
-        {
-            moveData.lastLane = currentMouseLane;
-            laneMovement = true;
-        }
-
-        if (IsNoteSelectionEmpty()) return;
-
-        if (!moveData.inProgress && (tickMovement || laneMovement))
-        {
-            // optimize call
-            moveData = new(
-                currentMouseTick,
-                currentLane: currentMouseLane,
-                Lanes.ExportData(),
-                Lanes.ExportNormalizedSelection(),
-                Lanes.GetFirstSelectionTick()
-                );
-            Chart.showPreviewers = false;
-            return;
-        }
-        if (!(tickMovement || laneMovement)) return;
-
-        Lanes.OverwriteLaneData(moveData.preMoveData);
-
-        var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
-        var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
-        moveData.lastGhostStartTick = pasteDestination;
-
-        var movingDataSet = moveData.GetMoveData(currentMouseLane - moveData.firstLane);
-
-        Lanes.OverwriteLaneDataWithOffset(movingDataSet, pasteDestination);
-
-        Lanes.ApplyScaledSelection(movingDataSet, moveData.lastGhostStartTick);
-
-        CheckForHoposInRange(moveData.lastGhostStartTick, moveData.lastGhostEndTick);
-
-        Chart.InPlaceRefresh();
     }
 
     void CompleteMove()
     {
         if (this != Chart.LoadedInstrument) return;
-
         Chart.showPreviewers = true;
-        if (!moveData.inProgress) return;
 
-        var movingDataSet = moveData.GetMoveData(moveData.lastLane - moveData.firstLane);
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            if (movingDataSet[i].Count > 0)
-            {
-                var endTick = movingDataSet[i].Keys.Max() + moveData.lastGhostStartTick;
-                var startTick = movingDataSet[i].Keys.Min() + moveData.lastGhostStartTick;
+        if (!mover.MoveInProgress) return;
 
-                ValidateSustainsInRange(startTick, endTick);
-            }
-        }
-
-        moveData = new();
+        ValidateSustainsInRange(mover.GetFinalValidationRange(laneOrdering));
+        mover.Reset();
     }
 
     #endregion
@@ -269,7 +214,8 @@ public class FiveFretInstrument : IInstrument
         SoloData.DeleteTick(tick);
 
         Lanes.PopAllEventsAtTick(tick);
-        Lanes.ClearAllSelections();
+        ClearAllSelections();
+
         Chart.InPlaceRefresh();
     }
 
@@ -401,9 +347,12 @@ public class FiveFretInstrument : IInstrument
     public void SetSelectionToNewLane(LaneOrientation destinationLane)
     {
         if (IsNoteSelectionEmpty()) return;
+
         var selectionMinMax = Lanes.GetSelectionBounds();
         Lanes.SetSelectionToNewLane((int)destinationLane);
+
         CheckForHoposInRange(selectionMinMax.min, selectionMinMax.max);
+
         Chart.InPlaceRefresh();
     }
 
@@ -728,6 +677,7 @@ public class FiveFretInstrument : IInstrument
         }
     }
 
+    public void ValidateSustainsInRange(MinMaxTicks range) => ValidateSustainsInRange(range.min, range.max);
     public void ValidateSustainsInRange(int startTick, int endTick)
     {
         var uniqueTicks = GetUniqueTickSet();
@@ -858,6 +808,7 @@ public class FiveFretInstrument : IInstrument
         }
     }
 
+    public void CheckForHoposInRange(MinMaxTicks range) => CheckForHoposInRange(range.min, range.max);
     public void CheckForHoposInRange(int startTick, int endTick)
     {
         var uniqueTicks = GetUniqueTickSet();

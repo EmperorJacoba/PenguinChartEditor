@@ -116,7 +116,6 @@ public class StarpowerInstrument : IInstrument
         Chart.InPlaceRefresh();
     }
 
-
     public void DeleteTickInLane(int tick, int lane) 
     { 
         Lanes.PopTickFromLane(tick, lane);

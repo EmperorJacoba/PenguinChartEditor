@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Overlays;
 using UnityEngine;
 
 // Two dimensions in this scenario meaning across time and lanes. Enables lane-to-lane movement.
@@ -48,23 +50,21 @@ public class UniversalMoveData<T> where T : IEventData
     public UniversalMoveData(
         int currentMouseTick,
         int currentLane,
-        Dictionary<int, SortedDictionary<int, T>> laneData,
-        Dictionary<int, SortedDictionary<int, T>> selectionData,
-        int firstSelectionTick
+        Lanes<T> laneData
         )
     {
         firstMouseTick = currentMouseTick;
         lastMouseTick = currentMouseTick;
         firstLane = currentLane;
 
-        this.firstSelectionTick = firstSelectionTick;
+        firstSelectionTick = laneData.GetFirstSelectionTick();
         if (firstSelectionTick == SelectionSet<T>.NONE_SELECTED) return;
 
         lastGhostStartTick = firstSelectionTick;
 
         // preMoveData needs selection data removed
-        preMoveData = laneData;
-        originalMovingDataSet = selectionData;
+        preMoveData = laneData.ExportData();
+        originalMovingDataSet = laneData.ExportNormalizedSelection();
 
         foreach (var preMoveLane in preMoveData)
         {
@@ -103,7 +103,7 @@ public class UniversalMoveData<T> where T : IEventData
         };
         originalMovingDataSet = new Dictionary<int, SortedDictionary<int, T>>
         {
-            { 0,  selection.ExportNormalizedData() }
+            { 0, selection.ExportNormalizedData() }
         };
 
         foreach (var tick in laneSet.protectedTicks)
@@ -162,37 +162,54 @@ public class UniversalMoveData<T> where T : IEventData
         return boundsCorrectedData;
     }
 
-    public Dictionary<int, SortedDictionary<int, T>> GetMoveData(int laneShift)
+    // This uses a linked list to make moving across highways in starpower mode versitile (movable highway positioning)
+    public Dictionary<int, SortedDictionary<int, T>> GetMoveData(int laneShift, LinkedList<int> laneOrdering)
     {
         var boundsCorrectedData = OneDGetMoveData();
-
         if (laneShift == 0) return boundsCorrectedData;
 
-        var laneIDs = originalMovingDataSet.Keys.ToList();
-        laneIDs.Sort();
-
         var laneSmooshOutput = MakeEmptyDataSet();
-        foreach (var id in laneIDs)
+
+        if (laneShift < 0)
         {
-            int targetLaneID = id + laneShift;
+            LinkedListNode<int> activeNode = laneOrdering.Last;
 
-            // This loop is structured this way so that there is no data
-            // loss when users decide to shift the lane of a selection
-            // If data is marked for destruction (for example, if the original lane
-            // was orange, and laneShift = +1, orange would be deleted (as it is the highest lane in this context))
-            // then instead of destroying it, tell the LINQ call below to forward the data to either
-            // the lowest or highest dictionary in the output.
-            if (laneShift < 0 && id < Mathf.Abs(laneShift))
+            while (activeNode != null)
             {
-                targetLaneID = 0;
-            }
-            else if (laneShift > 0 && targetLaneID >= boundsCorrectedData.Count)
-            {
-                targetLaneID = boundsCorrectedData.Count - 1;
-            }
+                LinkedListNode<int> targetNode = activeNode;
+                for (int i = 0; i > laneShift; i--)
+                {
+                    if (targetNode.Previous != null)
+                    {
+                        targetNode = targetNode.Previous;
+                    }
+                    else break;
+                }
+                boundsCorrectedData[activeNode.Value].ToList().ForEach(item => laneSmooshOutput[targetNode.Value][item.Key] = item.Value);
 
-            // taken from https://stackoverflow.com/questions/294138/merging-dictionaries-in-c-sharp (second answer)
-            boundsCorrectedData[id].ToList().ForEach(item => laneSmooshOutput[targetLaneID][item.Key] = item.Value);
+                activeNode = activeNode.Previous;
+            }
+        }
+        else
+        {
+            LinkedListNode<int> activeNode = laneOrdering.First;
+
+            while (activeNode != null)
+            {
+                LinkedListNode<int> targetNode = activeNode;
+
+                for (int i = 0; i < laneShift; i++)
+                {
+                    if (targetNode.Next != null)
+                    {
+                        targetNode = targetNode.Next;
+                    }
+                    else break;
+                }
+                boundsCorrectedData[activeNode.Value].ToList().ForEach(item => laneSmooshOutput[targetNode.Value][item.Key] = item.Value);
+
+                activeNode = activeNode.Next;
+            }
         }
 
         return laneSmooshOutput;
@@ -212,6 +229,25 @@ public class UniversalMoveData<T> where T : IEventData
         }
 
         return output;
+    }
+
+    public MinMaxTicks GetChangedDataRange(LinkedList<int> laneOrdering)
+    {
+        var movingDataSet = GetMoveData(lastLane - firstLane, laneOrdering);
+
+        int startValidationTick = int.MaxValue;
+        int endValidationTick = -1;
+
+        for (int i = 0; i < movingDataSet.Count; i++)
+        {
+            if (movingDataSet[i].Count > 0)
+            {
+                endValidationTick = Mathf.Max(movingDataSet[i].Keys.Max() + lastGhostStartTick, endValidationTick);
+                startValidationTick = Mathf.Min(movingDataSet[i].Keys.Min() + lastGhostStartTick, startValidationTick);
+            }
+        }
+
+        return new(startValidationTick, endValidationTick);
     }
 
     Dictionary<int, SortedDictionary<int, T>> MakeEmptyDataSet()

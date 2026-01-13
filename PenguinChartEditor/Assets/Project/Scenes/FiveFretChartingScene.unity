@@ -4207,7 +4207,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   highway: {fileID: 2069553716}
   waveform: {fileID: 1754544326}
-  instrumentType: 10
+  laneDetails: {fileID: 0}
+  instrumentID: 13
 --- !u!1 &536290877
 GameObject:
   m_ObjectHideFlags: 0
@@ -14575,7 +14576,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 1454501876}
   entryBox: {fileID: 2024623240}
-  highway: {fileID: 543450653712637668}
   dataType: 3
 --- !u!1 &1890081628
 GameObject:
@@ -16340,7 +16340,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 4297312114606867051}
   entryBox: {fileID: 1871962314558776004}
-  highway: {fileID: 0}
   dataType: 1
 --- !u!114 &214637036671902963
 MonoBehaviour:
@@ -17959,7 +17958,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dropdown: {fileID: 6848583809872980865}
-  waveformManager: {fileID: 1754544326}
 --- !u!222 &2591396665170002089
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18256,7 +18254,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 7084568804511383722}
   entryBox: {fileID: 2404142054370612247}
-  highway: {fileID: 0}
   dataType: 0
 --- !u!224 &2930785978472836039
 RectTransform:
@@ -19973,7 +19970,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 380819836842028409}
   entryBox: {fileID: 8858688487190095543}
-  highway: {fileID: 0}
   dataType: 2
 --- !u!114 &5210407002871531167
 MonoBehaviour:

@@ -20,7 +20,7 @@ public class GameInstrument : MonoBehaviour
                 var instrumentCandidates = Chart.Instruments.Where(item => item.InstrumentID == instrumentID).ToList();
                 if (instrumentCandidates.Count == 0)
                 {
-                    Debug.LogError("Instrument not found in instrument database.");
+                    Debug.LogError($"Instrument {instrumentID} not found in instrument database.", gameObject);
                     return null;
                 }
                 _instRef = instrumentCandidates.First();
