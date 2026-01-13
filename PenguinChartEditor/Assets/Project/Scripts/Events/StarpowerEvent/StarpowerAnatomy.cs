@@ -11,6 +11,10 @@ public struct StarpowerAnatomy
     [SerializeField] public MeshRenderer colorMesh;
     [SerializeField] public MeshRenderer colorSphereTopperMesh;
 
+    [SerializeField] Material previewerColor;
+    [SerializeField] Material normalColor;
+    [SerializeField] Material fillColor;
+
     public void UpdateSustainLength(int tick, int sustainLength)
     {
         var sustainTrackLength = Waveform.GetWaveformRatio(tick, sustainLength) * Highway3D.highwayLength;
@@ -18,5 +22,10 @@ public struct StarpowerAnatomy
 
         sustainTail.localScale = new(sustainTail.localScale.x, sustainTail.localScale.y, (float)sustainTrackLength);
         trackOverlay.localScale = new(trackOverlay.localScale.x, trackOverlay.localScale.y, (float)sustainTrackLength);
+    }
+
+    public void ChangeColorToPreviewer()
+    {
+        colorMesh.material = colorSphereTopperMesh.material = previewerColor;
     }
 }

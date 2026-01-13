@@ -533,6 +533,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     public void ValidateSustainsInRange(int startTick, int endTick) => sustainer.ValidateSustainsInRange(startTick, endTick);
     public void ClampSustainsBefore(int tick, LaneOrientation lane) => sustainer.ClampSustainsBefore(tick, (int)lane);
     public int CalculateSustainClamp(int sustainLength, int tick, LaneOrientation lane) => sustainer.CalculateSustainClamp(sustainLength, tick, (int)lane);
+    public int CalculateSustainClamp(int sustainLength, int tick, int lane) => sustainer.CalculateSustainClamp(sustainLength, tick, lane);
 
     #endregion
 

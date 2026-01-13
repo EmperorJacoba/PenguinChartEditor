@@ -85,9 +85,14 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
             );
     }
 
-    public float GetStarpowerXCoordinate()
+    public float GetLocalStarpowerXCoordinate()
     {
         return LeftEndCoordinate - 1.5f;
+    }
+
+    public float GetGlobalStarpowerXCoordinate()
+    {
+        return GetLocalStarpowerXCoordinate() + transform.position.x;
     }
 
     public int MatchXCoordinateToLane(float xCoordinate)

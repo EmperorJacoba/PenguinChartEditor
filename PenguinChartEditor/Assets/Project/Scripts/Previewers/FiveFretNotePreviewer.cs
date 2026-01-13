@@ -60,12 +60,6 @@ public class FiveFretNotePreviewer : Previewer
 
         var highwayProportion = lane.parentGameInstrument.GetCursorHighwayProportion();
 
-        if (highwayProportion == 0)
-        {
-            Hide();
-            return;
-        }
-
         Tick = SongTime.CalculateGridSnappedTick(highwayProportion);
 
         FiveFretNoteData.FlagType previewFlag;
@@ -93,8 +87,6 @@ public class FiveFretNotePreviewer : Previewer
 
     bool IsWithinRange(Vector3 hitPosition)
     {
-        if (lane == null) return false;
-
         // add code here to block open note from placing note if the cursor is above another note
         if (lane.laneIdentifier == FiveFretInstrument.LaneOrientation.open)
         {
@@ -103,7 +95,7 @@ public class FiveFretNotePreviewer : Previewer
         else
         {
             if (openNoteEditing) return false;
-            if (hitPosition.x < (laneCenterPosition - 1) || hitPosition.x > (laneCenterPosition + 1)) return false;
+            if (hitPosition.x < (laneCenterPosition - 1) || hitPosition.x > (laneCenterPosition + 1) || hitPosition.y < 0) return false;
         }
         return true;
     }
@@ -118,7 +110,7 @@ public class FiveFretNotePreviewer : Previewer
     protected override void AddCurrentEventDataToLaneSet()
     {
         int sustain =
-            Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(Tick + AppliedSustain) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(Tick) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
+            Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(Tick, Tick + AppliedSustain) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
             0 : AppliedSustain;
 
         parentFiveFretInstrument.AddData(

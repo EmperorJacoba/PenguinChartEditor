@@ -52,6 +52,8 @@ public class SceneDetails : MonoBehaviour
     // with 3D physics raycaster, make sure lane objects are castable by the raycaster
     public bool IsEventDataHit() => IsRaycasterHit(eventRaycaster);
 
+    public bool IsMasterHighwayHit() => GetCursorHighwayPosition().x > 0; 
+
     bool IsRaycasterHit(BaseRaycaster targetRaycaster)
     {
         PointerEventData pointerData = new(EventSystem.current)
@@ -69,11 +71,6 @@ public class SceneDetails : MonoBehaviour
     // please fit for 3D
     public Vector3 GetCursorHighwayPosition()
     {
-        if (is2D)
-        {
-            Debug.LogWarning("If you are attempting to use this function for vocal editing, the current code does not account for 2D lane positions.");
-        }
-
         PointerEventData pointerData = new(EventSystem.current)
         {
             position = Input.mousePosition
@@ -84,7 +81,8 @@ public class SceneDetails : MonoBehaviour
 
         if (results.Count == 0) return new Vector3(int.MinValue, int.MinValue, int.MinValue);
 
-        return results[0].worldPosition;
+        var relevantResult = results.Find(x => x.gameObject.transform.IsChildOf(highway.transform));
+        return relevantResult.worldPosition;
     }
 
     // please fit for 3D

@@ -9,7 +9,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     public override SelectionSet<FiveFretNoteData> Selection => _cachedSelectionRef;
     private SelectionSet<FiveFretNoteData> _cachedSelectionRef;
 
-    private const float PREVIEWER_Y_OFFSET = 0.00001f;
 
     [SerializeField] FiveFretAnatomy notePieces;
 

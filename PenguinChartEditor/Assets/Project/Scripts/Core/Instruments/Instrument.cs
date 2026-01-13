@@ -38,5 +38,6 @@ public interface IInstrument
 public interface ISustainableInstrument
 {
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event);
+    public int CalculateSustainClamp(int sustainLength, int tick, int lane);
 }
 

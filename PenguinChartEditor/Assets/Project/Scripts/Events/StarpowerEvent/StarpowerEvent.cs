@@ -53,13 +53,28 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
 
         if (!readOnly) CheckForSelection();
 
-        UpdatePosition(Waveform.GetWaveformRatio(tick), parentGameInstrument.GetStarpowerXCoordinate());
+        UpdatePosition(Waveform.GetWaveformRatio(tick), parentGameInstrument.GetLocalStarpowerXCoordinate());
         notePieces.UpdateSustainLength(tick, representedData.Sustain);
     }
 
-    void UpdatePosition(double percentOfTrack, float xPosition)
+    public void InitializeEventAsPreviewer(StarpowerLane parentLane, int previewTick, StarpowerEventData previewData)
+    {
+        ParentLane = parentLane;
+        laneID = (HeaderType)ParentLane.laneID;
+
+        _tick = previewTick;
+
+        UpdatePositionAsPreviewer();
+        notePieces.UpdateSustainLength(previewTick, previewData.Sustain);
+        notePieces.ChangeColorToPreviewer();
+    }
+
+    void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
     {
         var trackProportion = (float)percentOfTrack * parentGameInstrument.HighwayLength;
-        transform.localPosition = new(xPosition, transform.localPosition.y, trackProportion);
+        transform.localPosition = new(xPosition, yPosition, trackProportion);
     }
+
+    void UpdatePositionAsPreviewer() => 
+        UpdatePosition(Waveform.GetWaveformRatio(_tick), parentGameInstrument.GetLocalStarpowerXCoordinate(), PREVIEWER_Y_OFFSET);
 }

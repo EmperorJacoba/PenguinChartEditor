@@ -139,7 +139,13 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected void Update()
     {
-        if (Input.GetMouseButton(0) && !Input.GetMouseButton(1) && IsPreviewerActive())
+        if (Input.GetMouseButton(1))
+        {
+            Hide();
+            return;
+        }
+
+        if (Input.GetMouseButton(0) && IsPreviewerActive())
         {
             CreateEvent();
         }

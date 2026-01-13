@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class StarpowerInstrument : IInstrument, ISustainableInstrument
@@ -74,12 +75,15 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     SustainHelper<StarpowerEventData> sustainer;
 
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
+    public int CalculateSustainClamp(int sustainLength, int tick, int lane) => sustainer.CalculateSustainClamp(sustainLength, tick, lane);
+    public int CalculateSustainClamp(int sustainLength, int tick, HeaderType lane) => CalculateSustainClamp(sustainLength, tick, (int)lane);
 
     void CheckForSelectionClear()
     {
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsMasterHighwayHit()) return;
 
         ClearAllSelections();
+        Chart.InPlaceRefresh();
     }
 
     void DeleteSelection()

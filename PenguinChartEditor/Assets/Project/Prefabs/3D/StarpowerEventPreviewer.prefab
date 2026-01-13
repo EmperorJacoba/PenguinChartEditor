@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3086465253228726207}
   - component: {fileID: 2217320744227936152}
-  - component: {fileID: 8564898454960514793}
+  - component: {fileID: 1107878799456722441}
   m_Layer: 0
   m_Name: StarpowerEventPreviewer
   m_TagString: Untagged
@@ -51,32 +51,26 @@ MonoBehaviour:
   readOnly: 0
   <SelectionOverlay>k__BackingField: {fileID: 0}
   notePieces:
-    isPreviewer: 0
+    isPreviewer: 1
     sustainTail: {fileID: 6598787168120117805}
     trackOverlay: {fileID: 2379565370671930859}
     colorMesh: {fileID: 7764414235528491945}
     colorSphereTopperMesh: {fileID: 2752884268654699197}
---- !u!65 &8564898454960514793
-BoxCollider:
+    previewerColor: {fileID: 2100000, guid: f94a99ac2a8549d4c807b6e03387c100, type: 2}
+    normalColor: {fileID: 2100000, guid: 322a366ae2ba41b40a69d7fb5cc9e353, type: 2}
+    fillColor: {fileID: 0}
+--- !u!114 &1107878799456722441
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5029302309147462073}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2.4747233, y: 1.0931344, z: 2.750296}
-  m_Center: {x: 0.008440018, y: 0.25586188, z: 0.018663585}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eed25e7eabd7ff84ba7329386df2c131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6588379698825394863
 GameObject:
   m_ObjectHideFlags: 0

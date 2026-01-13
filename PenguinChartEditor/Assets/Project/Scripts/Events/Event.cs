@@ -29,6 +29,7 @@ public interface IEvent
 // Use the interfaces guaranteed in IEvent above to access necessary functions/properties (add as needed)
 public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler where T : IEventData
 {
+    protected const float PREVIEWER_Y_OFFSET = 0.00001f;
     public abstract bool hasSustainTrail { get; }
     public bool readOnly = false;
     public abstract int Lane { get; }
