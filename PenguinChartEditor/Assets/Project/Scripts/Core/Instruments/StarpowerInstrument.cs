@@ -69,6 +69,7 @@ public class StarpowerInstrument : IInstrument
 
     void MoveSelection()
     {
+        if (Chart.LoadedInstrument != this) return;
         currentLaneOrdering ??= InstrumentSpawningManager.instance.GetCurrentLaneOrdering();
         if (mover.Move2DSelection(this, Lanes, currentLaneOrdering))
         {

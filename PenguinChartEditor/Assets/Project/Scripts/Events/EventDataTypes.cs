@@ -11,6 +11,7 @@ public interface IEventData : IEquatable<IEventData>
 public interface ISustainable
 {
     int Sustain { get; set; }
+    ISustainable ExportWithNewSustain(int newSustain);
 }
 
 public struct BPMData : IEquatable<BPMData>, IEventData
@@ -127,10 +128,11 @@ public struct FiveFretNoteData : IEventData, ISustainable, IEquatable<FiveFretNo
         return new FiveFretNoteData(Sustain, newFlag, Default);
     }
 
-    public FiveFretNoteData ExportWithNewSustain(int sustain)
+    public FiveFretNoteData ExportWithNewSustain(int newSustain)
     {
-        return new FiveFretNoteData(sustain, Flag, Default);
+        return new FiveFretNoteData(newSustain, Flag, Default);
     }
+    ISustainable ISustainable.ExportWithNewSustain(int newSustain) => ExportWithNewSustain(newSustain);
 
     public FiveFretNoteData ExportWithNewDefault(bool state)
     {
@@ -235,31 +237,6 @@ public struct VoxData : IEventData
 
 } */
 
-public struct SpecialData
-{
-    public enum EventType
-    {
-        starpower = 2,
-        drumFill = 64,
-        drumRoll = 65,
-        drumRollDouble = 66
-    }
-
-    public EventType eventType;
-    public int Sustain;
-
-    public SpecialData(int sustain, EventType eventType)
-    {
-        this.eventType = eventType;
-        Sustain = sustain;
-    }
-
-    public string[] ToChartFormat(int lane)
-    {
-        throw new NotImplementedException();
-    }
-}
-
 public struct StarpowerEventData : IEventData, IEquatable<StarpowerEventData>, ISustainable
 {
     public bool IsFill;
@@ -283,6 +260,13 @@ public struct StarpowerEventData : IEventData, IEquatable<StarpowerEventData>, I
             @event = $"S 2 {Sustain}";
         }
         return new string[1] { @event };
+    }
+
+    ISustainable ISustainable.ExportWithNewSustain(int newSustain) => ExportWithNewSustain(newSustain);
+
+    public StarpowerEventData ExportWithNewSustain(int newSustain)
+    {
+        return new(IsFill, newSustain);
     }
 
     public bool Equals(StarpowerEventData other)

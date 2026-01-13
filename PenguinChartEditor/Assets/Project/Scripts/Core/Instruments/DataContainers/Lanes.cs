@@ -297,12 +297,14 @@ public class Lanes<T> where T : IEventData
         Chart.InPlaceRefresh();
     }
 
-    public void DeleteAllTicksInSelection()
+    public bool DeleteAllTicksInSelection()
     {
+        if (GetTotalSelectionCount() == 0) return false;
         foreach (var selection in selections.Values)
         {
             selection.PopSelectedTicksFromLane();
         }
+        return true;
     }
 
     public void ShiftClickSelect(int start, int end)

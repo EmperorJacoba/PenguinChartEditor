@@ -56,7 +56,6 @@ public class SyncTrackInstrument : IInstrument
         return tsSelection;
     }
 
-    public SortedDictionary<int, SpecialData> SpecialEvents { get; set; }
     public SoloDataSet SoloData
     {
         get { throw new NotImplementedException("SyncTrack does not have solo events. If you are using the SoloEvent suite, it is not required."); }

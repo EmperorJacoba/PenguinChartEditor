@@ -125,6 +125,8 @@ public class FiveFretInstrument : IInstrument
                 CheckForHoposInRange(startTick, endTick);
             };
         }
+
+        sustainer = new(this, Lanes, true);
     }
 
     InstrumentType IdentifyInstrument(HeaderType instrumentID)
@@ -196,8 +198,6 @@ public class FiveFretInstrument : IInstrument
             Lanes.DeleteAllTicksInSelection();
 
             CheckForHoposInRange(totalSelection.Min(), totalSelection.Max());
-
-            Lanes.ClearAllSelections();
         }
 
         Chart.InPlaceRefresh();
@@ -410,26 +410,6 @@ public class FiveFretInstrument : IInstrument
         Chart.InPlaceRefresh();
     }
 
-    public void SetSelectionSustain(int ticks)
-    {
-        var currentSelection = Lanes.GetTotalSelectionByLane();
-
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            var laneSelection = currentSelection[i];
-            if (laneSelection.Count == 0) continue;
-
-            var changingLane = Lanes.GetLane(i);
-
-            foreach (var selectedNote in laneSelection)
-            {
-                UpdateSustain(selectedNote, (LaneOrientation)i, ticks);
-            }
-        }
-
-        Chart.InPlaceRefresh();
-    }
-
     public void SetEqualSpacing()
     {
         var currentSelection = Lanes.GetTotalSelectionByLane();
@@ -544,236 +524,20 @@ public class FiveFretInstrument : IInstrument
 
     #region Sustains
 
-    SustainData<FiveFretNoteData> sustainData = new();
-
-    public void SustainSelection()
-    {
-        if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
-
-        // Early return if attempting to start an edit while over an overlay element
-        // Allows edit to start only if interacting with main content
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !sustainData.sustainInProgress) return;
-
-        var currentMouseTick = GetCurrentMouseTick();
-        if (currentMouseTick == int.MinValue) return;
-
-        // early return if no changes to mouse's grid snap
-        if (currentMouseTick == sustainData.lastMouseTick) return;
-
-        if (!sustainData.sustainInProgress)
-        {
-            // directly access parent lane here to avoid reassigning the local shortcut variable
-            sustainData = new(Lanes.GetTotalSelectionByLane(), currentMouseTick);
-            return;
-        }
-
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            var laneTicks = sustainData.sustainingTicks[i];
-            var lane = Lanes.GetLane(i);
-
-            foreach (var tick in laneTicks)
-            {
-                var newSustain = currentMouseTick - tick;
-
-                // drag behind the note to max out sustain - cool feature from moonscraper
-                // -CurrentDivison is easy arbitrary value for when to max out - so that there is a buffer for users to remove sustain entirely
-                // SongLengthTicks will get clamped to max sustain length
-                if (newSustain < -DivisionChanger.CurrentDivision) newSustain = SongTime.SongLengthTicks;
-
-                if (lane.ContainsKey(tick))
-                {
-                    UpdateSustain(tick, (LaneOrientation)i, newSustain);
-                }
-            }
-        }
-
-        Chart.InPlaceRefresh();
-        sustainData.lastMouseTick = currentMouseTick;
-    }
-
+    SustainHelper<FiveFretNoteData> sustainer;
+    public void SetSelectionSustain(int ticks) => sustainer.SetSelectionSustain(ticks);
+    public void SustainSelection() => sustainer.SustainSelection();
     public void CompleteSustain()
     {
-        // parameterless new() = flag as empty 
-        sustainData = new();
+        sustainer.ResetSustainChange();
         Chart.InPlaceRefresh();
     }
-
-    public static int GetCurrentMouseTick()
-    {
-        var newHighwayPercent = Chart.instance.SceneDetails.GetCursorHighwayProportion();
-
-        // 0 is very unlikely as an actual position (as 0 is at the very bottom of the TRACK, which should be outside the screen in most cases)
-        // but is returned if cursor is outside track
-        // min value serves as an easy exit check in case the cursor is outside the highway
-        if (newHighwayPercent == 0) return int.MinValue;
-
-        return SongTime.CalculateGridSnappedTick(newHighwayPercent);
-    }
-
-    public void ShiftClickSustainClamp(int tick, int tickLength)
-    {
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            if (Lanes.GetLane(i).ContainsKey(tick))
-            {
-                Lanes.GetLane(i)[tick] = new(tickLength, Lanes.GetLane(i)[tick].Flag, Lanes.GetLane(i)[tick].Default);
-            }
-        }
-    }
-
-    public void ValidateSustain(int tick, LaneOrientation lane)
-    {
-        if (UserSettings.ExtSustains)
-        {
-            var extendedLaneRef = Lanes.GetLane((int)lane);
-            if (!extendedLaneRef.Contains(tick)) return;
-
-            UpdateSustain(tick, lane, extendedLaneRef[tick].Sustain);
-        }
-        else
-        {
-            var smallestSustain = int.MaxValue;
-
-            for (int i = 0; i < Lanes.Count; i++)
-            {
-                var laneRef = Lanes.GetLane(i);
-                if (!laneRef.Contains(tick)) continue;
-
-                if (laneRef[tick].Sustain < smallestSustain) smallestSustain = laneRef[tick].Sustain;
-            }
-
-            UpdateSustain(tick, lane, smallestSustain);
-        }
-    }
-
-    public void UpdateSustain(int tick, LaneOrientation lane, int newSustain)
-    {
-        // clamp based on this lane only (ignore other lane overlap)
-        if (UserSettings.ExtSustains)
-        {
-            var currentLane = Lanes.GetLane((int)lane);
-            if (!currentLane.Contains(tick)) return;
-
-            currentLane[tick] = currentLane[tick].ExportWithNewSustain(
-                CalculateSustainClamp(newSustain, tick, currentLane.GetNextTickEventInLane(tick))
-                );
-        }
-        // clamp based on ALL lanes
-        else
-        {
-            var ticks = Lanes.GetTickEventBounds(tick);
-            var calculatedCurrentSustain = CalculateSustainClamp(newSustain, tick, ticks.next);
-
-            for (int i = 0; i < Lanes.Count; i++)
-            {
-                var iteratorLane = Lanes.GetLane(i);
-
-                if (iteratorLane.Contains(tick))
-                {
-                    iteratorLane[tick] = iteratorLane[tick].ExportWithNewSustain(calculatedCurrentSustain);
-                }
-            }
-        }
-    }
-
+    public void ShiftClickSustainClamp(int tick, int tickLength) => sustainer.ShiftClickSustainClamp(tick, tickLength);
+    public void UpdateSustain(int tick, LaneOrientation lane, int newSustain) => sustainer.UpdateSustain(tick, (int)lane, newSustain);
     public void ValidateSustainsInRange(MinMaxTicks range) => ValidateSustainsInRange(range.min, range.max);
-    public void ValidateSustainsInRange(int startTick, int endTick)
-    {
-        var uniqueTicks = GetUniqueTickSet();
-        var uniqueTicksInRange = uniqueTicks.Where(tick => tick >= startTick && tick <= endTick).ToList();
-
-        if (UserSettings.ExtSustains)
-        {
-            for (int i = 0; i < Lanes.Count; i++)
-            {
-                var currentLane = Lanes.GetLane(i);
-                ClampSustainsBefore(startTick, (LaneOrientation)i);
-
-                for (int index = 0; index < uniqueTicksInRange.Count(); index++)
-                {
-                    int tick = uniqueTicksInRange[index];
-                    if (currentLane.Contains(tick)) ValidateSustain(uniqueTicksInRange[index], (LaneOrientation)i);
-                }
-            }
-        }
-        else
-        {
-            // lane orientation is irrelevant, just pass in anything
-            ClampSustainsBefore(startTick, LaneOrientation.green);
-
-            for (int index = 0; index < uniqueTicksInRange.Count(); index++)
-            {
-                int tick = uniqueTicksInRange[index];
-                ValidateSustain(uniqueTicksInRange[index], LaneOrientation.green);
-            }
-        }
-
-        Chart.InPlaceRefresh();
-    }
-
-    public void ClampSustainsBefore(int tick, LaneOrientation lane)
-    {
-        if (UserSettings.ExtSustains)
-        {
-            ClampLaneEventsBefore(tick, lane);
-            return;
-        }
-
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            ClampLaneEventsBefore(tick, (LaneOrientation)i);
-        }
-    }
-
-    void ClampLaneEventsBefore(int tick, LaneOrientation lane)
-    {
-        var currentLane = Lanes.GetLane((int)lane);
-
-        var clampTargetTick = currentLane.GetPreviousTickEventInLane(tick);
-        if (clampTargetTick == LaneSet<FiveFretNoteData>.NO_TICK_EVENT) return;
-
-        var data = currentLane[clampTargetTick];
-        currentLane[clampTargetTick] = data.ExportWithNewSustain(
-            CalculateSustainClamp(data.Sustain, clampTargetTick, tick)
-            );
-    }
-
-    public int CalculateSustainClamp(int sustainLength, int tick, LaneOrientation lane)
-    {
-        if (!UserSettings.ExtSustains)
-        {
-            return CalculateSustainClamp(sustainLength, tick, Lanes.GetTickEventBounds(tick).next);
-        }
-        else
-        {
-            return CalculateSustainClamp(sustainLength, tick, Lanes.GetLane((int)lane).GetNextTickEventInLane(tick));
-        }
-    }
-
-    public int CalculateSustainClamp(int sustainLength, int tick, int nextTick)
-    {
-        int clampedSustain = sustainLength;
-        if (nextTick != LaneSet<FiveFretNoteData>.NO_TICK_EVENT)
-        {
-            if (sustainLength + tick >= nextTick - UserSettings.SustainGapTicks)
-            {
-                clampedSustain = (nextTick - tick) - UserSettings.SustainGapTicks;
-            }
-        }
-        else
-        {
-            if (sustainLength + tick >= SongTime.SongLengthTicks)
-            {
-                clampedSustain = (SongTime.SongLengthTicks - tick); // does sustain gap apply to end of song? 🤔
-            }
-        }
-
-        if (clampedSustain < 0) clampedSustain = 0;
-
-        var sustainLengthMS = Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick + clampedSustain) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick);
-        return sustainLengthMS < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ? 0 : clampedSustain;
-    }
+    public void ValidateSustainsInRange(int startTick, int endTick) => sustainer.ValidateSustainsInRange(startTick, endTick);
+    public void ClampSustainsBefore(int tick, LaneOrientation lane) => sustainer.ClampSustainsBefore(tick, (int)lane);
+    public int CalculateSustainClamp(int sustainLength, int tick, LaneOrientation lane) => sustainer.CalculateSustainClamp(sustainLength, tick, (int)lane);
 
     #endregion
 
