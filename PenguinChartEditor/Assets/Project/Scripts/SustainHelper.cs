@@ -99,7 +99,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         sustainData.lastMouseTick = currentMouseTick;
     }
 
-    public void UpdateSustain(int tick, int lane, int newSustain)
+    void UpdateSustain(int tick, int lane, int newSustain)
     {
         // clamp based on this lane only (ignore other lane overlap)
         if (independentLanes)
@@ -158,7 +158,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         return sustainLengthMS < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ? 0 : clampedSustain;
     }
 
-    public void ShiftClickSustainClamp(int tick, int tickLength)
+    void ShiftClickSustainClamp(int tick, int tickLength)
     {
         foreach (var lane in laneData.LaneKeys)
         {

@@ -3,10 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Notes: The equivilent of LaneOrientation in this instrument is HeaderType - as each instrument track has independent starpower.
+/// </summary>
 public class StarpowerInstrument : IInstrument, ISustainableInstrument
 {
+    #region Constants
+
     private const int EVENT_TYPE_IDENTIFIER_INDEX = 1;
     private const int SUSTAIN_INDEX = 2;
+
+    #endregion
+
+    #region Data Access
 
     /// <summary>
     /// Access instrument data with GetLane(int), where int is casted version of HeaderType, since each traditional instrument has its own set of starpower events.
@@ -18,10 +27,13 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         throw new NotImplementedException($"Starpower does not have a bar lane. Please format the note receivers to access your intended instrument instead of the loaded instrument.");
     }
     ISelection IInstrument.GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
+
     public LaneSet<StarpowerEventData> GetLaneData(HeaderType lane) => Lanes.GetLane((int)lane);
     public LaneSet<StarpowerEventData> GetLaneData(int lane) => Lanes.GetLane(lane);
+
     public SelectionSet<StarpowerEventData> GetLaneSelection(HeaderType lane) => Lanes.GetLaneSelection((int)lane);
     public SelectionSet<StarpowerEventData> GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
+
     public SoloDataSet SoloData
     {
         get { throw new NotImplementedException("Starpower does not have solo events. If you are using the SoloEvent suite, it is not required."); }
@@ -33,9 +45,16 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
     public int NoteSelectionCount => Lanes.GetTotalSelectionCount();
 
-    public List<int> GetUniqueTickSet()
+    public List<int> GetUniqueTickSet() => Lanes.GetUniqueTickSet();
+
+    #endregion
+
+    #region Constructor
+
+    public StarpowerInstrument(List<RawStarpowerEvent> starpowerEvents)
     {
-        return Lanes.GetUniqueTickSet();
+        SetUpLanes();
+        ParseRawStarpowerEvents(starpowerEvents);
     }
 
     void SetUpLanes()
@@ -52,11 +71,6 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         sustainer = new(this, Lanes, false);
     }
 
-    public StarpowerInstrument(List<RawStarpowerEvent> starpowerEvents)
-    {
-        SetUpLanes();
-        ParseRawStarpowerEvents(starpowerEvents);
-    }
 
     InputMap inputMap;
     public void SetUpInputMap()
@@ -72,11 +86,21 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         inputMap.Charting.SelectAll.performed += x => Lanes.SelectAll();
     }
 
+    #endregion
+
+    #region Sustains
+
     SustainHelper<StarpowerEventData> sustainer;
 
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
     public int CalculateSustainClamp(int sustainLength, int tick, int lane) => sustainer.CalculateSustainClamp(sustainLength, tick, lane);
     public int CalculateSustainClamp(int sustainLength, int tick, HeaderType lane) => CalculateSustainClamp(sustainLength, tick, (int)lane);
+
+    #endregion
+
+    #region Selections
+
+    public void ClearAllSelections() => Lanes.ClearAllSelections();
 
     void CheckForSelectionClear()
     {
@@ -94,6 +118,35 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
         Chart.InPlaceRefresh();
     }
+
+    public bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
+
+    public void ClearTickFromAllSelections(int tick) => Lanes.ClearTickFromAllSelections(tick);
+
+
+    public void ShiftClickSelect(int start, int end) => Lanes.ShiftClickSelect(start, end);
+
+    public void ShiftClickSelect(int tick) => Lanes.ShiftClickSelect(tick, tick);
+
+
+    #endregion
+
+    #region Add/Delete
+    public void DeleteAllEventsAtTick(int tick)
+    {
+        Lanes.PopAllEventsAtTick(tick);
+        Chart.InPlaceRefresh();
+    }
+
+    public void DeleteTickInLane(int tick, int lane)
+    {
+        Lanes.PopTickFromLane(tick, lane);
+        Chart.InPlaceRefresh();
+    }
+
+    public void DeleteTicksInSelection() => Lanes.DeleteAllTicksInSelection();
+
+    #endregion
 
     #region Moving
 
@@ -123,6 +176,8 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     }
 
     #endregion
+
+    #region Import
 
     void ParseRawStarpowerEvents(List<RawStarpowerEvent> starpowerEvents)
     {
@@ -168,43 +223,25 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         */
     }
 
+
     public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
     {
         throw new System.NotImplementedException();
     }
 
-    public void ClearAllSelections() => Lanes.ClearAllSelections();
+    #endregion
+
+    #region Export 
 
     public string ConvertSelectionToString()
     {
         throw new System.NotImplementedException();
     }
 
-    public void DeleteAllEventsAtTick(int tick) 
-    {
-        Lanes.PopAllEventsAtTick(tick);
-        Chart.InPlaceRefresh();
-    }
-
-    public void DeleteTickInLane(int tick, int lane) 
-    { 
-        Lanes.PopTickFromLane(tick, lane);
-        Chart.InPlaceRefresh();
-    }
-
-    public void DeleteTicksInSelection() => Lanes.DeleteAllTicksInSelection();
-
     public List<string> ExportAllEvents()
     {
         throw new System.NotImplementedException();
     }
 
-    public bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
-
-    public void ClearTickFromAllSelections(int tick) => Lanes.ClearTickFromAllSelections(tick);
-
-
-    public void ShiftClickSelect(int start, int end) => Lanes.ShiftClickSelect(start, end);
-
-    public void ShiftClickSelect(int tick) => Lanes.ShiftClickSelect(tick, tick);
+    #endregion
 }

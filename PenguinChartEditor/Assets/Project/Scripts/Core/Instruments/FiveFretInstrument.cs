@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class FiveFretInstrument : IInstrument, ISustainableInstrument
@@ -10,7 +9,6 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     #region Constants 
 
     const string NOTE_INDICATOR = "N";
-    const string SPECIAL_INDICATOR = "S";
     const string EVENT_INDICATOR = "E";
     const string DEPRECATED_HAND_INDICATOR = "H";
     const int IDENTIFIER_INDEX = 0;
@@ -20,21 +18,20 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     const string TAP_SUBSTRING = "N 6 0";
     const int EVENT_DATA_INDEX = 1;
     const int LAST_VALID_IDENTIFIER = 7;
-    const int OPEN_IDENTIFIER = 7;
-    const int STARPOWER_INDICATOR = 2;
     const string TAP_ID = "N 6 0";
     const string EXPLICIT_STRUM_ID = "N FS 0";
     const string EXPLICIT_HOPO_ID = "N FH 0";
 
     #endregion
 
-    #region Data
+    #region Data Access
 
     private Lanes<FiveFretNoteData> Lanes { get; set; }
     ILaneData IInstrument.GetLaneData(int lane) => Lanes.GetLane(lane);
     ILaneData IInstrument.GetBarLaneData() => GetLaneData(LaneOrientation.open);
     public LaneSet<FiveFretNoteData> GetLaneData(int lane) => Lanes.GetLane(lane);
     public LaneSet<FiveFretNoteData> GetLaneData(LaneOrientation lane) => Lanes.GetLane((int)lane);
+
     ISelection IInstrument.GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
     public SelectionSet<FiveFretNoteData> GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
     public SelectionSet<FiveFretNoteData> GetLaneSelection(LaneOrientation lane) => Lanes.GetLaneSelection((int)lane);
@@ -46,6 +43,10 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     public HeaderType InstrumentID => (HeaderType)((int)InstrumentName + (int)Difficulty);
 
     InputMap inputMap;
+
+    #endregion
+
+    #region LaneOrientation
 
     /// <summary>
     /// Corresponds to this lane's ID in Lanes.
@@ -93,10 +94,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         };
     }
 
-    public List<int> GetUniqueTickSet()
-    {
-        return Lanes.GetUniqueTickSet();
-    }
+    public List<int> GetUniqueTickSet() => Lanes.GetUniqueTickSet();
 
     #endregion
 
@@ -107,7 +105,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         Lanes = new(6);
         SoloData = new();
 
-        InstrumentName = IdentifyInstrument(instrumentID);
+        InstrumentName = InstrumentMetadata.GetInstrumentType(instrumentID);
         Difficulty = InstrumentMetadata.GetDifficulty(instrumentID);
 
         AddChartFormattedEventsToInstrument(instrumentInfo);
@@ -128,19 +126,6 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         }
 
         sustainer = new(this, Lanes, true);
-    }
-
-    InstrumentType IdentifyInstrument(HeaderType instrumentID)
-    {
-        return (int)instrumentID switch
-        {
-            <= 13 => InstrumentType.guitar,
-            <= 23 => InstrumentType.coopGuitar,
-            <= 33 => InstrumentType.bass,
-            <= 43 => InstrumentType.rhythm,
-            <= 53 => InstrumentType.keys,
-            _ => throw new ArgumentException("Tried to create a FiveFretInstrument with an unsupported instrument.")
-        };
     }
 
     public void SetUpInputMap()
@@ -527,8 +512,6 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     public SustainHelper<FiveFretNoteData> sustainer;
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
     public void SetSelectionSustain(int ticks) => sustainer.SetSelectionSustain(ticks);
-    public void ShiftClickSustainClamp(int tick, int tickLength) => sustainer.ShiftClickSustainClamp(tick, tickLength);
-    public void UpdateSustain(int tick, LaneOrientation lane, int newSustain) => sustainer.UpdateSustain(tick, (int)lane, newSustain);
     public void ValidateSustainsInRange(MinMaxTicks range) => ValidateSustainsInRange(range.min, range.max);
     public void ValidateSustainsInRange(int startTick, int endTick) => sustainer.ValidateSustainsInRange(startTick, endTick);
     public void ClampSustainsBefore(int tick, LaneOrientation lane) => sustainer.ClampSustainsBefore(tick, (int)lane);
