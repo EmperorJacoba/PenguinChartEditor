@@ -11,8 +11,8 @@ public class Lanes<T> where T : IEventData
 
     public Lanes(int laneCount)
     {
-        lanes = new();
-        selections = new();
+        lanes = new(laneCount);
+        selections = new(laneCount);
 
         for (int i = 0; i < laneCount; i++)
         {
@@ -23,8 +23,8 @@ public class Lanes<T> where T : IEventData
 
     public Lanes(List<int> laneIDs)
     {
-        lanes = new();
-        selections = new();
+        lanes = new(laneIDs.Count);
+        selections = new(laneIDs.Count);
 
         foreach (var id in laneIDs)
         {
@@ -312,6 +312,14 @@ public class Lanes<T> where T : IEventData
         foreach (var selection in selections.Values)
         {
             selection.ShiftClickSelectInRange(start, end);
+        }
+    }
+
+    public void ShiftClickSelect(int start, int end, List<int> targetLanes)
+    {
+        foreach (var laneID in targetLanes)
+        {
+            selections[laneID].ShiftClickSelectInRange(start, end);
         }
     }
 

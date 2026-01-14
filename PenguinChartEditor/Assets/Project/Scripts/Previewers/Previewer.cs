@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 public interface IPreviewer
 {
@@ -131,10 +133,13 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         inputMap = new();
         inputMap.Enable();
 
-        inputMap.Charting.PreviewMousePos.performed += position =>
-            UpdatePosition();
-
+        inputMap.Charting.PreviewMousePos.performed += position => UpdatePosition();
         inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
+    }
+
+    private void OnDestroy()
+    {
+        inputMap.Dispose();
     }
 
     protected void Update()

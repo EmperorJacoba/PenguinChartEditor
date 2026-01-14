@@ -132,9 +132,15 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         Lanes.GetLaneSelection(lane).ShiftClickSelectInRange(start, end);
     }
 
-    public void ShiftClickSelect(int start, int end) => Lanes.ShiftClickSelect(start, end);
+    public void ShiftClickSelect(int start, int end)
+    {
+        Lanes.ShiftClickSelect(start, end, InstrumentSpawningManager.instance.GetActiveInstrumentIDs());
+    }
 
-    public void ShiftClickSelect(int tick) => Lanes.ShiftClickSelect(tick, tick);
+    public void ShiftClickSelect(int tick)
+    {
+        Lanes.ShiftClickSelect(tick, tick, InstrumentSpawningManager.instance.GetActiveInstrumentIDs());
+    }
 
 
     #endregion
@@ -164,7 +170,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     void MoveSelection()
     {
         if (Chart.LoadedInstrument != this) return;
-        currentLaneOrdering ??= InstrumentSpawningManager.instance.GetCurrentLaneOrdering();
+        currentLaneOrdering ??= InstrumentSpawningManager.instance.GetCurrentInstrumentOrdering();
         if (mover.Move2DSelection(this, Lanes, currentLaneOrdering))
         {
             Chart.InPlaceRefresh();
