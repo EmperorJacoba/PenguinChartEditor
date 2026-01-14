@@ -169,10 +169,8 @@ public class InstrumentSpawningManager : MonoBehaviour
 
         if (activeGameInstruments.Count == 0)
         {
-            leftButton.transform.position = Vector3.zero + BUTTON_Z_POSITION;
+            leftButton.transform.position = rightButton.transform.position = Vector3.zero + BUTTON_Z_POSITION;
             leftButton.gameObject.SetActive(false);
-
-            rightButton.transform.position = Vector3.zero + BUTTON_Z_POSITION;
 
             cameraController.ResetCameraPosition();
         }
@@ -202,6 +200,7 @@ public class InstrumentSpawningManager : MonoBehaviour
             }
         }
 
+        Chart.StarpowerInstrument.ClearLaneSelection(instrument.instrumentID);
         Destroy(instrument.gameObject);
         Chart.InPlaceRefresh();
     }

@@ -127,6 +127,8 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
     public void ClearTickFromAllSelections(int tick) => Lanes.ClearTickFromAllSelections(tick);
 
+    public void ClearLaneSelection(HeaderType lane) => Lanes.GetLaneSelection((int)lane).Clear();
+
     public void ShiftClickSelectLane(int start, int end, int lane)
     {
         Lanes.GetLaneSelection(lane).ShiftClickSelectInRange(start, end);
