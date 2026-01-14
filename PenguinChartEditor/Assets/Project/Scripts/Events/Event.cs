@@ -188,7 +188,14 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         {
             var minNum = Math.Min(lastTickSelection, Tick);
             var maxNum = Math.Max(lastTickSelection, Tick);
-            ParentInstrument.ShiftClickSelect(minNum, maxNum);
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                ParentInstrument.ShiftClickSelectLane(minNum, maxNum, Lane);
+            }
+            else
+            {
+                ParentInstrument.ShiftClickSelect(minNum, maxNum);
+            }
         }
         else if (Input.GetKey(KeyCode.LeftControl))
         {
@@ -210,6 +217,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
             }
             Selection.Add(Tick);
         }
+
         Chart.InPlaceRefresh();
 
         // Record the last selection data for shift-click selection

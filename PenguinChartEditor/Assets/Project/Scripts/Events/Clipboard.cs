@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using TextCopy;
-using UnityEngine;
 
 public static class Clipboard
 {

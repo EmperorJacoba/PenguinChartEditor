@@ -47,7 +47,7 @@ public class SoloPlate : Event<SoloEventData>
         transform.position = new(transform.position.x, transform.position.y, zPosition);
     }
 
-    public override int Lane => 0;
+    public override int Lane => IInstrument.SOLO_DATA_LANE_ID;
     public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
     public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
 

@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 // future me: PLEASE STOP ADDING <T>! IT WILL NOT WORK THIS TIME! LIKE THE 7 OTHER TIMES
 public interface IInstrument
 {
+    public const int SOLO_DATA_LANE_ID = int.MaxValue;
     SoloDataSet SoloData { get; set; }
     InstrumentType InstrumentName { get; set; }
     DifficultyType Difficulty { get; set; }
@@ -15,6 +16,7 @@ public interface IInstrument
     void ClearAllSelections();
     bool NoteSelectionContains(int tick, int lane);
     int NoteSelectionCount { get; }
+    public void ShiftClickSelectLane(int start, int end, int lane);
     public void ShiftClickSelect(int start, int end);
     public void ShiftClickSelect(int tick);
     public void ClearTickFromAllSelections(int tick);

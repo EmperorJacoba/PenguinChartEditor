@@ -237,6 +237,18 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         SoloData.DeleteSelection();
     }
 
+    public void ShiftClickSelectLane(int start, int end, int lane)
+    {
+        if (lane == IInstrument.SOLO_DATA_LANE_ID)
+        {
+            SoloData.SelectTicksInRange(start, end);
+        }
+        else
+        {
+            Lanes.GetLaneSelection(lane).ShiftClickSelectInRange(start, end);
+        }
+    }
+
     public void ShiftClickSelect(int start, int end)
     {
         Lanes.ShiftClickSelect(start, end);

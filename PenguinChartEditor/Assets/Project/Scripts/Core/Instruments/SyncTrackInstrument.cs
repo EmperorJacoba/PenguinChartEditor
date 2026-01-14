@@ -656,13 +656,27 @@ public class SyncTrackInstrument : IInstrument
         return false;
     }
 
+    public void ShiftClickSelectLane(int start, int end, int lane)
+    {
+        var trackID = (LaneOrientation)lane;
+
+        if (trackID == LaneOrientation.bpm)
+        {
+            bpmSelection.ShiftClickSelectInRange(start, end);
+        }
+        else
+        {
+            tsSelection.ShiftClickSelectInRange(start, end);
+        }
+    }
+
     public void ShiftClickSelect(int start, int end)
     {
         bpmSelection.Clear();
         tsSelection.Clear();
 
-        bpmSelection.AddInRange(start, end);
-        tsSelection.AddInRange(start, end);
+        bpmSelection.ShiftClickSelectInRange(start, end);
+        tsSelection.ShiftClickSelectInRange(start, end);
     }
 
     public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
