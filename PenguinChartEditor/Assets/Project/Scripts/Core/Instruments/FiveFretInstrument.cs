@@ -104,6 +104,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     {
         Lanes = new(6);
         SoloData = new();
+        sustainer = new(this, Lanes, true);
 
         InstrumentName = InstrumentMetadata.GetInstrumentType(instrumentID);
         Difficulty = InstrumentMetadata.GetDifficulty(instrumentID);
@@ -124,8 +125,6 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
                 CheckForHoposInRange(startTick, endTick);
             };
         }
-
-        sustainer = new(this, Lanes, true);
     }
 
     public void SetUpInputMap()
@@ -262,72 +261,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     public bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
 
     // solos not here as of current
-    public string ConvertSelectionToString()
-    {
-        if (Lanes.GetTotalSelection().Count == 0) return "";
-        var stringIDs = new List<KeyValuePair<int, string>>();
-        var zeroTick = Lanes.GetFirstSelectionTick();
-
-        HashSet<int> tapTicks = new();
-        HashSet<int> strumTicks = new();
-        HashSet<int> hopoTicks = new();
-
-        // add functionality here to allow N 5 forced pasting instead
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            var selectionData = Lanes.GetLaneSelection(i).ExportNormalizedData(zeroTick);
-            foreach (var note in selectionData)
-            {
-                stringIDs.Add(
-                    new(note.Key, note.Value.ToChartFormat(i)[0])
-                    );
-
-                if (!note.Value.Default)
-                {
-                    switch (note.Value.Flag)
-                    {
-                        case FiveFretNoteData.FlagType.hopo:
-                            hopoTicks.Add(note.Key);
-                            break;
-                        case FiveFretNoteData.FlagType.strum:
-                            strumTicks.Add(note.Key);
-                            break;
-                    }
-                }
-                if (note.Value.Flag == FiveFretNoteData.FlagType.tap) tapTicks.Add(note.Key);
-            }
-        }
-
-        foreach (var tick in tapTicks)
-        {
-            stringIDs.Add(
-                new(tick, TAP_ID)
-                );
-        }
-
-        foreach (var tick in strumTicks)
-        {
-            stringIDs.Add(
-                new(tick, EXPLICIT_STRUM_ID)
-                );
-        }
-
-        foreach (var tick in hopoTicks)
-        {
-            stringIDs.Add(
-                new(tick, EXPLICIT_HOPO_ID)
-                );
-        }
-
-        stringIDs.Sort((a, b) => a.Key.CompareTo(b.Key));
-
-        StringBuilder combinedIDs = new();
-        foreach (var id in stringIDs)
-        {
-            combinedIDs.AppendLine($"\t{id.Key} = {id.Value}");
-        }
-        return combinedIDs.ToString();
-    }
+    
 
     public void SetSelectionToNewLane(LaneOrientation destinationLane)
     {
@@ -676,6 +610,11 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     #region Import
 
+    public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    {
+        AddChartFormattedEventsToInstrument(Clipboard.ConvertToLineList(clipboardData, offset));
+    }
+
     // Prepare for indentation hell.
     public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
     {
@@ -826,36 +765,10 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
         if (openSoloEvent.StartTick >= 0) SoloData.SoloEvents.Add(openSoloEvent.StartTick, openSoloEvent);
         CheckForHoposInRange(uniqueTicks.Min(), uniqueTicks.Max());
+
+        if (Chart.SyncTrackInstrument is not null) ValidateSustainsInRange(uniqueTicks.Min(), uniqueTicks.Max());
+
         FlipTicks(flippedTicks);
-    }
-
-    public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
-    {
-        var lines = new List<KeyValuePair<int, string>>();
-        var clipboardAsLines = clipboardData.Split("\n");
-
-        for (int i = 0; i < clipboardAsLines.Length; i++)
-        {
-            var line = clipboardAsLines[i];
-
-            if (line.Trim() == "") continue;
-            var parts = line.Split(" = ", 2);
-
-            if (!int.TryParse(parts[0].Trim(), out int tick))
-            {
-                Chart.Log(@$"Problem parsing event {line}");
-                continue;
-            }
-
-            if (i == 0)
-            {
-                offset -= tick;
-            }
-
-            lines.Add(new(tick + offset, parts[1]));
-        }
-
-        AddChartFormattedEventsToInstrument(lines);
     }
 
     public void FlipTicks(HashSet<int> flippedTicks)
@@ -879,7 +792,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     #region Export
 
-    // currently only supports N events, need support for E and S
+    // currently only supports N events, need support for E solo/soloend
     // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)
     // throw away sustains that are too small (ms < user settings constant) (add setting to do extra validation, or do this when validators fail)
     public List<string> ExportAllEvents()
@@ -896,6 +809,74 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
         var orderedStrings = notes.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
         return orderedStrings;
+    }
+
+    // no solos currently
+    public string ConvertSelectionToString()
+    {
+        if (Lanes.GetTotalSelection().Count == 0) return "";
+        var stringIDs = new List<KeyValuePair<int, string>>();
+        var zeroTick = Lanes.GetFirstSelectionTick();
+
+        HashSet<int> tapTicks = new();
+        HashSet<int> strumTicks = new();
+        HashSet<int> hopoTicks = new();
+
+        // add functionality here to allow N 5 forced pasting instead
+        for (int i = 0; i < Lanes.Count; i++)
+        {
+            var selectionData = Lanes.GetLaneSelection(i).ExportNormalizedData(zeroTick);
+            foreach (var note in selectionData)
+            {
+                stringIDs.Add(
+                    new(note.Key, note.Value.ToChartFormat(i)[0])
+                    );
+
+                if (!note.Value.Default)
+                {
+                    switch (note.Value.Flag)
+                    {
+                        case FiveFretNoteData.FlagType.hopo:
+                            hopoTicks.Add(note.Key);
+                            break;
+                        case FiveFretNoteData.FlagType.strum:
+                            strumTicks.Add(note.Key);
+                            break;
+                    }
+                }
+                if (note.Value.Flag == FiveFretNoteData.FlagType.tap) tapTicks.Add(note.Key);
+            }
+        }
+
+        foreach (var tick in tapTicks)
+        {
+            stringIDs.Add(
+                new(tick, TAP_ID)
+                );
+        }
+
+        foreach (var tick in strumTicks)
+        {
+            stringIDs.Add(
+                new(tick, EXPLICIT_STRUM_ID)
+                );
+        }
+
+        foreach (var tick in hopoTicks)
+        {
+            stringIDs.Add(
+                new(tick, EXPLICIT_HOPO_ID)
+                );
+        }
+
+        stringIDs.Sort((a, b) => a.Key.CompareTo(b.Key));
+
+        StringBuilder combinedIDs = new();
+        foreach (var id in stringIDs)
+        {
+            combinedIDs.AppendLine($"\t{id.Key} = {id.Value}");
+        }
+        return combinedIDs.ToString();
     }
 
     #endregion

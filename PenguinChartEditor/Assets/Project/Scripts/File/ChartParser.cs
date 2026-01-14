@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public static class ChartParser
 {
@@ -18,14 +19,14 @@ public static class ChartParser
     #region Sync Track Constants
     const string HELPFUL_REMINDER = "Please check the file and try again.";
     private const string SPECIAL_INDICATOR = "S";
-    private const int INDENTIFIER_INDEX = 0;
+    public const int INDENTIFIER_INDEX = 0;
 
     #endregion
 
     #region Setup
 
     static SyncTrackInstrument syncTrackInstrument;
-    static List<RawStarpowerEvent> rawStarpowerEvents = new();
+    static ConcurrentBag<RawStarpowerEvent> rawStarpowerEvents = new();
     static Metadata metadata;
     static ConcurrentBag<IInstrument> instruments = new();
 
@@ -41,7 +42,7 @@ public static class ChartParser
 
         Parallel.ForEach(eventGroups, item => ProcessEventGroup(item));
 
-        var starpower = new StarpowerInstrument(rawStarpowerEvents);
+        var starpower = new StarpowerInstrument(rawStarpowerEvents.ToList());
 
         Chart.ApplyFileInformation(
             metadata,
@@ -109,13 +110,13 @@ public static class ChartParser
     static ChartEventGroup InitializeEventGroup(int lineIndex, string[] chartAsLines)
     {
         var identifierLine = chartAsLines[lineIndex];
-        var cleanIdentifier = identifierLine.Replace("[", "").Replace("]", "");
 
-        if (!Enum.TryParse(typeof(HeaderType), cleanIdentifier, true, out var enumObject))
+        if (!InstrumentMetadata.TryParseHeaderType(identifierLine, out var sectionHeader))
         {
             return null;
         }
-        ChartEventGroup identifiedSection = new((HeaderType)enumObject);
+
+        ChartEventGroup identifiedSection = new(sectionHeader);
 
         if (chartAsLines[lineIndex + 1] != "{") // line with { to mark beginning of section
             throw new ArgumentException($"{identifiedSection.InstrumentID} is not enclosed properly. {HELPFUL_REMINDER}");
@@ -127,13 +128,10 @@ public static class ChartParser
 
         while (workingLine != "}" && lineIndex < chartAsLines.Length - 1)
         {
-            var parts = workingLine.Split(" = ", 2);
-            if (!int.TryParse(parts[0].Trim(), out int tick))
+            if (!InstrumentMetadata.TryParseChartLine(workingLine, out var formattedKVP))
             {
-                throw new ArgumentException($"Problem parsing tick {parts[0].Trim()}");
+                continue;
             }
-
-            var formattedKVP = new KeyValuePair<int, string>(tick, parts[1]);
 
             if (TryGetStarpowerEvent(formattedKVP, identifiedSection.InstrumentID, out RawStarpowerEvent @event))
             {
@@ -153,7 +151,6 @@ public static class ChartParser
     }
 
     static RawStarpowerEvent defaultRawSPEvent = new((HeaderType)(-1), -1, "");
-    static readonly string[] validStarpowerEvents = new string[2] { "2", "64" };
     static bool TryGetStarpowerEvent(KeyValuePair<int, string> @event, HeaderType targetInstrument, out RawStarpowerEvent rawStarpowerEvent)
     {
         rawStarpowerEvent = defaultRawSPEvent;
@@ -168,7 +165,7 @@ public static class ChartParser
         if (values[INDENTIFIER_INDEX] != SPECIAL_INDICATOR) return false;
 
         // Used to avoid drum S 65 and S 66 for drum rolls (and other future unimplemented events)
-        if (!validStarpowerEvents.Contains(values[1])) return false;
+        if (!StarpowerInstrument.IsSpecialEventStarpowerEvent(values)) return false;
 
         rawStarpowerEvent = new(targetInstrument, @event.Key, @event.Value);
         return true;
@@ -316,7 +313,7 @@ public static class ChartParser
 /// <summary>
 /// Object that contains event section data (enclosed in [SectionName] { ... }) in deconstructed KeyValuePairs. 
 /// </summary>
-class ChartEventGroup
+public class ChartEventGroup
 {
     public HeaderType InstrumentID;
     public List<KeyValuePair<int, string>> data;

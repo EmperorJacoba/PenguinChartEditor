@@ -1,10 +1,8 @@
-﻿using Penguin.Debug;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class SyncTrackInstrument : IInstrument
 {
@@ -725,6 +723,11 @@ public class SyncTrackInstrument : IInstrument
 
     #region Parsing
 
+    public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    {
+        AddChartFormattedEventsToInstrument(Clipboard.ConvertToLineList(clipboardData, offset));
+    }
+
     public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
     {
         HashSet<int> anchoredTicks = new(); // allows for versitility if A event comes before or after tempo event proper
@@ -795,25 +798,6 @@ public class SyncTrackInstrument : IInstrument
         }
 
         RecalculateTempoEventDictionary();
-    }
-
-    public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
-    {
-        var lines = new List<KeyValuePair<int, string>>();
-        var clipboardAsLines = clipboardData.Split("\n");
-        foreach (var line in clipboardAsLines)
-        {
-            var parts = line.Split(" = ", 2);
-            if (!int.TryParse(parts[0].Trim(), out int tick))
-            {
-                Chart.Log($"Problem parsing tick {parts[0].Trim()}");
-                continue;
-            }
-
-            lines.Add(new(tick + offset, parts[1]));
-        }
-        AddChartFormattedEventsToInstrument(lines);
-        Chart.InPlaceRefresh();
     }
 
     #endregion

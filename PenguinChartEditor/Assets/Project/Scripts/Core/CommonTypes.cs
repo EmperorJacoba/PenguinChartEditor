@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using UnityEngine;
 
 /// <summary>
 /// Difficulty choices for a given instrument (e.g. E, M, H, X)
@@ -278,6 +281,58 @@ public static class InstrumentMetadata
     {
         return (HeaderType)((int)instrument + (int)difficulty);
     }
+
+    public static string MakeChartLine(int tickKey, string value)
+    {
+        return $"\t{tickKey} = {value}";
+    }
+
+    public static string CreateHeader(HeaderType headerType)
+    {
+        return $"[{headerType}]\n{{";
+    }
+
+    public static void CreateHeader(StringBuilder stringifier, HeaderType headerType)
+    {
+        stringifier.AppendLine($"[{headerType}]");
+        stringifier.AppendLine("{");
+    }
+
+    public static void CloseSection(StringBuilder stringifier)
+    {
+        stringifier.AppendLine("}");
+    }
+
+    public static bool TryParseHeaderType(string lineWithID, out HeaderType headerType)
+    {
+        var cleanIdentifier = lineWithID.Replace("[", "").Replace("]", "");
+        if (!Enum.TryParse(typeof(HeaderType), cleanIdentifier, true, out var enumObject))
+        {
+            Debug.LogWarning($"Could not parse identifier {cleanIdentifier}.");
+            headerType = (HeaderType)(-1);
+            return false;
+        }
+        headerType = (HeaderType)enumObject;
+        return true;
+    }
+
+    static KeyValuePair<int, string> defaultKVP = new(-1, "Invalid event");
+    public static bool TryParseChartLine(string line, out KeyValuePair<int, string> formattedKVP)
+    {
+        formattedKVP = defaultKVP;
+
+        var parts = line.Split(" = ", 2);
+        if (!int.TryParse(parts[0].Trim(), out int tick))
+        {
+            Debug.LogWarning($"Problem parsing tick {parts[0].Trim()}");
+            return false;
+        }
+
+        formattedKVP = new KeyValuePair<int, string>(tick, parts[1]);
+        return true;
+    }
+
+    public static string CreateHeader(int headerID) => CreateHeader((HeaderType)headerID);
 
     public static InstrumentCategory GetInstrumentGroup(HeaderType headerType)
     {

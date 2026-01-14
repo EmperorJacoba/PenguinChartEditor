@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,6 +14,8 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
     private const int EVENT_TYPE_IDENTIFIER_INDEX = 1;
     private const int SUSTAIN_INDEX = 2;
+    private const string DRUM_FILL_ID = "64";
+    private const string STARPOWER_ID = "2";
 
     #endregion
 
@@ -95,7 +99,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
     public int CalculateSustainClamp(int sustainLength, int tick, int lane) => sustainer.CalculateSustainClamp(sustainLength, tick, lane);
     public int CalculateSustainClamp(int sustainLength, int tick, HeaderType lane) => CalculateSustainClamp(sustainLength, tick, (int)lane);
-
+    void ValidateSustainsInRange(int startTick, int endTick) => sustainer.ValidateSustainsInRange(startTick, endTick);
     #endregion
 
     #region Selections
@@ -179,6 +183,13 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
     #region Import
 
+    // RawStarpowerEvent comes from ChartParser.
+    // To parse starpower as a separate track, ChartParser checks every incoming event to see if it is starpower
+    // and then packs it as RawStarpower, which is then unpacked here.
+    // Since the data structure of PCE is very different to the structure of a .chart file, this half&half parsing method is what came to be.
+    // AddChartFormatted comes from Clipboard, which parses the lines and then parses valid data.
+    // Two pathes share some common actions which is why the flow is a bit weird with TryParses.
+
     void ParseRawStarpowerEvents(List<RawStarpowerEvent> starpowerEvents)
     {
         foreach (var @event in starpowerEvents)
@@ -187,46 +198,120 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
             // S identifier should already be checked by ChartParser
 
-            var fill = data[EVENT_TYPE_IDENTIFIER_INDEX] == "64";
-
-            if (!int.TryParse(data[SUSTAIN_INDEX], out int sustain))
-            {
-                throw new ArgumentException($"Invalid sustain @ tick {@event.tick} for instrument {@event.header}. Expected integer, given {data[2]}.");
-            }
-            StarpowerEventData parsedData = new(fill, sustain);
+            if (!TryParseCheckedLine(data, out var parsedData)) continue;
 
             Lanes.GetLane((int)@event.header).Add(@event.tick, parsedData);
         }
     }
 
-    public void AddChartFormattedEventsToInstrument(string lines, int offset)
+    public void AddChartFormattedEventsToInstrument(Dictionary<HeaderType, List<KeyValuePair<int, string>>> chartData, int offset)
     {
-        throw new System.NotImplementedException();
-        /*
-        if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
+        foreach (var headerData in chartData)
         {
-            Chart.Log($"Invalid special identifier for {InstrumentName} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
-            break;
+            if (headerData.Value.Count == 0) continue;
+            HashSet<int> ticks = headerData.Value.Select(item => item.Key).ToHashSet();
+
+            var targetLane = GetLaneData(headerData.Key);
+            targetLane.PopTicksInRange(ticks.Min(), ticks.Max());
+
+            foreach (var @event in headerData.Value)
+            {
+                if (!TryParseEventLineValue(@event.Value, out var data))
+                {
+                    continue;
+                }
+                targetLane.Add(@event.Key + offset, data);
+            }
         }
-
-        if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
-        {
-            Chart.Log($"Invalid sustain for {InstrumentName} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
-            break;
-        }
-
-        if (noteIdentifier != STARPOWER_INDICATOR) break; // should only have starpower indicator, no fills or anything
-
-        SpecialEvents[uniqueTick] = new SpecialData(sustain, SpecialData.EventType.starpower);
-
-        break; 
-        */
+        // fixme: calculate range properly
+        ValidateSustainsInRange(0, SongTime.SongLengthTicks);
     }
 
+    StarpowerEventData defaultSPEvent = new(false, -1);
+    public static readonly string[] validStarpowerEvents = new string[2] { STARPOWER_ID, DRUM_FILL_ID };
 
-    public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
+    public static bool IsSpecialEventStarpowerEvent(string[] partiallyParsedVals)
     {
-        throw new System.NotImplementedException();
+        return validStarpowerEvents.Contains(partiallyParsedVals[1]);
+    }
+
+    bool TryParseEventLineValue(string line, out StarpowerEventData data)
+    {
+        data = defaultSPEvent;
+
+        if (!line.Contains('S'))
+        {
+            return false;
+        }
+
+        var vals = line.Split(' ');
+
+        if (vals[ChartParser.INDENTIFIER_INDEX] != "S") return false;
+        if (!IsSpecialEventStarpowerEvent(vals)) return false;
+
+        if (TryParseCheckedLine(vals, out data))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool TryParseCheckedLine(string[] splitVal, out StarpowerEventData data)
+    {
+        data = defaultSPEvent;
+
+        var fill = splitVal[EVENT_TYPE_IDENTIFIER_INDEX] == DRUM_FILL_ID;
+
+        if (!int.TryParse(splitVal[SUSTAIN_INDEX], out int sustain))
+        {
+            Debug.LogError($"Invalid sustain. Expected integer, given {splitVal[2]}.");
+            return false;
+        }
+
+        data = new(fill, sustain);
+        return true;
+    }
+
+    public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    {
+        var clipboardAsLines = clipboardData.Split(Environment.NewLine);
+
+        List<KeyValuePair<int, string>> activeSection = null;
+        HeaderType sectionID = (HeaderType)(-1);
+
+        Dictionary<HeaderType, List<KeyValuePair<int, string>>> parsedSections = new();
+
+        for (int i = 0; i < clipboardAsLines.Length; i++)
+        {
+            var workingLine = clipboardAsLines[i];
+            if (activeSection == null && workingLine.Contains("["))
+            {
+                if (InstrumentMetadata.TryParseHeaderType(workingLine, out sectionID))
+                {
+                    activeSection = new();
+                    i++; // avoid '{'
+                }
+                continue;
+            }
+            if (activeSection != null)
+            {
+                if (workingLine.Contains("}"))
+                {
+                    parsedSections.Add(sectionID, activeSection);
+                    activeSection = null;
+                    sectionID = (HeaderType)(-1);
+                }
+                else
+                {
+                    if (InstrumentMetadata.TryParseChartLine(workingLine, out var formattedKVP))
+                    {
+                        activeSection.Add(formattedKVP);
+                    }
+                }
+            }
+        }
+
+        AddChartFormattedEventsToInstrument(parsedSections, offset);
     }
 
     #endregion
@@ -235,7 +320,25 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
     public string ConvertSelectionToString()
     {
-        throw new System.NotImplementedException();
+        StringBuilder stringifiedOutput = new();
+
+        foreach (var selectionKVP in Lanes.ExportNormalizedSelection())
+        {
+            if (selectionKVP.Value.Count == 0) continue;
+
+            InstrumentMetadata.CreateHeader(stringifiedOutput, (HeaderType)selectionKVP.Key);
+
+            var selectionData = selectionKVP.Value;
+
+            foreach (var @event in selectionData)
+            {
+                stringifiedOutput.AppendLine(InstrumentMetadata.MakeChartLine(@event.Key, @event.Value.ToChartFormat(int.MinValue)[0]));
+            }
+
+            InstrumentMetadata.CloseSection(stringifiedOutput);
+        }
+
+        return stringifiedOutput.ToString();
     }
 
     public List<string> ExportAllEvents()

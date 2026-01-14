@@ -23,8 +23,7 @@ public interface IInstrument
     void SetUpInputMap();
 
     string ConvertSelectionToString();
-    void AddChartFormattedEventsToInstrument(string lines, int offset);
-    void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines);
+    void AddChartFormattedEventsToInstrument(string clipboardData, int offset);
 
     void DeleteTicksInSelection();
     void DeleteTickInLane(int tick, int lane);
