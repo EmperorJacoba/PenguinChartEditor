@@ -1,22 +1,27 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+#region ILane
+
 public interface ILane
 {
     public int laneID { get; }
     public GameInstrument parentGameInstrument { get; }
 }
+
+#endregion
+
 public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent : IPoolable
 {
+    #region Overridden/Serialized Properties
+
     [field: SerializeField] public virtual bool isReadOnly { get; set; } = false;
     [SerializeField] protected LaneProperties properties;
-    
     protected abstract bool cullAtStrikelineOnPlay { get; }
     public abstract int laneID { get; }
+
     protected int GetListStartRefreshPoint() => cullAtStrikelineOnPlay && AudioManager.AudioPlaying ? SongTime.SongPositionTicks : Waveform.startTick;
-    protected abstract List<int> GetEventsToDisplay();
-    protected abstract int GetNextEventUpdate(int tick);
-    protected abstract int GetPreviousEventUpdate(int tick);
+
     protected abstract IPooler<TEvent> Pooler { get; }
     protected virtual IPreviewer Previewer
     {
@@ -27,6 +32,35 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         }
     }
     private IPreviewer previewer;
+
+    #endregion
+
+    #region GameInstrument Setup
+
+    // Set through parent Lanes object. 
+    [HideInInspector]
+    public GameInstrument parentGameInstrument
+    {
+        get
+        {
+            _gi ??= GetComponentInParent<LaneDetails>().parentGameInstrument;
+            return _gi;
+        }
+    }
+    private GameInstrument _gi;
+    public IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
+
+    #endregion
+
+    #region Overridden Event Access
+
+    protected abstract List<int> GetEventsToDisplay();
+    protected abstract int GetNextEventUpdate(int tick);
+    protected abstract int GetPreviousEventUpdate(int tick);
+
+    #endregion
+
+    #region Update Events
 
     protected List<int> eventsToDisplay { get; private set; }
     protected void UpdateEvents()
@@ -39,10 +73,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         if (!isReadOnly) Previewer.UpdatePosition();
     }
 
-    protected void RefreshEventsToDisplay()
-    {
-        eventsToDisplay = GetEventsToDisplay();
-    }
+    #endregion
 
     #region Refresh
 
@@ -160,20 +191,14 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         UpdateEvents();
     }
 
+    protected void RefreshEventsToDisplay()
+    {
+        eventsToDisplay = GetEventsToDisplay();
+    }
+
     #endregion
 
-    // Set through parent Lanes object. 
-    [HideInInspector] public GameInstrument parentGameInstrument
-    {
-        get
-        {
-            _gi ??= GetComponentInParent<LaneDetails>().parentGameInstrument;
-            return _gi;
-        }
-    }
-    private GameInstrument _gi;
-
-    public IInstrument parentInstrument => parentGameInstrument.representedInstrument;
+    #region Internal Event Subscribing
 
     AudioManager.PlayingDelegate playbackAction;
     protected void OnEnable()
@@ -184,6 +209,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         SongTime.NegativeTimeChange += NegativeTimeRefresh;
         AudioManager.PlaybackStateChanged += playbackAction;
     }
+
     protected void OnDisable()
     {
         Chart.InPlaceRefreshNeeded -= InPlaceRefresh;
@@ -199,8 +225,13 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
             InPlaceRefresh();
         }
     }
+
+    #endregion
 }
 
+#region LaneProperties
+
+// I was originally going to do more with this, but oh well. It stays because it's a pain to change.
 [System.Serializable]
 public struct LaneProperties
 {
@@ -211,3 +242,5 @@ public struct LaneProperties
         this.is3D = is3D;
     }
 }
+
+#endregion

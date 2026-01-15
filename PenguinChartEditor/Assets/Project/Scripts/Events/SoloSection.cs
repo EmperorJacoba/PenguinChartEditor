@@ -28,7 +28,7 @@ public class SoloSection : MonoBehaviour, IPoolable
 
     public void InitializeEvent(int tick)
     {
-        var soloData = parentLane.parentInstrument.SoloData.SoloEvents[tick];
+        var soloData = parentLane.ParentInstrument.SoloData.SoloEvents[tick];
         int startTick = soloData.StartTick;
         int endTick = soloData.EndTick;
 

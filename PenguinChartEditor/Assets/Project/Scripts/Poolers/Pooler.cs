@@ -23,18 +23,17 @@ public interface IPooler<T>
 // Adapted from Unity's intro to object pooling
 // https://learn.unity.com/tutorial/introduction-to-object-pooling
 
+// Poolers are attached to the same empty manager object that SpawningLane is attached to
+// Poolers manage the objects themselves, SpawningLanes manage when and what to spawn.
 public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehaviour, IPoolable
 {
     [SerializeField] protected GameObject objectPrefab;
-
-    [Tooltip("The object that the pooled objects will be children of. Use the canvas with all other events on it for 2D applications (TempoMap)")]
-    [SerializeField] protected GameObject parentObject;
 
     protected List<T> eventObjects = new();
 
     protected void CreateNew(ILane parentLane)
     {
-        GameObject tmp = Instantiate(objectPrefab, parentObject.transform);
+        GameObject tmp = Instantiate(objectPrefab, this.transform);
         T eventScript = tmp.GetComponent<T>();
         eventScript.InitializeProperties(parentLane);
         eventObjects.Add(eventScript);
