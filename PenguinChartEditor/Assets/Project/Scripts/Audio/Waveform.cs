@@ -268,12 +268,19 @@ public class Waveform : MonoBehaviour
         }
 
         Visible = true;
+        float xOffset = 0;
+
+        if (!is2D)
+        {
+            xOffset = parentGameInstrument.GetGlobalCenterHighwayPosition();
+            positions = Array.ConvertAll(positions, pos => new Vector3(pos.x + xOffset, pos.y, pos.z));
+        }
 
         lineRendererMain.positionCount = lineRendererMirror.positionCount = positions.Length;
         lineRendererMain.SetPositions(positions);
 
         // mirror all x positions of every point
-        positions = Array.ConvertAll(positions, pos => new Vector3(-pos.x, pos.y, pos.z));
+        positions = Array.ConvertAll(positions, pos => new Vector3(-pos.x + 2 * xOffset, pos.y, pos.z));
         lineRendererMirror.SetPositions(positions);
     }
 

@@ -47,6 +47,7 @@ public class GameInstrument : MonoBehaviour
     public float GetCenterXCoordinateFromLane(int lane) => highway.GetCenterXCoordinateFromLane(lane);
     public float GetLocalStarpowerXCoordinate() => highway.GetLocalStarpowerXCoordinate();
     public float GetGlobalStarpowerXCoordinate() => highway.GetGlobalStarpowerXCoordinate();
+    public float GetGlobalCenterHighwayPosition() => highway.GetGlobalCenterHighwayPosition();
     public int MatchXCoordinateToLane(float xCoordinate) => highway.MatchXCoordinateToLane(xCoordinate);
     public Vector3 GetCursorHighwayPosition() => highway.GetCursorHighwayPosition();
     public float GetCursorHighwayProportion() => highway.GetCursorHighwayProportion();

@@ -95,6 +95,8 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
         return GetLocalStarpowerXCoordinate() + transform.position.x;
     }
 
+    public float GetGlobalCenterHighwayPosition() => transform.position.x;
+
     public int MatchXCoordinateToLane(float xCoordinate)
     {
         if (highwayDisplayType == InstrumentCategory.FiveFret)

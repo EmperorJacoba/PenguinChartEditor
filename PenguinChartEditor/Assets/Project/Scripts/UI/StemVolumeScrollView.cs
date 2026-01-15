@@ -12,12 +12,11 @@ public class StemVolumeScrollView : MonoBehaviour
 
     void Start()
     {
-        // Create a slider package for each stem the user has
+        // The UI object containing all stems is uses Content Size Fitter & Vertical Layout Group to automatically fit objects.
         foreach (var entry in Chart.Metadata.StemPaths)
         {
             var currentEditor = Instantiate(volumeEditor, scrollViewContentRt.transform);
 
-            // Update the text on the given slider package for the current stem
             currentEditor.GetComponent<StemVolumeEditor>().StemType = entry.Key;
         }
     }
