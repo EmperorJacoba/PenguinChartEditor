@@ -108,6 +108,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
     void CheckForSelectionClear()
     {
+        if (Chart.LoadedInstrument != this) return;
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsMasterHighwayHit()) return;
 
         ClearAllSelections();

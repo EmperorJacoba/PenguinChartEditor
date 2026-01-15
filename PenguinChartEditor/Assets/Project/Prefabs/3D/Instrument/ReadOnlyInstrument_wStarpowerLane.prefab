@@ -86,52 +86,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &288182015822794016
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7773659088227897020}
-  - component: {fileID: 8317344313365862613}
-  m_Layer: 0
-  m_Name: OrangePooler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7773659088227897020
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 288182015822794016}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4253728282370969520}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8317344313365862613
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 288182015822794016}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b272959324a9b5d4cb21bc251df16b90, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 532864701870792285, guid: eb800c8f0f7695b49be51aa60057afbe, type: 3}
-  parentObject: {fileID: 6186763533990345981}
 --- !u!1 &448391595366042067
 GameObject:
   m_ObjectHideFlags: 0
@@ -288,52 +242,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &1205894937707311718
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8981351008117081015}
-  - component: {fileID: 7547795236369827828}
-  m_Layer: 0
-  m_Name: StarpowerPooler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8981351008117081015
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1205894937707311718}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4253728282370969520}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7547795236369827828
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1205894937707311718}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe44dcb350a102d43a6c9ac7f1da3b0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 5029302309147462073, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
-  parentObject: {fileID: 3414159719500508136}
 --- !u!1 &1361600957449025553
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,7 +320,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5008417329833482552}
-  - {fileID: 4253728282370969520}
   m_Father: {fileID: 6728049931399594877}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1520806286325922734
@@ -610,52 +517,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5495902117074765545, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
---- !u!1 &1720259064621937750
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4405753408413849082}
-  - component: {fileID: 3997432210600584407}
-  m_Layer: 0
-  m_Name: BeatlinePooler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4405753408413849082
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1720259064621937750}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4253728282370969520}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3997432210600584407
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1720259064621937750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 862c844b63e0cca43bd44eb15ee2d893, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 5507039253395518596, guid: d574ad09b27b29f499ec66b6b2881065, type: 3}
-  parentObject: {fileID: 8174819437759358648}
 --- !u!1 &2246743359976575598
 GameObject:
   m_ObjectHideFlags: 0
@@ -783,52 +644,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentGameInstrument: {fileID: 5904531191217681117}
---- !u!1 &2297211365878239934
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8645303810417326872}
-  - component: {fileID: 6240294967903006522}
-  m_Layer: 6
-  m_Name: SoloSectionPooler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8645303810417326872
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2297211365878239934}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4253728282370969520}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6240294967903006522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2297211365878239934}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd93d7204c47c714eb6b173b152f0ca3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 8974281703401690028, guid: e0b551a5238254f4ebb6308e46f6adce, type: 3}
-  parentObject: {fileID: 4004596066508903992}
 --- !u!1 &2308207059749948138
 GameObject:
   m_ObjectHideFlags: 0
@@ -1167,6 +982,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6543008429029529526}
   - component: {fileID: 6175219787730248152}
+  - component: {fileID: 6511137942350828471}
   m_Layer: 0
   m_Name: StarpowerLane
   m_TagString: Untagged
@@ -1205,53 +1021,21 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 1
   properties:
     is3D: 1
-  pooler: {fileID: 7547795236369827828}
---- !u!1 &3532184668351512456
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5629891287318474304}
-  - component: {fileID: 3964760140739117376}
-  m_Layer: 0
-  m_Name: YellowPooler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5629891287318474304
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3532184668351512456}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4253728282370969520}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3964760140739117376
+  pooler: {fileID: 6511137942350828471}
+--- !u!114 &6511137942350828471
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3532184668351512456}
+  m_GameObject: {fileID: 3414159719500508136}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b272959324a9b5d4cb21bc251df16b90, type: 3}
+  m_Script: {fileID: 11500000, guid: fe44dcb350a102d43a6c9ac7f1da3b0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 532864701870792285, guid: eb800c8f0f7695b49be51aa60057afbe, type: 3}
-  parentObject: {fileID: 3883360116229719151}
+  objectPrefab: {fileID: 5029302309147462073, guid: 4e83731b41d2a0745b9f3ff07aa9a77d, type: 3}
+  parentObject: {fileID: 3414159719500508136}
 --- !u!1 &3568430572116962329
 GameObject:
   m_ObjectHideFlags: 0
@@ -1262,6 +1046,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7689862949067022592}
   - component: {fileID: 1688441855554188860}
+  - component: {fileID: 1004458174722606742}
   m_Layer: 0
   m_Name: BlueLane
   m_TagString: Untagged
@@ -1299,8 +1084,22 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 1
   properties:
     is3D: 1
-  lanePooler: {fileID: 8319380451863149916}
+  lanePooler: {fileID: 1004458174722606742}
   laneIdentifier: 4
+--- !u!114 &1004458174722606742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3568430572116962329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b272959324a9b5d4cb21bc251df16b90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 532864701870792285, guid: eb800c8f0f7695b49be51aa60057afbe, type: 3}
+  parentObject: {fileID: 3568430572116962329}
 --- !u!1 &3795541331296235936
 GameObject:
   m_ObjectHideFlags: 0
@@ -1397,6 +1196,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3819280424977082005}
   - component: {fileID: 3608793435970748691}
+  - component: {fileID: 2225483398938606822}
   m_Layer: 0
   m_Name: YellowLane
   m_TagString: Untagged
@@ -1434,8 +1234,22 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 1
   properties:
     is3D: 1
-  lanePooler: {fileID: 3964760140739117376}
+  lanePooler: {fileID: 2225483398938606822}
   laneIdentifier: 3
+--- !u!114 &2225483398938606822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3883360116229719151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b272959324a9b5d4cb21bc251df16b90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 532864701870792285, guid: eb800c8f0f7695b49be51aa60057afbe, type: 3}
+  parentObject: {fileID: 3883360116229719151}
 --- !u!1 &4004596066508903992
 GameObject:
   m_ObjectHideFlags: 0
@@ -1446,6 +1260,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1611465343577879702}
   - component: {fileID: 361698773476168912}
+  - component: {fileID: 6335548929471685979}
   m_Layer: 6
   m_Name: SoloSections
   m_TagString: Untagged
@@ -1483,7 +1298,21 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 1
   properties:
     is3D: 0
-  pooler: {fileID: 6240294967903006522}
+  pooler: {fileID: 6335548929471685979}
+--- !u!114 &6335548929471685979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4004596066508903992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd93d7204c47c714eb6b173b152f0ca3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 8974281703401690028, guid: e0b551a5238254f4ebb6308e46f6adce, type: 3}
+  parentObject: {fileID: 4004596066508903992}
 --- !u!1 &4206195670467757154
 GameObject:
   m_ObjectHideFlags: 0
@@ -1623,46 +1452,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &4757926481248168831
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4253728282370969520}
-  m_Layer: 0
-  m_Name: Poolers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4253728282370969520
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4757926481248168831}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4405753408413849082}
-  - {fileID: 8981351008117081015}
-  - {fileID: 772802685439223670}
-  - {fileID: 6245737135746721691}
-  - {fileID: 112631724676121012}
-  - {fileID: 5629891287318474304}
-  - {fileID: 503762267910029443}
-  - {fileID: 7773659088227897020}
-  - {fileID: 8645303810417326872}
-  m_Father: {fileID: 7723315704517734663}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4794158334836246621
 GameObject:
   m_ObjectHideFlags: 0
@@ -1797,6 +1586,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2551475055660485793}
   - component: {fileID: 2108116293827491012}
+  - component: {fileID: 3463396355469971507}
   m_Layer: 0
   m_Name: GreenLane
   m_TagString: Untagged
@@ -1834,54 +1624,22 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 1
   properties:
     is3D: 1
-  lanePooler: {fileID: 1703361141427909750}
+  lanePooler: {fileID: 3463396355469971507}
   laneIdentifier: 1
---- !u!1 &4982131296842087886
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 503762267910029443}
-  - component: {fileID: 8319380451863149916}
-  m_Layer: 0
-  m_Name: BluePooler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &503762267910029443
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4982131296842087886}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4253728282370969520}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8319380451863149916
+--- !u!114 &3463396355469971507
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4982131296842087886}
+  m_GameObject: {fileID: 4968621588330973468}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b272959324a9b5d4cb21bc251df16b90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 532864701870792285, guid: eb800c8f0f7695b49be51aa60057afbe, type: 3}
-  parentObject: {fileID: 3568430572116962329}
+  parentObject: {fileID: 4968621588330973468}
 --- !u!1 &5085080593859271173
 GameObject:
   m_ObjectHideFlags: 0
@@ -1991,98 +1749,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5495902117074765545, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
---- !u!1 &5086602185970555663
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6245737135746721691}
-  - component: {fileID: 1703361141427909750}
-  m_Layer: 0
-  m_Name: GreenPooler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6245737135746721691
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5086602185970555663}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4253728282370969520}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1703361141427909750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5086602185970555663}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b272959324a9b5d4cb21bc251df16b90, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 532864701870792285, guid: eb800c8f0f7695b49be51aa60057afbe, type: 3}
-  parentObject: {fileID: 4968621588330973468}
---- !u!1 &5770536165357192799
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 772802685439223670}
-  - component: {fileID: 6052767105252048963}
-  m_Layer: 0
-  m_Name: OpenPooler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &772802685439223670
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5770536165357192799}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4253728282370969520}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6052767105252048963
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5770536165357192799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b272959324a9b5d4cb21bc251df16b90, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 2653644340035125748, guid: 0406aa7ebd008224dba0a97eb25f490a, type: 3}
-  parentObject: {fileID: 5771604830844513553}
 --- !u!1 &5771604830844513553
 GameObject:
   m_ObjectHideFlags: 0
@@ -2093,6 +1759,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7914556074028010387}
   - component: {fileID: 7329513007024198269}
+  - component: {fileID: 3299577692951911113}
   m_Layer: 0
   m_Name: OpenLane
   m_TagString: Untagged
@@ -2130,8 +1797,22 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 1
   properties:
     is3D: 1
-  lanePooler: {fileID: 6052767105252048963}
+  lanePooler: {fileID: 3299577692951911113}
   laneIdentifier: 0
+--- !u!114 &3299577692951911113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5771604830844513553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b272959324a9b5d4cb21bc251df16b90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 2653644340035125748, guid: 0406aa7ebd008224dba0a97eb25f490a, type: 3}
+  parentObject: {fileID: 5771604830844513553}
 --- !u!1 &5948060568280295776
 GameObject:
   m_ObjectHideFlags: 0
@@ -2287,52 +1968,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   is2D: 0
   parentGameInstrument: {fileID: 5904531191217681117}
---- !u!1 &6022573545452148141
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 112631724676121012}
-  - component: {fileID: 248679661678885739}
-  m_Layer: 0
-  m_Name: RedPooler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &112631724676121012
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6022573545452148141}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4253728282370969520}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &248679661678885739
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6022573545452148141}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b272959324a9b5d4cb21bc251df16b90, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 532864701870792285, guid: eb800c8f0f7695b49be51aa60057afbe, type: 3}
-  parentObject: {fileID: 8109355547652874643}
 --- !u!1 &6186763533990345981
 GameObject:
   m_ObjectHideFlags: 0
@@ -2343,6 +1978,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2539821177536272170}
   - component: {fileID: 226601080526105270}
+  - component: {fileID: 5707649625340425808}
   m_Layer: 0
   m_Name: OrangeLane
   m_TagString: Untagged
@@ -2380,8 +2016,22 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 1
   properties:
     is3D: 1
-  lanePooler: {fileID: 8317344313365862613}
+  lanePooler: {fileID: 5707649625340425808}
   laneIdentifier: 5
+--- !u!114 &5707649625340425808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6186763533990345981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b272959324a9b5d4cb21bc251df16b90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 532864701870792285, guid: eb800c8f0f7695b49be51aa60057afbe, type: 3}
+  parentObject: {fileID: 6186763533990345981}
 --- !u!1 &6231030864135659917
 GameObject:
   m_ObjectHideFlags: 0
@@ -2757,6 +2407,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6243463170656995432}
   - component: {fileID: 480379272836113112}
+  - component: {fileID: 8824388356312349839}
   m_Layer: 0
   m_Name: RedLane
   m_TagString: Untagged
@@ -2794,8 +2445,22 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 1
   properties:
     is3D: 1
-  lanePooler: {fileID: 248679661678885739}
+  lanePooler: {fileID: 8824388356312349839}
   laneIdentifier: 2
+--- !u!114 &8824388356312349839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8109355547652874643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b272959324a9b5d4cb21bc251df16b90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 532864701870792285, guid: eb800c8f0f7695b49be51aa60057afbe, type: 3}
+  parentObject: {fileID: 8109355547652874643}
 --- !u!1 &8174819437759358648
 GameObject:
   m_ObjectHideFlags: 0
@@ -2806,6 +2471,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3913519989696620992}
   - component: {fileID: 4612735699392215859}
+  - component: {fileID: 7791259031083701118}
   m_Layer: 0
   m_Name: BeatlineLane
   m_TagString: Untagged
@@ -2843,7 +2509,21 @@ MonoBehaviour:
   <isReadOnly>k__BackingField: 1
   properties:
     is3D: 1
-  pooler: {fileID: 3997432210600584407}
+  pooler: {fileID: 7791259031083701118}
+--- !u!114 &7791259031083701118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8174819437759358648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 862c844b63e0cca43bd44eb15ee2d893, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 5507039253395518596, guid: d574ad09b27b29f499ec66b6b2881065, type: 3}
+  parentObject: {fileID: 8174819437759358648}
 --- !u!1 &8708003327013455832
 GameObject:
   m_ObjectHideFlags: 0
