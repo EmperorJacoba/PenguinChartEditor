@@ -14,6 +14,9 @@ public class SliderBoxLinker : MonoBehaviour
 
     [SerializeField] Slider slider;
     [SerializeField] TMP_InputField entryBox;
+    [SerializeField] float minValue;
+    [SerializeField] float maxValue;
+    [SerializeField] float defaultStartingValue;
 
     /// <summary>
     /// The data type that this slider + input field combo changes.
@@ -31,16 +34,18 @@ public class SliderBoxLinker : MonoBehaviour
         highwayLength = 3
     }
 
-    void Awake()
-    {
-        slider.onValueChanged.AddListener(x => SliderChange(x));
-        entryBox.onValueChanged.AddListener(x => EntryBoxChange(x));
-    }
-
     void Start()
     {
-        // Change this once importing from previous sessions is added
+        slider.minValue = minValue;
+        slider.maxValue = maxValue;
+
+        EntryBoxChange($"{defaultStartingValue}");
+
+        slider.onValueChanged.AddListener(x => SliderChange(x));
+        entryBox.onEndEdit.AddListener(x => EntryBoxChange(x));
+
         entryBox.text = slider.value.ToString();
+
     }
 
     /// <summary>
@@ -54,6 +59,7 @@ public class SliderBoxLinker : MonoBehaviour
             (newValue >= slider.maxValue ||
             newValue <= slider.minValue))
         {
+            print("Early return");
             return;
         }
 
@@ -78,14 +84,11 @@ public class SliderBoxLinker : MonoBehaviour
         UpdateValue(newValue);
     }
 
-    /// <summary>
-    /// Changes slider and variable values upon entry box value change.
-    /// </summary>
-    /// <param name="newValue"></param>
     void EntryBoxChange(string newValue)
     {
         if (!float.TryParse(newValue, out var valueAsFloat) && (valueAsFloat <= 0 || valueAsFloat > VARIABLE_SAFETY_UPPER_BOUND))
         {
+            entryBox.text = slider.value.ToString();
             return;
         }
 
@@ -111,7 +114,6 @@ public class SliderBoxLinker : MonoBehaviour
         }
 
         UpdateValue(valueAsFloat);
-        Chart.SyncTrackInPlaceRefresh();
     }
 
     void UpdateValue(float newValue)
@@ -132,6 +134,7 @@ public class SliderBoxLinker : MonoBehaviour
                 Highway3D.highwayLength = newValue;
                 break;
 
-        } 
+        }
+        Chart.SyncTrackInPlaceRefresh();
     }
 }

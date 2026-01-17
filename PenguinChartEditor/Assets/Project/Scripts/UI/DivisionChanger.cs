@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DivisionChanger : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public class DivisionChanger : MonoBehaviour
     private const int MIN_DIVISION = 1;
 
     [SerializeField] TMP_InputField entryBox;
+    [SerializeField] Button upButton;
+    [SerializeField] Button downButton;
+
     InputMap inputMap;
     public static int CurrentDivision { get; set; } = 16;
 
@@ -16,6 +20,9 @@ public class DivisionChanger : MonoBehaviour
 
     void Start()
     {
+        upButton.onClick.AddListener(IncreaseDivision);
+        downButton.onClick.AddListener(DecreaseDivision);
+
         entryBox.text = CurrentDivision.ToString();
         entryBox.onValueChanged.AddListener(x => ManualDivisionChange(x));
 

@@ -185,8 +185,8 @@ public class Chart : MonoBehaviour
 
         LoadFile();
         
-        // LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.guitar).ToList()[0]; 
-        LoadedInstrument = SyncTrackInstrument;
+        LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.guitar).ToList()[0]; 
+        // LoadedInstrument = SyncTrackInstrument;
         // LoadedInstrument = StarpowerInstrument;
 
         inputMap = new();

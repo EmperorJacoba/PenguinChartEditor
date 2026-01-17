@@ -133,7 +133,7 @@ public class Waveform : MonoBehaviour
         PointUpdateNeeded += pointUpdateDel;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         PointUpdateNeeded -= pointUpdateDel;
     }
