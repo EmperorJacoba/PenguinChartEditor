@@ -8,7 +8,7 @@ This method of chart editing is inspired by Steinberg's Dorico, a program used f
 
 ## An important note about Penguin
 
-### **Please do not submit issues or pull requests at this time. If you have any feature requests, questions, feedback, or want to contribute, please join the [discord server](https://discord.gg/z2UTt2p6uM) and contact me.**
+### **Please do not submit issues or pull requests at this time. If you have any feature requests, questions, feedback, or want to contribute, please join the [discord server](https://discord.gg/z2UTt2p6uM) and contact Emperor.**
 
 Penguin is still in development, and no built version of Penguin exists yet. I hope to have an alpha version of Penguin released by **March-April 2026**. 
 **Please star and watch this repository to get notifications when I (eventually) release builds!**
