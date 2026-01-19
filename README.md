@@ -36,7 +36,7 @@ In following versions (roughly in this order - no promises), more features will 
 - RB3/YARG venue, lighting, and character animation editing tab
 - Linux support
 
-Plus other minor features not listed. Planned features are usually outlined as an issue in the [issues tab](https://github.com/EmperorJacoba/PenguinChartEditor/issues).
+Plus other major & minor features not listed. Planned features are usually outlined as an issue in the [issues tab](https://github.com/EmperorJacoba/PenguinChartEditor/issues).
 
 
 # Images
