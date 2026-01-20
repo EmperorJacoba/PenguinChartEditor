@@ -17,6 +17,7 @@ public interface IPreviewer
 public abstract class Previewer : MonoBehaviour, IPreviewer
 {
     public static int previewTick = 0;
+    public static int defaultSustainTicks = 0;
     private const int RIGHT_MOUSE_ID = 1;
 
     protected InputMap inputMap;

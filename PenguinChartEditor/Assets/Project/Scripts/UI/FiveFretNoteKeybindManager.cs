@@ -6,7 +6,7 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
     private InputMap inputMap;
     [SerializeField] private TMP_Dropdown modifierDropdown;
     [SerializeField] private ExtendedSustainController esc;
-    [SerializeField] private FiveFretSustainController noteFFSC;
+    [SerializeField] private SustainController noteFFSC;
     [SerializeField] private FiveFretSustainSelector selectionFFSC;
     private void Awake()
     {
@@ -94,7 +94,7 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
             return;
         }
 
-        FiveFretNotePreviewer.defaultSustain = ticks;
+        Previewer.defaultSustainTicks = ticks;
         noteFFSC.ClearInput();
         UpdatePreviewer?.Invoke();
     }

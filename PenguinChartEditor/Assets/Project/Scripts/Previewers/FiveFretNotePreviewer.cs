@@ -14,10 +14,8 @@ public class FiveFretNotePreviewer : Previewer
     #endregion
 
     #region Sustain Controlling
-
-    public static int defaultSustain = 0;
-
-    private int AppliedSustain => note.ParentFiveFretInstrument.CalculateSustainClamp(defaultSustain, Tick, lane.laneIdentifier);
+    
+    private int AppliedSustain => note.ParentFiveFretInstrument.CalculateSustainClamp(defaultSustainTicks, Tick, lane.laneIdentifier);
 
     #endregion
 
