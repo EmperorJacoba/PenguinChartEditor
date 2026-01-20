@@ -77,7 +77,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
 
     #region Refresh
 
-    void InPlaceRefresh()
+    private void InPlaceRefresh()
     {
         RefreshEventsToDisplay();
         UpdateEvents();
@@ -85,9 +85,9 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         endUpdateTick = -1;
     }
 
-    bool directionIsPositive;
-    int startUpdateTick = -1;
-    int endUpdateTick = -1;
+    private bool directionIsPositive;
+    private int startUpdateTick = -1;
+    private int endUpdateTick = -1;
     protected virtual void PositiveTimeRefresh()
     {
         if (eventsToDisplay == null)
@@ -200,7 +200,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
 
     #region Internal Event Subscribing
 
-    AudioManager.PlayingDelegate playbackAction;
+    private AudioManager.PlayingDelegate playbackAction;
     protected void OnEnable()
     {
         playbackAction = x => RefreshOnStop(x);
@@ -218,7 +218,7 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         AudioManager.PlaybackStateChanged -= playbackAction;
     }
 
-    void RefreshOnStop(bool playing)
+    private void RefreshOnStop(bool playing)
     {
         if (!playing)
         {

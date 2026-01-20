@@ -10,14 +10,15 @@ public static class ChartParser
 {
     #region Metadata Constants
 
-    const string QUOTES_STRING = "\"";
-    const string YEAR_COMMA = ", ";
-    const int SONG_HEADER_LOCATION = 0;
+    private const string QUOTES_STRING = "\"";
+    private const string YEAR_COMMA = ", ";
+    private const int SONG_HEADER_LOCATION = 0;
 
     #endregion
 
     #region Sync Track Constants
-    const string HELPFUL_REMINDER = "Please check the file and try again.";
+
+    private const string HELPFUL_REMINDER = "Please check the file and try again.";
     private const string SPECIAL_INDICATOR = "S";
     public const int INDENTIFIER_INDEX = 0;
 
@@ -25,10 +26,10 @@ public static class ChartParser
 
     #region Setup
 
-    static SyncTrackInstrument syncTrackInstrument;
-    static ConcurrentBag<RawStarpowerEvent> rawStarpowerEvents = new();
-    static Metadata metadata;
-    static ConcurrentBag<IInstrument> instruments = new();
+    private static SyncTrackInstrument syncTrackInstrument;
+    private static ConcurrentBag<RawStarpowerEvent> rawStarpowerEvents = new();
+    private static Metadata metadata;
+    private static ConcurrentBag<IInstrument> instruments = new();
 
     // note: chart resolution is set within FormatEventSections so that SyncTrack can use it via Chart.Resolution
     public static void ParseChart(string filePath)
@@ -52,7 +53,7 @@ public static class ChartParser
             );
     }
 
-    static void ProcessEventGroup(ChartEventGroup eventGroup)
+    private static void ProcessEventGroup(ChartEventGroup eventGroup)
     {
         if (eventGroup == null) return;
         switch (eventGroup.InstrumentID)
@@ -74,7 +75,7 @@ public static class ChartParser
 
     #region Event Section Setup
 
-    static ConcurrentBag<ChartEventGroup> FormatEventSections(string[] chartAsLines)
+    private static ConcurrentBag<ChartEventGroup> FormatEventSections(string[] chartAsLines)
     {
         // "[" begins a section header => begins a section of interest to parse (details are validated later)
         List<int> sectionHeaderCandidates = Enumerable.Range(0, chartAsLines.Length).Where(i => chartAsLines[i].Contains("[")).ToList();
@@ -107,7 +108,7 @@ public static class ChartParser
     /// <param name="lineIndex">The index of the section header</param>
     /// <returns>ChartEventGroup with Identifier SectionName and data { ... }</returns>
     /// <exception cref="ArgumentException"></exception>
-    static ChartEventGroup InitializeEventGroup(int lineIndex, string[] chartAsLines)
+    private static ChartEventGroup InitializeEventGroup(int lineIndex, string[] chartAsLines)
     {
         var identifierLine = chartAsLines[lineIndex];
 
@@ -150,8 +151,9 @@ public static class ChartParser
         return identifiedSection;
     }
 
-    static RawStarpowerEvent defaultRawSPEvent = new((HeaderType)(-1), -1, "");
-    static bool TryGetStarpowerEvent(KeyValuePair<int, string> @event, HeaderType targetInstrument, out RawStarpowerEvent rawStarpowerEvent)
+    private static RawStarpowerEvent defaultRawSPEvent = new((HeaderType)(-1), -1, "");
+
+    private static bool TryGetStarpowerEvent(KeyValuePair<int, string> @event, HeaderType targetInstrument, out RawStarpowerEvent rawStarpowerEvent)
     {
         rawStarpowerEvent = defaultRawSPEvent;
 
@@ -176,7 +178,7 @@ public static class ChartParser
     /// </summary>
     /// <param name="iniPath">File path of the .ini file.</param>
     /// <returns>ChartEventGroup with data from .ini file.</returns>
-    static SongDataGroup InitializeIniGroup(string iniPath)
+    private static SongDataGroup InitializeIniGroup(string iniPath)
     {
         var iniData = File.ReadAllLines(iniPath);
 
@@ -195,7 +197,7 @@ public static class ChartParser
         return iniGroup;
     }
 
-    static SongDataGroup InitializeSongGroup(int lineIndex, string[] chartAsLines)
+    private static SongDataGroup InitializeSongGroup(int lineIndex, string[] chartAsLines)
     {
         if (chartAsLines[lineIndex + 1] != "{") // line with { to mark beginning of section
             throw new ArgumentException($"[Song] is not enclosed properly. {HELPFUL_REMINDER}");
@@ -228,7 +230,7 @@ public static class ChartParser
     /// <param name="songEventGroup">ChartEventGroup object with [Song] header.</param>
     /// <returns>Constructed Metadata, resolution</returns>
     /// <exception cref="ArgumentException"></exception>
-    static Metadata ParseSongMetadata(SongDataGroup songEventGroup)
+    private static Metadata ParseSongMetadata(SongDataGroup songEventGroup)
     {
         Metadata metadata = new();
         if (File.Exists($"{Chart.FolderPath}/song.ini")) // read from ini if exists (most reliable scenario)
@@ -268,7 +270,7 @@ public static class ChartParser
         return metadata;
     }
 
-    static int GetChartResolution(SongDataGroup songEventGroup)
+    private static int GetChartResolution(SongDataGroup songEventGroup)
     {
         var resolutionData = songEventGroup.data.Where(list => list.Key == "Resolution").ToList();
 
@@ -284,7 +286,8 @@ public static class ChartParser
     #endregion
 
     #region Instruments
-    static IInstrument ParseInstrumentGroup(ChartEventGroup chartEventGroup)
+
+    private static IInstrument ParseInstrumentGroup(ChartEventGroup chartEventGroup)
     {
         switch (InstrumentMetadata.GetInstrumentGroup(chartEventGroup.InstrumentID))
         {
@@ -325,7 +328,7 @@ public class ChartEventGroup
 }
 
 // ChartEventGroup but formatted for .ini and [Song] sections 
-class SongDataGroup
+internal class SongDataGroup
 {
     public List<KeyValuePair<string, string>> data;
 

@@ -4,8 +4,8 @@
 public class BPMPreviewer : Previewer
 {
     public static BPMPreviewer instance;
-    [SerializeField] BPMLabel bpmLabel;
-    [SerializeField] RectTransform boundaryReference;
+    [SerializeField] private BPMLabel bpmLabel;
+    [SerializeField] private RectTransform boundaryReference;
     protected float timestamp;
 
     protected override void Awake()

@@ -4,8 +4,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class FiveFretLaneSelector : MonoBehaviour
 {
-    Button laneButton;
-    [SerializeField] FiveFretInstrument.LaneOrientation lane;
+    private Button laneButton;
+    [SerializeField] private FiveFretInstrument.LaneOrientation lane;
 
     private void Awake()
     {
@@ -13,5 +13,5 @@ public class FiveFretLaneSelector : MonoBehaviour
         laneButton.onClick.AddListener(TriggerSelectionUpdate);
     }
 
-    void TriggerSelectionUpdate() => Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionToNewLane(lane);
+    private void TriggerSelectionUpdate() => Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionToNewLane(lane);
 }

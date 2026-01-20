@@ -270,7 +270,7 @@ public class InstrumentInformationAttribute : Attribute
 
 public static class InstrumentMetadata
 {
-    static InstrumentInformationAttribute GetAttributeOnInstrumentID(HeaderType instrumentID) => (InstrumentInformationAttribute)instrumentID.GetType().GetCustomAttributes(typeof(InstrumentInformationAttribute), true).First();
+    private static InstrumentInformationAttribute GetAttributeOnInstrumentID(HeaderType instrumentID) => (InstrumentInformationAttribute)instrumentID.GetType().GetCustomAttributes(typeof(InstrumentInformationAttribute), true).First();
 
     public static string GetInstrumentName(HeaderType instrumentID)
     {
@@ -316,7 +316,7 @@ public static class InstrumentMetadata
         return true;
     }
 
-    static KeyValuePair<int, string> defaultKVP = new(-1, "Invalid event");
+    private static KeyValuePair<int, string> defaultKVP = new(-1, "Invalid event");
     public static bool TryParseChartLine(string line, out KeyValuePair<int, string> formattedKVP)
     {
         formattedKVP = defaultKVP;

@@ -5,9 +5,9 @@ using System;
 
 public class FiveFretSustainSelector : MonoBehaviour
 {
-    [SerializeField] TMP_InputField customSustainInput;
-    [SerializeField] Button zeroButton;
-    [SerializeField] Button maxButton;
+    [SerializeField] private TMP_InputField customSustainInput;
+    [SerializeField] private Button zeroButton;
+    [SerializeField] private Button maxButton;
 
     private void Awake()
     {
@@ -16,18 +16,19 @@ public class FiveFretSustainSelector : MonoBehaviour
         maxButton.onClick.AddListener(SetMax);
     }
 
-    void SetZero()
+    private void SetZero()
     {
         Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionSustain(0);
         customSustainInput.text = "";
     }
-    void SetMax()
+
+    private void SetMax()
     {
         Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionSustain(SongTime.SongLengthTicks);
         customSustainInput.text = "";
     }
 
-    void SetCustomInput(string userInput)
+    private void SetCustomInput(string userInput)
     {
         if (!float.TryParse(userInput, out float beatsAsFloat)) return;
 

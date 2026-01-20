@@ -12,21 +12,21 @@ public class SliderBoxLinker : MonoBehaviour
     private const int VARIABLE_SAFETY_UPPER_BOUND = 10000;
     private const int HYPERSPEED_TO_SHRINK_FACTOR_CONVERSION_FACTOR = 1000;
 
-    [SerializeField] Slider slider;
-    [SerializeField] TMP_InputField entryBox;
-    [SerializeField] float minValue;
-    [SerializeField] float maxValue;
-    [SerializeField] float defaultStartingValue;
+    [SerializeField] private Slider slider;
+    [SerializeField] private TMP_InputField entryBox;
+    [SerializeField] private float minValue;
+    [SerializeField] private float maxValue;
+    [SerializeField] private float defaultStartingValue;
 
     /// <summary>
     /// The data type that this slider + input field combo changes.
     /// </summary>
-    [SerializeField] WaveformProperties dataType;
+    [SerializeField] private WaveformProperties dataType;
 
     /// <summary>
     /// Holds possible properties that the slider + input field combo can change. 
     /// </summary>
-    enum WaveformProperties
+    private enum WaveformProperties
     {
         shrinkFactor = 0,
         amplitude = 1,
@@ -34,7 +34,7 @@ public class SliderBoxLinker : MonoBehaviour
         highwayLength = 3
     }
 
-    void Start()
+    private void Start()
     {
         slider.minValue = minValue;
         slider.maxValue = maxValue;
@@ -52,7 +52,7 @@ public class SliderBoxLinker : MonoBehaviour
     /// Changes entry box and variable values upon slider value change.
     /// </summary>
     /// <param name="newValue"></param>
-    void SliderChange(float newValue)
+    private void SliderChange(float newValue)
     {
         if ((float.Parse(entryBox.text) > slider.maxValue || 
             float.Parse(entryBox.text) < slider.minValue) && 
@@ -84,7 +84,7 @@ public class SliderBoxLinker : MonoBehaviour
         UpdateValue(newValue);
     }
 
-    void EntryBoxChange(string newValue)
+    private void EntryBoxChange(string newValue)
     {
         if (!float.TryParse(newValue, out var valueAsFloat) && (valueAsFloat <= 0 || valueAsFloat > VARIABLE_SAFETY_UPPER_BOUND))
         {
@@ -116,7 +116,7 @@ public class SliderBoxLinker : MonoBehaviour
         UpdateValue(valueAsFloat);
     }
 
-    void UpdateValue(float newValue)
+    private void UpdateValue(float newValue)
     {
         // Make sure we change the correct data!
         switch(dataType)

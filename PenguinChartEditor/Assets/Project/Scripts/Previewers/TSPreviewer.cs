@@ -4,9 +4,9 @@
 public class TSPreviewer : Previewer
 {
     public static TSPreviewer instance { get; set; }
-    [SerializeField] TSLabel tsLabel;
-    [SerializeField] RectTransform boundaryReference;
-    TSData displayedTS = new(4, 4);
+    [SerializeField] private TSLabel tsLabel;
+    [SerializeField] private RectTransform boundaryReference;
+    private TSData displayedTS = new(4, 4);
 
     protected override void Awake()
     {

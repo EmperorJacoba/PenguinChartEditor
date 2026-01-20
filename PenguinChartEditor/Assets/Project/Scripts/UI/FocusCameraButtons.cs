@@ -3,8 +3,8 @@ using UnityEngine.UI;
 
 public class FocusCameraButtons : MonoBehaviour
 {
-    [SerializeField] Button rightButton;
-    [SerializeField] Button leftButton;
+    [SerializeField] private Button rightButton;
+    [SerializeField] private Button leftButton;
     [SerializeField] public Camera mainCamera;
 
     private void Awake()
@@ -13,7 +13,7 @@ public class FocusCameraButtons : MonoBehaviour
         rightButton.onClick.AddListener(MoveCameraRight);
     }
 
-    void MoveCameraLeft()
+    private void MoveCameraLeft()
     {
         if (mainCamera.transform.position.x <= InstrumentSpawningManager.instance.OutOfBoundsPosLeft)
         {
@@ -23,7 +23,7 @@ public class FocusCameraButtons : MonoBehaviour
         mainCamera.transform.position += (Vector3.left * 10);
     }
 
-    void MoveCameraRight()
+    private void MoveCameraRight()
     {
         if (mainCamera.transform.position.x >= InstrumentSpawningManager.instance.OutOfBoundsPosRight)
         {

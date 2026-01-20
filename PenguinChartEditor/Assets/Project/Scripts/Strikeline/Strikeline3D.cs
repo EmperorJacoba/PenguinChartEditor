@@ -36,14 +36,14 @@ public class Strikeline3D : MonoBehaviour, IStrikeline
     }
     private static float _sp = 7.5f;
 
-    void Awake()
+    private void Awake()
     {
         parentGameInstrument.strikeline = this;
         UpdateStrikelinePosition();
         StrikelinePositionUpdated += UpdateStrikelinePosition;
     }
 
-    void UpdateStrikelinePosition()
+    private void UpdateStrikelinePosition()
     {
         transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, StrikelinePosition);
     }

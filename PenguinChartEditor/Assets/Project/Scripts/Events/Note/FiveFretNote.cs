@@ -10,7 +10,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     private SelectionSet<FiveFretNoteData> _cachedSelectionRef;
 
 
-    [SerializeField] FiveFretAnatomy notePieces;
+    [SerializeField] private FiveFretAnatomy notePieces;
 
     public Coroutine destructionCoroutine { get; set; }
 
@@ -34,14 +34,14 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
 
     // starts as -1 so the redundancy check in laneIdentifier.set does not return true when setting lane to 0
-    FiveFretInstrument.LaneOrientation _li = (FiveFretInstrument.LaneOrientation)(-1);
+    private FiveFretInstrument.LaneOrientation _li = (FiveFretInstrument.LaneOrientation)(-1);
 
-    void CacheXCoordinate()
+    private void CacheXCoordinate()
     {
         xCoordinate = parentGameInstrument.GetCenterXCoordinateFromLane((int)laneID);
     }
 
-    void CacheDataReferences()
+    private void CacheDataReferences()
     {
         _cachedDataRef = (LaneSet<FiveFretNoteData>)ParentInstrument.GetLaneData((int)laneID);
         _cachedSelectionRef = (SelectionSet<FiveFretNoteData>)ParentInstrument.GetLaneSelection((int)laneID);
@@ -60,7 +60,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             _isHopo = value;
         }
     }
-    bool _isHopo = false;
+
+    private bool _isHopo = false;
 
     public bool IsTap
     {
@@ -74,7 +75,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             tapStarpowerColorRefreshNeeded = false;
         }
     }
-    bool _isTap = false;
+
+    private bool _isTap = false;
 
     public bool IsDefault
     {
@@ -87,7 +89,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             _isDefault = value;
         }
     }
-    bool _isDefault = true;
+
+    private bool _isDefault = true;
 
     public bool IsStarpower
     {
@@ -105,8 +108,9 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             tapStarpowerColorRefreshNeeded = true;
         }
     }
-    bool _isStarpower = false;
-    bool tapStarpowerColorRefreshNeeded = false;
+
+    private bool _isStarpower = false;
+    private bool tapStarpowerColorRefreshNeeded = false;
 
     public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
     public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
@@ -139,7 +143,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     }
 
 
-    void SetVisualProperties(FiveFretNoteData data)
+    private void SetVisualProperties(FiveFretNoteData data)
     {
         IsStarpower = parentGameInstrument.IsTickStarpower(Tick);
         IsHopo = (data.Flag == FiveFretNoteData.FlagType.hopo);
@@ -161,7 +165,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         SetVisualProperties(previewData);
     }
 
-    bool CalculateHeadVisibility()
+    private bool CalculateHeadVisibility()
     {
         int headDespawnTick = AudioManager.AudioPlaying ? SongTime.SongPositionTicks : Waveform.startTick;
         if (Tick <= headDespawnTick)
@@ -171,17 +175,18 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         return true;
     }
 
-    void UpdatePositionAsPreviewer() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate, PREVIEWER_Y_OFFSET);
-    void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate);
-    void UpdatePosition(int tick) => UpdatePosition(Waveform.GetWaveformRatio(tick), xCoordinate);
-    void UpdatePosition(double percentOfTrack) => UpdatePosition(percentOfTrack, xCoordinate);
-    void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
+    private void UpdatePositionAsPreviewer() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate, PREVIEWER_Y_OFFSET);
+    private void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate);
+    private void UpdatePosition(int tick) => UpdatePosition(Waveform.GetWaveformRatio(tick), xCoordinate);
+    private void UpdatePosition(double percentOfTrack) => UpdatePosition(percentOfTrack, xCoordinate);
+
+    private void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
     {
         var trackProportion = (float)percentOfTrack * parentGameInstrument.HighwayLength;
         transform.localPosition = new Vector3(xPosition, yPosition, trackProportion);
     }
 
-    void UpdateSustain(bool headOnly)
+    private void UpdateSustain(bool headOnly)
     {
         // No math needed at all if sustain is 0
         if (representedData.Sustain == 0)
@@ -199,7 +204,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
     }
 
-    void UpdateSustain(FiveFretNoteData data)
+    private void UpdateSustain(FiveFretNoteData data)
     {
         notePieces.UpdateSustainLength(_tick, data.Sustain);
     }

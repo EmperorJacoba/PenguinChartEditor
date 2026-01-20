@@ -46,7 +46,7 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
         HighwayLengthChanged += UpdateLength;
     }
 
-    void UpdateLength()
+    private void UpdateLength()
     {
         Length = _hL;
         Waveform.GenerateWaveformPoints();

@@ -7,11 +7,11 @@ using UnityEngine.UI;
 /// </summary>
 public class InstrumentTrackAdder : MonoBehaviour
 {
-    InstrumentAddBox parentBox;
-    [SerializeField] InstrumentSpriteIcons iconReference;
-    [SerializeField] Image instrumentIcon;
-    [SerializeField] List<Button> DifficultyButtons;
-    InstrumentType targetInstrument;
+    private InstrumentAddBox parentBox;
+    [SerializeField] private InstrumentSpriteIcons iconReference;
+    [SerializeField] private Image instrumentIcon;
+    [SerializeField] private List<Button> DifficultyButtons;
+    private InstrumentType targetInstrument;
 
     public void Awake()
     {

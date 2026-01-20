@@ -4,14 +4,15 @@ using UnityEngine;
 public class Metronome : MonoBehaviour
 {
     public static bool metronomeActive = false;
-    const int TICK_BUFFER = 1;
+    private const int TICK_BUFFER = 1;
 
-    static int nextPromisedMetronomeHit = 0;
+    private static int nextPromisedMetronomeHit = 0;
 
     // promised metronome hit will not be active on first loop
     // could result in first hit missing/skipped w/o this var
-    bool firstLoop = true;
-    void CheckForMetronomeHit()
+    private bool firstLoop = true;
+
+    private void CheckForMetronomeHit()
     {
         // might change in case metronome for ffw/rw buttons is a wanted feature
         if (!AudioManager.AudioPlaying || !metronomeActive)

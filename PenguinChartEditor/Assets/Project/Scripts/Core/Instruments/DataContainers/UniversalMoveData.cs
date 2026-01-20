@@ -18,7 +18,7 @@ public class UniversalMoveData<T> where T : IEventData
     /// <summary>
     /// Contains the original (normalized) set of data that is being moved.
     /// </summary>
-    readonly Dictionary<int, SortedDictionary<int, T>> originalMovingDataSet;
+    private readonly Dictionary<int, SortedDictionary<int, T>> originalMovingDataSet;
 
     /// <summary>
     /// Contains the original chart data with the data being moved deleted.
@@ -250,7 +250,7 @@ public class UniversalMoveData<T> where T : IEventData
         return new(startValidationTick, endValidationTick);
     }
 
-    Dictionary<int, SortedDictionary<int, T>> MakeEmptyDataSet()
+    private Dictionary<int, SortedDictionary<int, T>> MakeEmptyDataSet()
     {
         Dictionary<int, SortedDictionary<int, T>> outputSet = new();
         foreach (var set in originalMovingDataSet)

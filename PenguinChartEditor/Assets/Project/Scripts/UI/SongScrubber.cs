@@ -3,9 +3,9 @@ using UnityEngine.UI;
 
 public class SongScrubber : MonoBehaviour
 {
-    [SerializeField] Scrollbar scrubber;
+    [SerializeField] private Scrollbar scrubber;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
         SongTime.TimeChanged += UpdateSongScrubber;
 
@@ -18,7 +18,7 @@ public class SongScrubber : MonoBehaviour
     }
     
     // Diagnostic: This function takes <0.05ms on average per frame during song playback.
-    void UpdateSongScrubber()
+    private void UpdateSongScrubber()
     {
         disableNextUpdate = true;
 
@@ -28,9 +28,10 @@ public class SongScrubber : MonoBehaviour
         // cause a dual refresh on the same frame from UpdateSongTimeFromScrubber.
         // this doubles compute time needed and thus must be prevented.
     }
-    bool disableNextUpdate = false;
 
-    void UpdateSongTimeFromScrubber(float newPos)
+    private bool disableNextUpdate = false;
+
+    private void UpdateSongTimeFromScrubber(float newPos)
     {
         if (disableNextUpdate)
         {

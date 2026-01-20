@@ -4,8 +4,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Toggle))]
 public class SoloPlacementController : MonoBehaviour
 {
-    Toggle toggle;
-    InputMap inputMap;
+    private Toggle toggle;
+    private InputMap inputMap;
 
     private void Awake()
     {

@@ -3,10 +3,10 @@ using UnityEngine.UI;
 
 public class AudioNavigationButtons : MonoBehaviour
 {
-    [SerializeField] Button PlayButton;
-    [SerializeField] Button PauseButton;
-    [SerializeField] Button RWButton;
-    [SerializeField] Button FFWButton;
+    [SerializeField] private Button PlayButton;
+    [SerializeField] private Button PauseButton;
+    [SerializeField] private Button RWButton;
+    [SerializeField] private Button FFWButton;
 
     public bool RWButtonDown {get; set;}
     public bool FFWButtonDown {get; set;}
@@ -14,14 +14,14 @@ public class AudioNavigationButtons : MonoBehaviour
     public void Pause() => AudioManager.PauseAudio();
     public void Stop() => AudioManager.StopAudio();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
         AudioManager.PlaybackStateChanged += state => ManagePlaybackButtonStates(state);
         ManagePlaybackButtonStates(false);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         // These two triggers use event triggers, not default button functionality. 
         // Check for interactability or you can use them even when uninteractable

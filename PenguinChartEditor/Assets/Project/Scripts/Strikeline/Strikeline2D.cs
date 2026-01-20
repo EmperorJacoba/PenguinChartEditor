@@ -11,11 +11,11 @@ public interface IStrikeline
 public class Strikeline2D : MonoBehaviour, IStrikeline
 {
     public static Strikeline2D instance;
-    [SerializeField] GameInstrument parentGameInstrument;
-    [SerializeField] RectTransform strikelineRt;
-    [SerializeField] RectTransform boundaryReference;
+    [SerializeField] private GameInstrument parentGameInstrument;
+    [SerializeField] private RectTransform strikelineRt;
+    [SerializeField] private RectTransform boundaryReference;
 
-    void Awake()
+    private void Awake()
     {
         instance = this;
         parentGameInstrument.strikeline = this;

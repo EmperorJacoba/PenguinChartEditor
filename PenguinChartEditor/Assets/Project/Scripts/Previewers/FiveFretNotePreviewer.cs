@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(FiveFretNote))]
@@ -5,10 +6,10 @@ public class FiveFretNotePreviewer : Previewer
 {
     #region Event References
 
-    FiveFretNote note => (FiveFretNote)previewerEventReference;
-    FiveFretLane lane => (FiveFretLane)parentLane;
-    FiveFretInstrument parentFiveFretInstrument => (FiveFretInstrument)lane.parentGameInstrument.representedInstrument;
-    float laneCenterPosition => note.xCoordinate;
+    private FiveFretNote note => (FiveFretNote)previewerEventReference;
+    private FiveFretLane lane => (FiveFretLane)parentLane;
+    private FiveFretInstrument parentFiveFretInstrument => (FiveFretInstrument)lane.parentGameInstrument.representedInstrument;
+    private float laneCenterPosition => note.xCoordinate;
 
     #endregion
 
@@ -16,7 +17,7 @@ public class FiveFretNotePreviewer : Previewer
 
     public static int defaultSustain = 0;
 
-    int AppliedSustain => note.ParentFiveFretInstrument.CalculateSustainClamp(defaultSustain, Tick, lane.laneIdentifier);
+    private int AppliedSustain => note.ParentFiveFretInstrument.CalculateSustainClamp(defaultSustain, Tick, lane.laneIdentifier);
 
     #endregion
 
@@ -34,7 +35,7 @@ public class FiveFretNotePreviewer : Previewer
 
     public static NoteOption currentPlacementMode = NoteOption.natural;
 
-    FiveFretNoteData.FlagType MapPlacementModeToFlag()
+    private FiveFretNoteData.FlagType MapPlacementModeToFlag()
     {
         return currentPlacementMode switch
         {
@@ -85,7 +86,7 @@ public class FiveFretNotePreviewer : Previewer
         Show();
     }
 
-    bool IsWithinRange(Vector3 hitPosition)
+    private bool IsWithinRange(Vector3 hitPosition)
     {
         // add code here to block open note from placing note if the cursor is above another note
         if (lane.laneIdentifier == FiveFretInstrument.LaneOrientation.open)

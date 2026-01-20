@@ -8,9 +8,9 @@ using TMPro;
 public class GameInstrumentIconLabel : MonoBehaviour
 {
     [SerializeField] public GameInstrument parentGameInstrument;
-    [SerializeField] InstrumentIcons iconMatcher;
-    MeshRenderer iconMesh;
-    [SerializeField] TMP_Text difficultyText;
+    [SerializeField] private InstrumentIcons iconMatcher;
+    private MeshRenderer iconMesh;
+    [SerializeField] private TMP_Text difficultyText;
 
     private void Awake()
     {

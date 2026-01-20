@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class FiveFretEvenSpacingButton : MonoBehaviour
 {
-    Button button;
+    private Button button;
 
     private void Awake()
     {
@@ -11,5 +11,5 @@ public class FiveFretEvenSpacingButton : MonoBehaviour
         button.onClick.AddListener(SetEqualSpacing);
     }
 
-    void SetEqualSpacing() => Chart.GetActiveInstrument<FiveFretInstrument>().SetEqualSpacing();
+    private void SetEqualSpacing() => Chart.GetActiveInstrument<FiveFretInstrument>().SetEqualSpacing();
 }

@@ -17,7 +17,7 @@ public class MetadataHelper : MonoBehaviour
     // Stores button to set image of (one used to select image)
     [SerializeField] private Button imageSelector;
 
-    void Awake()
+    private void Awake()
     {
         resolutionTextBox.text = Convert.ToString(Chart.Resolution);
     }

@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class TabBoundsManager : MonoBehaviour
 {
-    [SerializeField] GameObject contentPanel;
-    void Start()
+    [SerializeField] private GameObject contentPanel;
+
+    private void Start()
     {
         ResizeTabContent();
     }
@@ -11,7 +12,7 @@ public class TabBoundsManager : MonoBehaviour
     /// <summary>
     /// Fit the contents of the tab scene into the content area in ContainerScene.
     /// </summary>
-    void ResizeTabContent()
+    private void ResizeTabContent()
     {
         // Get the RT components of both the alloted area and content itself, both of which are stored as panels
         var displayedTabZoneRt = GameObject.Find("DisplayedTabZone").GetComponent<RectTransform>();

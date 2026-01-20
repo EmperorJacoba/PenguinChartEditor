@@ -11,9 +11,9 @@ public struct StarpowerAnatomy
     [SerializeField] public MeshRenderer colorMesh;
     [SerializeField] public MeshRenderer colorSphereTopperMesh;
 
-    [SerializeField] Material previewerColor;
-    [SerializeField] Material normalColor;
-    [SerializeField] Material fillColor;
+    [SerializeField] private Material previewerColor;
+    [SerializeField] private Material normalColor;
+    [SerializeField] private Material fillColor;
 
     public void UpdateSustainLength(int tick, int sustainLength)
     {

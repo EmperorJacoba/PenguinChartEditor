@@ -3,8 +3,8 @@ using UnityEngine.EventSystems;
 
 public class SustainTrail : MonoBehaviour, IPointerDownHandler
 {
-    IEvent parentNote;
-    ISustainableInstrument parentInstrument => parentNote.ParentInstrument as ISustainableInstrument;
+    private IEvent parentNote;
+    private ISustainableInstrument parentInstrument => parentNote.ParentInstrument as ISustainableInstrument;
 
     private void Awake()
     {

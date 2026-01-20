@@ -6,14 +6,14 @@ using UnityEngine.UI;
 public class Clap : MonoBehaviour
 {
     public static bool clapActive = false;
-    [SerializeField] Button button;
+    [SerializeField] private Button button;
 
     private void Awake()
     {
         button.onClick.AddListener(ToggleClap);
     }
 
-    void ToggleClap()
+    private void ToggleClap()
     {
         clapActive = !clapActive;
 
@@ -28,10 +28,11 @@ public class Clap : MonoBehaviour
         }
     }
 
-    static int nextPromisedClapHit = -1;
-    bool firstLoop = true;
-    List<int> cachedTicks;
-    void CheckForClapHit()
+    private static int nextPromisedClapHit = -1;
+    private bool firstLoop = true;
+    private List<int> cachedTicks;
+
+    private void CheckForClapHit()
     {
         // might change in case metronome for ffw/rw buttons is a wanted feature
         if (!AudioManager.AudioPlaying || !clapActive)
@@ -59,7 +60,7 @@ public class Clap : MonoBehaviour
         }
     }
 
-    int GetNextClipHit()
+    private int GetNextClipHit()
     {
         var listIndex = cachedTicks.BinarySearch(SongTime.SongPositionTicks);
 

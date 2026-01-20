@@ -61,7 +61,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         ParseRawStarpowerEvents(starpowerEvents);
     }
 
-    void SetUpLanes()
+    private void SetUpLanes()
     {
         List<int> headerTypeIDs = new();
         foreach (var instrumentType in Enum.GetValues(typeof(HeaderType)))
@@ -76,7 +76,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     }
 
 
-    InputMap inputMap;
+    private InputMap inputMap;
     public void SetUpInputMap()
     {
         inputMap = new();
@@ -94,19 +94,19 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
     #region Sustains
 
-    SustainHelper<StarpowerEventData> sustainer;
+    private SustainHelper<StarpowerEventData> sustainer;
 
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
     public int CalculateSustainClamp(int sustainLength, int tick, int lane) => sustainer.CalculateSustainClamp(sustainLength, tick, lane);
     public int CalculateSustainClamp(int sustainLength, int tick, HeaderType lane) => CalculateSustainClamp(sustainLength, tick, (int)lane);
-    void ValidateSustainsInRange(int startTick, int endTick) => sustainer.ValidateSustainsInRange(startTick, endTick);
+    private void ValidateSustainsInRange(int startTick, int endTick) => sustainer.ValidateSustainsInRange(startTick, endTick);
     #endregion
 
     #region Selections
 
     public void ClearAllSelections() => Lanes.ClearAllSelections();
 
-    void CheckForSelectionClear()
+    private void CheckForSelectionClear()
     {
         if (Chart.LoadedInstrument != this) return;
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsMasterHighwayHit()) return;
@@ -115,7 +115,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         Chart.InPlaceRefresh();
     }
 
-    void DeleteSelection()
+    private void DeleteSelection()
     {
         if (Chart.LoadedInstrument != this) return;
 
@@ -167,10 +167,10 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
     #region Moving
 
-    MoveHelper<StarpowerEventData> mover = new();
-    LinkedList<int> currentLaneOrdering = null;
+    private MoveHelper<StarpowerEventData> mover = new();
+    private LinkedList<int> currentLaneOrdering = null;
 
-    void MoveSelection()
+    private void MoveSelection()
     {
         if (Chart.LoadedInstrument != this) return;
         currentLaneOrdering ??= InstrumentSpawningManager.instance.GetCurrentInstrumentOrdering();
@@ -180,7 +180,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         }
     }
 
-    void CompleteMove()
+    private void CompleteMove()
     {
         if (this != Chart.LoadedInstrument) return;
         Chart.showPreviewers = true;
@@ -203,7 +203,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     // AddChartFormatted comes from Clipboard, which parses the lines and then parses valid data.
     // Two pathes share some common actions which is why the flow is a bit weird with TryParses.
 
-    void ParseRawStarpowerEvents(List<RawStarpowerEvent> starpowerEvents)
+    private void ParseRawStarpowerEvents(List<RawStarpowerEvent> starpowerEvents)
     {
         foreach (var @event in starpowerEvents)
         {
@@ -240,7 +240,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         ValidateSustainsInRange(0, SongTime.SongLengthTicks);
     }
 
-    StarpowerEventData defaultSPEvent = new(false, -1);
+    private StarpowerEventData defaultSPEvent = new(false, -1);
     public static readonly string[] validStarpowerEvents = new string[2] { STARPOWER_ID, DRUM_FILL_ID };
 
     public static bool IsSpecialEventStarpowerEvent(string[] partiallyParsedVals)
@@ -248,7 +248,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         return validStarpowerEvents.Contains(partiallyParsedVals[1]);
     }
 
-    bool TryParseEventLineValue(string line, out StarpowerEventData data)
+    private bool TryParseEventLineValue(string line, out StarpowerEventData data)
     {
         data = defaultSPEvent;
 

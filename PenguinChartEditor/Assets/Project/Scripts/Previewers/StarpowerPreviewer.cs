@@ -5,9 +5,9 @@ public class StarpowerPreviewer : Previewer
 {
     #region Event References
 
-    StarpowerEvent starpowerEvent => (StarpowerEvent)previewerEventReference;
-    StarpowerLane lane => (StarpowerLane)parentLane;
-    LaneSet<StarpowerEventData> actingStarpowerLane => Chart.StarpowerInstrument.GetLaneData(parentGameInstrument.representedInstrument.InstrumentID);
+    private StarpowerEvent starpowerEvent => (StarpowerEvent)previewerEventReference;
+    private StarpowerLane lane => (StarpowerLane)parentLane;
+    private LaneSet<StarpowerEventData> actingStarpowerLane => Chart.StarpowerInstrument.GetLaneData(parentGameInstrument.representedInstrument.InstrumentID);
 
     #endregion
 
@@ -15,7 +15,7 @@ public class StarpowerPreviewer : Previewer
 
     public static int defaultSustain = 0;
 
-    int AppliedSustain => Chart.StarpowerInstrument.CalculateSustainClamp(defaultSustain, Tick, lane.laneIdentifier);
+    private int AppliedSustain => Chart.StarpowerInstrument.CalculateSustainClamp(defaultSustain, Tick, lane.laneIdentifier);
 
     #endregion
 
@@ -43,7 +43,7 @@ public class StarpowerPreviewer : Previewer
         Show();
     }
 
-    bool IsWithinRange(Vector3 hitPosition)
+    private bool IsWithinRange(Vector3 hitPosition)
     {
         var starpowerXCoordinate = starpowerEvent.parentGameInstrument.GetGlobalStarpowerXCoordinate();
         var halfLaneWidth = Chart.instance.SceneDetails.laneWidth / 2;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class FiveFretLane : SpawningLane<FiveFretNote>
 {
-    [SerializeField] FiveFretNotePooler lanePooler;
+    [SerializeField] private FiveFretNotePooler lanePooler;
     protected override IPooler<FiveFretNote> Pooler => lanePooler;
     protected override bool cullAtStrikelineOnPlay => true;
     public FiveFretInstrument.LaneOrientation laneIdentifier;

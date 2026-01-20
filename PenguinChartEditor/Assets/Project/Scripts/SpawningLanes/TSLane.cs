@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TSLane : SpawningLane<TSLabel>
 {
-    [SerializeField] TSPooler pooler;
+    [SerializeField] private TSPooler pooler;
     protected override bool cullAtStrikelineOnPlay => false;
 
     public override int laneID => (int)SyncTrackInstrument.LaneOrientation.timeSignature;

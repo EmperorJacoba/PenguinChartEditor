@@ -15,7 +15,7 @@ public interface ISustainable
 public struct BPMData : IEquatable<BPMData>, IEventData
 {
     public const int BPM_CONVERSION = 1000;
-    const string BPM_IDENTIFIER = "B";
+    private const string BPM_IDENTIFIER = "B";
 
     public float BPMChange;
     public float Timestamp;
@@ -47,7 +47,7 @@ public struct BPMData : IEquatable<BPMData>, IEventData
 
 public struct TSData : IEquatable<TSData>, IEventData
 {
-    const string TS_IDENTIFIER = "TS";
+    private const string TS_IDENTIFIER = "TS";
 
     public int Numerator;
     public int Denominator;
@@ -342,7 +342,8 @@ public struct SoloEventData : IEventData, IEquatable<SoloEventData>
             _etick = value;
         }
     }
-    int _etick;
+
+    private int _etick;
 
     public SoloEventData(int startTick, int endTick)
     {

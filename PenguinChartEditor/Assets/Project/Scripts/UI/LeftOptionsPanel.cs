@@ -15,7 +15,7 @@ public class LeftOptionsPanel : MonoBehaviour
         noteSelectionFiveFret
     }
 
-    void Awake()
+    private void Awake()
     {
         currentPanel = panels[0];
     }

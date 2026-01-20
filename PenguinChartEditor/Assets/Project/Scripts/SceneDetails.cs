@@ -52,9 +52,9 @@ public class SceneDetails : MonoBehaviour
     // with 3D physics raycaster, make sure lane objects are castable by the raycaster
     public bool IsEventDataHit() => IsRaycasterHit(eventRaycaster);
 
-    public bool IsMasterHighwayHit() => GetCursorHighwayPosition().x > 0; 
+    public bool IsMasterHighwayHit() => GetCursorHighwayPosition().x > 0;
 
-    bool IsRaycasterHit(BaseRaycaster targetRaycaster)
+    private static bool IsRaycasterHit(BaseRaycaster targetRaycaster)
     {
         PointerEventData pointerData = new(EventSystem.current)
         {

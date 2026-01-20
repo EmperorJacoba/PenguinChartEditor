@@ -11,8 +11,8 @@ public class InstrumentAddBox : MonoBehaviour
     public bool addDirectionIsRight => _right;
     private bool _right = false;
 
-    [SerializeField] GameObject instrumentTrackAdderPrefab;
-    [SerializeField] Transform scrollViewContentTransform;
+    [SerializeField] private GameObject instrumentTrackAdderPrefab;
+    [SerializeField] private Transform scrollViewContentTransform;
 
     private void Start()
     {

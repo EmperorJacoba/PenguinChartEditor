@@ -7,17 +7,18 @@ using UnityEngine;
 public class SyncTrackInstrument : IInstrument
 {
     #region Constants
-    const int SECONDS_PER_MINUTE = 60;
-    const string ANCHOR_IDENTIFIER = "A";
-    const float MINIMUM_BPM_VALUE = 0;
-    const float MAXIMUM_BPM_VALUE = 1000;
-    const int DEFAULT_TS_DENOMINATOR = 4;
-    const string TEMPO_EVENT_INDICATOR = "B";
-    const string TIME_SIGNATURE_EVENT_INDICATOR = "TS";
-    const string SYNC_TRACK_ERROR = "[SyncTrack] has invalid tempo event:";
+
+    private const int SECONDS_PER_MINUTE = 60;
+    private const string ANCHOR_IDENTIFIER = "A";
+    private const float MINIMUM_BPM_VALUE = 0;
+    private const float MAXIMUM_BPM_VALUE = 1000;
+    private const int DEFAULT_TS_DENOMINATOR = 4;
+    private const string TEMPO_EVENT_INDICATOR = "B";
+    private const string TIME_SIGNATURE_EVENT_INDICATOR = "TS";
+    private const string SYNC_TRACK_ERROR = "[SyncTrack] has invalid tempo event:";
     public const int MICROSECOND_CONVERSION = 1000000;
-    const float BPM_FORMAT_CONVERSION = 1000.0f;
-    const int TS_POWER_CONVERSION_NUMBER = 2;
+    private const float BPM_FORMAT_CONVERSION = 1000.0f;
+    private const int TS_POWER_CONVERSION_NUMBER = 2;
 
     #endregion
 
@@ -102,7 +103,7 @@ public class SyncTrackInstrument : IInstrument
         }
     }
 
-    InputMap inputMap;
+    private InputMap inputMap;
     public void SetUpInputMap() 
     {
         inputMap = new();
@@ -136,13 +137,13 @@ public class SyncTrackInstrument : IInstrument
 
     #region Movement
 
-    UniversalMoveData<BPMData> bpmMoveData = new();
-    UniversalMoveData<TSData> tsMoveData = new();
+    private UniversalMoveData<BPMData> bpmMoveData = new();
+    private UniversalMoveData<TSData> tsMoveData = new();
 
     /// <summary>
     /// Runs every frame when Drag input action is active. 
     /// </summary>
-    void MoveSelection()
+    private void MoveSelection()
     {
         if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
 
@@ -152,7 +153,7 @@ public class SyncTrackInstrument : IInstrument
         MoveLane(currentMouseTick, ref tsMoveData, tsSelection, TimeSignatureEvents);
     }
 
-    void MoveLane<T>(int currentMouseTick, ref UniversalMoveData<T> moveData, SelectionSet<T> selection, LaneSet<T> lane) where T : IEventData
+    private void MoveLane<T>(int currentMouseTick, ref UniversalMoveData<T> moveData, SelectionSet<T> selection, LaneSet<T> lane) where T : IEventData
     {
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress)
         {
@@ -218,7 +219,7 @@ public class SyncTrackInstrument : IInstrument
 
     #region Add/Delete
 
-    void DeleteSelection()
+    private void DeleteSelection()
     {
         if (Chart.LoadedInstrument != this) return;
 
@@ -514,9 +515,9 @@ public class SyncTrackInstrument : IInstrument
         return BaseBeatline.BeatlineType.none;
     }
 
-    float GetBarlineStep(int tsPos) => Chart.Resolution * (float)TimeSignatureEvents[tsPos].Numerator / (float)(TimeSignatureEvents[tsPos].Denominator / 4.0f);
-    float GetDivisionStep(int tsPos) => Chart.Resolution / (float)TimeSignatureEvents[tsPos].Denominator * 4;
-    float GetHalfDivisionStep(int tsPos) => Chart.Resolution / ((float)TimeSignatureEvents[tsPos].Denominator / 2);
+    private float GetBarlineStep(int tsPos) => Chart.Resolution * (float)TimeSignatureEvents[tsPos].Numerator / (float)(TimeSignatureEvents[tsPos].Denominator / 4.0f);
+    private float GetDivisionStep(int tsPos) => Chart.Resolution / (float)TimeSignatureEvents[tsPos].Denominator * 4;
+    private float GetHalfDivisionStep(int tsPos) => Chart.Resolution / ((float)TimeSignatureEvents[tsPos].Denominator / 2);
 
     /// <summary>
     /// Calculate the last "1" of a bar from a tick-time timestamp.

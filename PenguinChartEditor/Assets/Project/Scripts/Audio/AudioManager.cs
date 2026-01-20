@@ -12,7 +12,7 @@ public class AudioManager : MonoBehaviour
 {
     #region Properties
 
-    const int SAMPLE_RATE = 44100;
+    private const int SAMPLE_RATE = 44100;
     public const float MAX_VOLUME = 1;
 
     /// <summary>
@@ -74,7 +74,7 @@ public class AudioManager : MonoBehaviour
 
     #region Unity Functions
 
-    InputMap inputMap;
+    private InputMap inputMap;
     private void Awake()
     {
         inputMap = new();
@@ -90,7 +90,7 @@ public class AudioManager : MonoBehaviour
         LinkStreams();
     }
 
-    void OnApplicationQuit()
+    private void OnApplicationQuit()
     {
         Bass.BASS_Free();
     }
@@ -173,7 +173,7 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// Generate BASS streams from file paths in Stem dict in ChartMetadata.
     /// </summary>
-    static void UpdateStemStreams()
+    private static void UpdateStemStreams()
     {
         StemStreams.Clear();
         StemVolumes.Clear();
@@ -196,7 +196,7 @@ public class AudioManager : MonoBehaviour
     /// <param name="stemType">The stem that the BASS stream belongs to.</param>
     /// <param name="songPath">The file path to create a stream from.</param>
     /// <exception cref="ArgumentException">Thrown when created stem returns an error (0) from BASS</exception>
-    static void UpdateAudioStream(StemType stemType, string songPath)
+    private static void UpdateAudioStream(StemType stemType, string songPath)
     {
         // Make this asynchronous for later? idk
         // Create master stream in data set to avoid creating a stream over and over during frequent start/stopping
@@ -222,7 +222,7 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// Link all BASS streams to the longest BASS stream for playback purposes.
     /// </summary>
-    static void LinkStreams()
+    private static void LinkStreams()
     {
         // In order to play all the streams in sync they must be linked together
         // All audio must be linked to the longest stream so that pausing the longer stream is possible after other shorter ones have ended
@@ -236,7 +236,7 @@ public class AudioManager : MonoBehaviour
     /// Get the longest audio file to link playing all other stems to. Needed to properly play audio synchronously.
     /// </summary>
     /// <returns>Stem with longest playback length</returns>
-    static StemType GetLongestStream()
+    private static StemType GetLongestStream()
     {
         // Basic max value finder algorithm: get length of each stem, overwrite current longest stem if new longest is found
         long streamLength = 0;
@@ -336,7 +336,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    static int metronomeStreamHandle = -1;
+    private static int metronomeStreamHandle = -1;
     public static void PlayMetronomeSound()
     {
         if (metronomeStreamHandle == -1)
@@ -346,7 +346,7 @@ public class AudioManager : MonoBehaviour
         bool success = Bass.BASS_ChannelPlay(metronomeStreamHandle, false);
     }
 
-    static int clapStreamHandle = -1;
+    private static int clapStreamHandle = -1;
 
     public static void PlayClapSound()
     {

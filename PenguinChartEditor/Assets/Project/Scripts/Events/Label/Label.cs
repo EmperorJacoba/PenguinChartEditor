@@ -12,9 +12,9 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 {
     #region Components
 
-    [SerializeField] RectTransform LabelRectTransform;
-    [SerializeField] TMP_InputField LabelEntryBox;
-    [SerializeField] TextMeshProUGUI _labelText;
+    [SerializeField] private RectTransform LabelRectTransform;
+    [SerializeField] private TMP_InputField LabelEntryBox;
+    [SerializeField] private TextMeshProUGUI _labelText;
 
     public string LabelText
     {
@@ -33,7 +33,8 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     #region Setup
     public override bool hasSustainTrail => false;
     public Coroutine destructionCoroutine { get; set; }
-    void Start()
+
+    private void Start()
     {
         if (LabelEntryBox != null)
         {
@@ -136,7 +137,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 
     #region Double Click Implementation (Activate Labels)
 
-    int clickCount = 0;
+    private int clickCount = 0;
     public override void OnPointerDown(PointerEventData pointerEventData)
     {
         base.OnPointerDown(pointerEventData);
@@ -164,7 +165,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
         if (clickCount == 1 && gameObject.activeInHierarchy) StartCoroutine(TriggerDoubleClick());
     }
 
-    IEnumerator TriggerDoubleClick()
+    private IEnumerator TriggerDoubleClick()
     {
         yield return clickCooldown;
         clickCount = 0;

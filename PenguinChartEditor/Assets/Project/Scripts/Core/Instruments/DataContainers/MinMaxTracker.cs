@@ -3,8 +3,8 @@ using System.Linq;
 
 public class MinMaxTracker
 {
-    HashSet<int> minTicks;
-    HashSet<int> maxTicks;
+    private HashSet<int> minTicks;
+    private HashSet<int> maxTicks;
 
     public MinMaxTracker(int laneCount)
     {

@@ -6,21 +6,21 @@ using UnityEngine.EventSystems;
 
 public class FiveFretInstrument : IInstrument, ISustainableInstrument
 {
-    #region Constants 
+    #region Constants
 
-    const string NOTE_INDICATOR = "N";
-    const string EVENT_INDICATOR = "E";
-    const string DEPRECATED_HAND_INDICATOR = "H";
-    const int IDENTIFIER_INDEX = 0;
-    const int NOTE_IDENTIFIER_INDEX = 1;
-    const int SUSTAIN_INDEX = 2;
-    const string FORCED_SUBSTRING = "N 5 0";
-    const string TAP_SUBSTRING = "N 6 0";
-    const int EVENT_DATA_INDEX = 1;
-    const int LAST_VALID_IDENTIFIER = 7;
-    const string TAP_ID = "N 6 0";
-    const string EXPLICIT_STRUM_ID = "N FS 0";
-    const string EXPLICIT_HOPO_ID = "N FH 0";
+    private const string NOTE_INDICATOR = "N";
+    private const string EVENT_INDICATOR = "E";
+    private const string DEPRECATED_HAND_INDICATOR = "H";
+    private const int IDENTIFIER_INDEX = 0;
+    private const int NOTE_IDENTIFIER_INDEX = 1;
+    private const int SUSTAIN_INDEX = 2;
+    private const string FORCED_SUBSTRING = "N 5 0";
+    private const string TAP_SUBSTRING = "N 6 0";
+    private const int EVENT_DATA_INDEX = 1;
+    private const int LAST_VALID_IDENTIFIER = 7;
+    private const string TAP_ID = "N 6 0";
+    private const string EXPLICIT_STRUM_ID = "N FS 0";
+    private const string EXPLICIT_HOPO_ID = "N FH 0";
 
     #endregion
 
@@ -42,7 +42,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     public DifficultyType Difficulty { get; set; }
     public HeaderType InstrumentID => (HeaderType)((int)InstrumentName + (int)Difficulty);
 
-    InputMap inputMap;
+    private InputMap inputMap;
 
     #endregion
 
@@ -62,7 +62,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         orange = 5,
     }
 
-    LinkedList<int> laneOrdering = new(Enumerable.Range(0, 6));
+    private LinkedList<int> laneOrdering = new(Enumerable.Range(0, 6));
 
     public static int MatchLaneOrientationToChartID(LaneOrientation lane)
     {
@@ -144,9 +144,9 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     #region Moving
 
-    MoveHelper<FiveFretNoteData> mover = new();
+    private MoveHelper<FiveFretNoteData> mover = new();
 
-    void MoveSelection()
+    private void MoveSelection()
     {
         if (mover.Move2DSelection(this, Lanes, laneOrdering))
         {
@@ -155,7 +155,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         }
     }
 
-    void CompleteMove()
+    private void CompleteMove()
     {
         if (this != Chart.LoadedInstrument) return;
         Chart.showPreviewers = true;
@@ -170,7 +170,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     #region Add/Delete
 
-    void DeleteSelection()
+    private void DeleteSelection()
     {
         if (Chart.LoadedInstrument != this) return;
 
@@ -213,8 +213,6 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         CheckForHopos(lane, tick);
         ClampSustainsBefore(tick, lane);
         ClearAllSelections();
-
-        Chart.InPlaceRefresh();
     }
 
     #endregion
@@ -227,7 +225,6 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     {
         Lanes.ClearAllSelections();
         SoloData.ClearSelection();
-        Chart.InPlaceRefresh();
     }
     public bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
 
@@ -268,6 +265,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
 
         ClearAllSelections();
+        Chart.InPlaceRefresh();
     }
 
     public bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
@@ -384,7 +382,8 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     #endregion
 
     #region Flag Changes
-    void ChangeTickFlag(int targetTick, int previousTick, FiveFretNoteData.FlagType flag)
+
+    private void ChangeTickFlag(int targetTick, int previousTick, FiveFretNoteData.FlagType flag)
     {
         if (flag == FiveFretNoteData.FlagType.tap)
         {
@@ -409,7 +408,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         SetAllEventsAtTickTo(targetTick, flag);
     }
 
-    void ChangeTickFlag(int targetTick, int previousTick, LaneOrientation targetLane, FiveFretNoteData.FlagType flag)
+    private void ChangeTickFlag(int targetTick, int previousTick, LaneOrientation targetLane, FiveFretNoteData.FlagType flag)
     {
         if (!Lanes.GetLane((int)targetLane).Contains(targetTick))
         {
@@ -425,7 +424,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         else ChangeTickFlag(targetTick, previousTick, flag);
     }
 
-    void UpdateTickDataToMatch(int tick, FiveFretNoteData data)
+    private void UpdateTickDataToMatch(int tick, FiveFretNoteData data)
     {
         var @default = data.Default;
         var flag = data.Flag;
@@ -439,7 +438,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         }
     }
 
-    void SetAllEventsAtTickTo(int targetTick, FiveFretNoteData.FlagType flag)
+    private void SetAllEventsAtTickTo(int targetTick, FiveFretNoteData.FlagType flag)
     {
         for (int i = 0; i < Lanes.Count; i++)
         {
@@ -470,8 +469,6 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     public void CheckForHopos(LaneOrientation lane, int changedTick)
     {
-        var activeLane = Lanes.GetLane((int)lane);
-
         bool nextTickHopo = false;
         bool currentTickHopo = false;
         bool changedTickExists = Lanes.AnyLaneContainsTick(changedTick);
@@ -479,10 +476,10 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         var ticks = Lanes.GetTickEventBounds(changedTick); // biggest bottleneck here btw
 
         if (ticks.next != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
-            ticks.next - changedTick < Chart.hopoCutoff) nextTickHopo = true;
+            ticks.next - changedTick < Chart.HopoCutoff) nextTickHopo = true;
 
         if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
-            changedTick - ticks.prev < Chart.hopoCutoff) currentTickHopo = true;
+            changedTick - ticks.prev < Chart.HopoCutoff) currentTickHopo = true;
 
         if (IsTickNaturallyChangable(changedTick))
         {
@@ -525,9 +522,9 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
             if (!IsTickNaturallyChangable(currentTick)) continue;
 
-            var prevTick = i != 0 ? uniqueTicks[i - 1] : -Chart.hopoCutoff;
+            var prevTick = i != 0 ? uniqueTicks[i - 1] : -Chart.HopoCutoff;
 
-            var flag = (currentTick - prevTick < Chart.hopoCutoff) && !Lanes.IsTickChord(currentTick) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
+            var flag = (currentTick - prevTick < Chart.HopoCutoff) && !Lanes.IsTickChord(currentTick) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
 
             ChangeTickFlag(currentTick, prevTick, flag);
         }
@@ -538,7 +535,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         var ticks = Lanes.GetTickEventBounds(tick);
 
         if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
-            tick - ticks.prev < Chart.hopoCutoff &&
+            tick - ticks.prev < Chart.HopoCutoff &&
             (Lanes.GetTickCountAtTick(tick) == 0 && !Lanes.GetLane((int)lane).Contains(ticks.prev))
             ) return true;
 

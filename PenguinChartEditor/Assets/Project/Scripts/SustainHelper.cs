@@ -4,13 +4,13 @@ using UnityEngine.EventSystems;
 
 public class SustainHelper<T> where T : IEventData, ISustainable
 {
-    SustainData<T> sustainData = new();
+    private SustainData<T> sustainData = new();
 
-    Lanes<T> laneData;
-    IInstrument parentInstrument;
+    private Lanes<T> laneData;
+    private IInstrument parentInstrument;
 
-    bool obeyExtendedSustainSetting;
-    bool independentLanes => UserSettings.ExtSustains || !obeyExtendedSustainSetting;
+    private bool obeyExtendedSustainSetting;
+    private bool independentLanes => UserSettings.ExtSustains || !obeyExtendedSustainSetting;
 
     public SustainHelper(IInstrument parentInstrument, Lanes<T> lanes, bool obeyExtended)
     {
@@ -99,7 +99,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         sustainData.lastMouseTick = currentMouseTick;
     }
 
-    void UpdateSustain(int tick, int lane, int newSustain)
+    private void UpdateSustain(int tick, int lane, int newSustain)
     {
         // clamp based on this lane only (ignore other lane overlap)
         if (independentLanes)
@@ -158,7 +158,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         return sustainLengthMS < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ? 0 : clampedSustain;
     }
 
-    void ShiftClickSustainClamp(int tick, int tickLength)
+    private void ShiftClickSustainClamp(int tick, int tickLength)
     {
         foreach (var lane in laneData.LaneKeys)
         {
@@ -243,7 +243,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         }
     }
 
-    void ClampLaneEventsBefore(int tick, int lane)
+    private void ClampLaneEventsBefore(int tick, int lane)
     {
         var currentLane = laneData.GetLane(lane);
 

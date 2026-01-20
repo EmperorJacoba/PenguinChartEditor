@@ -15,7 +15,7 @@ public class StarpowerLane : SpawningLane<StarpowerEvent>
     }
     private HeaderType _li = (HeaderType)(-1);
     public override int laneID => (int)laneIdentifier;
-    [SerializeField] StarpowerPooler pooler;
+    [SerializeField] private StarpowerPooler pooler;
     protected override IPooler<StarpowerEvent> Pooler => pooler;
 
     protected override bool cullAtStrikelineOnPlay => false;

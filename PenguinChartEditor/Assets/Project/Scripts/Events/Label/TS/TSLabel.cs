@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class TSLabel : Label<TSData>
 {
-    TSLane parentLane;
+    private TSLane parentLane;
     #region Event Sets
     public override SelectionSet<TSData> Selection => Chart.SyncTrackInstrument.tsSelection;
     public override LaneSet<TSData> LaneData => Chart.SyncTrackInstrument.TimeSignatureEvents;
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
-    [SerializeField] Warning tsWarningAlert;
+    [SerializeField] private Warning tsWarningAlert;
 
     #endregion
 

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class ExtendedSustainController : MonoBehaviour
 {
-    [SerializeField] Toggle toggle;
+    [SerializeField] private Toggle toggle;
 
     private void Awake()
     {
@@ -11,7 +11,7 @@ public class ExtendedSustainController : MonoBehaviour
         toggle.isOn = UserSettings.ExtSustains;
     }
 
-    void UpdateExtendedSustain(bool mode) => UserSettings.ExtSustains = mode;
+    private void UpdateExtendedSustain(bool mode) => UserSettings.ExtSustains = mode;
     public void SetExtendedSustains(bool mode)
     {
         UserSettings.ExtSustains = mode;

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class InstrumentAddButton : MonoBehaviour, IPointerDownHandler
 {
-    [SerializeField] bool directionIsRight;
+    [SerializeField] private bool directionIsRight;
     public void OnPointerDown(PointerEventData eventData)
     {
         InstrumentAddBox.instance.Activate(directionIsRight);

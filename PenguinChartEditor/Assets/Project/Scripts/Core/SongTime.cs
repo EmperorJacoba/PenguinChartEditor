@@ -4,7 +4,7 @@ using UnityEngine;
 public class SongTime : MonoBehaviour
 {
     private const int MIDDLE_MOUSE_BUTTON_ID = 2;
-    static InputMap inputMap;
+    private static InputMap inputMap;
 
     // Needed for delta calculations when scrolling using MMB
     private float initialMouseY = float.NaN;
@@ -58,7 +58,7 @@ public class SongTime : MonoBehaviour
 
     #region Unity Functions
 
-    void Awake()
+    private void Awake()
     {
         inputMap = new();
         inputMap.Enable();
@@ -69,14 +69,14 @@ public class SongTime : MonoBehaviour
         inputMap.Charting.MiddleMouseClick.canceled += x => initialMouseY = float.NaN;
     }
 
-    void Start()
+    private void Start()
     {
         Waveform.GenerateWaveformPoints();
         TimeChanged?.Invoke();
         Chart.InPlaceRefresh();
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetMouseButton(MIDDLE_MOUSE_BUTTON_ID))
         {

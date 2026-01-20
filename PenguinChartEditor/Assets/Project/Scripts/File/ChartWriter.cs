@@ -4,10 +4,10 @@ using System.Linq;
 
 public static class ChartWriter
 {
-    const int CHART_FIELDS_ENUM_START_POINT = 0;
-    const int CHART_FIELDS_ENUM_END_POINT = 5;
-    const string CLOSING_GROUP_CHAR = "}";
-    const string OFFSET = "Offset = 0";
+    private const int CHART_FIELDS_ENUM_START_POINT = 0;
+    private const int CHART_FIELDS_ENUM_END_POINT = 5;
+    private const string CLOSING_GROUP_CHAR = "}";
+    private const string OFFSET = "Offset = 0";
 
     public static void WriteChart()
     {
@@ -61,7 +61,7 @@ public static class ChartWriter
         File.WriteAllLines(dotChartPath, dotChartLines);
     }
 
-    static List<string> GenerateData()
+    private static List<string> GenerateData()
     {
         List<string> dotChartLines = new();
 
@@ -77,7 +77,7 @@ public static class ChartWriter
         return dotChartLines;
     }
 
-    static List<string> WriteIni()
+    private static List<string> WriteIni()
     {
         // no opening curly brace needed
         List<string> iniLines = new()
@@ -96,7 +96,7 @@ public static class ChartWriter
         return iniLines;
     }
 
-    static List<string> WriteSong()
+    private static List<string> WriteSong()
     {
         // Chart file format specifications ordering
         // https://docs.google.com/document/d/1v2v0U-9HQ5qHeccpExDOLJ5CMPZZ3QytPmAG5WF0Kzs
@@ -148,7 +148,7 @@ public static class ChartWriter
         return songGroup;
     }
 
-    static List<string> WriteSyncTrack()
+    private static List<string> WriteSyncTrack()
     {
         List<string> syncTrackEvents = WriteHeader(HeaderType.SyncTrack);
         var syncTrackStrings = Chart.SyncTrackInstrument.ExportAllEvents();
@@ -159,7 +159,7 @@ public static class ChartWriter
         return syncTrackEvents;
     }
 
-    static List<string> WriteGlobalEvents()
+    private static List<string> WriteGlobalEvents()
     {
         List<string> globalEvents = WriteHeader(HeaderType.Events);
 
@@ -169,7 +169,7 @@ public static class ChartWriter
         return globalEvents;
     }
 
-    static List<string> WriteInstrument(IInstrument instrument)
+    private static List<string> WriteInstrument(IInstrument instrument)
     {
         List<string> instrumentEvents = WriteHeader(GetMatchingHeader(instrument));
 
@@ -178,7 +178,7 @@ public static class ChartWriter
         return instrumentEvents;
     }
 
-    static List<string> WriteHeader(HeaderType header)
+    private static List<string> WriteHeader(HeaderType header)
     {
         List<string> lines = new(2)
         {
@@ -188,7 +188,7 @@ public static class ChartWriter
         return lines;
     }
 
-    static HeaderType GetMatchingHeader(IInstrument instrument)
+    private static HeaderType GetMatchingHeader(IInstrument instrument)
     {
         int enumValue = (int)instrument.InstrumentName + (int)instrument.Difficulty;
         return (HeaderType)enumValue;

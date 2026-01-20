@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class Beatline3D : BaseBeatline
 {
-    BeatlineLane3D parentLane;
-    GameInstrument parentGameInstrument => parentLane.parentGameInstrument;
+    private BeatlineLane3D parentLane;
+    private GameInstrument parentGameInstrument => parentLane.parentGameInstrument;
     /// <summary>
     /// Line renderer thicknesses corresponding to each beatline type in the BeatlineType enum. 
     /// </summary>
     protected override float[] thicknesses => _thicknesses;
 
-    float[] _thicknesses = { 0, 0.3f, 0.1f, 0.02f };
+    private float[] _thicknesses = { 0, 0.3f, 0.1f, 0.02f };
 
     public override void UpdateBeatlinePosition(double percentOfHighway)
     {

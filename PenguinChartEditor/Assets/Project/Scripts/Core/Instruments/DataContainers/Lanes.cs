@@ -5,8 +5,8 @@ public class Lanes<T> where T : IEventData
 {
     public const int NO_TICK_EVENT = -1;
     public List<int> LaneKeys => lanes.Keys.ToList();
-    Dictionary<int, LaneSet<T>> lanes;
-    Dictionary<int, SelectionSet<T>> selections;
+    private Dictionary<int, LaneSet<T>> lanes;
+    private Dictionary<int, SelectionSet<T>> selections;
     public HashSet<int> TempSustainTicks = new();
 
     public Lanes(int laneCount)
@@ -41,7 +41,7 @@ public class Lanes<T> where T : IEventData
     /// </summary>
     public event UpdateNeededDelegate UpdatesNeededInRange;
 
-    Dictionary<int, SortedDictionary<int, T>> MakeEmptyDataSet()
+    private Dictionary<int, SortedDictionary<int, T>> MakeEmptyDataSet()
     {
         Dictionary<int, SortedDictionary<int, T>> outputSet = new();
         foreach (var set in lanes)

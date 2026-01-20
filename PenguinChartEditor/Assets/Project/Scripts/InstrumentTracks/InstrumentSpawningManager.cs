@@ -4,19 +4,19 @@ using UnityEngine;
 public class InstrumentSpawningManager : MonoBehaviour
 {
     public static InstrumentSpawningManager instance;
-    [SerializeField] GameObject GameInstrumentPackage;
-    LinkedList<GameInstrument> activeGameInstruments = new();
+    [SerializeField] private GameObject GameInstrumentPackage;
+    private LinkedList<GameInstrument> activeGameInstruments = new();
 
     public GameInstrument leftmostTrack => activeGameInstruments.First.Value;
     public GameInstrument rightmostTrack => activeGameInstruments.Last.Value;
 
-    [SerializeField] FocusCameraButtons cameraController;
-    [SerializeField] InstrumentAddButton leftButton;
-    [SerializeField] InstrumentAddButton rightButton;
+    [SerializeField] private FocusCameraButtons cameraController;
+    [SerializeField] private InstrumentAddButton leftButton;
+    [SerializeField] private InstrumentAddButton rightButton;
 
-    Vector3 BUTTON_Z_POSITION = (Vector3.forward * 25);
-    Vector3 rightSpawningOffset = Vector3.right * 20;
-    Vector3 leftSpawningOffset = Vector3.left * 20;
+    private Vector3 BUTTON_Z_POSITION = (Vector3.forward * 25);
+    private Vector3 rightSpawningOffset = Vector3.right * 20;
+    private Vector3 leftSpawningOffset = Vector3.left * 20;
 
     public float OutOfBoundsPosLeft => leftmostTrack.transform.position.x + leftSpawningOffset.x;
     public float OutOfBoundsPosRight => rightmostTrack.transform.position.x + rightSpawningOffset.x;

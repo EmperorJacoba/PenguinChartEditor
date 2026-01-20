@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 {
-    BPMLane parentLane;
+    private BPMLane parentLane;
     #region Constants
 
     private const int SECONDS_PER_MINUTE = 60;
@@ -20,7 +20,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     public override LaneSet<BPMData> LaneData => Chart.SyncTrackInstrument.TempoEvents;
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
 
-    [SerializeField] Anchor anchorIcon;
+    [SerializeField] private Anchor anchorIcon;
 
 
     #endregion
@@ -43,7 +43,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     // Overriden to make sure faulty/inaccurate data is not in Tempo dict after any large modifications
     public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
 
-    void ExecuteWithRecalculate(Action action)
+    private void ExecuteWithRecalculate(Action action)
     {
         action();
         Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();

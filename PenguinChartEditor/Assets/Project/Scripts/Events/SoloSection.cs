@@ -3,10 +3,10 @@ using UnityEngine;
 public class SoloSection : MonoBehaviour, IPoolable
 {
     private const float HEIGHT_VISIBILITY_OFFSET = 0f;
-    [SerializeField] GameObject overlay;
-    [SerializeField] SoloPlate platehead;
-    [SerializeField] SoloEnd plateheadReceiver;
-    SoloSectionLane parentLane;
+    [SerializeField] private GameObject overlay;
+    [SerializeField] private SoloPlate platehead;
+    [SerializeField] private SoloEnd plateheadReceiver;
+    private SoloSectionLane parentLane;
 
     public bool Visible
     {

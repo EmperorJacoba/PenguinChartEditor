@@ -7,13 +7,13 @@ using UnityEngine;
 /// </summary>
 public class Beatline : BaseBeatline
 {
-    BeatlineLane parentLane;
+    private BeatlineLane parentLane;
     /// <summary>
     /// Line renderer thicknesses corresponding to each beatline type in the BeatlineType enum. 
     /// </summary>
     protected override float[] thicknesses => _thicknesses;
 
-    float[] _thicknesses = { 0, 0.05f, 0.02f, 0.005f };
+    private float[] _thicknesses = { 0, 0.05f, 0.02f, 0.005f };
 
     #region Properties
 

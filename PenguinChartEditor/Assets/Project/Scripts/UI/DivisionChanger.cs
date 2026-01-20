@@ -9,16 +9,16 @@ public class DivisionChanger : MonoBehaviour
     private const int MAX_DIVISION = 768;
     private const int MIN_DIVISION = 1;
 
-    [SerializeField] TMP_InputField entryBox;
-    [SerializeField] Button upButton;
-    [SerializeField] Button downButton;
+    [SerializeField] private TMP_InputField entryBox;
+    [SerializeField] private Button upButton;
+    [SerializeField] private Button downButton;
 
-    InputMap inputMap;
+    private InputMap inputMap;
     public static int CurrentDivision { get; set; } = 16;
 
-    readonly int[] steps = { 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512, 768 };
+    private readonly int[] steps = { 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512, 768 };
 
-    void Start()
+    private void Start()
     {
         upButton.onClick.AddListener(IncreaseDivision);
         downButton.onClick.AddListener(DecreaseDivision);

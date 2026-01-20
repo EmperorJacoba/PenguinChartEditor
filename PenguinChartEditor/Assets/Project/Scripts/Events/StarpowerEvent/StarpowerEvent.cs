@@ -20,7 +20,7 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
     }
     private HeaderType _li = (HeaderType)(-1);
 
-    void CacheDataReferences()
+    private void CacheDataReferences()
     {
         _cachedSelectionRef = (SelectionSet<StarpowerEventData>)ParentInstrument.GetLaneSelection((int)laneID);
         _cachedDataRef = (LaneSet<StarpowerEventData>)ParentInstrument.GetLaneData((int)laneID);
@@ -32,7 +32,7 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
     public override LaneSet<StarpowerEventData> LaneData => _cachedDataRef;
     private LaneSet<StarpowerEventData> _cachedDataRef;
 
-    [SerializeField] StarpowerAnatomy notePieces;
+    [SerializeField] private StarpowerAnatomy notePieces;
 
     public override IInstrument ParentInstrument => Chart.StarpowerInstrument;
 
@@ -69,12 +69,12 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
         notePieces.ChangeColorToPreviewer();
     }
 
-    void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
+    private void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
     {
         var trackProportion = (float)percentOfTrack * parentGameInstrument.HighwayLength;
         transform.localPosition = new(xPosition, yPosition, trackProportion);
     }
 
-    void UpdatePositionAsPreviewer() => 
+    private void UpdatePositionAsPreviewer() => 
         UpdatePosition(Waveform.GetWaveformRatio(_tick), parentGameInstrument.GetLocalStarpowerXCoordinate(), PREVIEWER_Y_OFFSET);
 }

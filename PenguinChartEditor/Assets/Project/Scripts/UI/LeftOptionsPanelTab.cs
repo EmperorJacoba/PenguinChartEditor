@@ -5,11 +5,11 @@ using UnityEngine.UI;
 
 public class LeftOptionsPanelTab : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] LeftOptionsPanel leftOptionsPanel;
-    [SerializeField] LeftOptionsPanel.PanelType thisPanelTab;
-    [SerializeField] Image imageComponent;
-    [SerializeField] Sprite tabActiveImage;
-    [SerializeField] Sprite tabInactiveImage;
+    [SerializeField] private LeftOptionsPanel leftOptionsPanel;
+    [SerializeField] private LeftOptionsPanel.PanelType thisPanelTab;
+    [SerializeField] private Image imageComponent;
+    [SerializeField] private Sprite tabActiveImage;
+    [SerializeField] private Sprite tabInactiveImage;
 
     public void OnPointerClick(PointerEventData data)
     {

@@ -7,8 +7,8 @@ using UnityEngine.EventSystems;
 public class SoloPlate : Event<SoloEventData>
 {
     public override bool hasSustainTrail => false;
-    [SerializeField] TMP_Text percentage;
-    [SerializeField] TMP_Text counter;
+    [SerializeField] private TMP_Text percentage;
+    [SerializeField] private TMP_Text counter;
 
     public void InitializeEvent(SoloSectionLane parentLane, int startTick, int endTick)
     {
@@ -65,7 +65,8 @@ public class SoloPlate : Event<SoloEventData>
             _prevobj = value;
         }
     } // define in pooler
-    SoloPreviewer _prevobj;
+
+    private SoloPreviewer _prevobj;
 
 
     public override void OnPointerDown(PointerEventData eventData)

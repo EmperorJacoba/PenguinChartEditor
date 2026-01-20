@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class FiveFretFlagSelector : MonoBehaviour
 {
-    Button button;
+    private Button button;
 
     private void Awake()
     {
@@ -13,8 +13,8 @@ public class FiveFretFlagSelector : MonoBehaviour
         button.onClick.AddListener(HandleClick);
     }
 
-    [SerializeField] bool naturalize;
-    [SerializeField] FiveFretNoteData.FlagType flag;
+    [SerializeField] private bool naturalize;
+    [SerializeField] private FiveFretNoteData.FlagType flag;
 
     public void HandleClick()
     {

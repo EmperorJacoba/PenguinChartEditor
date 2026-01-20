@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 // Thanks Game Dev Guide! (even though this technically isn't a game)
 public class TooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] string displayInformation; 
+    [SerializeField] private string displayInformation; 
     public void OnPointerEnter(PointerEventData eventData) => Tooltip.NewTooltip(displayInformation);
     public void OnPointerExit(PointerEventData eventData) => Tooltip.Deactivate();
 

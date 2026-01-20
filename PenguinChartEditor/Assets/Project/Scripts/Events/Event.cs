@@ -59,7 +59,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
     }
 
     private const int RMB_ID = 1;
-    bool _selected = false;
+    private bool _selected = false;
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
 
     public bool Visible
@@ -83,11 +83,11 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         }
         set
         {
-            if (_parLane == value) return;
             _parLane = value;
         }
     }
-    ILane _parLane;
+
+    private ILane _parLane;
 
     public T representedData;
 
@@ -124,8 +124,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
             return;
         }
         LaneData.Add(newTick, newData);
-
-        Chart.InPlaceRefresh();
     }
 
     #endregion
@@ -174,11 +172,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         }
     }
 
-    public static int lastTickSelection;
-    /// <summary>
-    /// Calculate the event(s) to be selected based on the last click event.
-    /// </summary>
-    /// <param name="clickButton">PointerEventData.button</param>
+    private static int lastTickSelection;
+
     public void CalculateSelectionStatus(PointerEventData clickData) // refactor this pls
     {
         // Goal is to follow standard selection functionality of most productivity programs

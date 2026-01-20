@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class TrackBackground : MonoBehaviour
 {
-    [SerializeField] GameObject screenReference;
+    [SerializeField] private GameObject screenReference;
 
-    void Start()
+    private void Start()
     {
         transform.localScale = screenReference.transform.
         transform.position = screenReference.transform.position;

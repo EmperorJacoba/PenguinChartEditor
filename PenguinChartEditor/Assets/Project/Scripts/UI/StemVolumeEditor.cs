@@ -24,23 +24,24 @@ public class StemVolumeEditor : MonoBehaviour
     }
     private StemType _type;
 
-    [SerializeField] Slider slider;
-    [SerializeField] TextMeshProUGUI label;
-    [SerializeField] TMP_InputField entryBox;
-    [SerializeField] Button muteButton;
-    [SerializeField] Button soloButton;
+    [SerializeField] private Slider slider;
+    [SerializeField] private TextMeshProUGUI label;
+    [SerializeField] private TMP_InputField entryBox;
+    [SerializeField] private Button muteButton;
+    [SerializeField] private Button soloButton;
 
-    delegate void UnsoloDelegate();
-    static event UnsoloDelegate SoloedStemOccurred;
+    private delegate void UnsoloDelegate();
 
-    enum ButtonStates
+    private static event UnsoloDelegate SoloedStemOccurred;
+
+    private enum ButtonStates
     {
         normal,
         muted,
         soloed
     }
 
-    void Start()
+    private void Start()
     {
         SoloedStemOccurred += UpdateMuteButton;
 
@@ -52,7 +53,7 @@ public class StemVolumeEditor : MonoBehaviour
     /// Changes entry box and variable values upon slider value change.
     /// </summary>
     /// <param name="newValue"></param>
-    void SliderChange(float newValue)
+    private void SliderChange(float newValue)
     {
         // Prevent values in entry boxes from looking wonky with 100000 decimal places
         newValue = (float)Math.Round(newValue, 3);
@@ -66,7 +67,7 @@ public class StemVolumeEditor : MonoBehaviour
     /// Changes slider and variable values upon entry box value change.
     /// </summary>
     /// <param name="newValue"></param>
-    void EntryBoxChange(string newValue)
+    private void EntryBoxChange(string newValue)
     {
         var valueAsFloat = ValidateEntryBoxText(newValue);
         slider.value = valueAsFloat;
@@ -74,7 +75,7 @@ public class StemVolumeEditor : MonoBehaviour
         AudioManager.SetStemVolume(StemType, valueAsFloat);
     }
 
-    float ValidateEntryBoxText(string text)
+    private float ValidateEntryBoxText(string text)
     {
         // Entry boxes should be decimal numerical only
         var valueAsFloat = float.Parse(text);
@@ -110,7 +111,7 @@ public class StemVolumeEditor : MonoBehaviour
         }
     }
 
-    void UpdateButtonState(Button targetButton, ButtonStates newState)
+    private void UpdateButtonState(Button targetButton, ButtonStates newState)
     {
         switch (newState)
         {
@@ -126,7 +127,7 @@ public class StemVolumeEditor : MonoBehaviour
         }
     }
 
-    void UpdateMuteButton()
+    private void UpdateMuteButton()
     {
         UpdateButtonState(muteButton, ButtonStates.normal);
     }

@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class SoloPreviewer : Previewer
 {
-    [SerializeField] SoloPlate previewSoloPlate;
-    [SerializeField] SoloEnd previewEndPlate;
-    SoloSectionLane ParentLane { get; set; }
-    IInstrument ParentInstrument => ParentLane.parentGameInstrument.representedInstrument;
+    [SerializeField] private SoloPlate previewSoloPlate;
+    [SerializeField] private SoloEnd previewEndPlate;
+    private SoloSectionLane ParentLane { get; set; }
+    private IInstrument ParentInstrument => ParentLane.parentGameInstrument.representedInstrument;
 
     protected override void Awake()
     {

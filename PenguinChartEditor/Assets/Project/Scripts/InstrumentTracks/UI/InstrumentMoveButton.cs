@@ -6,8 +6,8 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class InstrumentMoveButton : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] GameInstrumentIconLabel parentIconLabel;
-    [SerializeField] bool isRight;
+    [SerializeField] private GameInstrumentIconLabel parentIconLabel;
+    [SerializeField] private bool isRight;
 
     public void OnPointerClick(PointerEventData eventData)
     {

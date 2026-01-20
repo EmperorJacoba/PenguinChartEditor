@@ -8,9 +8,9 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class Waveform : MonoBehaviour
 {
-    [SerializeField] bool is2D = false;
+    [SerializeField] private bool is2D = false;
     private const float THREE_D_Y_POSITION_OFFSET = 0.01f;
-    public static Waveform instance;
+    private static Waveform instance;
 
     public GameInstrument parentGameInstrument;
 
@@ -19,12 +19,12 @@ public class Waveform : MonoBehaviour
     /// <para>StemType is the audio stem the data belongs to</para>
     /// <para>Data holds cached waveform float array (float[] - fairly space efficient @ 1ms per sample) and the number of bytes per sample (long)</para>
     /// </summary>
-    public static Dictionary<StemType, StemWaveformData> WaveformData { get; private set; } = new();
+    private static Dictionary<StemType, StemWaveformData> WaveformData { get; set; } = new();
     
     /// <summary>
     /// The currently displayed waveform.
     /// </summary>
-    protected static StemType CurrentWaveform { get; set; }
+    private static StemType CurrentWaveform { get; set; }
 
     #region Scene Objects
 
@@ -33,13 +33,13 @@ public class Waveform : MonoBehaviour
     // main is attached to waveform object itself (use prefab with this)
     // mirror is first child
     // uses local positioning
-    LineRenderer lineRendererMain;
-    LineRenderer lineRendererMirror;
+    private LineRenderer lineRendererMain;
+    private LineRenderer lineRendererMirror;
 
     /// <summary>
     /// RectTransform attached to the waveform container.
     /// </summary>
-    RectTransform TwoDRectTransform
+    private RectTransform TwoDRectTransform
     {
         get
         {
@@ -50,7 +50,8 @@ public class Waveform : MonoBehaviour
             return _rt;
         }
     }
-    RectTransform _rt;
+
+    private RectTransform _rt;
 
     /// <summary>
     /// Height of the RectTransform component attached to the waveform's container GameObject.
@@ -62,7 +63,7 @@ public class Waveform : MonoBehaviour
     #region Display Options
 
     /// <summary>
-    /// The y distance between each waveform point on the line renderer. Default is 0.0001.
+    /// The point-to-point distance between each waveform point on the line renderer.
     /// <para>Change shrink factor to modify how tight the waveform looks.</para>
     /// <para>Modified by hyperspeed and audio speed changes.</para>
     /// </summary>
@@ -118,7 +119,7 @@ public class Waveform : MonoBehaviour
 
     #region Unity Functions
 
-    protected virtual void Awake()
+    private void Awake()
     {
         lineRendererMain = GetComponent<LineRenderer>();
         lineRendererMirror = gameObject.transform.GetChild(0).GetComponent<LineRenderer>();
@@ -126,16 +127,14 @@ public class Waveform : MonoBehaviour
         if (is2D) instance = this;
     }
 
-    private WaveformDataUpdated pointUpdateDel;
     private void OnEnable()
     {
-        pointUpdateDel = x => ApplyGeneratedPositions(x);
-        PointUpdateNeeded += pointUpdateDel;
+        PointUpdateNeeded += ApplyGeneratedPositions;
     }
 
     private void OnDestroy()
     {
-        PointUpdateNeeded -= pointUpdateDel;
+        PointUpdateNeeded -= ApplyGeneratedPositions;
     }
 
     #endregion
@@ -161,7 +160,7 @@ public class Waveform : MonoBehaviour
     /// Update waveform data to a new audio file.
     /// </summary>
     /// <param name="stem">The BASS stream to get audio samples of.</param>
-    static KeyValuePair<StemType, StemWaveformData> UpdateWaveformData(StemType stem) // pass in file path here later
+    private static KeyValuePair<StemType, StemWaveformData> UpdateWaveformData(StemType stem) // pass in file path here later
     {
         float[] stemWaveformData = AudioManager.GetAudioSamples(stem, out long bytesPerSample);
 
@@ -172,13 +171,14 @@ public class Waveform : MonoBehaviour
 
     #region Properties
 
-    static int GetSampleCapacity()
+    private static int GetSampleCapacity()
     {
         return Chart.instance.SceneDetails.is2D ?
             (int)Mathf.Round(instance.TwoDReferenceHeight / ShrinkFactor) :
             (int)Mathf.Round(Highway3D.highwayLength / (ShrinkFactor));
     }
-    static int GetStrikelineSamplePosition()
+
+    private static int GetStrikelineSamplePosition()
     {
         return Chart.instance.SceneDetails.is2D ?
             (int)Math.Ceiling(GetSampleCapacity() * Strikeline2D.instance.GetStrikelineProportion()) :
@@ -199,29 +199,18 @@ public class Waveform : MonoBehaviour
 
     #region Point Generation
 
-    delegate void WaveformDataUpdated(Vector3[] positions);
-    static event WaveformDataUpdated PointUpdateNeeded;
+    private delegate void WaveformDataUpdated(Vector3[] positions);
+
+    private static event WaveformDataUpdated PointUpdateNeeded;
     public static void GenerateWaveformPoints()
     {
         // This can use an implicit cast because song position is always rounded to 3 decimal places
         var currentWaveformDataPosition = (int)(SongTime.SongPositionSeconds * AudioManager.SAMPLES_PER_SECOND);
 
-        float[] waveformData;
-        if (WaveformData.ContainsKey(CurrentWaveform))
-        {
-            waveformData = WaveformData[CurrentWaveform].volumeData;
-        }
-        else
-        {
-            // this is to generate waveform data even if there is either
-            // a) no data available (no audio loaded)
-            // or b) a call when CurrentWaveform = 0 (none) occurs.
-            // this lets the for loop below execute because it can't without SOMETHING in waveformData.
-            // the if statement in that loop is always true when an empty float[] exists in waveformData,
-            // so it accurately represents no data (even though the "waveform" is actually behind the track)
-            waveformData = new float[0];
-        }
-
+        var waveformData = WaveformData.TryGetValue(CurrentWaveform, out var stemWaveformData)
+            ? stemWaveformData.volumeData
+            : Array.Empty<float>();
+        
         var sampleCount = GetSampleCapacity();
         var startSampleIndex = currentWaveformDataPosition - GetStrikelineSamplePosition();
 
@@ -284,7 +273,7 @@ public class Waveform : MonoBehaviour
         lineRendererMirror.SetPositions(positions);
     }
 
-    static void CacheWaveformDetails(double startTimeSeconds, double positionTimeSeconds, double endTimeSeconds)
+    private static void CacheWaveformDetails(double startTimeSeconds, double positionTimeSeconds, double endTimeSeconds)
     {
         startTime = startTimeSeconds;
         endTime = endTimeSeconds;
@@ -298,7 +287,7 @@ public class Waveform : MonoBehaviour
         CacheTimeDetails();
     }
 
-    static void CacheTimeDetails()
+    private static void CacheTimeDetails()
     {
         tickSecondValueMatch.Clear();
         tickSecondValueMatch[startTick] = new(Chart.SyncTrackInstrument.GetSecondsPerTickAtTick(startTick), accumulatedSeconds: 0);
@@ -325,8 +314,8 @@ public class Waveform : MonoBehaviour
     }
     
     // Key: Tick start point.
-    static SortedDictionary<int, CachedTimestampPosition> tickSecondValueMatch = new();
-    static int[] tickPositions;
+    private static SortedDictionary<int, CachedTimestampPosition> tickSecondValueMatch = new();
+    private static int[] tickPositions;
     public static double GetWaveformRatio(int tick)
     {
         if (tick < startTick) return -1; // spawn outside camera zone

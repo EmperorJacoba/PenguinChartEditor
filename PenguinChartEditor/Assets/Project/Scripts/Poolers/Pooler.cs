@@ -58,7 +58,7 @@ public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehavi
         return @object;
     }
 
-    void ActivateObject(T @object)
+    private void ActivateObject(T @object)
     {
         if (@object.Visible) return;
 
@@ -120,7 +120,7 @@ public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehavi
     /// </summary>
     /// <param name="beatline">The target beatline to destroy after five seconds.</param>
     /// <returns></returns>
-    IEnumerator DestructionTimer(T @object)
+    private IEnumerator DestructionTimer(T @object)
     {
         yield return new WaitForSeconds(5.0f);
 

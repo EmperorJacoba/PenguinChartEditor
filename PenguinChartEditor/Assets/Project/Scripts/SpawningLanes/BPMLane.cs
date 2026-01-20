@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BPMLane : SpawningLane<BPMLabel>
 {
-    [SerializeField] BPMPooler pooler;
+    [SerializeField] private BPMPooler pooler;
     protected override IPooler<BPMLabel> Pooler => pooler;
     protected override bool cullAtStrikelineOnPlay => false;
 

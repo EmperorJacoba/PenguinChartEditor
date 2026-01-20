@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class InstrumentSpriteIcons : ScriptableObject
 {
-    [SerializeField] List<InstrumentIcon<Sprite>> icons;
+    [SerializeField] private List<InstrumentIcon<Sprite>> icons;
 
     public Sprite GetInstrumentIcon(HeaderType instrumentID)
     {

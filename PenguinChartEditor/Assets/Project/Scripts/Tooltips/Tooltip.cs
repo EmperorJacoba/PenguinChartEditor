@@ -11,9 +11,9 @@ public class Tooltip : MonoBehaviour
     public TextMeshProUGUI contentText;
     public LayoutElement layoutElement;
     public int wrapLimit = 20;
-    [SerializeField] RectTransform rectTransform;
+    [SerializeField] private RectTransform rectTransform;
 
-    void Awake()
+    private void Awake()
     {
         tooltip = this;
         tooltip.gameObject.SetActive(false);
@@ -33,7 +33,7 @@ public class Tooltip : MonoBehaviour
         layoutElement.enabled = (contentLength > wrapLimit) ? true : false;
     }
 
-    void Update()
+    private void Update()
     {
         Vector2 mousePosition = Input.mousePosition;
         transform.position = mousePosition;
@@ -41,7 +41,7 @@ public class Tooltip : MonoBehaviour
         rectTransform.pivot = GetDesiredPivot();
     }
 
-    Vector2 GetDesiredPivot()
+    private Vector2 GetDesiredPivot()
     {
         int pivotX = 0;
         int pivotY = 0;

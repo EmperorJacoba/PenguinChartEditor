@@ -6,39 +6,40 @@ public class NoteReceiver : MonoBehaviour
 {
     #region Animation Management
 
-    Animator animator;
+    private Animator animator;
 
     // 0, 0 arguments make it possible for restarting animations
     // without cooldowns for sections with lots of notes back-to-back.
     // Please do not mess with these unless you absolutely have to.
-    void PlayNoSustain()
+    private void PlayNoSustain()
     {
         animator.Play("Punch", 0, 0);
     }
 
-    void PlaySustain(int tick, int sustainLength)
+    private void PlaySustain(int tick, int sustainLength)
     {
         animator.Play("SustainPunch", 0, 0);
         StartCoroutine(StopSustainAfterLength(tick, sustainLength));
     }
 
-    void PlayIdle()
+    private void PlayIdle()
     {
         if (animator != null) animator.Play("Idle", 0, 0);
     }
 
-    void PlayFall()
+    private void PlayFall()
     {
         animator.Play("SustainFall", 0, 0);
     }
 
     #endregion
 
-    [SerializeField] int lane;
-    Strikeline3D strikeline;
-    IInstrument ParentInstrument => strikeline.parentGameInstrument.representedInstrument;
-    bool firstLoop = true;
-    IEnumerator StopSustainAfterLength(int tick, int sustainLength)
+    [SerializeField] private int lane;
+    private Strikeline3D strikeline;
+    private IInstrument ParentInstrument => strikeline.parentGameInstrument.representedInstrument;
+    private bool firstLoop = true;
+
+    private IEnumerator StopSustainAfterLength(int tick, int sustainLength)
     {
         var lengthSeconds = Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(SongTime.SongPositionTicks, tick + sustainLength) * AudioManager.currentAudioSpeed;
         yield return new WaitForSeconds((float)lengthSeconds);
@@ -51,7 +52,7 @@ public class NoteReceiver : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    AudioManager.PlayingDelegate activeDelegateAction;
+    private AudioManager.PlayingDelegate activeDelegateAction;
     private void OnEnable()
     {
         activeDelegateAction = x => ToggleNoteReceivers(x);
@@ -67,7 +68,7 @@ public class NoteReceiver : MonoBehaviour
         SongTime.TimeChanged -= CheckForNoteHit;
     }
 
-    void ToggleNoteReceivers(bool state)
+    private void ToggleNoteReceivers(bool state)
     {
         if (state)
         {
@@ -81,9 +82,10 @@ public class NoteReceiver : MonoBehaviour
         }
     }
 
-    int nextPromisedNoteHit = -1;
-    bool nextIsBar = false;
-    void CheckForNoteHit()
+    private int nextPromisedNoteHit = -1;
+    private bool nextIsBar = false;
+
+    private void CheckForNoteHit()
     {
         if (firstLoop)
         {
@@ -110,7 +112,7 @@ public class NoteReceiver : MonoBehaviour
         }
     }
 
-    int GetNextNoteHit()
+    private int GetNextNoteHit()
     {
         nextIsBar = false;
 
@@ -124,7 +126,7 @@ public class NoteReceiver : MonoBehaviour
         return relevantTick;
     }
 
-    int GetStartingNote()
+    private int GetStartingNote()
     {
         nextIsBar = false;
 

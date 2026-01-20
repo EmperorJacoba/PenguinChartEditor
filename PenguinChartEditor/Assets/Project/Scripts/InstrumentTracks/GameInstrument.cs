@@ -3,12 +3,12 @@ using System.Linq;
 
 public class GameInstrument : MonoBehaviour
 {
-    [SerializeField] Highway3D highway;
+    [SerializeField] private Highway3D highway;
     
     // inject via strikeline script itself
     public IStrikeline strikeline;
-    [SerializeField] Waveform waveform;
-    [SerializeField] LaneDetails laneDetails;
+    [SerializeField] private Waveform waveform;
+    [SerializeField] private LaneDetails laneDetails;
 
     [SerializeField] public HeaderType instrumentID;
     public IInstrument representedInstrument
@@ -28,7 +28,8 @@ public class GameInstrument : MonoBehaviour
             return _instRef;
         }
     }
-    IInstrument _instRef;
+
+    private IInstrument _instRef;
 
     public StarpowerLane StarpowerLane
     {
@@ -41,7 +42,8 @@ public class GameInstrument : MonoBehaviour
             return _sLane;
         }
     }
-    StarpowerLane _sLane;
+
+    private StarpowerLane _sLane;
 
     public float HighwayLength => highway.Length;
     public float GetCenterXCoordinateFromLane(int lane) => highway.GetCenterXCoordinateFromLane(lane);

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class InstrumentMinusButton : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] GameInstrumentIconLabel parentIconLabel;
+    [SerializeField] private GameInstrumentIconLabel parentIconLabel;
     public void OnPointerClick(PointerEventData eventData)
     {
         InstrumentSpawningManager.instance.RemoveInstrument(parentIconLabel.parentGameInstrument);

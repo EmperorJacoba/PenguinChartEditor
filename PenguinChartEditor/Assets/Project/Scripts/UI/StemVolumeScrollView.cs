@@ -7,10 +7,10 @@ using UnityEngine.UI;
 [RequireComponent(typeof(ScrollRect))]
 public class StemVolumeScrollView : MonoBehaviour
 {
-    [SerializeField] GameObject volumeEditor;
-    [SerializeField] RectTransform scrollViewContentRt;
+    [SerializeField] private GameObject volumeEditor;
+    [SerializeField] private RectTransform scrollViewContentRt;
 
-    void Start()
+    private void Start()
     {
         // The UI object containing all stems is uses Content Size Fitter & Vertical Layout Group to automatically fit objects.
         foreach (var entry in Chart.Metadata.StemPaths)

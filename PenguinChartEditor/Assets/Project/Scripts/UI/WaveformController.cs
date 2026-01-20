@@ -5,10 +5,10 @@ using TMPro;
 using UnityEngine;
 public class WaveformController : MonoBehaviour
 {
-    [SerializeField] TMP_Dropdown dropdown;
+    [SerializeField] private TMP_Dropdown dropdown;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
         dropdown.ClearOptions();
 

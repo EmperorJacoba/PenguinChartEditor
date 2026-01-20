@@ -4,10 +4,10 @@ using UnityEngine.UI;
 
 public class Anchor : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    [SerializeField] Image lockImage;
-    [SerializeField] BPMLabel parentBPM;
+    [SerializeField] private Image lockImage;
+    [SerializeField] private BPMLabel parentBPM;
 
-    void Awake()
+    private void Awake()
     {
         Opacity = 0;
     }
@@ -36,7 +36,7 @@ public class Anchor : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
         }
     }
 
-    bool IsAnchor => Chart.SyncTrackInstrument.TempoEvents[parentBPM.Tick].Anchor;
+    private bool IsAnchor => Chart.SyncTrackInstrument.TempoEvents[parentBPM.Tick].Anchor;
 
     public void OnPointerEnter(PointerEventData pointerEventData)
     {

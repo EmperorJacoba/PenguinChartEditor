@@ -103,8 +103,8 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
     public bool ContainsTickInHopoRange(int startTick, bool positive)
     {
-        if (positive) return ContainsTickInRangeExclusive(startTick, startTick + Chart.hopoCutoff);
-        return ContainsTickInRangeExclusive(startTick, startTick - Chart.hopoCutoff);
+        if (positive) return ContainsTickInRangeExclusive(startTick, startTick + Chart.HopoCutoff);
+        return ContainsTickInRangeExclusive(startTick, startTick - Chart.HopoCutoff);
     }
 
     public bool Remove(int tick)
@@ -160,7 +160,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         UpdatesNeededInRange(keys.Min(), keys.Max());
     }
 
-    void InvokeForSetEnds(HashSet<int> ticksAdded)
+    private void InvokeForSetEnds(HashSet<int> ticksAdded)
     {
         if (ticksAdded.Count == 0) return;
 
@@ -247,14 +247,13 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     }
 
 
-
-    int BinarySearchForTick(int currentTick, out List<int> tickTimeKeys)
+    private int BinarySearchForTick(int currentTick, out List<int> tickTimeKeys)
     {
         tickTimeKeys = Keys.ToList();
         return tickTimeKeys.BinarySearch(currentTick);
     }
 
-    HashSet<int> GetOverwritableDictEvents(int startPasteTick, int endPasteTick)
+    private HashSet<int> GetOverwritableDictEvents(int startPasteTick, int endPasteTick)
     {
         return Keys.ToList().Where(x => x >= startPasteTick && x <= endPasteTick).ToHashSet();
     }
@@ -297,7 +296,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     public int GetNextRelevantTick() => GetNextRelevantTick(SongTime.SongPositionTicks);
     public int GetNextRelevantTick(int targetTick) => ValidateEvent(GetNextTickEventInLane(targetTick));
 
-    int ValidateEvent(int tickEvent) => tickEvent == NO_TICK_EVENT ? SongTime.SongLengthTicks + 1 : tickEvent;
+    private int ValidateEvent(int tickEvent) => tickEvent == NO_TICK_EVENT ? SongTime.SongLengthTicks + 1 : tickEvent;
 
     public int GetTickSustain(int tick)
     {

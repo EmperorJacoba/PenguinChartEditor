@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] RectTransform rectTransform;
+    [SerializeField] private RectTransform rectTransform;
     public void OnPointerEnter(PointerEventData eventData) => Tooltip.NewTooltip(warningDescriptions[type]);
     public void OnPointerExit(PointerEventData eventData) => Tooltip.Deactivate();
     public Coroutine destructionCoroutine { get; set; }
@@ -17,7 +17,7 @@ public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
 
     public int Tick => _tick;
-    int _tick;
+    private int _tick;
 
     public bool Visible
     {
@@ -31,7 +31,7 @@ public class Warning : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    WarningType type;
+    private WarningType type;
     public enum WarningType
     {
         invalidTimeSignature

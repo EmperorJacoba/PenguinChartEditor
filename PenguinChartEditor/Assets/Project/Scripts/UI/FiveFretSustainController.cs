@@ -4,7 +4,7 @@ using TMPro;
 
 public class FiveFretSustainController : MonoBehaviour
 {
-    [SerializeField] TMP_InputField customSustainInput;
+    [SerializeField] private TMP_InputField customSustainInput;
 
     private void Awake()
     {

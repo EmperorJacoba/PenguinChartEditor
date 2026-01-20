@@ -7,10 +7,10 @@ namespace Penguin.Debug
 {
     public class TimeDiagnoser
     {
-        string diagnosticName;
-        StringBuilder timeString;
-        float lastRecord;
-        float firstRecord;
+        private string diagnosticName;
+        private StringBuilder timeString;
+        private float lastRecord;
+        private float firstRecord;
 
         public TimeDiagnoser(string name)
         {

@@ -2,11 +2,11 @@
 
 public class FiveFretSelectionTabManager : MonoBehaviour
 {
-    [SerializeField] LeftOptionsPanelTab noteTab;
-    [SerializeField] LeftOptionsPanelTab selectionTab;
-    [SerializeField] LeftOptionsPanel leftOptionsPanel;
+    [SerializeField] private LeftOptionsPanelTab noteTab;
+    [SerializeField] private LeftOptionsPanelTab selectionTab;
+    [SerializeField] private LeftOptionsPanel leftOptionsPanel;
 
-    void Update()
+    private void Update()
     {
         var selectionEmpty = Chart.GetActiveInstrument<FiveFretInstrument>().IsNoteSelectionEmpty();
         if (noteTab.gameObject.activeInHierarchy != selectionEmpty)

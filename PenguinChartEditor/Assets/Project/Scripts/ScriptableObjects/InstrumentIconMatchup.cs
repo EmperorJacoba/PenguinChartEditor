@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class InstrumentIcons : ScriptableObject
 {
-    [SerializeField] List<Penguin.InstrumentIconMatchup.InstrumentIcon<Material>> icons;
+    [SerializeField] private List<Penguin.InstrumentIconMatchup.InstrumentIcon<Material>> icons;
 
     public Material GetInstrumentIcon(HeaderType instrumentID)
     {

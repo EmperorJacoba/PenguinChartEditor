@@ -20,7 +20,7 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
     public Coroutine destructionCoroutine { get; set; }
 
     public abstract void UpdateBeatlinePosition(double percentOfHighway);
-    void UpdateBeatlinePosition() => UpdateBeatlinePosition(Waveform.GetWaveformRatio(Tick));
+    private void UpdateBeatlinePosition() => UpdateBeatlinePosition(Waveform.GetWaveformRatio(Tick));
 
     #region Components
 
@@ -66,7 +66,8 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
             _bt = value;
         }
     }
-    BeatlineType _bt = BeatlineType.none;
+
+    private BeatlineType _bt = BeatlineType.none;
 
     #endregion
 

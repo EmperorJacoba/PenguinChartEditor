@@ -15,7 +15,7 @@ public class Chart : MonoBehaviour
     {
         get
         {
-            if (sceneDetails == null)
+            if (!sceneDetails)
             {
                 throw new ArgumentException(
                     "Please create and assign a SceneDetails object in this scene. A SceneDetails object is required for selections and moving."
@@ -24,7 +24,7 @@ public class Chart : MonoBehaviour
             return sceneDetails;
         }
     }
-    [SerializeField] SceneDetails sceneDetails;
+    [SerializeField] private SceneDetails sceneDetails;
 
     public static void Log(string x) => Debug.Log(x); // debug shortcut for static classes like parsers
 
@@ -63,7 +63,7 @@ public class Chart : MonoBehaviour
         foreach (var instrument in Instruments)
         {
             instrument.SetUpInputMap();
-        }
+        }   
     }
 
     public static void LoadFile()
@@ -71,7 +71,7 @@ public class Chart : MonoBehaviour
         var pathCandidates = StandaloneFileBrowser.OpenFilePanel($"Open .chart file to load from.", "", new[] { new ExtensionFilter(".chart files ", "chart") }, false);
 
         ChartPath = pathCandidates[0];
-        FolderPath = ChartPath[..ChartPath.LastIndexOf("\\")];
+        FolderPath = Path.GetDirectoryName(ChartPath);
 
         ChartParser.ParseChart(ChartPath);
 
@@ -113,14 +113,15 @@ public class Chart : MonoBehaviour
     }
     private static int _chartRes = -1;
 
-    public static int hopoCutoff
+    public static int HopoCutoff
     {
         get
         {
             return _cachcut == -1 ? throw new ArgumentException("Uninitialized hopo cutoff.") : _cachcut;
         }
     }
-    static int _cachcut = -1;
+
+    private static int _cachcut = -1;
 
     public static string FolderPath { get; private set; }
     public static string ChartPath
@@ -140,37 +141,15 @@ public class Chart : MonoBehaviour
             _chPath = value;
         }
     }
-    static string _chPath;
-
-    public enum TabType
-    {
-        SongSetup,
-        TempoMap,
-        Chart
-    }
-
-    // When linking tabs via top banner, the button presses will have to modify this.
-    // Serialize the field ONLY during debug
-    public TabType currentTab
-    {
-        get
-        {
-            return currentDebugTab;
-        }
-        set
-        {
-            currentDebugTab = value;
-        }
-    }
-    [SerializeField] TabType currentDebugTab;
+    private static string _chPath;
 
     #endregion
 
     public static bool showPreviewers = true;
 
-    InputMap inputMap;
+    private InputMap inputMap;
 
-    void Awake()
+    private void Awake()
     {
         // Only ever one chart game object active, prioritize first loaded
         if (instance != null)
@@ -185,15 +164,15 @@ public class Chart : MonoBehaviour
 
         LoadFile();
         
-        LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.guitar).ToList()[0]; 
+        // LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.guitar).ToList()[0]; 
         // LoadedInstrument = SyncTrackInstrument;
-        // LoadedInstrument = StarpowerInstrument;
+        LoadedInstrument = StarpowerInstrument;
 
         inputMap = new();
         inputMap.Enable();
-        inputMap.Charting.Copy.performed += x => Clipboard.Copy();
-        inputMap.Charting.Paste.performed += x => Clipboard.Paste();
-        inputMap.Charting.Cut.performed += x => Clipboard.Cut();
+        inputMap.Charting.Copy.performed += _ => Clipboard.Copy();
+        inputMap.Charting.Paste.performed += _ => Clipboard.Paste();
+        inputMap.Charting.Cut.performed += _ => Clipboard.Cut();
     }
 
     public delegate void InPlaceUpdatedDelegate();
@@ -215,18 +194,18 @@ public class Chart : MonoBehaviour
 
     public enum SelectionMode
     {
-        edit,
-        select,
-        view
+        Edit,
+        Select,
+        View
     }
-    public static SelectionMode currentSelectionMode = SelectionMode.edit;
+    public static SelectionMode currentSelectionMode = SelectionMode.Edit;
     public static bool IsSelectionAllowed()
     {
         return currentSelectionMode switch
         {
-            SelectionMode.select => true,
-            SelectionMode.edit => false,
-            SelectionMode.view => false,
+            SelectionMode.Select => true,
+            SelectionMode.Edit => false,
+            SelectionMode.View => false,
             _ => throw new ArgumentException("Invalid assigned selection mode."),
         };
     }
@@ -235,9 +214,9 @@ public class Chart : MonoBehaviour
     {
         return currentSelectionMode switch
         {
-            SelectionMode.select => false,
-            SelectionMode.edit => true,
-            SelectionMode.view => false,
+            SelectionMode.Select => false,
+            SelectionMode.Edit => true,
+            SelectionMode.View => false,
             _ => throw new ArgumentException("Invalid assigned selection mode.")
         };
     }
@@ -246,9 +225,9 @@ public class Chart : MonoBehaviour
     {
         return currentSelectionMode switch
         {
-            SelectionMode.select => true,
-            SelectionMode.edit => true,
-            SelectionMode.view => false,
+            SelectionMode.Select => true,
+            SelectionMode.Edit => true,
+            SelectionMode.View => false,
             _ => throw new ArgumentException("Invalid assigned selection mode.")
         };
     }

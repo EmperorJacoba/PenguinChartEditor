@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class SoloSectionLane : SpawningLane<SoloSection>
 {
-    [SerializeField] SoloSectionPooler pooler;
+    [SerializeField] private SoloSectionPooler pooler;
     protected override IPooler<SoloSection> Pooler => pooler;
     protected override bool cullAtStrikelineOnPlay => throw new System.NotImplementedException("Solo events do not use traditional event culling. See SoloSectionLane.cs for more details.");
 
@@ -21,7 +21,8 @@ public class SoloSectionLane : SpawningLane<SoloSection>
             return previewer;
         }
     }
-    SoloPreviewer previewer;
+
+    private SoloPreviewer previewer;
 
     protected override List<int> GetEventsToDisplay()
     {

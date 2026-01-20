@@ -3,11 +3,11 @@ using UnityEngine;
 
 public class FiveFretNoteKeybindManager : MonoBehaviour
 {
-    InputMap inputMap;
-    [SerializeField] TMP_Dropdown modifierDropdown;
-    [SerializeField] ExtendedSustainController esc;
-    [SerializeField] FiveFretSustainController noteFFSC;
-    [SerializeField] FiveFretSustainSelector selectionFFSC;
+    private InputMap inputMap;
+    [SerializeField] private TMP_Dropdown modifierDropdown;
+    [SerializeField] private ExtendedSustainController esc;
+    [SerializeField] private FiveFretSustainController noteFFSC;
+    [SerializeField] private FiveFretSustainSelector selectionFFSC;
     private void Awake()
     {
         inputMap = new();

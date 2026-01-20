@@ -16,11 +16,11 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
 {
     public const int NONE_SELECTED = -1;
 
-    HashSet<int> selection = new();
+    private HashSet<int> selection = new();
     public int Count => selection.Count;
 
 
-    LaneSet<TValue> parentLane;
+    private LaneSet<TValue> parentLane;
 
     public SortedDictionary<int, TValue> ExportData()
     {

@@ -3,14 +3,14 @@ using TMPro;
 
 public class CurrentTimeDisplay : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI SongTimestampLabel;
-    [SerializeField] TMP_InputField TimeInputField;
+    [SerializeField] private TextMeshProUGUI SongTimestampLabel;
+    [SerializeField] private TMP_InputField TimeInputField;
 
-    const float MINUTES_TO_SECONDS_CONVERSION = 60;
-    const float MILLISECONDS_TO_SECONDS_CONVERSION = 1000;
+    private const float MINUTES_TO_SECONDS_CONVERSION = 60;
+    private const float MILLISECONDS_TO_SECONDS_CONVERSION = 1000;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
         UpdateSongText();
         SongTime.TimeChanged += UpdateSongText;
@@ -37,7 +37,7 @@ public class CurrentTimeDisplay : MonoBehaviour
         SongTime.ToggleChartingInputMap();
     }
 
-    void PrepTimeEdit(string newTime)
+    private void PrepTimeEdit(string newTime)
     {
         try
         {
@@ -48,7 +48,7 @@ public class CurrentTimeDisplay : MonoBehaviour
         SongTime.ToggleChartingInputMap();
     }
 
-    void HandleEndTimeEdit(string newTime)
+    private void HandleEndTimeEdit(string newTime)
     {
         int minutes = 0;
         int seconds = 0;

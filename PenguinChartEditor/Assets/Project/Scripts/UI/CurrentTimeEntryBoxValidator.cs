@@ -4,15 +4,15 @@ using System.Linq;
 
 public class CurrentTimeEntryBoxValidator : MonoBehaviour
 {
-    [SerializeField] TMP_InputField entryBox;
+    [SerializeField] private TMP_InputField entryBox;
 
     // Code adapted from https://docs.unity3d.com/2018.3/Documentation/ScriptReference/UI.InputField-onValidateInput.html 
-    void Start()
+    private void Start()
     {
         entryBox.onValidateInput += delegate(string input, int charIndex, char addedChar) { return Validate(addedChar); };    
     }
 
-    char Validate(char charToValidate)
+    private char Validate(char charToValidate)
     {
         if (!allowedTimeCharacters.Contains(charToValidate))
         {
@@ -29,5 +29,5 @@ public class CurrentTimeEntryBoxValidator : MonoBehaviour
         return charToValidate;
     }
 
-    readonly char[] allowedTimeCharacters = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ':', '.'};
+    private readonly char[] allowedTimeCharacters = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ':', '.'};
 }
