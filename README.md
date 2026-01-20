@@ -38,6 +38,7 @@ In following versions (roughly in this order - no promises), more features will 
 
 Plus other major & minor features not listed. Planned features are usually outlined as an issue in the [issues tab](https://github.com/EmperorJacoba/PenguinChartEditor/issues).
 
+Penguin Chart Editor is being developed with [Unity, version 6000.0.60f1.](https://unity.com/releases/editor/whats-new/6000.0.61f1)
 
 # Images
 <img width="1959" height="1122" alt="Unity_JopUTMpohL" src="https://github.com/user-attachments/assets/051cd531-d516-44a6-bb5f-55810a75f199" />
