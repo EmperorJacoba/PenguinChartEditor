@@ -103,7 +103,8 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     #endregion
 
     #region Selections
-
+    
+    public bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
     public void ClearAllSelections() => Lanes.ClearAllSelections();
 
     private void CheckForSelectionClear()

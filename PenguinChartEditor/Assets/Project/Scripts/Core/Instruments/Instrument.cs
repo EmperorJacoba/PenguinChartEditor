@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
-// please please please do not add <T> to this
-// i have done this like 7 times and it makes chartparser really ugly
-// future me: PLEASE STOP ADDING <T>! IT WILL NOT WORK THIS TIME! LIKE THE 7 OTHER TIMES
+// this is untyped because these methods (by design) apply regardless of type. Specify type in calls to an instrument
+// if necessary.
 public interface IInstrument
 {
     public const int SOLO_DATA_LANE_ID = int.MaxValue;
@@ -34,6 +33,7 @@ public interface IInstrument
     public ILaneData GetLaneData(int lane);
     public ILaneData GetBarLaneData();
     public ISelection GetLaneSelection(int lane);
+    bool IsNoteSelectionEmpty();
 }
 
 public interface ISustainableInstrument

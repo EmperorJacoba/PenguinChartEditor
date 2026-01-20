@@ -55,6 +55,8 @@ public class SyncTrackInstrument : IInstrument
         return tsSelection;
     }
 
+    public bool IsNoteSelectionEmpty() => bpmSelection.Count == 0 && tsSelection.Count == 0;
+
     public SoloDataSet SoloData
     {
         get { throw new NotImplementedException("SyncTrack does not have solo events. If you are using the SoloEvent suite, it is not required."); }
