@@ -3,8 +3,8 @@
 
 public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 {
-    public override bool hasSustainTrail => true;
-    public override LaneSet<FiveFretNoteData> LaneData => _cachedDataRef;
+    protected override bool hasSustainTrail => true;
+    protected override LaneSet<FiveFretNoteData> LaneData => _cachedDataRef;
     private LaneSet<FiveFretNoteData> _cachedDataRef;
     public override SelectionSet<FiveFretNoteData> Selection => _cachedSelectionRef;
     private SelectionSet<FiveFretNoteData> _cachedSelectionRef;
@@ -124,7 +124,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     public void InitializeEvent(int tick)
     {
-        _tick = tick;
+        Tick = tick;
         representedData = LaneData[tick];
 
         bool isHeadVisible = CalculateHeadVisibility();
@@ -158,7 +158,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
         // do not use this with the previewer, use previewer's tick instead
         // but this is here for the functions below
-        _tick = previewTick;
+        Tick = previewTick;
 
         UpdatePositionAsPreviewer();
         UpdateSustain(previewData);
@@ -175,8 +175,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         return true;
     }
 
-    private void UpdatePositionAsPreviewer() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate, PREVIEWER_Y_OFFSET);
-    private void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(_tick), xCoordinate);
+    private void UpdatePositionAsPreviewer() => UpdatePosition(Waveform.GetWaveformRatio(Tick), xCoordinate, PREVIEWER_Y_OFFSET);
+    private void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(Tick), xCoordinate);
     private void UpdatePosition(int tick) => UpdatePosition(Waveform.GetWaveformRatio(tick), xCoordinate);
     private void UpdatePosition(double percentOfTrack) => UpdatePosition(percentOfTrack, xCoordinate);
 
@@ -206,6 +206,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     private void UpdateSustain(FiveFretNoteData data)
     {
-        notePieces.UpdateSustainLength(_tick, data.Sustain);
+        notePieces.UpdateSustainLength(Tick, data.Sustain);
     }
 }

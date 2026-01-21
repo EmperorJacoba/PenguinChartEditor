@@ -2,7 +2,7 @@
 
 public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
 {
-    public override bool hasSustainTrail => true;
+    protected override bool hasSustainTrail => true;
     public override int Lane => (int)laneID;
     public HeaderType laneID
     {
@@ -29,7 +29,7 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
     public override SelectionSet<StarpowerEventData> Selection => _cachedSelectionRef;
     private SelectionSet<StarpowerEventData> _cachedSelectionRef;
 
-    public override LaneSet<StarpowerEventData> LaneData => _cachedDataRef;
+    protected override LaneSet<StarpowerEventData> LaneData => _cachedDataRef;
     private LaneSet<StarpowerEventData> _cachedDataRef;
 
     [SerializeField] private StarpowerAnatomy notePieces;
@@ -48,7 +48,7 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
 
     public void InitializeEvent(int tick)
     {
-        _tick = tick;
+        Tick = tick;
         representedData = LaneData[tick];
 
         if (!readOnly) CheckForSelection();
@@ -62,7 +62,7 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
         ParentLane = parentLane;
         laneID = (HeaderType)ParentLane.laneID;
 
-        _tick = previewTick;
+        Tick = previewTick;
 
         UpdatePositionAsPreviewer();
         notePieces.UpdateSustainLength(previewTick, previewData.Sustain);
@@ -76,5 +76,5 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
     }
 
     private void UpdatePositionAsPreviewer() => 
-        UpdatePosition(Waveform.GetWaveformRatio(_tick), parentGameInstrument.GetLocalStarpowerXCoordinate(), PREVIEWER_Y_OFFSET);
+        UpdatePosition(Waveform.GetWaveformRatio(Tick), parentGameInstrument.GetLocalStarpowerXCoordinate(), PREVIEWER_Y_OFFSET);
 }

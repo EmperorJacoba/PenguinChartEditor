@@ -31,7 +31,8 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     #endregion
 
     #region Setup
-    public override bool hasSustainTrail => false;
+
+    protected override bool hasSustainTrail => false;
     public Coroutine destructionCoroutine { get; set; }
 
     private void Start()
@@ -79,7 +80,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     {
         LaneData[Tick] = ProcessUnsafeLabelString(newVal);
 
-        if (typeof(T) == typeof(BPMData)) Chart.SyncTrackInstrument.RecalculateTempoEventDictionary(_tick);
+        if (typeof(T) == typeof(BPMData)) Chart.SyncTrackInstrument.RecalculateTempoEventDictionary(Tick);
 
         ConcludeManualEdit();
         Chart.SyncTrackInPlaceRefresh();
@@ -110,14 +111,14 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 
     public virtual void InitializeLabel(int tick)
     {
-        _tick = tick;
+        Tick = tick;
         Visible = true;
-        UpdatePosition(Waveform.GetWaveformRatio(_tick), Chart.instance.SceneDetails.HighwayLength);
+        UpdatePosition(Waveform.GetWaveformRatio(Tick), Chart.instance.SceneDetails.HighwayLength);
 
         LabelText = ConvertDataToPreviewString();
         CheckForSelection();
 
-        if (editTick != _tick) DeactivateManualInput();
+        if (editTick != Tick) DeactivateManualInput();
     }
 
     public void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(Tick), Chart.instance.SceneDetails.HighwayLength);

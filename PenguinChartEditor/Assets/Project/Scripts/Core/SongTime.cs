@@ -40,7 +40,14 @@ public class SongTime : MonoBehaviour
     }
     private static double _songPos = 0;
 
-    public static int SongPositionTicks => Waveform.songPositionTicks;
+    public static int SongPositionTicks
+    {
+        get => Waveform.songPositionTicks;
+        set
+        {
+            SongPositionSeconds = Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(value);
+        }
+    }
 
     /// <summary>
     /// The length of the song in tick time.

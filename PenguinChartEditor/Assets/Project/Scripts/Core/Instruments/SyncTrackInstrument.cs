@@ -494,13 +494,7 @@ public class SyncTrackInstrument : IInstrument
     #endregion
 
     #region Time Signature
-
-    /// <summary>
-    /// Calculate the type of barline a specified tick-time position should be.
-    /// </summary>
-    /// <param name="beatlineTickTimePos"></param>
-    /// <param name="inclusive">Use only if you want to calculate a predicted TS beatline, like when checking if the position of a TS event is on a barline based on its prior TS event.</param>
-    /// <returns>The type of beatline at this tick.</returns>
+    
     public BaseBeatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos, bool ignoreValidity = true)
     {
         // includes 0 at all times
@@ -610,15 +604,43 @@ public class SyncTrackInstrument : IInstrument
         return proposedNext;
     }
 
-    // Call in CheckForEvents
     public bool IsEventValid(int tick)
     {
-        if (CalculateBeatlineType(tick, ignoreValidity: false) != BaseBeatline.BeatlineType.barline)
+        // FIXME: Every time event is placed run this check for all future events and put alert on scrubber
+        return CalculateBeatlineType(tick, ignoreValidity: false) == BaseBeatline.BeatlineType.barline;
+    }
+
+    public int ConvertBarsToTicks(int startTick, float bars)
+    {
+        var workingTick = startTick;
+        var accumulatedTicks = 0;
+
+        while (bars > 0)
         {
-            return false;
+            var currentTSEventTimestamp = TimeSignatureEvents.GetPreviousTickEventInLane(workingTick, inclusive: true);
+            var ticksPerBar = Mathf.FloorToInt(GetBarlineStep(currentTSEventTimestamp));
+            
+            var nextTSEventTimestamp = TimeSignatureEvents.GetNextTickEventInLane(workingTick);
+
+            var barDurationCandidate = bars * ticksPerBar;
+            if (nextTSEventTimestamp != LaneSet<TSData>.NO_TICK_EVENT && nextTSEventTimestamp < workingTick + barDurationCandidate)
+            {
+                var tickDistance = nextTSEventTimestamp - workingTick;
+                accumulatedTicks += tickDistance;
+                
+                workingTick = nextTSEventTimestamp;
+
+                // mmm algebra
+                bars -= (tickDistance / (float)ticksPerBar);
+            }
+            else
+            {
+                accumulatedTicks += Mathf.FloorToInt(barDurationCandidate);
+                bars = 0;
+            }
         }
-        else return true;
-        // Every time event is placed run this check for all future events and put alert on scrubber
+
+        return accumulatedTicks;
     }
 
     #endregion

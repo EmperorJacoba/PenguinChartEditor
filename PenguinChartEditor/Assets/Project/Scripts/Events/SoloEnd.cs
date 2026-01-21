@@ -4,13 +4,13 @@ using UnityEngine.EventSystems;
 
 public class SoloEnd : Event<SoloEventData>
 {
-    public override bool hasSustainTrail => false;
+    protected override bool hasSustainTrail => false;
     public override int Lane => IInstrument.SOLO_DATA_LANE_ID;
     public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
 
     public override SelectionSet<SoloEventData> Selection => ParentInstrument.SoloData.SelectedEndEvents;
 
-    public override LaneSet<SoloEventData> LaneData => ParentInstrument.SoloData.SoloEvents;
+    protected override LaneSet<SoloEventData> LaneData => ParentInstrument.SoloData.SoloEvents;
 
     public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
 
@@ -23,7 +23,7 @@ public class SoloEnd : Event<SoloEventData>
 
         // Selection uses the startTick as the ID for all solo events.
         // The tick this represents is the end tick, but the selection depends on the start tick for continuity.
-        _tick = startTick;
+        Tick = startTick;
         representedTick = endTick;
 
         UpdatePosition();

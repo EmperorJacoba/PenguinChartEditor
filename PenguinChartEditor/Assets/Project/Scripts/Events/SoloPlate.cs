@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class SoloPlate : Event<SoloEventData>
 {
-    public override bool hasSustainTrail => false;
+    protected override bool hasSustainTrail => false;
     [SerializeField] private TMP_Text percentage;
     [SerializeField] private TMP_Text counter;
 
@@ -14,7 +14,7 @@ public class SoloPlate : Event<SoloEventData>
     {
         ParentLane = parentLane;
 
-        _tick = startTick;
+        Tick = startTick;
 
         UpdatePosition(endTick);
 
@@ -54,7 +54,7 @@ public class SoloPlate : Event<SoloEventData>
 
     public override SelectionSet<SoloEventData> Selection => ParentInstrument.SoloData.SelectedStartEvents;
 
-    public override LaneSet<SoloEventData> LaneData => ParentInstrument.SoloData.SoloEvents;
+    protected override LaneSet<SoloEventData> LaneData => ParentInstrument.SoloData.SoloEvents;
 
     public SoloPreviewer previewer
     {

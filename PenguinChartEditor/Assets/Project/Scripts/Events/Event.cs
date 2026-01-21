@@ -30,19 +30,16 @@ public interface IEvent
 public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler where T : IEventData
 {
     protected const float PREVIEWER_Y_OFFSET = 0.00001f;
-    public abstract bool hasSustainTrail { get; }
+    private const float doubleClickTime = 0.3f;
+
+    protected abstract bool hasSustainTrail { get; }
     public bool readOnly = false;
+    
     public abstract int Lane { get; }
-    protected static float doubleClickTime = 0.3f;
+
     #region Properties
-    public int Tick
-    {
-        get
-        {
-            return _tick;
-        }
-    }
-    protected int _tick = -1;
+    
+    public int Tick { get; protected set; } = -1;
 
     public bool Selected
     {
@@ -52,7 +49,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         }
         set
         {
-           // Debug.Log($"Selection property accessed. {Tick}");
             SelectionOverlay.SetActive(value);
             _selected = value;
         }
@@ -86,7 +82,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
             _parLane = value;
         }
     }
-
     private ILane _parLane;
 
     public T representedData;
@@ -97,11 +92,11 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
 
     // These properties point to each event type's instrument data
     // so they can be used in the broad "Event" class.
-    // Data is always stored in an instrument, or in the BPM/TS case, in the Tempo/TimeSignature classes.
+    // Data is always stored in an "instrument" object accessed through the event's parent GameInstrument or Chart
     public abstract SelectionSet<T> Selection { get; }
     public ISelection GetSelection() => Selection;
 
-    public abstract LaneSet<T> LaneData { get; }
+    protected abstract LaneSet<T> LaneData { get; }
     public ILaneData GetLaneData() => LaneData;
 
     public abstract IInstrument ParentInstrument { get; }
