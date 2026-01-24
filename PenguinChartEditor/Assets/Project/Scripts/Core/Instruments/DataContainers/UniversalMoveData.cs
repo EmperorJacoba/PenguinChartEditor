@@ -247,7 +247,7 @@ public class UniversalMoveData<T> where T : IEventData
             }
         }
 
-        return new(startValidationTick, endValidationTick);
+        return new MinMaxTicks(startValidationTick, endValidationTick);
     }
 
     private Dictionary<int, SortedDictionary<int, T>> MakeEmptyDataSet()
@@ -255,7 +255,7 @@ public class UniversalMoveData<T> where T : IEventData
         Dictionary<int, SortedDictionary<int, T>> outputSet = new();
         foreach (var set in originalMovingDataSet)
         {
-            outputSet[set.Key] = new();
+            outputSet[set.Key] = new SortedDictionary<int, T>();
         }
         return outputSet;
     }

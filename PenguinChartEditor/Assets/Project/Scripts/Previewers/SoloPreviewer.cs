@@ -12,7 +12,7 @@ public class SoloPreviewer : Previewer
     {
         ParentLane = GetComponentInParent<SoloSectionLane>();
 
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
 
         previewSoloPlate.ParentLane = ParentLane;
@@ -56,13 +56,13 @@ public class SoloPreviewer : Previewer
 
         if (activeSoloEvents.Count() == 0)
         {
-            previewSoloPlate.transform.position = new(previewSoloPlate.transform.position.x, previewSoloPlate.transform.position.y, zPosition);
+            previewSoloPlate.transform.position = new Vector3(previewSoloPlate.transform.position.x, previewSoloPlate.transform.position.y, zPosition);
             previewSoloPlate.Visible = true;
             previewEndPlate.Visible = false;
         }
         else
         {
-            previewEndPlate.transform.position = new(previewEndPlate.transform.position.x, previewEndPlate.transform.position.y, zPosition);
+            previewEndPlate.transform.position = new Vector3(previewEndPlate.transform.position.x, previewEndPlate.transform.position.y, zPosition);
             previewEndPlate.Visible = true;
             previewSoloPlate.Visible = false;
         }
@@ -79,7 +79,7 @@ public class SoloPreviewer : Previewer
 
             if (nextSoloEvent.Count() > 0) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
 
-            ParentInstrument.SoloData.SoloEvents.Add(Tick, new(Tick, endTick));
+            ParentInstrument.SoloData.SoloEvents.Add(Tick, new SoloEventData(Tick, endTick));
         }
         else
         {

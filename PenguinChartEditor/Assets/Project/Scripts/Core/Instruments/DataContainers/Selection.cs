@@ -118,12 +118,12 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
 
     public void OverwriteWith(HashSet<int> newSelectionSet)
     {
-        selection = new(newSelectionSet);
+        selection = new HashSet<int>(newSelectionSet);
     }
 
     public void OverwriteWith(List<int> newSelectionSet)
     {
-        selection = new(newSelectionSet);
+        selection = new HashSet<int>(newSelectionSet);
     }
 
     public int GetFirstSelectedTick()
@@ -154,14 +154,14 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
         {
             receiver.Add(item + scalar);
         }
-        selection = new(receiver);
+        selection = new HashSet<int>(receiver);
     }
 
     public void ApplyScaledSelection(SortedDictionary<int, TValue> normalizedSelection, int scalar) => ApplyScaledSelection(normalizedSelection.Keys.ToHashSet(), scalar);
 
     public void SelectAllInLane()
     {
-        selection = new(parentLane.Keys);
+        selection = new HashSet<int>(parentLane.Keys);
     }
 
     public void UnionWith(IEnumerable<int> other) => selection.UnionWith(other);

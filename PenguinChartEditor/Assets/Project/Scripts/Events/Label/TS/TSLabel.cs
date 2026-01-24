@@ -19,7 +19,7 @@ public class TSLabel : Label<TSData>
     public override void InitializeEvent(int tick)
     {
         base.InitializeLabel(tick);
-        tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsEventValid(tick);
+        tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsTimeSignatureEventValid(tick);
     }
 
     #region Conversions

@@ -42,7 +42,7 @@ public class SoloEnd : Event<SoloEventData>
         Visible = true;
 
         float zPosition = (float)(ratio * Highway3D.highwayLength);
-        transform.position = new(transform.position.x, transform.position.y, zPosition);
+        transform.position = new Vector3(transform.position.x, transform.position.y, zPosition);
     }
 
     public override void OnPointerDown(PointerEventData eventData)

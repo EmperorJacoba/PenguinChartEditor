@@ -102,9 +102,9 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     public FiveFretInstrument(HeaderType instrumentID, List<KeyValuePair<int, string>> instrumentInfo)
     {
-        Lanes = new(6);
-        SoloData = new();
-        sustainer = new(this, Lanes, true);
+        Lanes = new Lanes<FiveFretNoteData>(6);
+        SoloData = new SoloDataSet();
+        sustainer = new SustainHelper<FiveFretNoteData>(this, Lanes, true);
 
         InstrumentName = InstrumentMetadata.GetInstrumentType(instrumentID);
         Difficulty = InstrumentMetadata.GetDifficulty(instrumentID);
@@ -129,7 +129,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     public void SetUpInputMap()
     {
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
 
         inputMap.Charting.XYDrag.performed += x => MoveSelection();
@@ -751,17 +751,17 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
                         switch (localEvent)
                         {
                             case LocalEventIdentifier.solo:
-                                openSoloEvent = new(uniqueTick);
+                                openSoloEvent = new SoloEventData(uniqueTick);
                                 break;
                             case LocalEventIdentifier.soloend:
                                 // Techinically a possibility for a soloend event to come before a solo event, even if unlikely.
                                 // I will not be having weirdness in MY solo events no thank you
                                 if (openSoloEvent.StartTick == -1) continue;
 
-                                openSoloEvent = new(openSoloEvent.StartTick, uniqueTick);
+                                openSoloEvent = new SoloEventData(openSoloEvent.StartTick, uniqueTick);
                                 SoloData.SoloEvents.Add(openSoloEvent.StartTick, openSoloEvent);
 
-                                openSoloEvent = new(-1);
+                                openSoloEvent = new SoloEventData(-1);
                                 break;
                         }
                         
@@ -792,7 +792,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
                 var data = activeLane[tick];
                 var replaceFlag = data.Flag == FiveFretNoteData.FlagType.strum ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
 
-                activeLane[tick] = new(data.Sustain, replaceFlag, false);
+                activeLane[tick] = new FiveFretNoteData(data.Sustain, replaceFlag, false);
             }
         }
     }
@@ -838,7 +838,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
             foreach (var note in selectionData)
             {
                 stringIDs.Add(
-                    new(note.Key, note.Value.ToChartFormat(i)[0])
+                    new KeyValuePair<int, string>(note.Key, note.Value.ToChartFormat(i)[0])
                     );
 
                 if (!note.Value.Default)
@@ -860,21 +860,21 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         foreach (var tick in tapTicks)
         {
             stringIDs.Add(
-                new(tick, TAP_ID)
+                new KeyValuePair<int, string>(tick, TAP_ID)
                 );
         }
 
         foreach (var tick in strumTicks)
         {
             stringIDs.Add(
-                new(tick, EXPLICIT_STRUM_ID)
+                new KeyValuePair<int, string>(tick, EXPLICIT_STRUM_ID)
                 );
         }
 
         foreach (var tick in hopoTicks)
         {
             stringIDs.Add(
-                new(tick, EXPLICIT_HOPO_ID)
+                new KeyValuePair<int, string>(tick, EXPLICIT_HOPO_ID)
                 );
         }
 

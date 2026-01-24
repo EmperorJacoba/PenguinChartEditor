@@ -32,7 +32,7 @@ public class Anchor : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
         }
         set
         {
-            lockImage.color = new(lockImage.color.r, lockImage.color.g, lockImage.color.b, value);
+            lockImage.color = new Color(lockImage.color.r, lockImage.color.g, lockImage.color.b, value);
         }
     }
 

@@ -131,7 +131,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected virtual void Awake()
     {
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
 
         inputMap.Charting.PreviewMousePos.performed += position => UpdatePosition();

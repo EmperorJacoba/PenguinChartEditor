@@ -16,7 +16,7 @@ public class SyncTrackInstrument : IInstrument
     private const string TEMPO_EVENT_INDICATOR = "B";
     private const string TIME_SIGNATURE_EVENT_INDICATOR = "TS";
     private const string SYNC_TRACK_ERROR = "[SyncTrack] has invalid tempo event:";
-    public const int MICROSECOND_CONVERSION = 1000000;
+    private const int MICROSECOND_CONVERSION = 1000000;
     private const float BPM_FORMAT_CONVERSION = 1000.0f;
     private const int TS_POWER_CONVERSION_NUMBER = 2;
 
@@ -76,39 +76,35 @@ public class SyncTrackInstrument : IInstrument
         return list;
     }
 
-    public SyncTrackInstrument(LaneSet<BPMData> bpmEvents, LaneSet<TSData> tsEvents)
-    {
-        TempoEvents = bpmEvents;
-        TimeSignatureEvents = tsEvents;
-        bpmSelection = new(TempoEvents);
-        tsSelection = new(TimeSignatureEvents);
-        SetUpInputMap();
-    }
-
     public SyncTrackInstrument(List<KeyValuePair<int, string>> fileData)
     {
-        TempoEvents = new(protectedTicks: new() { 0 });
-        TimeSignatureEvents = new(protectedTicks: new() { 0 });
+        TempoEvents = new LaneSet<BPMData>(
+            protectedTicks: new HashSet<int> { 0 }
+            );
+        
+        TimeSignatureEvents = new LaneSet<TSData>(
+            protectedTicks: new HashSet<int> { 0 }
+            );
 
-        bpmSelection = new(TempoEvents);
-        tsSelection = new(TimeSignatureEvents);
+        bpmSelection = new SelectionSet<BPMData>(TempoEvents);
+        tsSelection = new SelectionSet<TSData>(TimeSignatureEvents);
 
         AddChartFormattedEventsToInstrument(fileData);
         if (TempoEvents.Count == 0)
         {
-            TempoEvents[0] = new(120, 0, false);
+            TempoEvents[0] = new BPMData(120, 0, false);
         }
 
         if (TimeSignatureEvents.Count == 0)
         {
-            TimeSignatureEvents[0] = new(4, 4);
+            TimeSignatureEvents[0] = new TSData(4, 4);
         }
     }
 
     private InputMap inputMap;
     public void SetUpInputMap() 
     {
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
         inputMap.Charting.YDrag.performed += x => 
         {
@@ -214,7 +210,7 @@ public class SyncTrackInstrument : IInstrument
     {
         if (!moveData.inProgress) return;
 
-        moveData = new();
+        moveData = new UniversalMoveData<T>();
     }
 
     #endregion
@@ -366,7 +362,7 @@ public class SyncTrackInstrument : IInstrument
         {
             var tick = tickEvents[i];
             var bpmData = TempoEvents[tickEvents[i]];
-            var timestamp = tick == 0 ? new(bpmData.BPMChange, 0, bpmData.Anchor) : TempoEvents[tickEvents[i]];
+            var timestamp = tick == 0 ? new BPMData(bpmData.BPMChange, 0, bpmData.Anchor) : TempoEvents[tickEvents[i]];
 
             outputTempoEventsDict.Add(tick, timestamp);
         }
@@ -544,7 +540,7 @@ public class SyncTrackInstrument : IInstrument
 
         var tickDiff = currentTick - ts;
         var tickInterval = GetHalfDivisionStep(ts);
-        int numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
+        var numIntervals = (int)Math.Ceiling(tickDiff / tickInterval);
 
         return (int)(ts + numIntervals * tickInterval);
     }
@@ -568,11 +564,7 @@ public class SyncTrackInstrument : IInstrument
 
         var middleTSEvent = TimeSignatureEvents.GetPreviousTickEventInLane(proposedPrevious);
 
-        if (middleTSEvent != TimeSignatureEvents.GetPreviousTickEventInLane(currentTick))
-        {
-            return middleTSEvent;
-        }
-        return proposedPrevious;
+        return middleTSEvent != TimeSignatureEvents.GetPreviousTickEventInLane(currentTick) ? middleTSEvent : proposedPrevious;
     }
 
     public int GetNextDivisionEvent(int currentTick)
@@ -604,7 +596,13 @@ public class SyncTrackInstrument : IInstrument
         return proposedNext;
     }
 
-    public bool IsEventValid(int tick)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="tick">Time signature event tick-timestamp</param>
+    /// <returns>Is the time signature in proper alignment? <para>Aligned = The TS event falls on a "beat 1" of the last active TS event.</para></returns>
+    /// <remarks>CH (and maybe YARG?) can't parse unaligned time signatures. All time signatures must be aligned.</remarks>
+    public bool IsTimeSignatureEventValid(int tick)
     {
         // FIXME: Every time event is placed run this check for all future events and put alert on scrubber
         return CalculateBeatlineType(tick, ignoreValidity: false) == BaseBeatline.BeatlineType.barline;
@@ -723,19 +721,19 @@ public class SyncTrackInstrument : IInstrument
         foreach (var item in bpmSelectionData)
         {
             stringIDs.Add(
-                new(item.Key, item.Value.ToChartFormat(0)[0])
+                new KeyValuePair<int, string>(item.Key, item.Value.ToChartFormat(0)[0])
                 );
             if (item.Value.Anchor)
             {
                 stringIDs.Add(
-                    new(item.Key, $"A {item.Value.Timestamp * MICROSECOND_CONVERSION}")
+                    new KeyValuePair<int, string>(item.Key, $"A {item.Value.Timestamp * MICROSECOND_CONVERSION}")
                     );
             }
         }
         foreach (var item in tsSelectionData)
         {
             stringIDs.Add(
-                new(item.Key, item.Value.ToChartFormat(0)[0])
+                new KeyValuePair<int, string>(item.Key, item.Value.ToChartFormat(0)[0])
                 );
         }
 
@@ -787,7 +785,7 @@ public class SyncTrackInstrument : IInstrument
                 float bpmWithDecimal = bpmNoDecimal / BPM_FORMAT_CONVERSION;
 
                 // timestamp will be calculated by the RecalculateTempoEventDictionary call following this
-                TempoEvents[entry.Key] = new((float)Math.Round(bpmWithDecimal, 3), timestamp: 0, anchoredTicks.Contains(entry.Key));
+                TempoEvents[entry.Key] = new BPMData((float)Math.Round(bpmWithDecimal, 3), timestamp: 0, anchoredTicks.Contains(entry.Key));
             }
             else if (entry.Value.Contains(TIME_SIGNATURE_EVENT_INDICATOR))
             {
@@ -832,7 +830,7 @@ public class SyncTrackInstrument : IInstrument
         {
             if (TempoEvents.Contains(anchoredTick))
             {
-                TempoEvents[anchoredTick] = new(TempoEvents[anchoredTick].BPMChange, 0, true);
+                TempoEvents[anchoredTick] = new BPMData(TempoEvents[anchoredTick].BPMChange, 0, true);
             }
         }
 

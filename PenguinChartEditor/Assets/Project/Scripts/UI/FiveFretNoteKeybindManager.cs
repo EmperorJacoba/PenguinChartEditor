@@ -10,7 +10,7 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
     [SerializeField] private FiveFretSustainSelector selectionFFSC;
     private void Awake()
     {
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
 
         inputMap.ExternalCharting.SwitchNotePlacementMode.performed += x =>

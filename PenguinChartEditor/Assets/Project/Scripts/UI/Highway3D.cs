@@ -19,7 +19,7 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
         private set
         {
             if (transform.localScale.z == value) return;
-            transform.localScale = new(transform.localScale.x, transform.localScale.y, value);
+            transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, value);
         }
     }
     

@@ -8,8 +8,8 @@ public class MinMaxTracker
 
     public MinMaxTracker(int laneCount)
     {
-        minTicks = new(laneCount - 1);
-        maxTicks = new(laneCount - 1);
+        minTicks = new HashSet<int>(laneCount - 1);
+        maxTicks = new HashSet<int>(laneCount - 1);
     }
 
     public void AddTickMinMax(int min, int max)
@@ -22,9 +22,9 @@ public class MinMaxTracker
     {
         if (minTicks.Count == 0 || maxTicks.Count == 0)
         {
-            return new(0, SongTime.SongLengthTicks);
+            return new MinMaxTicks(0, SongTime.SongLengthTicks);
         }
-        return new(minTicks.Min(), maxTicks.Max());
+        return new MinMaxTicks(minTicks.Min(), maxTicks.Max());
     }
 }
 

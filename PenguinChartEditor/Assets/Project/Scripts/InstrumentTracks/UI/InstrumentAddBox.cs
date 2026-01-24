@@ -32,7 +32,7 @@ public class InstrumentAddBox : MonoBehaviour
             else
             {
                 foundInstruments.Add(name);
-                instrumentData.Add(new(name, instrument.Difficulty));
+                instrumentData.Add(new ActiveInstrument(name, instrument.Difficulty));
             }
         }
 
@@ -63,7 +63,7 @@ public struct ActiveInstrument
     public ActiveInstrument(InstrumentType instrument, DifficultyType firstDifficulty)
     {
         name = instrument;
-        activeDifficulties = new()
+        activeDifficulties = new List<DifficultyType>
         {
             firstDifficulty
         };

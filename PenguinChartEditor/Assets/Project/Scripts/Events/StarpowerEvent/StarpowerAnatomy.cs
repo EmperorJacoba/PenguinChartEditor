@@ -20,8 +20,8 @@ public struct StarpowerAnatomy
         var sustainTrackLength = Waveform.GetWaveformRatio(tick, sustainLength) * Highway3D.highwayLength;
         if (sustainTrackLength < 0) sustainTrackLength = 0;
 
-        sustainTail.localScale = new(sustainTail.localScale.x, sustainTail.localScale.y, (float)sustainTrackLength);
-        trackOverlay.localScale = new(trackOverlay.localScale.x, trackOverlay.localScale.y, (float)sustainTrackLength);
+        sustainTail.localScale = new Vector3(sustainTail.localScale.x, sustainTail.localScale.y, (float)sustainTrackLength);
+        trackOverlay.localScale = new Vector3(trackOverlay.localScale.x, trackOverlay.localScale.y, (float)sustainTrackLength);
     }
 
     public void ChangeColorToPreviewer()

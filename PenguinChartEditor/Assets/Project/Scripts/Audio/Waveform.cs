@@ -164,7 +164,7 @@ public class Waveform : MonoBehaviour
     {
         float[] stemWaveformData = AudioManager.GetAudioSamples(stem, out long bytesPerSample);
 
-        return new(stem, new(stemWaveformData, bytesPerSample));
+        return new KeyValuePair<StemType, StemWaveformData>(stem, new StemWaveformData(stemWaveformData, bytesPerSample));
     }
 
     #endregion
@@ -231,11 +231,11 @@ public class Waveform : MonoBehaviour
             // Track operates on X & Y directions in 2D, X & Z directions in 3D. Thus, the branching.
             if (Chart.instance.SceneDetails.is2D)
             {
-                lineRendererPositions[lineRendererIndex] = new(xPosition, incrementPosition);
+                lineRendererPositions[lineRendererIndex] = new Vector3(xPosition, incrementPosition);
             }
             else
             {
-                lineRendererPositions[lineRendererIndex] = new(xPosition, THREE_D_Y_POSITION_OFFSET, incrementPosition);
+                lineRendererPositions[lineRendererIndex] = new Vector3(xPosition, THREE_D_Y_POSITION_OFFSET, incrementPosition);
             }
         }
 
@@ -290,7 +290,7 @@ public class Waveform : MonoBehaviour
     private static void CacheTimeDetails()
     {
         tickSecondValueMatch.Clear();
-        tickSecondValueMatch[startTick] = new(Chart.SyncTrackInstrument.GetSecondsPerTickAtTick(startTick), accumulatedSeconds: 0);
+        tickSecondValueMatch[startTick] = new CachedTimestampPosition(Chart.SyncTrackInstrument.GetSecondsPerTickAtTick(startTick), accumulatedSeconds: 0);
 
         var activeEventTick = Chart.SyncTrackInstrument.TempoEvents.GetNextTickEventInLane(startTick, inclusive: false);
         var lastActiveTick = startTick;
@@ -302,7 +302,7 @@ public class Waveform : MonoBehaviour
                 break;
             }
             tickSecondValueMatch[activeEventTick] =
-                new(Chart.SyncTrackInstrument.GetSecondsPerTickAtTick(activeEventTick),
+                new CachedTimestampPosition(Chart.SyncTrackInstrument.GetSecondsPerTickAtTick(activeEventTick),
                 accumulatedSeconds: tickSecondValueMatch[lastActiveTick].secondsPerTick * (activeEventTick - lastActiveTick) + tickSecondValueMatch[lastActiveTick].accumulatedSeconds
                 );
 

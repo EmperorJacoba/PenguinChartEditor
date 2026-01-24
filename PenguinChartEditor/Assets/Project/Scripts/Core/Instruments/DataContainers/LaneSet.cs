@@ -42,13 +42,13 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     public SortedDictionary<int, TValue> ExportData() => new(laneData);
     public LaneSet(HashSet<int> protectedTicks)
     {
-        laneData = new();
+        laneData = new SortedDictionary<int, TValue>();
         this.protectedTicks = protectedTicks;
     }
 
     public LaneSet()
     {
-        laneData = new();
+        laneData = new SortedDictionary<int, TValue>();
     }
 
     public void Add(int key, TValue value)
@@ -142,7 +142,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         UpdatesNeededInRange?.Invoke(tick, tick);
 
         return 
-        new()
+        new SortedDictionary<int, TValue>
         {
             {tick, data}
         };
@@ -229,7 +229,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
     public void OverwriteLaneDataWith(SortedDictionary<int, TValue> data)
     {
-        laneData = new(data);
+        laneData = new SortedDictionary<int, TValue>(data);
     }
 
     public void OverwriteDataWithOffset(SortedDictionary<int, TValue> data, int tickOffset)
@@ -344,7 +344,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     // Uses array and not list for easy range segmenting
     public List<int> GetRelevantTicksInRange(int startTick, int endTick)
     {
-        if (Count == 0) return new();
+        if (Count == 0) return new List<int>();
 
         var tickList = Keys.ToList();
 
@@ -366,7 +366,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         if (startIndex == tickList.Count || endIndex < 0)
         {
-            return new();
+            return new List<int>();
         }
 
         var finalList = tickList.GetRange(startIndex, (endIndex + 1) - startIndex);

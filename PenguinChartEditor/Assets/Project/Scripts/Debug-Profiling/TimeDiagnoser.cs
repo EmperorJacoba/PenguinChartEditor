@@ -17,7 +17,7 @@ namespace Penguin.Debug
             diagnosticName = name;
             lastRecord = Time.realtimeSinceStartup;
             firstRecord = lastRecord;
-            timeString = new();
+            timeString = new StringBuilder();
         }
 
         public void Report()

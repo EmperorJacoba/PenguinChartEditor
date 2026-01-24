@@ -36,7 +36,7 @@ public static class ChartParser
     {
         syncTrackInstrument = null;
         metadata = null;
-        instruments = new();
+        instruments = new ConcurrentBag<IInstrument>();
 
         string[] chartAsLines = File.ReadAllLines(filePath);
         var eventGroups = FormatEventSections(chartAsLines);
@@ -169,7 +169,7 @@ public static class ChartParser
         // Used to avoid drum S 65 and S 66 for drum rolls (and other future unimplemented events)
         if (!StarpowerInstrument.IsSpecialEventStarpowerEvent(values)) return false;
 
-        rawStarpowerEvent = new(targetInstrument, @event.Key, @event.Value);
+        rawStarpowerEvent = new RawStarpowerEvent(targetInstrument, @event.Key, @event.Value);
         return true;
     }
 
@@ -211,13 +211,13 @@ public static class ChartParser
         while (workingLine != "}" && lineIndex < chartAsLines.Length - 1)
         {
             var parts = workingLine.Split(" = ", 2);
-            eventData.Add(new(parts[0].Trim(), parts[1].Trim()));
+            eventData.Add(new KeyValuePair<string, string>(parts[0].Trim(), parts[1].Trim()));
 
             lineIndex++;
             workingLine = chartAsLines[lineIndex];
         }
 
-        return new(eventData);
+        return new SongDataGroup(eventData);
     }
 
     #endregion

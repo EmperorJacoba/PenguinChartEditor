@@ -13,7 +13,7 @@ public class SoloPlacementController : MonoBehaviour
         toggle.onValueChanged.AddListener(x => UserSettings.SoloPlacingAllowed = x);
         toggle.isOn = UserSettings.SoloPlacingAllowed;
 
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
 
         inputMap.Charting.ToggleSolos.performed += x =>

@@ -70,16 +70,16 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
             if ((int)instrumentType < 10) continue;
             headerTypeIDs.Add((int)instrumentType);
         }
-        Lanes = new(headerTypeIDs);
+        Lanes = new Lanes<StarpowerEventData>(headerTypeIDs);
 
-        sustainer = new(this, Lanes, false);
+        sustainer = new SustainHelper<StarpowerEventData>(this, Lanes, false);
     }
 
 
     private InputMap inputMap;
     public void SetUpInputMap()
     {
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
 
         inputMap.Charting.XYDrag.performed += x => MoveSelection();
@@ -282,7 +282,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
             return false;
         }
 
-        data = new(fill, sustain);
+        data = new StarpowerEventData(fill, sustain);
         return true;
     }
 
@@ -302,7 +302,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
             {
                 if (InstrumentMetadata.TryParseHeaderType(workingLine, out sectionID))
                 {
-                    activeSection = new();
+                    activeSection = new List<KeyValuePair<int, string>>();
                     i++; // avoid '{'
                 }
                 continue;

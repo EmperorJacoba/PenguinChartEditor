@@ -67,7 +67,7 @@ public class SongTime : MonoBehaviour
 
     private void Awake()
     {
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
 
         inputMap.Charting.ScrollTrack.performed += scrollChange => ChangeTime(scrollChange.ReadValue<float>());

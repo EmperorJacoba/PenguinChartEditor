@@ -26,7 +26,7 @@ public class DivisionChanger : MonoBehaviour
         entryBox.text = CurrentDivision.ToString();
         entryBox.onValueChanged.AddListener(x => ManualDivisionChange(x));
 
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
 
         inputMap.ExternalCharting.IncreaseStep.performed += _ => IncreaseDivision();

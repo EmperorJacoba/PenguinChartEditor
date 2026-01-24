@@ -77,7 +77,7 @@ public class AudioManager : MonoBehaviour
     private InputMap inputMap;
     private void Awake()
     {
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
         inputMap.ExternalCharting.PlayPause.performed += x => ToggleAudioPlayback();
     }
@@ -208,7 +208,7 @@ public class AudioManager : MonoBehaviour
 
         if (!StemVolumes.ContainsKey(stemType))
         {
-            StemVolumes.Add(stemType, new(MAX_VOLUME, false));
+            StemVolumes.Add(stemType, new StemVolumeData(MAX_VOLUME, false));
         }
 
         StemStreams.Add(stemType, Bass.BASS_StreamCreateFile(songPath, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_STREAM_PRESCAN));
@@ -270,19 +270,19 @@ public class AudioManager : MonoBehaviour
 
     public static void MuteStem(StemType stem)
     {
-        StemVolumes[stem] = new(StemVolumes[stem].Volume, true);
+        StemVolumes[stem] = new StemVolumeData(StemVolumes[stem].Volume, true);
         Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, 0);
     }
 
     public static void UnmuteStem(StemType stem)
     {
-        StemVolumes[stem] = new(StemVolumes[stem].Volume, false);
+        StemVolumes[stem] = new StemVolumeData(StemVolumes[stem].Volume, false);
         Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, StemVolumes[stem].Volume);
     }
 
     public static void SetStemVolume(StemType stem, float newVolume)
     {
-        StemVolumes[stem] = new(newVolume, StemVolumes[stem].Muted);
+        StemVolumes[stem] = new StemVolumeData(newVolume, StemVolumes[stem].Muted);
 
         if (StemVolumes[stem].Muted) return;
         Bass.BASS_ChannelSetAttribute(StemStreams[stem], BASSAttribute.BASS_ATTRIB_VOL, newVolume);

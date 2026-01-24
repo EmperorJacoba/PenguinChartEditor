@@ -33,7 +33,7 @@ public class TSPreviewer : Previewer
             var num = Chart.SyncTrackInstrument.TimeSignatureEvents[prevTick].Numerator;
             var denom = Chart.SyncTrackInstrument.TimeSignatureEvents[prevTick].Denominator;
             tsLabel.LabelText = $"{num} / {denom}";
-            displayedTS = new(num, denom);
+            displayedTS = new TSData(num, denom);
         }
         else // optimize this
         {

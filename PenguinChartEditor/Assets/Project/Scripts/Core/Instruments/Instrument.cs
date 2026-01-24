@@ -21,6 +21,10 @@ public interface IInstrument
     public void ClearTickFromAllSelections(int tick);
 
     List<int> GetUniqueTickSet();
+    
+    /// <remarks>
+    /// Call from the main thread, because this uses an InputActionMap. Do not call in a constructor!
+    /// </remarks>
     void SetUpInputMap();
 
     string ConvertSelectionToString();
@@ -31,6 +35,11 @@ public interface IInstrument
     void DeleteAllEventsAtTick(int tick);
 
     public ILaneData GetLaneData(int lane);
+    
+    /// <remarks>
+    /// A "bar lane" refers to a lane that a note receiver prefab must respond to in a non-exclusively
+    /// fretted view, even if its lane data is not the bar lane data. See: open notes, kick notes.
+    /// </remarks>
     public ILaneData GetBarLaneData();
     public ISelection GetLaneSelection(int lane);
     bool IsNoteSelectionEmpty();

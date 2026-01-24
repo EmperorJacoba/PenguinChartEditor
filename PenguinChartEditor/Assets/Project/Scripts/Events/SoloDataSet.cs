@@ -20,9 +20,9 @@ public class SoloDataSet
     
     public SoloDataSet()
     {
-        SoloEvents = new();
-        SelectedStartEvents = new(SoloEvents);
-        SelectedEndEvents = new(SoloEvents);
+        SoloEvents = new LaneSet<SoloEventData>();
+        SelectedStartEvents = new SelectionSet<SoloEventData>(SoloEvents);
+        SelectedEndEvents = new SelectionSet<SoloEventData>(SoloEvents);
     }
 
     public void DeleteSelection()
@@ -36,7 +36,7 @@ public class SoloDataSet
             var endTick = SongTime.SongLengthTicks - @event.Value.StartTick;
             if (nextSoloEvent.Count() > 0) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
 
-            SoloEvents.Add(@event.Key, new(@event.Value.StartTick, endTick));
+            SoloEvents.Add(@event.Key, new SoloEventData(@event.Value.StartTick, endTick));
         }
     }
 
@@ -53,7 +53,7 @@ public class SoloDataSet
         foreach (var @event in endCandidates)
         {
             SoloEvents.Remove(@event);
-            SoloEvents.Add(@event.Key, new(@event.Value.StartTick, SongTime.SongLengthTicks - @event.Value.StartTick));
+            SoloEvents.Add(@event.Key, new SoloEventData(@event.Value.StartTick, SongTime.SongLengthTicks - @event.Value.StartTick));
         }
     }
 

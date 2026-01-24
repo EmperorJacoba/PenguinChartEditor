@@ -168,7 +168,7 @@ public class Chart : MonoBehaviour
         // LoadedInstrument = SyncTrackInstrument;
         LoadedInstrument = StarpowerInstrument;
 
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
         inputMap.Charting.Copy.performed += _ => Clipboard.Copy();
         inputMap.Charting.Paste.performed += _ => Clipboard.Paste();

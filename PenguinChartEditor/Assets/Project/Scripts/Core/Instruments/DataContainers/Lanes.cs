@@ -11,25 +11,25 @@ public class Lanes<T> where T : IEventData
 
     public Lanes(int laneCount)
     {
-        lanes = new(laneCount);
-        selections = new(laneCount);
+        lanes = new Dictionary<int, LaneSet<T>>(laneCount);
+        selections = new Dictionary<int, SelectionSet<T>>(laneCount);
 
         for (int i = 0; i < laneCount; i++)
         {
-            lanes[i] = new();
-            selections[i] = new(lanes[i]);
+            lanes[i] = new LaneSet<T>();
+            selections[i] = new SelectionSet<T>(lanes[i]);
         }
     }
 
     public Lanes(List<int> laneIDs)
     {
-        lanes = new(laneIDs.Count);
-        selections = new(laneIDs.Count);
+        lanes = new Dictionary<int, LaneSet<T>>(laneIDs.Count);
+        selections = new Dictionary<int, SelectionSet<T>>(laneIDs.Count);
 
         foreach (var id in laneIDs)
         {
-            lanes[id] = new();
-            selections[id] = new(lanes[id]);
+            lanes[id] = new LaneSet<T>();
+            selections[id] = new SelectionSet<T>(lanes[id]);
         }
     }
 
@@ -46,7 +46,7 @@ public class Lanes<T> where T : IEventData
         Dictionary<int, SortedDictionary<int, T>> outputSet = new();
         foreach (var set in lanes)
         {
-            outputSet[set.Key] = new();
+            outputSet[set.Key] = new SortedDictionary<int, T>();
         }
         return outputSet;
     }

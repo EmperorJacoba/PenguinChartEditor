@@ -264,7 +264,7 @@ public struct StarpowerEventData : IEventData, IEquatable<StarpowerEventData>, I
 
     public StarpowerEventData ExportWithNewSustain(int newSustain)
     {
-        return new(IsFill, newSustain);
+        return new StarpowerEventData(IsFill, newSustain);
     }
 
     public bool Equals(StarpowerEventData other)

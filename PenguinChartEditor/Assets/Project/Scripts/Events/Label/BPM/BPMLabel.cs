@@ -70,7 +70,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
         }
         bpmAsFloat = (float)Math.Round(bpmAsFloat, 3);
 
-        return new(bpmAsFloat, existingData.Timestamp, existingData.Anchor);
+        return new BPMData(bpmAsFloat, existingData.Timestamp, existingData.Anchor);
     }
 
     protected override string ConvertDataToPreviewString()

@@ -99,7 +99,7 @@ public class SceneDetails : MonoBehaviour
 
         PointerEventData modifiedPointerData = new(EventSystem.current)
         {
-            position = new(Input.mousePosition.x, Input.mousePosition.y)
+            position = new Vector2(Input.mousePosition.x, Input.mousePosition.y)
         };
 
         List<RaycastResult> results = new();

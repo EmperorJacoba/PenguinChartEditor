@@ -72,7 +72,7 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
     private void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
     {
         var trackProportion = (float)percentOfTrack * parentGameInstrument.HighwayLength;
-        transform.localPosition = new(xPosition, yPosition, trackProportion);
+        transform.localPosition = new Vector3(xPosition, yPosition, trackProportion);
     }
 
     private void UpdatePositionAsPreviewer() => 

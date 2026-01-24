@@ -12,7 +12,7 @@ public class MoveHelper<T> where T : IEventData
 
     public void Reset()
     {
-        moveData = new();
+        moveData = new UniversalMoveData<T>();
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public class MoveHelper<T> where T : IEventData
         if (!moveData.inProgress && (tickMovement || laneMovement))
         {
             // optimize call
-            moveData = new(
+            moveData = new UniversalMoveData<T>(
                 currentMouseTick,
                 currentLane: currentMouseLane,
                 laneData

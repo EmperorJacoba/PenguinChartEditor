@@ -21,7 +21,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
 
     public void ResetSustainChange()
     {
-        sustainData = new();
+        sustainData = new SustainData<T>();
     }
 
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) 
@@ -70,7 +70,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         if (!sustainData.sustainInProgress)
         {
             // directly access parent lane here to avoid reassigning the local shortcut variable
-            sustainData = new(laneData.GetTotalSelectionByLane(), currentMouseTick);
+            sustainData = new SustainData<T>(laneData.GetTotalSelectionByLane(), currentMouseTick);
             return;
         }
 

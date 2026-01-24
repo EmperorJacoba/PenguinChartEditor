@@ -13,7 +13,7 @@ public class SelectionController : MonoBehaviour
     private InputMap inputMap;
     private void Awake()
     {
-        inputMap = new();
+        inputMap = new InputMap();
         inputMap.Enable();
 
         inputMap.Charting.SelectionView.performed += x => SetSelectionMode(Chart.SelectionMode.View);

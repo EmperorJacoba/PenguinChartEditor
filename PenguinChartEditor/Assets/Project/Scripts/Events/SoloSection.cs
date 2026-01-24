@@ -40,7 +40,7 @@ public class SoloSection : MonoBehaviour, IPoolable
     private void UpdateOverlayProperties(int startTick, int endTick)
     {
         float startPosition = startTick > Waveform.startTick ? (float)(Waveform.GetWaveformRatio(startTick) * Highway3D.highwayLength) : 0;
-        overlay.transform.position = new(parentLane.parentGameInstrument.HighwayGlobalTransformProperties.x, HEIGHT_VISIBILITY_OFFSET, startPosition);
+        overlay.transform.position = new Vector3(parentLane.parentGameInstrument.HighwayGlobalTransformProperties.x, HEIGHT_VISIBILITY_OFFSET, startPosition);
 
         var trackProportion = Waveform.GetWaveformRatio(endTick);
         var trackEndPosition = trackProportion * Highway3D.highwayLength;
@@ -53,6 +53,6 @@ public class SoloSection : MonoBehaviour, IPoolable
 
         if (localScaleZ < 0) localScaleZ = 0; // box collider negative size issues??
 
-        overlay.transform.localScale = new(parentLane.parentGameInstrument.HighwayLocalScaleProperties.x, 1f, localScaleZ);
+        overlay.transform.localScale = new Vector3(parentLane.parentGameInstrument.HighwayLocalScaleProperties.x, 1f, localScaleZ);
     }
 }

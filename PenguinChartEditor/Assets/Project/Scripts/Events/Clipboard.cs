@@ -40,7 +40,7 @@ public static class Clipboard
                 offset -= tick;
             }
 
-            lines.Add(new(tick + offset, parts[1]));
+            lines.Add(new KeyValuePair<int, string>(tick + offset, parts[1]));
         }
 
         return lines;
