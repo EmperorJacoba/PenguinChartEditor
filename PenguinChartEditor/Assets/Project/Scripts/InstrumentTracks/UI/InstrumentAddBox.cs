@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Pop-up box when clicking the green plus in multi-track (starpower) mode. Singleton.
@@ -13,10 +14,13 @@ public class InstrumentAddBox : MonoBehaviour
 
     [SerializeField] private GameObject instrumentTrackAdderPrefab;
     [SerializeField] private Transform scrollViewContentTransform;
+    [SerializeField] private Button closeButton;
 
     private void Start()
     {
         instance = this;
+        
+        closeButton.onClick.AddListener(Deactivate);
 
         HashSet<InstrumentType> foundInstruments = new();
         List<ActiveInstrument> instrumentData = new();
@@ -52,6 +56,11 @@ public class InstrumentAddBox : MonoBehaviour
     {
         gameObject.SetActive(true);
         _right = isRight;
+    }
+
+    void Deactivate()
+    {
+        gameObject.SetActive(false);
     }
 }
 
