@@ -26,6 +26,7 @@ public class InstrumentSpawningManager : MonoBehaviour
     {
         instance = this;
     }
+    
     private void OnDestroy()
     {
         instance = null;

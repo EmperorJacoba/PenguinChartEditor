@@ -634,7 +634,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         SoloEventData openSoloEvent = new(-1);
 
         if (uniqueTicks.Count == 0) return;
-        Lanes.PopDataInRange(uniqueTicks.Min(), uniqueTicks.Max());
+        Lanes.PopTicksInRange(uniqueTicks.Min(), uniqueTicks.Max());
 
         foreach (var uniqueTick in uniqueTicks)
         {

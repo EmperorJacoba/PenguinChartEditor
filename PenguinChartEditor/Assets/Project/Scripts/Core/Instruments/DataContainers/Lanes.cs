@@ -52,6 +52,11 @@ public class Lanes<T> where T : IEventData
     }
 
     public LaneSet<T> GetLane(int lane) => lanes[lane];
+
+    public bool TryGetTick(int lane, int tick, out T data)
+    {
+        return lanes[lane].TryGetValue(tick, out data);
+    }
     public void SetLane(int lane, SortedDictionary<int, T> newData) => lanes[lane].Update(newData);
     public SelectionSet<T> GetLaneSelection(int lane) => selections[lane];
 
@@ -213,8 +218,22 @@ public class Lanes<T> where T : IEventData
             selection.Value.ApplyScaledSelection(movingData[selection.Key], lastPasteStartTick);
         }
     }
+    public void PopTicksInRange(MinMaxTicks minMaxTicks) =>
+        PopTicksInRange(minMaxTicks.min, minMaxTicks.max);
 
-    public Dictionary<int, SortedDictionary<int, T>> PopDataInRange(int startTick, int endTick)
+    public void PopTicksInRange(int tick, ISustainable sustainedData) =>
+        PopTicksInRange(tick, tick + sustainedData.Sustain);
+
+    public void PopTicksInRange(int tick, T data)
+    {
+        if (data is ISustainable sustainableData)
+        {
+            PopTicksInRange(tick, sustainableData);
+        }
+        else PopTicksInRange(tick, tick);
+    }
+    
+    public Dictionary<int, SortedDictionary<int, T>> PopTicksInRange(int startTick, int endTick)
     {
         var subtractedData = MakeEmptyDataSet();
         foreach (var lane in lanes)
@@ -373,6 +392,21 @@ public class Lanes<T> where T : IEventData
                 lane.Value.Remove(selectedNote);
                 targetLaneSelection.Add(selectedNote);
             }
+        }
+    }
+
+    public void CopyDataToAllLanes(int lane, int tick)
+    {
+        if (!TryGetTick(lane, tick, out var data))
+        {
+            return;
+        }
+
+        PopTicksInRange(tick, data);
+        
+        foreach (var copiedToLane in lanes)
+        {
+            copiedToLane.Value.Add(tick, data);
         }
     }
 

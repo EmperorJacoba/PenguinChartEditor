@@ -7541,6 +7541,7 @@ GameObject:
   - component: {fileID: 930004082}
   - component: {fileID: 930004081}
   - component: {fileID: 930004080}
+  - component: {fileID: 930004083}
   m_Layer: 5
   m_Name: Make Unison
   m_TagString: Untagged
@@ -7650,6 +7651,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 930004078}
   m_CullTransparentMesh: 1
+--- !u!114 &930004083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930004078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90c1743eb4ed458cbecbdb7aec7b578c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &959947523
 GameObject:
   m_ObjectHideFlags: 0

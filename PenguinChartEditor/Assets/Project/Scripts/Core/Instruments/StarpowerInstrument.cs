@@ -102,6 +102,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     public int CalculateSustainClamp(int sustainLength, int tick, int lane) => sustainer.CalculateSustainClamp(sustainLength, tick, lane);
     public int CalculateSustainClamp(int sustainLength, int tick, HeaderType lane) => CalculateSustainClamp(sustainLength, tick, (int)lane);
     private void ValidateSustainsInRange(int startTick, int endTick) => sustainer.ValidateSustainsInRange(startTick, endTick);
+    private void ValidateSustainsInRange(MinMaxTicks minMaxTicks) => sustainer.ValidateSustainsInRange(minMaxTicks);
     #endregion
 
     #region Selections
@@ -148,6 +149,28 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         Lanes.ShiftClickSelect(tick, tick, InstrumentSpawningManager.instance.GetActiveInstrumentIDs());
     }
 
+    public void MakeSelectionUnison()
+    {
+        var selections = Lanes.GetTotalSelectionByLane();
+        var minMaxTicks = Lanes.GetSelectionBounds();
+
+        foreach (var selection in selections)
+        {
+            var selectionVal = selection.Value;
+
+            foreach (var tick in selectionVal)
+            {
+                if (!Lanes.TryGetTick(selection.Key, tick, out var starpowerEventData))
+                {
+                    continue;
+                }
+
+                Lanes.CopyDataToAllLanes(selection.Key, tick);
+            }
+        }
+        
+        ValidateSustainsInRange(minMaxTicks);
+    }
 
     #endregion
 

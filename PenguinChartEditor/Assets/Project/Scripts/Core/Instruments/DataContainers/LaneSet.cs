@@ -20,7 +20,7 @@ public interface ILaneData
 public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue : IEventData
 {
     public const int NO_TICK_EVENT = -1;
-    protected SortedDictionary<int, TValue> laneData;
+    private SortedDictionary<int, TValue> laneData;
 
     public delegate void UpdateNeededDelegate(int startTick, int endTick);
 
