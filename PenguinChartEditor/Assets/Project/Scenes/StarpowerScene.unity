@@ -5007,7 +5007,7 @@ GameObject:
   - component: {fileID: 703711729}
   - component: {fileID: 703711732}
   m_Layer: 5
-  m_Name: Dropdown
+  m_Name: BeatsOrBarsSelector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16511,6 +16511,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1857436836}
   - component: {fileID: 1857436837}
+  - component: {fileID: 1857436838}
   m_Layer: 5
   m_Name: Custom Line
   m_TagString: Untagged
@@ -16566,6 +16567,26 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1857436838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1857436835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae33f8b033bf432bad82d45f99da5683, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  beatsOrBarsSelector: {fileID: 703711732}
+  inputField: {fileID: 1279295130}
+  disableOnButtonPressCandidates:
+  - {fileID: 269105754}
+  - {fileID: 1913936823}
+  - {fileID: 1318994774}
+  - {fileID: 1508720485}
+  - {fileID: 22088369}
 --- !u!1001 &1870513000
 PrefabInstance:
   m_ObjectHideFlags: 0
