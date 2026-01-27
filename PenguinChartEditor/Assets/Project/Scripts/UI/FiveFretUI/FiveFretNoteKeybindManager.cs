@@ -1,13 +1,14 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class FiveFretNoteKeybindManager : MonoBehaviour
 {
     private InputMap inputMap;
     [SerializeField] private TMP_Dropdown modifierDropdown;
     [SerializeField] private ExtendedSustainController esc;
-    [SerializeField] private SustainController noteFFSC;
-    [SerializeField] private FiveFretSustainSelector selectionFFSC;
+    [FormerlySerializedAs("sustainCustomInput")] [SerializeField] private CustomSustainInputter sustainCustomInputPlacement;
+    [SerializeField] private CustomSustainInputter sustainCustomInputSelection;
     private void Awake()
     {
         inputMap = new InputMap();
@@ -30,11 +31,11 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
         {
             if (Chart.GetActiveInstrument<FiveFretInstrument>().IsNoteSelectionEmpty())
             {
-                noteFFSC.ActivateCustomInput();
+                sustainCustomInputPlacement.ActivateCustomInput();
             }
             else
             {
-                selectionFFSC.ActivateCustomInput();
+                sustainCustomInputSelection.ActivateCustomInput();
             }
         };
 
@@ -94,8 +95,8 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
             return;
         }
 
-        Previewer.defaultSustainTicks = ticks;
-        noteFFSC.ClearInput();
+        Previewer.SetDefaultSustainLength(true, ticks);
+        sustainCustomInputPlacement.ClearInput();
         UpdatePreviewer?.Invoke();
     }
 

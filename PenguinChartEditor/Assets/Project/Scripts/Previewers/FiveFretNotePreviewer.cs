@@ -13,12 +13,6 @@ public class FiveFretNotePreviewer : Previewer
 
     #endregion
 
-    #region Sustain Controlling
-    
-    private int AppliedSustain => note.ParentFiveFretInstrument.CalculateSustainClamp(defaultSustainTicks, Tick, lane.laneIdentifier);
-
-    #endregion
-
     #region NoteOption
 
     public static bool openNoteEditing = false;
@@ -108,7 +102,7 @@ public class FiveFretNotePreviewer : Previewer
 
     protected override void AddCurrentEventDataToLaneSet()
     {
-        int sustain =
+        var sustain =
             Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(Tick, Tick + AppliedSustain) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
             0 : AppliedSustain;
 

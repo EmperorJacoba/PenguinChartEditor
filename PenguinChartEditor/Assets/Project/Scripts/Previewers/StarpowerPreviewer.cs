@@ -10,15 +10,7 @@ public class StarpowerPreviewer : Previewer
     private LaneSet<StarpowerEventData> actingStarpowerLane => Chart.StarpowerInstrument.GetLaneData(parentGameInstrument.representedInstrument.InstrumentID);
 
     #endregion
-
-    #region Sustain Controlling
-
-    public static int defaultSustain = 0;
-
-    private int AppliedSustain => Chart.StarpowerInstrument.CalculateSustainClamp(defaultSustain, Tick, lane.laneIdentifier);
-
-    #endregion
-
+    
     protected override void UpdatePreviewer()
     {
         var hitPos = Chart.instance.SceneDetails.GetCursorHighwayPosition();
@@ -38,6 +30,8 @@ public class StarpowerPreviewer : Previewer
             AppliedSustain
             );
 
+        print(AppliedSustain);
+        
         starpowerEvent.InitializeEventAsPreviewer(lane, Tick, previewData);
 
         Show();

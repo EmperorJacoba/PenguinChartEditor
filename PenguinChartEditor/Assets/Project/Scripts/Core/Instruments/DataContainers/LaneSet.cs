@@ -329,7 +329,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         if (index < 0) return NO_TICK_EVENT;
         return tickTimeKeys[index];
     }
-
+    
     public int GetNextTickEventInLane(int currentTick, bool inclusive = false)
     {
         int index = BinarySearchForTick(currentTick, out var tickTimeKeys);

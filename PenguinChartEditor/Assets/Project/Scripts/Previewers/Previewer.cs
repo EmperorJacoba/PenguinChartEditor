@@ -16,9 +16,52 @@ public interface IPreviewer
 /// </summary>
 public abstract class Previewer : MonoBehaviour, IPreviewer
 {
-    public static int previewTick = 0;
-    public static int defaultSustainTicks = 0;
     private const int RIGHT_MOUSE_ID = 1;
+    
+    public static int previewTick = 0;
+
+    private static float defaultSustain
+    {
+        get => _defSust;
+        set
+        {
+            _defSust = value;
+            AppliedSustainUpdateNeeded?.Invoke();
+        }
+    }
+    private static float _defSust;
+    private delegate void SustainUpdateNeededDelegate();
+    private static event SustainUpdateNeededDelegate AppliedSustainUpdateNeeded;
+    private static bool modeIsBars = false;
+    
+    protected int AppliedSustain { get; set; }
+
+    private void UpdateAppliedSustain()
+    {
+        if (previewerEventReference.ParentInstrument is not ISustainableInstrument sustainableInstrument)
+        {
+            throw new ArgumentException(
+                $"Tried to apply a sustain to a previewer that does not accept a sustain. " +
+                $"Please check to make sure that \n" +
+                $"a) The previewer's event's parent instrument is a sustainable instrument and\n" +
+                $"b) The instrument you're trying to apply a sustain to is properly set up to apply a sustain.");
+        }
+
+        var calculatedSustainTicks =
+            modeIsBars ? Chart.SyncTrackInstrument.ConvertBarsToTicks(previewTick, defaultSustain) : Mathf.CeilToInt(defaultSustain);
+        AppliedSustain = sustainableInstrument.CalculateSustainClamp(calculatedSustainTicks, previewTick, parentLane.laneID);
+    }
+    
+    /// <remarks>
+    /// isTicks = true => interpret float as integer, use default sustain as ticks
+    /// <para>isTicks = false => interpret float as float, use default sustain as bars</para>
+    /// </remarks>
+    public static void SetDefaultSustainLength(bool isTicks, float value)
+    {
+        print($"Setting. isTicks = {isTicks}, value = {value}, defaultSustainBefore = {defaultSustain}");
+        modeIsBars = !isTicks;
+        defaultSustain = value;
+    }
 
     protected InputMap inputMap;
 
@@ -131,6 +174,8 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected virtual void Awake()
     {
+        AppliedSustainUpdateNeeded += UpdateAppliedSustain;
+        
         inputMap = new InputMap();
         inputMap.Enable();
 

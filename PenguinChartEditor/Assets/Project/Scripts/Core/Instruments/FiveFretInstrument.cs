@@ -200,8 +200,6 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
         Lanes.PopAllEventsAtTick(tick);
         ClearAllSelections();
-
-        Chart.InPlaceRefresh();
     }
 
     public void AddData(int tick, LaneOrientation lane, FiveFretNoteData data)
@@ -226,6 +224,8 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     {
         Lanes.ClearAllSelections();
         SoloData.ClearSelection();
+        
+        Chart.InPlaceRefresh();
     }
     public bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
 

@@ -246,7 +246,7 @@
                     "id": "98d9727a-8382-4ca7-8b3e-7d29e49d5872",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -255,7 +255,7 @@
                     "id": "961ecf0d-b0f8-479e-94f7-170b4d2c2a2e",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -264,7 +264,7 @@
                     "id": "a061ab4b-6250-4969-87e2-c6d8a5b21443",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -273,7 +273,7 @@
                     "id": "4cb33396-dcbb-4830-900c-288c4bd919df",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -282,7 +282,7 @@
                     "id": "92ffa0f7-085b-412b-aefd-3d7f530d84ca",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -291,7 +291,7 @@
                     "id": "71179573-2e66-4c96-8456-786b5aae49ce",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -300,7 +300,7 @@
                     "id": "af57ab11-98df-4393-af93-7da9b91e3c24",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -309,7 +309,7 @@
                     "id": "358d6d18-0a78-44d8-84fd-e982a4426489",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
