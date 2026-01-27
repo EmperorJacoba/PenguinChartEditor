@@ -457,6 +457,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     public SustainHelper<FiveFretNoteData> sustainer;
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
     public void SetSelectionSustain(int ticks) => sustainer.SetSelectionSustain(ticks);
+    public void SetSelectionSustain(float bars) => sustainer.SetSelectionSustain(bars);
     public void ValidateSustainsInRange(MinMaxTicks range) => ValidateSustainsInRange(range.min, range.max);
     public void ValidateSustainsInRange(int startTick, int endTick) => sustainer.ValidateSustainsInRange(startTick, endTick);
     public void ClampSustainsBefore(int tick, LaneOrientation lane) => sustainer.ClampSustainsBefore(tick, (int)lane);

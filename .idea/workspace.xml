@@ -2,7 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d92372fb-226c-4365-b707-bf009f4886da" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Scenes/StarpowerScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Scenes/StarpowerScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Plugins/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Plugins/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Bold SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Bold SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-BoldItalic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-BoldItalic SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-ExtraBold SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-ExtraBold SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-ExtraBoldItalic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-ExtraBoldItalic SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Italic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Italic SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Medium SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Medium SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-MediumItalic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-MediumItalic SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Regular SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Regular SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-SemiBold SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-SemiBold SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-SemiBoldItalic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-SemiBoldItalic SDF.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -12,10 +22,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 4
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="38d5IBfCOgABv6AWbMTbpzyQSbQ" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -30,6 +40,7 @@
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
+    "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -49,7 +60,11 @@
       <option name="presentableId" value="Default" />
       <updated>1769116528639</updated>
       <workItem from="1769116530221" duration="5000" />
+      <workItem from="1769451585173" duration="118000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
 </project>

@@ -33,6 +33,20 @@ public class Chart : MonoBehaviour
     public static Metadata Metadata { get; set; } = new();
     public static List<IInstrument> Instruments { get; set; }
     public static IInstrument LoadedInstrument { get; set; }
+
+    public static ISustainableInstrument LoadedSustainableInstrument
+    {
+        get
+        {
+            if (LoadedInstrument is ISustainableInstrument sustainedInstrument) return sustainedInstrument;
+            else
+                throw new ArgumentException(
+                    "You are trying to access properties only applicable to sustainable instruments on an instrument " +
+                    "that has not been set up to support sustains. " +
+                    "Please fix the instrument or remove the reference to an ISustainableInstrument."
+                    );
+        }
+    }
     public static T GetActiveInstrument<T>() where T : IInstrument => (T)LoadedInstrument;
     public static SyncTrackInstrument SyncTrackInstrument { get; set; }
     public static StarpowerInstrument StarpowerInstrument { get; set; }

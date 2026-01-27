@@ -264,9 +264,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         {
             var laneSelection = currentSelection[laneKey];
             if (laneSelection.Count == 0) continue;
-
-            var changingLane = laneData.GetLane(laneKey);
-
+            
             foreach (var selectedNote in laneSelection)
             {
                 UpdateSustain(selectedNote, laneKey, ticks);
@@ -274,6 +272,26 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         }
 
         Chart.InPlaceRefresh();
+    }
+
+    public void SetSelectionSustain(float bars)
+    {
+        var currentSelection = laneData.GetTotalSelectionByLane();
+
+        foreach (var laneKey in laneData.LaneKeys)
+        {
+            var laneSelection = currentSelection[laneKey];
+            if (laneSelection.Count == 0) continue;
+
+            foreach (var selectedNote in laneSelection)
+            {
+                UpdateSustain(
+                    selectedNote, 
+                    laneKey, 
+                    Chart.SyncTrackInstrument.ConvertBarsToTicks(selectedNote, bars)
+                    );
+            }
+        }
     }
 
 }

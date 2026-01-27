@@ -95,7 +95,9 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     #region Sustains
 
     private SustainHelper<StarpowerEventData> sustainer;
-
+    
+    public void SetSelectionSustain(float bars) => sustainer.SetSelectionSustain(bars);
+    public void SetSelectionSustain(int ticks) => sustainer.SetSelectionSustain(ticks);
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
     public int CalculateSustainClamp(int sustainLength, int tick, int lane) => sustainer.CalculateSustainClamp(sustainLength, tick, lane);
     public int CalculateSustainClamp(int sustainLength, int tick, HeaderType lane) => CalculateSustainClamp(sustainLength, tick, (int)lane);
