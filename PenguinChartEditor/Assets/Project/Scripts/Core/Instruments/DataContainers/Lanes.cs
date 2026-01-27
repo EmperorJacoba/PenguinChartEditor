@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -244,7 +245,7 @@ public class Lanes<T> where T : IEventData
         return subtractedData;
     }
 
-    public HashSet<int> GetTotalSelection()
+    public HashSet<int> GetUnifiedSelection()
     {
         HashSet<int> ticks = new();
         foreach (var selection in selections.Values)
@@ -448,6 +449,52 @@ public class Lanes<T> where T : IEventData
     {
         var output = selections.Where(selection => selection.Value.Count != 0).Aggregate("", (current, selection) => current + $"{selection.Key}: {selection.Value.Count}");
         MonoBehaviour.print(output);
+    }
+
+    public SortedDictionary<int, T> GetUnifiedSelectionWithData()
+    {
+        var outputDict = new SortedDictionary<int, T>();
+
+        foreach (var selection in selections.Values)
+        {
+            var selectionData = selection.ExportData();
+            foreach (var data in selectionData)
+            {
+                outputDict[data.Key] = data.Value;
+            }
+        }
+
+        return outputDict;
+    }
+
+    public SortedDictionary<int, T> CutUnifiedSelectionWithData()
+    {
+        var selection = GetUnifiedSelectionWithData();
+        DeleteAllTicksInSelection();
+        
+        return selection;
+    }
+
+    public void CopySelectionToLane(int targetLane) =>
+        CopySelectionToLane(targetLane, GetUnifiedSelectionWithData());
+    public void CopySelectionToLane(int targetLane, SortedDictionary<int, T> selectionData)
+    {
+        if (selectionData.Count == 0) return;
+        
+        var clearZone = new MinMaxTicks(selectionData.Keys.Min(), selectionData.Keys.Max());
+        var targetLaneSet = lanes[targetLane];
+        targetLaneSet.PopTicksInRange(clearZone);
+
+        foreach (var data in selectionData)
+        {
+            targetLaneSet[data.Key] = data.Value;
+            selections[targetLane].Add(data.Key);
+        }
+    }
+
+    public void MoveSelectionToLane(int targetLane)
+    {
+        CopySelectionToLane(targetLane, CutUnifiedSelectionWithData());
     }
     
     public int Count => lanes.Count;

@@ -32,6 +32,35 @@ public class Chart : MonoBehaviour
 
     public static Metadata Metadata { get; set; } = new();
     public static List<IInstrument> Instruments { get; set; }
+
+    public static HashSet<InstrumentType> GetLoadedInstrumentTypes()
+    {
+        HashSet<InstrumentType> outputSet = new();
+        foreach (var entry in Instruments)
+        {
+            outputSet.Add(entry.InstrumentName);
+        }
+
+        return outputSet;
+    }
+
+    public static HashSet<DifficultyType> GetActiveDifficulties(InstrumentType instrumentType)
+    {
+        return Instruments.Where(x => x.InstrumentName == instrumentType).Select(x => x.Difficulty)
+            .ToHashSet();
+    }
+
+    public static HashSet<HeaderType> GetUniqueLoadedInstruments()
+    {
+        HashSet<HeaderType> outputSet = new();
+        foreach (var entry in Instruments)
+        {
+            outputSet.Add(entry.InstrumentID);
+        }
+
+        return outputSet;
+    }
+    
     public static IInstrument LoadedInstrument { get; set; }
 
     public static ISustainableInstrument LoadedSustainableInstrument

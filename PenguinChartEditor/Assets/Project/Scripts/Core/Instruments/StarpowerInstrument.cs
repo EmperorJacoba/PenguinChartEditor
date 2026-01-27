@@ -107,6 +107,32 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     #endregion
 
     #region Selections
+
+    public void CopySelectionTo(InstrumentType targetInstrument, HashSet<DifficultyType> targetDifficulties)
+    {
+        var selectionData = Lanes.GetUnifiedSelectionWithData();
+        
+        foreach (var trackDiff in targetDifficulties)
+        {
+            Lanes.CopySelectionToLane(
+                (int)InstrumentMetadata.GetHeader(targetInstrument, trackDiff), 
+                selectionData
+                );
+        }
+    }
+
+    public void MoveSelectionTo(InstrumentType targetInstrument, HashSet<DifficultyType> targetDifficulties)
+    {
+        var selectionData = Lanes.CutUnifiedSelectionWithData();
+        
+        foreach (var trackDiff in targetDifficulties)
+        {
+            Lanes.CopySelectionToLane(
+                (int)InstrumentMetadata.GetHeader(targetInstrument, trackDiff), 
+                selectionData
+                );
+        }
+    }
     
     public bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
     public void ClearAllSelections() => Lanes.ClearAllSelections();

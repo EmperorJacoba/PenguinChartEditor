@@ -179,7 +179,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
         if (NoteSelectionCount != 0)
         {
-            var totalSelection = Lanes.GetTotalSelection();
+            var totalSelection = Lanes.GetUnifiedSelection();
             Lanes.DeleteAllTicksInSelection();
 
             CheckForHoposInRange(totalSelection.Min(), totalSelection.Max());
@@ -288,7 +288,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     public void NaturalizeSelection()
     {
-        var totalSelectionSet = Lanes.GetTotalSelection();
+        var totalSelectionSet = Lanes.GetUnifiedSelection();
 
         if (totalSelectionSet.Count == 0) return;
 
@@ -321,7 +321,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     public void SetSelectionToFlag(FiveFretNoteData.FlagType flag)
     {
-        var currentSelection = Lanes.GetTotalSelection();
+        var currentSelection = Lanes.GetUnifiedSelection();
         if (currentSelection.Count == 0) return;
 
         for (int i = 0; i < Lanes.Count; i++)
@@ -343,7 +343,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     public void SetEqualSpacing()
     {
         var currentSelection = Lanes.GetTotalSelectionByLane();
-        var totalSelectionSet = Lanes.GetTotalSelection().ToList();
+        var totalSelectionSet = Lanes.GetUnifiedSelection().ToList();
 
         // equal spacing has no effect for selections of size 0-2
         if (totalSelectionSet.Count < 3) return;
@@ -552,7 +552,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     {
         if (Chart.LoadedInstrument != this) return;
 
-        var allTicksSelected = Lanes.GetTotalSelection();
+        var allTicksSelected = Lanes.GetUnifiedSelection();
 
         bool toggleToTaps = true;
         foreach (var tick in allTicksSelected)
@@ -825,7 +825,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     // no solos currently
     public string ConvertSelectionToString()
     {
-        if (Lanes.GetTotalSelection().Count == 0) return "";
+        if (Lanes.GetUnifiedSelection().Count == 0) return "";
         var stringIDs = new List<KeyValuePair<int, string>>();
         var zeroTick = Lanes.GetFirstSelectionTick();
 

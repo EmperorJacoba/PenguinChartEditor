@@ -6,10 +6,10 @@ public class SustainHelper<T> where T : IEventData, ISustainable
 {
     private SustainData<T> sustainData = new();
 
-    private Lanes<T> laneData;
-    private IInstrument parentInstrument;
+    private readonly Lanes<T> laneData;
+    private readonly IInstrument parentInstrument;
 
-    private bool obeyExtendedSustainSetting;
+    private readonly bool obeyExtendedSustainSetting;
     private bool independentLanes => UserSettings.ExtSustains || !obeyExtendedSustainSetting;
 
     public SustainHelper(IInstrument parentInstrument, Lanes<T> lanes, bool obeyExtended)
@@ -71,7 +71,6 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         {
             // directly access parent lane here to avoid reassigning the local shortcut variable
             sustainData = new SustainData<T>(laneData.GetTotalSelectionByLane(), currentMouseTick);
-            laneData.DebugPrintSelectionCount();
             return;
         }
 

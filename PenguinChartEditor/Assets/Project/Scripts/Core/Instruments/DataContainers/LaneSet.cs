@@ -193,6 +193,8 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         return subtractedTicks;
     }
 
+    public SortedDictionary<int, TValue> PopTicksInRange(MinMaxTicks minMaxTicks) =>
+        PopTicksInRange(minMaxTicks.min, minMaxTicks.max);
     public SortedDictionary<int, TValue> PopTicksInRange(int startTick, int endTick)
     {
         SortedDictionary<int, TValue> subtractedTicks = new();
