@@ -86,6 +86,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         inputMap.Charting.LMB.canceled += x => CompleteMove();
         inputMap.Charting.Delete.performed += x => DeleteSelection();
         inputMap.Charting.SustainDrag.performed += x => sustainer.SustainSelection();
+        inputMap.Charting.RMB.canceled += x => sustainer.ResetSustainChange();
         inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
         inputMap.Charting.SelectAll.performed += x => Lanes.SelectAll();
     }
@@ -166,6 +167,24 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
                 }
 
                 Lanes.CopyDataToAllLanes(selection.Key, tick);
+            }
+        }
+        
+        ValidateSustainsInRange(minMaxTicks);
+    }
+
+    public void IsolateSelection()
+    {
+        var selections = Lanes.GetTotalSelectionByLane();
+        var minMaxTicks = Lanes.GetSelectionBounds();
+
+        foreach (var selection in selections)
+        {
+            var selectionVal = selection.Value;
+            
+            foreach (var tick in selectionVal)
+            {
+                Lanes.DeleteAllEventsInTickDataRangeNotSelected(selection.Key, tick);
             }
         }
         

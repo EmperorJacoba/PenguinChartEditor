@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class Lanes<T> where T : IEventData
 {
@@ -407,9 +408,48 @@ public class Lanes<T> where T : IEventData
         foreach (var copiedToLane in lanes)
         {
             copiedToLane.Value.Add(tick, data);
+            selections[copiedToLane.Key].Add(tick);
         }
     }
 
+    public void DeleteAllEventsInTickDataRangeNotSelected(int lane, int tick)
+    {
+        if (!TryGetTick(lane, tick, out var data)) return;
+        
+        if (data is ISustainable sustainableData)
+        {
+            DeleteAllEventsInTickRangeNotSelected(tick, tick + sustainableData.Sustain);
+        }
+        
+        DeleteAllEventsInTickRangeNotSelected(tick, tick);
+    }
+    
+    public void DeleteAllEventsInTickRangeNotSelected(int startTick, int endTick)
+    {
+        foreach (var lane in lanes)
+        {
+            var removableData = lane.Value.Where
+            (
+                kvp =>
+                    kvp.Key >= startTick &&
+                    kvp.Key <= endTick &&
+                    !selections[lane.Key].Contains(kvp.Key)
+            ).ToHashSet();
+                
+            foreach (var @event in removableData)
+            {
+                lane.Value.Remove(@event.Key);
+                selections[lane.Key].Remove(@event.Key);
+            }
+        }
+    }
+
+    public void DebugPrintSelectionCount()
+    {
+        var output = selections.Where(selection => selection.Value.Count != 0).Aggregate("", (current, selection) => current + $"{selection.Key}: {selection.Value.Count}");
+        MonoBehaviour.print(output);
+    }
+    
     public int Count => lanes.Count;
 }
 

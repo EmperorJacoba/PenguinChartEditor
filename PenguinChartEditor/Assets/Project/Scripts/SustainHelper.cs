@@ -56,7 +56,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
     public void SustainSelection()
     {
         if (Chart.LoadedInstrument != parentInstrument || !Chart.IsModificationAllowed()) return;
-
+        
         // Early return if attempting to start an edit while over an overlay element
         // Allows edit to start only if interacting with main content
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !sustainData.sustainInProgress) return;
@@ -71,6 +71,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         {
             // directly access parent lane here to avoid reassigning the local shortcut variable
             sustainData = new SustainData<T>(laneData.GetTotalSelectionByLane(), currentMouseTick);
+            laneData.DebugPrintSelectionCount();
             return;
         }
 

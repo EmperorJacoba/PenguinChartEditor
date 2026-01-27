@@ -136,6 +136,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         inputMap.Charting.LMB.canceled += x => CompleteMove();
         inputMap.Charting.Delete.performed += x => DeleteSelection();
         inputMap.Charting.SustainDrag.performed += x => sustainer.SustainSelection();
+        inputMap.Charting.RMB.canceled += x => sustainer.ResetSustainChange();
         inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
         inputMap.Charting.SelectAll.performed += x => Lanes.SelectAll();
     }
