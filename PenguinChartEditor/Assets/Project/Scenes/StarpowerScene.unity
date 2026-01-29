@@ -20310,14 +20310,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Instrument
       objectReference: {fileID: 0}
-    - target: {fileID: 4206195670467757154, guid: 87253adb4e011cb49bedc16c9dc31f04, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6175219787730248152, guid: 87253adb4e011cb49bedc16c9dc31f04, type: 3}
-      propertyPath: <isReadOnly>k__BackingField
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6728049931399594877, guid: 87253adb4e011cb49bedc16c9dc31f04, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

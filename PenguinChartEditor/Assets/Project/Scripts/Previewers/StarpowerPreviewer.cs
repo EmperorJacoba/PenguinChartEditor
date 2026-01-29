@@ -29,8 +29,6 @@ public class StarpowerPreviewer : Previewer
             false,
             AppliedSustain
             );
-
-        print(AppliedSustain);
         
         starpowerEvent.InitializeEventAsPreviewer(lane, Tick, previewData);
 

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using TMPro;
 
@@ -11,6 +12,7 @@ public class GameInstrumentIconLabel : MonoBehaviour
     [SerializeField] private InstrumentIcons iconMatcher;
     private MeshRenderer iconMesh;
     [SerializeField] private TMP_Text difficultyText;
+    [SerializeField] private TMP_Text counter;
 
     private void Awake()
     {
@@ -18,5 +20,18 @@ public class GameInstrumentIconLabel : MonoBehaviour
 
         iconMesh.material = iconMatcher.GetInstrumentIcon(parentGameInstrument.instrumentID);
         difficultyText.text = InstrumentMetadata.GetDifficultyAbbreviation(parentGameInstrument.instrumentID);
+
+        eventSetRef = Chart.StarpowerInstrument.GetLaneData(parentGameInstrument.instrumentID);
+    }
+
+    private LaneSet<StarpowerEventData> eventSetRef;
+    private int displayedEventCount = -1;
+    private void Update()
+    {
+        if (displayedEventCount == eventSetRef.Count) return;
+        
+        // This has negligible effect running in Update. < 1 * 10^-2 milliseconds per frame. It's easier than setting up an event.
+        counter.text = $"{eventSetRef.Count}";
+        displayedEventCount = eventSetRef.Count;
     }
 }
