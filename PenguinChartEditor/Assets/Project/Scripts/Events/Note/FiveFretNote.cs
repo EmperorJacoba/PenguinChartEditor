@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-
 public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 {
     protected override bool hasSustainTrail => true;
@@ -21,7 +20,7 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         {
             return _li;
         }
-        set
+        private set
         {
             if (_li == value) return;
 

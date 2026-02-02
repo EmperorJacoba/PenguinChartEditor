@@ -304,25 +304,37 @@ public struct StarpowerEventData : IEventData, IEquatable<StarpowerEventData>, I
     }
 }
 
-public struct LocalEventData
+public struct SectionData : IEventData, IEquatable<SectionData>
 {
-    public enum EventType
+    public string Name;
+
+    public bool Equals(SectionData other)
     {
-        solo,
-        soloend
+        return Name == other.Name;
     }
 
-    public EventType eventType;
-
-    public LocalEventData(EventType eventType)
+    public bool Equals(IEventData other)
     {
-        this.eventType = eventType;
+        return Equals((object)other);
     }
+
+    public override bool Equals(object obj)
+    {
+        return obj is SectionData other && Equals(other);
+    }
+    
+    public override int GetHashCode()
+    {
+        return (Name != null ? Name.GetHashCode() : 0);
+    }
+
     public string[] ToChartFormat(int lane)
     {
-        throw new NotImplementedException();
+        return new string[1]
+        {
+            $"E \"section {Name}\""
+        };
     }
-
 }
 
 public struct SoloEventData : IEventData, IEquatable<SoloEventData>

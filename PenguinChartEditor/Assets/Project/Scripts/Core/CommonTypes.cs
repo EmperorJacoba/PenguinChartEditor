@@ -32,6 +32,7 @@ public enum InstrumentCategory
 public enum InstrumentType
 {
     synctrack = 1,
+    events = 2,
     starpower = 3,
     guitar = 10,
     coopGuitar = 20,

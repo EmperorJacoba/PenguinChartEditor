@@ -77,8 +77,9 @@ public class Chart : MonoBehaviour
         }
     }
     public static T GetActiveInstrument<T>() where T : IInstrument => (T)LoadedInstrument;
-    public static SyncTrackInstrument SyncTrackInstrument { get; set; }
-    public static StarpowerInstrument StarpowerInstrument { get; set; }
+    public static SyncTrackInstrument SyncTrackInstrument { get; private set; }
+    public static StarpowerInstrument StarpowerInstrument { get; private set; }
+    public static SectionInstrument SectionInstrument { get; private set; }
 
     #endregion
 

@@ -37,11 +37,10 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 
     private void Start()
     {
-        if (LabelEntryBox != null)
-        {
-            LabelEntryBox.onEndEdit.AddListener(x => HandleManualEndEdit(x));
-            LabelEntryBox.onDeselect.AddListener(x => HandleEntryBoxDeselect());
-        }
+        if (LabelEntryBox == null) return;
+        
+        LabelEntryBox.onEndEdit.AddListener(x => HandleManualEndEdit(x));
+        LabelEntryBox.onDeselect.AddListener(x => HandleEntryBoxDeselect());
     }
 
     #endregion
@@ -152,7 +151,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
         // so manual coroutine solution is here to circumvent that issue
         if (!Input.GetKey(KeyCode.LeftControl) &&
             Chart.IsModificationAllowed() && 
-            clickCount == 2)
+            clickCount >= 2)
         {
             ActivateManualInput();
             Chart.InPlaceRefresh();
