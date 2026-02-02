@@ -5,16 +5,27 @@ using UnityEngine;
 
 public class SectionInstrument : IInstrument
 {
+    #region Attributes
+
     public InstrumentType InstrumentName { get; set; } = InstrumentType.events;
     public DifficultyType Difficulty { get; set; } = DifficultyType.easy;
     public HeaderType InstrumentID { get; } = HeaderType.Events;
+    
+    #endregion
+
+    #region Data Setup
 
     public LaneSet<SectionData> GetLaneData() => laneData;
     private LaneSet<SectionData> laneData;
 
     public SelectionSet<SectionData> GetLaneSelection() => selection;
     private SelectionSet<SectionData> selection;
+    
+    public List<int> GetUniqueTickSet() => laneData.Keys.ToList();
 
+    #endregion
+
+    #region Selections
 
     public void ClearAllSelections() => selection.Clear();
     public bool NoteSelectionContains(int tick, int lane) => selection.Contains(tick);
@@ -24,10 +35,28 @@ public class SectionInstrument : IInstrument
     public void ShiftClickSelect(int tick) => selection.ShiftClickSelectInRange(tick, tick);
     public void ClearTickFromAllSelections(int tick) => selection.Remove(tick);
     public void DeleteTicksInSelection() => selection.PopSelectedTicksFromLane();
+    public bool IsNoteSelectionEmpty() => selection.Count == 0;
+    private void DeleteSelection() => selection.PopSelectedTicksFromLane();
+    public ISelection GetLaneSelection(int lane) => selection;
+    
+    private void CheckForSelectionClear()
+    {
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
+        
+        ClearAllSelections();
+        Chart.InPlaceRefresh();
+    }
+    
+    #endregion
+
+    #region Add/Delete
+
     public void DeleteTickInLane(int tick, int lane) => laneData.Remove(tick);
     public void DeleteAllEventsAtTick(int tick) => laneData.Remove(tick);
-    public List<int> GetUniqueTickSet() => laneData.Keys.ToList();
-    public bool IsNoteSelectionEmpty() => selection.Count == 0;
+
+    #endregion
+
+    #region Constructor
 
     public SectionInstrument(List<KeyValuePair<int, string>> events)
     {
@@ -36,16 +65,42 @@ public class SectionInstrument : IInstrument
         
         AddChartFormattedEventsToInstrument(events);
     }
-
+    
+    private InputMap inputMap;
     public void SetUpInputMap()
     {
-        throw new System.NotImplementedException();
+        inputMap = new InputMap();
+        inputMap.Enable();
+
+        inputMap.Charting.XYDrag.performed += x => MoveSelection();
+        inputMap.Charting.LMB.canceled += x => CompleteMove();
+        inputMap.Charting.Delete.performed += x => DeleteSelection();
+        inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
+        inputMap.Charting.SelectAll.performed += x => selection.SelectAllInLane();
+    }
+    
+    #endregion
+
+    #region Moving
+
+    private MoveHelper<SectionData> mover;
+
+    private void MoveSelection()
+    {
+        if (mover.Move1DSelection(this, laneData, selection))
+        {
+            Chart.InPlaceRefresh();
+        }
     }
 
-    public string ConvertSelectionToString()
+    private void CompleteMove()
     {
-        throw new System.NotImplementedException();
+        mover.Reset();
     }
+
+    #endregion
+
+    #region Import
 
     public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
     {
@@ -79,7 +134,7 @@ public class SectionInstrument : IInstrument
 
             if (
                 splitSection.Length != 2 || splitSection[0] != "section"
-                )
+            )
             {
                 splitSection = sectionEvent.Split("_", 2);
 
@@ -94,7 +149,21 @@ public class SectionInstrument : IInstrument
         }
     }
 
-    public ISelection GetLaneSelection(int lane) => selection;
+    #endregion
+
+    #region Export
+
+    public string ConvertSelectionToString()
+    {
+        throw new System.NotImplementedException();
+    }
+    
+    public List<string> ExportAllEvents()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    #endregion
 
     #region Not Implemented
 
@@ -105,11 +174,6 @@ public class SectionInstrument : IInstrument
     }
     public ILaneData GetBarLaneData() => throw new System.NotImplementedException("No bar lane in sections");
     public ILaneData GetLaneData(int lane) => laneData;
-
-    public List<string> ExportAllEvents()
-    {
-        throw new System.NotImplementedException();
-    }
     
     #endregion
 }

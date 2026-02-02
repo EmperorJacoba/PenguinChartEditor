@@ -135,82 +135,36 @@ public class SyncTrackInstrument : IInstrument
 
     #region Movement
 
-    private UniversalMoveData<BPMData> bpmMoveData = new();
-    private UniversalMoveData<TSData> tsMoveData = new();
+    private MoveHelper<BPMData> bpmMover = new();
+    private MoveHelper<TSData> tsMover = new();
 
     /// <summary>
     /// Runs every frame when Drag input action is active. 
     /// </summary>
     private void MoveSelection()
     {
-        if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
-
-        var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
-
-        MoveLane(currentMouseTick, ref bpmMoveData, bpmSelection, TempoEvents);
-        MoveLane(currentMouseTick, ref tsMoveData, tsSelection, TimeSignatureEvents);
-    }
-
-    private void MoveLane<T>(int currentMouseTick, ref UniversalMoveData<T> moveData, SelectionSet<T> selection, LaneSet<T> lane) where T : IEventData
-    {
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress)
+        var bpmMove = bpmMover.Move1DSelection(this, TempoEvents, bpmSelection);
+        var tsMove = tsMover.Move1DSelection(this, TimeSignatureEvents, tsSelection);
+        
+        if (bpmMove)
         {
-            return;
+            RecalculateTempoEventDictionary();
         }
 
-        if (currentMouseTick == moveData.lastMouseTick) 
+        if (bpmMove || tsMove)
         {
-            return;
+            Chart.SyncTrackInPlaceRefresh();
         }
-
-        if (!moveData.inProgress)
-        {
-            moveData = new UniversalMoveData<T>(
-                    currentMouseTick,
-                    lane,
-                    selection
-                );
-            Chart.showPreviewers = false;
-            return;
-        }
-
-        lane.OverwriteLaneDataWith(moveData.preMoveData[0]);
-
-        var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
-
-        var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
-        moveData.lastGhostStartTick = pasteDestination;
-
-        var movingDataSet = moveData.OneDGetMoveData()[0];
-
-        lane.OverwriteDataWithOffset(movingDataSet, pasteDestination);
-
-        selection.ApplyScaledSelection(movingDataSet, moveData.lastGhostStartTick);
-
-        moveData.lastMouseTick = currentMouseTick;
-
-        if (typeof(T) == typeof(BPMData)) RecalculateTempoEventDictionary();
-
-        Chart.SyncTrackInPlaceRefresh();
     }
 
     public void CompleteMove()
     {
         if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
-
-        Chart.showPreviewers = true;
-
-        CompleteMove(ref bpmMoveData, bpmSelection);
-        CompleteMove(ref tsMoveData, tsSelection);
+        
+        bpmMover.Reset();
+        tsMover.Reset();
 
         Chart.SyncTrackInPlaceRefresh();
-    }
-
-    public void CompleteMove<T>(ref UniversalMoveData<T> moveData, SelectionSet<T> selection) where T : IEventData
-    {
-        if (!moveData.inProgress) return;
-
-        moveData = new UniversalMoveData<T>();
     }
 
     #endregion
@@ -838,12 +792,7 @@ public class SyncTrackInstrument : IInstrument
     }
 
     #endregion
-
-    #region Unused
-    public void ReleaseTemporaryTicks() { } // unneeded - no sustains lol
-
-    #endregion
-
+    
     #region Export
 
     public List<string> ExportAllEvents()
@@ -884,6 +833,4 @@ public class SyncTrackInstrument : IInstrument
     }
 
     #endregion
-
-    public bool justMoved { get; set; }
 }

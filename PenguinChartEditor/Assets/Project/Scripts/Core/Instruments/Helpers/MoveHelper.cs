@@ -12,15 +12,13 @@ public class MoveHelper<T> where T : IEventData
 
     public void Reset()
     {
+        Chart.showPreviewers = true;
         moveData = new UniversalMoveData<T>();
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="instrument"></param>
-    /// <param name="laneData"></param>
-    /// <param name="laneProgression"></param>
+    
+    // 2D in this context means [lane X data] dataset (multiple lanes) - e.g. any traditional instrument (guitar)
+    // 1D in this context means just one lane, no cross-LaneSet<> movement needed - e.g TempoEvents, Sections, etc.
+    
     /// <returns>Were there any meaningful changes to the Lanes dataset?</returns>
     public bool Move2DSelection(IInstrument instrument, Lanes<T> laneData, LinkedList<int> laneProgression)
     {
@@ -72,6 +70,49 @@ public class MoveHelper<T> where T : IEventData
         laneData.OverwriteLaneDataWithOffset(movingDataSet, pasteDestination);
 
         laneData.ApplyScaledSelection(movingDataSet, moveData.lastGhostStartTick);
+        return true;
+    }
+
+    public bool Move1DSelection(IInstrument instrument, LaneSet<T> lane, SelectionSet<T> selection)
+    {
+        var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
+        
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress)
+        {
+            return false;
+        }
+
+        if (currentMouseTick == moveData.lastMouseTick) 
+        {
+            return false;
+        }
+
+        if (!moveData.inProgress)
+        {
+            moveData = new UniversalMoveData<T>(
+                currentMouseTick,
+                lane,
+                selection
+            );
+            Chart.showPreviewers = false;
+            return false;
+        }
+
+        lane.OverwriteLaneDataWith(moveData.preMoveData[0]);
+
+        var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
+
+        var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
+        moveData.lastGhostStartTick = pasteDestination;
+
+        var movingDataSet = moveData.OneDGetMoveData()[0];
+
+        lane.OverwriteDataWithOffset(movingDataSet, pasteDestination);
+
+        selection.ApplyScaledSelection(movingDataSet, moveData.lastGhostStartTick);
+
+        moveData.lastMouseTick = currentMouseTick;
+
         return true;
     }
 }
