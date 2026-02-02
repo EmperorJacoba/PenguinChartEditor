@@ -16,25 +16,25 @@ public class BPMPreviewer : Previewer
 
     protected override void UpdatePreviewer()
     {
-        Tick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
-        bpmLabel.UpdatePosition(Waveform.GetWaveformRatio(Tick), boundaryReference.rect.height);
+        var lastTick = Chart.SyncTrackInstrument.TempoEvents.GetPreviousTickEventInLane(previewTick, inclusive: true);
+        if (lastTick < 0) return;
+        
+        bpmLabel.LabelText = Chart.SyncTrackInstrument.TempoEvents[lastTick].BPMChange.ToString();
+        
+        bpmLabel.UpdatePosition(Waveform.GetWaveformRatio(previewTick), boundaryReference.rect.height);
 
-        // only call this function when cursor is within certain range?
-        // takes the functionality out of this function
-        if (Input.mousePosition.x / Screen.width > 0.5f)
-        {
-            bpmLabel.Visible = true;
-            var lastTick = Chart.SyncTrackInstrument.TempoEvents.GetPreviousTickEventInLane(Tick, inclusive: true);
-            if (lastTick < 0) return;
+        Show();
+    }
 
-            bpmLabel.LabelText = Chart.SyncTrackInstrument.TempoEvents[lastTick].BPMChange.ToString();
-        }
-        else bpmLabel.Visible = false;
+    protected override bool IsHitPositionValid(Vector3 hitPosition)
+    {
+        // Cursor must be on right side of track (50%+)
+        return !(Input.mousePosition.x / Screen.width <= 0.5f);
     }
 
     protected override void AddCurrentEventDataToLaneSet()
     {
-        bpmLabel.CreateEvent(Tick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
+        bpmLabel.CreateEvent(previewTick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
         bpmLabel.Selection.Clear();
     }
 }

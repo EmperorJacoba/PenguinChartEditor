@@ -43,23 +43,11 @@ public class FiveFretNotePreviewer : Previewer
 
     protected override void UpdatePreviewer()
     {
-        var hitPosition = lane.parentGameInstrument.GetCursorHighwayPosition();
-
-        if (!IsWithinRange(hitPosition))
-        {
-            Hide();
-            return;
-        }
-
-        var highwayProportion = lane.parentGameInstrument.GetCursorHighwayProportion();
-
-        Tick = SongTime.CalculateGridSnappedTick(highwayProportion);
-
         FiveFretNoteData.FlagType previewFlag;
         if (currentPlacementMode == NoteOption.natural)
         {
             previewFlag =
-                parentFiveFretInstrument.PreviewTickHopo(lane.laneIdentifier, Tick) ?
+                parentFiveFretInstrument.PreviewTickHopo(lane.laneIdentifier, previewTick) ?
                 FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
         }
         else
@@ -73,12 +61,12 @@ public class FiveFretNotePreviewer : Previewer
             defaultOrientation: currentPlacementMode == NoteOption.natural
             );
 
-        note.InitializeEventAsPreviewer(lane, Tick, previewData);
+        note.InitializeEventAsPreviewer(lane, previewTick, previewData);
 
         Show();
     }
 
-    private bool IsWithinRange(Vector3 hitPosition)
+    protected override bool IsHitPositionValid(Vector3 hitPosition)
     {
         // add code here to block open note from placing note if the cursor is above another note
         if (lane.laneIdentifier == FiveFretInstrument.LaneOrientation.open)
@@ -103,11 +91,11 @@ public class FiveFretNotePreviewer : Previewer
     protected override void AddCurrentEventDataToLaneSet()
     {
         var sustain =
-            Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(Tick, Tick + AppliedSustain) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
+            Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(previewTick, previewTick + AppliedSustain) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
             0 : AppliedSustain;
 
         parentFiveFretInstrument.AddData(
-            Tick,
+            previewTick,
             note.laneID,
             new FiveFretNoteData(
                 sustain,

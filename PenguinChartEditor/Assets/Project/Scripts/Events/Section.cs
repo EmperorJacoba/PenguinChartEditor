@@ -20,6 +20,34 @@ public class Section : Event<SectionData>, IPoolable
 
     public void InitializeEvent(int tick)
     {
-        throw new System.NotImplementedException();
+        Tick = tick;
+        representedData = LaneData[tick];
+        
+        if (Chart.LoadedInstrument != ParentInstrument) return;
+
+        displayedSectionName.text = representedData.Name;
+        
+        if (!readOnly) CheckForSelection();
+        UpdatePosition();
+    }
+
+    public void InitializeEventAsPreviewer(SectionLane parentLane, int previewTick, SectionData previewData)
+    {
+        ParentLane = parentLane;
+
+        Tick = previewTick;
+
+        UpdatePosition();
+    }
+
+    private void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(Tick), Camera.main.transform.position.x);
+    private void UpdatePosition(double percentOfTrack, float cameraX)
+    {
+        transform.position =
+            new Vector3(
+                cameraX,
+                transform.position.y,
+                (float)percentOfTrack * Chart.instance.SceneDetails.HighwayLength
+            );
     }
 }

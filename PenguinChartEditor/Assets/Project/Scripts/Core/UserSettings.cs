@@ -31,13 +31,6 @@ public static class UserSettings
     /// <para>Example: SustainGap is 50 milliseconds -> Gap between end of sustained note and next note is 50ms, converted approximately to tick time.</para>
     /// </summary>
     public static int SustainGap { get; set; }
-    // Note on sustain gaps:
-    // Sustain gap is stored in milliseconds, but works in tick time
-    // Distance between one note sustain and following note must be converted to ticks from ms, based on tempo
-    // Formula from chart file format specifications:
-    // (tickEnd - tickStart) / resolution * 60 / BPM
-    // With current vars in scripts:
-    // (note2.TickPosition - note1.TickPosition) / ChartMetadata.Resolution * 60 / beatline.Tempo
 
     public static int SustainGapTicks { get; set; } = 50;
 
@@ -52,4 +45,6 @@ public static class UserSettings
     public static bool OpenNoteAsFret { get; set; } = false;
 
     public static bool SoloPlacingAllowed { get; set; } = true;
+
+    public static bool ShowSidebarSections { get; set; } = true;
 }

@@ -62,6 +62,7 @@ public class SectionInstrument : IInstrument
     {
         laneData = new LaneSet<SectionData>();
         selection = new SelectionSet<SectionData>(laneData);
+        mover = new MoveHelper<SectionData>();
         
         AddChartFormattedEventsToInstrument(events);
     }

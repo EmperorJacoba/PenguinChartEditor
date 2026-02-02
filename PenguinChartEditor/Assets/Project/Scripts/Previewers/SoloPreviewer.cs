@@ -34,61 +34,50 @@ public class SoloPreviewer : Previewer
 
     protected override void UpdatePreviewer()
     {
-        if (parentGameInstrument.GetCursorHighwayPosition().x < parentGameInstrument.HighwayRightEndCoordinate || !UserSettings.SoloPlacingAllowed)
-        {
-            Hide();
-            return;
-        }
+        var activeSoloEvents = 
+            ParentInstrument.SoloData.SoloEvents.Where
+            (
+                x => x.Value.StartTick <= previewTick && x.Value.EndTick >= previewTick
+            );
 
-        var highwayProportion = parentGameInstrument.GetCursorHighwayProportion();
+        var platePos = new Vector3(previewSoloPlate.transform.position.x, previewSoloPlate.transform.position.y, (float)Waveform.GetWaveformRatio(previewTick) * Highway3D.highwayLength);
 
-        if (highwayProportion == 0)
-        {
-            Hide();
-            return;
-        }
+        var isSoloEventActive = activeSoloEvents.Any();
 
-        Tick = SongTime.CalculateGridSnappedTick(highwayProportion);
-        var percentOfTrack = Waveform.GetWaveformRatio(Tick);
-        var zPosition = (float)percentOfTrack * Highway3D.highwayLength;
+        previewSoloPlate.Visible = !isSoloEventActive;
+        previewEndPlate.Visible = isSoloEventActive;
+     
+        previewSoloPlate.transform.position = platePos;
+        previewEndPlate.transform.position = platePos;
+    }
 
-        var activeSoloEvents = ParentInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick <= Tick && x.Value.EndTick >= Tick);
-
-        if (activeSoloEvents.Count() == 0)
-        {
-            previewSoloPlate.transform.position = new Vector3(previewSoloPlate.transform.position.x, previewSoloPlate.transform.position.y, zPosition);
-            previewSoloPlate.Visible = true;
-            previewEndPlate.Visible = false;
-        }
-        else
-        {
-            previewEndPlate.transform.position = new Vector3(previewEndPlate.transform.position.x, previewEndPlate.transform.position.y, zPosition);
-            previewEndPlate.Visible = true;
-            previewSoloPlate.Visible = false;
-        }
+    protected override bool IsHitPositionValid(Vector3 hitPosition)
+    {
+        return !(parentGameInstrument.GetCursorHighwayPosition().x < parentGameInstrument.HighwayRightEndCoordinate) &&
+               UserSettings.SoloPlacingAllowed;
     }
 
     protected override void AddCurrentEventDataToLaneSet()
     {
-        var activeSoloEvents = ParentInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick <= Tick && x.Value.EndTick >= Tick);
+        var activeSoloEvents = ParentInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick <= previewTick && x.Value.EndTick >= previewTick);
 
         if (activeSoloEvents.Count() == 0)
         {
             var endTick = SongTime.SongLengthTicks;
-            var nextSoloEvent = ParentInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick > Tick);
+            var nextSoloEvent = ParentInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick > previewTick);
 
             if (nextSoloEvent.Count() > 0) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
 
-            ParentInstrument.SoloData.SoloEvents.Add(Tick, new SoloEventData(Tick, endTick));
+            ParentInstrument.SoloData.SoloEvents.Add(previewTick, new SoloEventData(previewTick, endTick));
         }
         else
         {
             var soloEventList = activeSoloEvents.Select(x => x.Key).ToList();
 
             var currentEvent = ParentInstrument.SoloData.SoloEvents[soloEventList[0]];
-            if (currentEvent.StartTick == Tick) return;
+            if (currentEvent.StartTick == previewTick) return;
 
-            var replacingEvent = new SoloEventData(currentEvent.StartTick, Tick);
+            var replacingEvent = new SoloEventData(currentEvent.StartTick, previewTick);
 
             ParentInstrument.SoloData.SoloEvents.Remove(soloEventList[0]);
             ParentInstrument.SoloData.SoloEvents.Add(replacingEvent.StartTick, replacingEvent);

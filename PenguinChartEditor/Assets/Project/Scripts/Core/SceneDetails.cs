@@ -71,6 +71,9 @@ public class SceneDetails : MonoBehaviour
     // please fit for 3D
     public Vector3 GetCursorHighwayPosition()
     {
+        // 2D (BPM/TS) deals with this its own way.
+        if (is2D) return Vector3.zero;
+        
         PointerEventData pointerData = new(EventSystem.current)
         {
             position = Input.mousePosition

@@ -13,29 +13,17 @@ public class StarpowerPreviewer : Previewer
     
     protected override void UpdatePreviewer()
     {
-        var hitPos = Chart.instance.SceneDetails.GetCursorHighwayPosition();
-
-        if (!IsWithinRange(hitPos))
-        {
-            Hide();
-            return;
-        }
-
-        var highwayProp = Chart.instance.SceneDetails.GetCursorHighwayProportion();
-
-        Tick = SongTime.CalculateGridSnappedTick(highwayProp);
-
         StarpowerEventData previewData = new(
             false,
             AppliedSustain
             );
         
-        starpowerEvent.InitializeEventAsPreviewer(lane, Tick, previewData);
+        starpowerEvent.InitializeEventAsPreviewer(lane, previewTick, previewData);
 
         Show();
     }
 
-    private bool IsWithinRange(Vector3 hitPosition)
+    protected override bool IsHitPositionValid(Vector3 hitPosition)
     {
         var starpowerXCoordinate = starpowerEvent.parentGameInstrument.GetGlobalStarpowerXCoordinate();
         var halfLaneWidth = Chart.instance.SceneDetails.laneWidth / 2;
@@ -49,11 +37,11 @@ public class StarpowerPreviewer : Previewer
     protected override void AddCurrentEventDataToLaneSet()
     {
         int sustain =
-            Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(Tick, Tick + AppliedSustain) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
+            Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(previewTick, previewTick + AppliedSustain) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
             0 : AppliedSustain;
 
         actingStarpowerLane.Add(
-            Tick,
+            previewTick,
             new StarpowerEventData(
                 false,
                 sustain

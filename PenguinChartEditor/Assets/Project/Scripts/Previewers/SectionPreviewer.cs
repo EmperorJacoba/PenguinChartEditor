@@ -11,4 +11,9 @@ public class SectionPreviewer : Previewer
     {
         throw new System.NotImplementedException();
     }
+
+    protected override bool IsHitPositionValid(Vector3 hitPosition)
+    {
+        throw new System.NotImplementedException();
+    }
 }

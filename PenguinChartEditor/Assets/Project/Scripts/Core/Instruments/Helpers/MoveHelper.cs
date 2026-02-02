@@ -75,6 +75,8 @@ public class MoveHelper<T> where T : IEventData
 
     public bool Move1DSelection(IInstrument instrument, LaneSet<T> lane, SelectionSet<T> selection)
     {
+        if (instrument != Chart.LoadedInstrument || !Chart.IsModificationAllowed()) return false;
+        
         var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
         
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress)

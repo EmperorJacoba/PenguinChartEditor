@@ -16,34 +16,29 @@ public class TSPreviewer : Previewer
 
     protected override void UpdatePreviewer()
     {
-        Tick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
-        tsLabel.UpdatePosition(Waveform.GetWaveformRatio(Tick), boundaryReference.rect.height);
+        var prevTick = Chart.SyncTrackInstrument.TimeSignatureEvents.GetPreviousTickEventInLane(previewTick);
+        if (prevTick < 0) return;
 
-        // only call this function when cursor is within certain range?
-        // takes the functionality out of this function
-        if (Input.mousePosition.x / Screen.width < 0.5f)
-        {
-            tsLabel.Visible = true;
-            var prevTick = Chart.SyncTrackInstrument.TimeSignatureEvents.GetPreviousTickEventInLane(Tick);
-            if (prevTick < 0)
-            {
-                tsLabel.Visible = false;
-                return;
-            }
-            var num = Chart.SyncTrackInstrument.TimeSignatureEvents[prevTick].Numerator;
-            var denom = Chart.SyncTrackInstrument.TimeSignatureEvents[prevTick].Denominator;
-            tsLabel.LabelText = $"{num} / {denom}";
-            displayedTS = new TSData(num, denom);
-        }
-        else // optimize this
-        {
-            tsLabel.Visible = false;
-        }
+        var representedData = Chart.SyncTrackInstrument.TimeSignatureEvents[prevTick];
+        var num = representedData.Numerator;
+        var denom = representedData.Denominator;
+        
+        tsLabel.LabelText = $"{num} / {denom}";
+        displayedTS = new TSData(num, denom);
+        
+        tsLabel.UpdatePosition(Waveform.GetWaveformRatio(previewTick), boundaryReference.rect.height);
+        
+        Show();
+    }
+
+    protected override bool IsHitPositionValid(Vector3 hitPosition)
+    {
+        return !(Input.mousePosition.x / Screen.width > 0.5f);
     }
 
     protected override void AddCurrentEventDataToLaneSet()
     {
-        tsLabel.CreateEvent(Tick, displayedTS);
+        tsLabel.CreateEvent(previewTick, displayedTS);
         tsLabel.Selection.Clear();
     }
 }

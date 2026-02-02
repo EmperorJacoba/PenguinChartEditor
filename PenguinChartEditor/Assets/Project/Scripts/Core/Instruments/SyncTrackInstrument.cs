@@ -414,15 +414,15 @@ public class SyncTrackInstrument : IInstrument
         return Mathf.RoundToInt((Chart.Resolution * dataRef.BPMChange * (float)(timestamp - dataRef.Timestamp) / SECONDS_PER_MINUTE) + lastTickEvent);
     }
 
-    public double ConvertTickTimeToSeconds(int ticktime)
+    public double ConvertTickTimeToSeconds(int tickTime)
     {
-        if (ticktime == 0) return 0;
+        if (tickTime == 0) return 0;
 
-        var lastTickEvent = TempoEvents.GetPreviousTickEventInLane(ticktime, inclusive: true);
-
+        var lastTickEvent = TempoEvents.GetPreviousTickEventInLane(tickTime, inclusive: true);
+        
         // Formula from .chart format specifications
         var dataRef = TempoEvents[lastTickEvent];
-        return ((ticktime - lastTickEvent) / (double)Chart.Resolution * SECONDS_PER_MINUTE / dataRef.BPMChange) + dataRef.Timestamp;
+        return ((tickTime - lastTickEvent) / (double)Chart.Resolution * SECONDS_PER_MINUTE / dataRef.BPMChange) + dataRef.Timestamp;
     }
 
     public double GetSecondsPerTickAtTick(int tick)

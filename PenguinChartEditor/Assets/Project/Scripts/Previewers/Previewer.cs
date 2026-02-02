@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public interface IPreviewer
 {
@@ -8,7 +7,6 @@ public interface IPreviewer
     void UpdatePosition();
     void Hide();
     void Show();
-    int Tick { get; set; }
 }
 
 /// <summary>
@@ -18,6 +16,12 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 {
     private const int RIGHT_MOUSE_ID = 1;
     
+    // this is done because there will never be a scenario where
+    // two previewers have different ticks (at least not in any meaningful way)
+    // previewers do not update this unless they are active, and since there is only ever one active,
+    // then this can be a property for the broad previewTick, while also making sense & being consistent
+    // in the child classes. previewTick is used for clipboard calculations without needing
+    // to find the previewer in any given scene
     public static int previewTick = 0;
 
     private static float defaultSustain
@@ -36,6 +40,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     
     protected int AppliedSustain { get; set; }
 
+    // FIXME: When calculating as bars, the applied sustain value must update when the time signature changes.
     private void UpdateAppliedSustain()
     {
         if (previewerEventReference.ParentInstrument is not ISustainableInstrument sustainableInstrument)
@@ -58,7 +63,6 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     /// </remarks>
     public static void SetDefaultSustainLength(bool isTicks, float value)
     {
-        print($"Setting. isTicks = {isTicks}, value = {value}, defaultSustainBefore = {defaultSustain}");
         modeIsBars = !isTicks;
         defaultSustain = value;
     }
@@ -113,39 +117,24 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     }
 
     protected abstract void AddCurrentEventDataToLaneSet();
-    public virtual void Hide()
-    {
-        previewerEventReference.Visible = false;
-    }
+    public virtual void Hide() => previewerEventReference.Visible = false;
 
-    public virtual void Show()
-    {
-        previewerEventReference.Visible = true;
-    }
+    public virtual void Show() => previewerEventReference.Visible = true;
 
-    // this is done because there will never be a scenario where
-    // two previewers have different ticks (at least not in any meaningful way)
-    // previewers do not update this unless they are active, and since there is only ever one active,
-    // then this can be a property for the broad previewTick, while also making sense & being consistent
-    // in the child classes. previewTick is used for clipboard calculations without needing
-    // to find the previewer in any given scene
-    public int Tick
-    {
-        get => previewTick;
-        set => previewTick = value;
-    }
+
 
     /// <summary>
     /// Refresh the previewer, with checks to ensure the previewer is allowed to be active.
     /// </summary>
     public void UpdatePosition()
     {
-        if (!IsPreviewerActive())
+        if (!IsPreviewerActive() || !IsPreviewerWithinRange(out var tickCandidate))
         {
             Hide();
             return;
         }
 
+        previewTick = tickCandidate;
         UpdatePreviewer();
     }
 
@@ -201,4 +190,24 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
             CreateEvent();
         }
     }
+
+    protected bool IsPreviewerWithinRange(out int activeTick)
+    {
+        activeTick = -1;
+        
+        var hitPos = Chart.instance.SceneDetails.GetCursorHighwayPosition();
+        
+        if (!IsHitPositionValid(hitPos))
+        {
+            Hide();
+            return false;
+        }
+        
+        var highwayProp = Chart.instance.SceneDetails.GetCursorHighwayProportion();
+
+        activeTick = SongTime.CalculateGridSnappedTick(highwayProp);
+        return true;
+    }
+
+    protected abstract bool IsHitPositionValid(Vector3 hitPosition);
 }
