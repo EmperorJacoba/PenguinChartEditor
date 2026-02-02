@@ -94,16 +94,20 @@ public class Chart : MonoBehaviour
         Metadata metadata,
         List<IInstrument> traditionalInstruments,
         SyncTrackInstrument syncTrack,
-        StarpowerInstrument starpower
+        StarpowerInstrument starpower,
+        SectionInstrument sections
         )
     {
         Metadata = metadata;
         Instruments = traditionalInstruments;
         SyncTrackInstrument = syncTrack;
         StarpowerInstrument = starpower;
+        SectionInstrument = sections;
 
         SyncTrackInstrument.SetUpInputMap();
         StarpowerInstrument.SetUpInputMap();
+        SectionInstrument.SetUpInputMap();
+        
         foreach (var instrument in Instruments)
         {
             instrument.SetUpInputMap();

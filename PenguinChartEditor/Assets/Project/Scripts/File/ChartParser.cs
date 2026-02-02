@@ -27,6 +27,7 @@ public static class ChartParser
     #region Setup
 
     private static SyncTrackInstrument syncTrackInstrument;
+    private static SectionInstrument sectionInstrument;
     private static ConcurrentBag<RawStarpowerEvent> rawStarpowerEvents = new();
     private static Metadata metadata;
     private static ConcurrentBag<IInstrument> instruments = new();
@@ -49,7 +50,8 @@ public static class ChartParser
             metadata,
             instruments.ToList(),
             syncTrackInstrument,
-            starpower
+            starpower,
+            sectionInstrument
             );
     }
 
@@ -62,7 +64,7 @@ public static class ChartParser
                 syncTrackInstrument = new SyncTrackInstrument(eventGroup.data);
                 break;
             case HeaderType.Events:
-                // events parse
+                ParseEvents(eventGroup.data);
                 break;
             default:
                 var instrument = ParseInstrumentGroup(eventGroup);
@@ -73,6 +75,41 @@ public static class ChartParser
 
     #endregion
 
+    private static void ParseEvents(List<KeyValuePair<int,string>> eventsGroupData)
+    {
+        List<KeyValuePair<int, string>> identifiedSectionEvents = new();
+        List<KeyValuePair<int, string>> identifiedVoxEvents = new();
+        
+        foreach (var @event in eventsGroupData)
+        {
+            // Very basic division into relevant chunks for section & vox instruments
+            // If a lyric contains "section" or "prc" or if a section contains "phrase" or "lyric",
+            // they will be improperly sorted. 
+            // Not a huge issue since both instruments check flags on their end anyway. 
+            // This is just to avoid sections wasting time scanning lyric events and vox scanning sections.
+            // (and possibly hitting errors/logging to console unnecessarily)
+            if (@event.Value.Contains("section") || @event.Value.Contains("prc"))
+            {
+                identifiedSectionEvents.Add(@event);
+            }
+            else if (@event.Value.Contains("phrase") || @event.Value.Contains("lyric"))
+            {
+                identifiedVoxEvents.Add(@event);
+            }
+            else if (@event.Value.Contains("E \"end\""))
+            {
+                break;
+            }
+            else
+            {
+                Debug.Log($"Could not sort {@event.Key} = {@event.Value}. Does not contain keyword 'section', 'prc', 'phrase', or 'lyric.'");
+            }
+        }
+
+        sectionInstrument = new SectionInstrument(identifiedSectionEvents);
+    }
+    
+    
     #region Event Section Setup
 
     private static ConcurrentBag<ChartEventGroup> FormatEventSections(string[] chartAsLines)

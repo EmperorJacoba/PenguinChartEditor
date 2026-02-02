@@ -24,8 +24,19 @@ public interface IEvent
 
 #endregion
 
+// Useful information about the event data structure/hierarchy:
+// Every event is displayed to the user via an in-game game object with its own functionality & visual properties (defined in children).
+// Every event has a SpawningLane inheritor that determines when and how to display an event.
+// Every event has a Pooler that actually spawns the event.
+// Every event has a Previewer that allows the user to place notes.
+// Every event has an Instrument that is a monolith for all data & data modification related to that event. 
+
+// Updates and exchange of information is usually made possible by Chart.InPlaceRefresh() (or equivalent "refresh" function, if the name changes)
+// Every time a modification of information happens, the outermost trigger (a keybind, move, whatever) triggers a call in an event Instrument
+// that performs the requested operation. The chart (display) must then be refreshed. A refresh tells the SpawningLanes to recalculate displayed events.
+
 // Each event (including one tasked with event handler) has an assigned lane 
-// Lane assignment happens through lane properties/fields and through GetLaneData() which is just a reference to its "instrument" lane data.
+// Lane assignment happens through lane properties/fields and through GetLaneData() which is a reference to its "instrument" lane data.
 // Use the interfaces guaranteed in IEvent above to access necessary functions/properties (add as needed)
 public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler where T : IEventData
 {
@@ -155,7 +166,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         }
     }
 
-    public void CheckForSelection()
+    protected void CheckForSelection()
     {
         if (SelectionOverlay != null && Selection.Contains(Tick))
         {
@@ -169,7 +180,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
 
     private static int lastTickSelection;
 
-    public void CalculateSelectionStatus(PointerEventData clickData) // refactor this pls
+    protected void CalculateSelectionStatus(PointerEventData clickData) // refactor this pls
     {
         // Goal is to follow standard selection functionality of most productivity programs
         if (clickData.button != PointerEventData.InputButton.Left || !Chart.IsSelectionAllowed()) return;

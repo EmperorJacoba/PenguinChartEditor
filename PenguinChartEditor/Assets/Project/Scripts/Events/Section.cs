@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 public class Section : Event<SectionData>, IPoolable
 {
@@ -8,7 +9,9 @@ public class Section : Event<SectionData>, IPoolable
     protected override LaneSet<SectionData> LaneData => Chart.SectionInstrument.GetLaneData();
     public override IInstrument ParentInstrument => Chart.SectionInstrument;
     public Coroutine destructionCoroutine { get; set; }
-    
+
+    [SerializeField] private TMP_Text displayedSectionName;
+    [SerializeField] private TMP_InputField sectionNameModifier;
     
     public void InitializeProperties(ILane parentLane)
     {

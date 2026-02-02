@@ -313,6 +313,11 @@ public struct SectionData : IEventData, IEquatable<SectionData>
         return Name == other.Name;
     }
 
+    public SectionData(string name)
+    {
+        Name = name;
+    }
+
     public bool Equals(IEventData other)
     {
         return Equals((object)other);

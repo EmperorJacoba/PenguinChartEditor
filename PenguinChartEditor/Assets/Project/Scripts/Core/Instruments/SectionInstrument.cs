@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Linq;
+using UnityEngine;
 
 public class SectionInstrument : IInstrument
 {
@@ -13,10 +14,7 @@ public class SectionInstrument : IInstrument
 
     public SelectionSet<SectionData> GetLaneSelection() => selection;
     private SelectionSet<SectionData> selection;
-    public List<string> ExportAllEvents()
-    {
-        throw new System.NotImplementedException();
-    }
+
 
     public void ClearAllSelections() => selection.Clear();
     public bool NoteSelectionContains(int tick, int lane) => selection.Contains(tick);
@@ -30,6 +28,14 @@ public class SectionInstrument : IInstrument
     public void DeleteAllEventsAtTick(int tick) => laneData.Remove(tick);
     public List<int> GetUniqueTickSet() => laneData.Keys.ToList();
     public bool IsNoteSelectionEmpty() => selection.Count == 0;
+
+    public SectionInstrument(List<KeyValuePair<int, string>> events)
+    {
+        laneData = new LaneSet<SectionData>();
+        selection = new SelectionSet<SectionData>(laneData);
+        
+        AddChartFormattedEventsToInstrument(events);
+    }
 
     public void SetUpInputMap()
     {
@@ -46,6 +52,48 @@ public class SectionInstrument : IInstrument
         throw new System.NotImplementedException();
     }
 
+    private void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> events)
+    {
+        foreach (var @event in events)
+        {
+            var splitEvent = @event.Value.Split(" ", 2);
+
+            if (splitEvent.Length != 2)
+            {
+                Debug.Log($"Could not split section event properly. {@event.Key} = {@event.Value}");
+                continue;
+            }
+
+            if (splitEvent[0] != "E")
+            {
+                Debug.Log($"Invalid/unrecognized event type identified as a section. {splitEvent[0]}");
+                continue;
+            }
+
+            var sectionEvent = splitEvent[1];
+            
+            // Change this to check for escape characters if any game ever supports quotations in a section/lyric.
+            sectionEvent = sectionEvent.Replace("\"", "");
+
+            var splitSection = sectionEvent.Split(" ", 2);
+
+            if (
+                splitSection.Length != 2 || splitSection[0] != "section"
+                )
+            {
+                splitSection = sectionEvent.Split("_", 2);
+
+                if (splitSection.Length != 2 || !(splitSection[0] != "section" || splitSection[0] != "prc"))
+                {
+                    Debug.Log($"Invalid separator char between section identifier and section name. {@event.Key} = {@event.Value}");
+                    continue;
+                }
+            }
+            
+            laneData.Add(@event.Key, new SectionData(splitSection[1]));
+        }
+    }
+
     public ISelection GetLaneSelection(int lane) => selection;
 
     #region Not Implemented
@@ -58,5 +106,10 @@ public class SectionInstrument : IInstrument
     public ILaneData GetBarLaneData() => throw new System.NotImplementedException("No bar lane in sections");
     public ILaneData GetLaneData(int lane) => laneData;
 
+    public List<string> ExportAllEvents()
+    {
+        throw new System.NotImplementedException();
+    }
+    
     #endregion
 }
