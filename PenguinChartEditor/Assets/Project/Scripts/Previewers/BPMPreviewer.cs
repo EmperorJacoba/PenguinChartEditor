@@ -18,11 +18,10 @@ public class BPMPreviewer : Previewer
     {
         var lastTick = Chart.SyncTrackInstrument.TempoEvents.GetPreviousTickEventInLane(previewTick, inclusive: true);
         if (lastTick < 0) return;
-        
-        bpmLabel.LabelText = Chart.SyncTrackInstrument.TempoEvents[lastTick].BPMChange.ToString();
-        
-        bpmLabel.UpdatePosition(Waveform.GetWaveformRatio(previewTick), boundaryReference.rect.height);
 
+        var previewData = Chart.SyncTrackInstrument.TempoEvents[lastTick];
+        bpmLabel.InitializeEventAsPreviewer(previewTick, previewData);
+        
         Show();
     }
 

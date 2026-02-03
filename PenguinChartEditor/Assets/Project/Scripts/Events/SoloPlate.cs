@@ -18,9 +18,9 @@ public class SoloPlate : Event<SoloEventData>
 
         UpdatePosition(endTick);
 
-        List<int> ticks = ParentInstrument.GetUniqueTickSet();
-        var totalNotes = ticks.Where(x => x >= startTick && x <= endTick).Count();
-        var notesHit = ticks.Where(x => x >= startTick && x <= SongTime.SongPositionTicks).Count();
+        var ticks = ParentInstrument.GetUniqueTickSet();
+        var totalNotes = ticks.Count(x => x >= startTick && x <= endTick);
+        var notesHit = ticks.Count(x => x >= startTick && x <= SongTime.SongPositionTicks);
 
         percentage.text = $"{Mathf.Floor((notesHit / (float)totalNotes) * 100)}%";
         counter.text = $"{notesHit} / {totalNotes}";
@@ -28,7 +28,7 @@ public class SoloPlate : Event<SoloEventData>
         CheckForSelection();
     }
 
-    public void UpdatePosition(int endTick)
+    private void UpdatePosition(int endTick)
     {
         float zPosition;
         if (SongTime.SongPositionTicks < Tick)

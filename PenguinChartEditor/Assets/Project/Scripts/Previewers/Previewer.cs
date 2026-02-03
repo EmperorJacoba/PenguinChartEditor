@@ -74,11 +74,10 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     {
         get
         {
-            if (_pER == null)
-            {
-                _pER = GetComponent<IEvent>();
-                _pER.IsPreviewEvent = true;
-            }
+            if (_pER != null) return _pER;
+            
+            _pER = GetComponent<IEvent>();
+            _pER.IsPreviewEvent = true;
             return _pER;
         }
         set
@@ -120,8 +119,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     public virtual void Hide() => previewerEventReference.Visible = false;
 
     public virtual void Show() => previewerEventReference.Visible = true;
-
-
+    
 
     /// <summary>
     /// Refresh the previewer, with checks to ensure the previewer is allowed to be active.
@@ -137,6 +135,17 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         previewTick = tickCandidate;
         UpdatePreviewer();
     }
+
+    /*
+    protected virtual void UpdatePreviewer()
+    {
+        
+    }
+
+    protected abstract IEventData GetPreviewData()
+    {
+        
+    } */
 
     /// <summary>
     /// Updates position and shows the previewer without any checks. 

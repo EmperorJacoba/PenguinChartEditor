@@ -47,12 +47,11 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 
     #region Manual Input / Entry Box Handling
 
-    protected abstract string ConvertDataToPreviewString();
     protected abstract T ProcessUnsafeLabelString(string newVal);
     public abstract void InitializeEvent(int tick);
     public abstract void InitializeProperties(ILane lane);
 
-    public void ActivateManualInput()
+    private void ActivateManualInput()
     {
         if (LabelEntryBox == null) return;
         LabelEntryBox.gameObject.SetActive(true);
@@ -63,7 +62,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
         LabelEntryBox.gameObject.SetActive(true);
         LabelEntryBox.ActivateInputField();
 
-        LabelEntryBox.text = ConvertDataToPreviewString();
+        LabelEntryBox.text = representedData.ToString();
         Chart.showPreviewers = false;
         SongTime.DisableChartingInputMap();
     }
@@ -73,9 +72,9 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     /// When initializing a label, this tick is set to the current tick of the label,
     /// and when refreshing labels, if the ticks of the labels do not match, then the entry box should be hidden.
     /// </summary>
-    protected static int editTick = -1;
+    private static int editTick = -1;
 
-    public void HandleManualEndEdit(string newVal)
+    private void HandleManualEndEdit(string newVal)
     {
         LaneData[Tick] = ProcessUnsafeLabelString(newVal);
 
@@ -85,18 +84,18 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
         Chart.SyncTrackInPlaceRefresh();
     }
 
-    public void HandleEntryBoxDeselect()
+    private void HandleEntryBoxDeselect()
     {
         ConcludeManualEdit();
     }
 
-    public void ConcludeManualEdit()
+    private void ConcludeManualEdit()
     {
         Chart.showPreviewers = true;
         DeactivateManualInput();
     }
 
-    public void DeactivateManualInput()
+    private void DeactivateManualInput()
     {
         LabelEntryBox.gameObject.SetActive(false);
 
@@ -108,16 +107,28 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 
     #region Init/Deinit Label
 
-    public virtual void InitializeLabel(int tick)
+    protected void InitializeLabel(int tick)
     {
         Tick = tick;
         Visible = true;
+
+        representedData = LaneData[tick];
+
+        LabelText = representedData.ToString();
+        if (!readOnly) CheckForSelection();
+
         UpdatePosition(Waveform.GetWaveformRatio(Tick), Chart.instance.SceneDetails.HighwayLength);
-
-        LabelText = ConvertDataToPreviewString();
-        CheckForSelection();
-
+        
         if (editTick != Tick) DeactivateManualInput();
+    }
+
+    public void InitializeEventAsPreviewer(int tick, T data)
+    {
+        Tick = tick;
+        representedData = data;
+        LabelText = representedData.ToString();
+        
+        UpdatePosition(Waveform.GetWaveformRatio(Tick), Chart.instance.SceneDetails.HighwayLength);
     }
 
     public void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(Tick), Chart.instance.SceneDetails.HighwayLength);

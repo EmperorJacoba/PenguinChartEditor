@@ -17,17 +17,13 @@ public class TSPreviewer : Previewer
     protected override void UpdatePreviewer()
     {
         var prevTick = Chart.SyncTrackInstrument.TimeSignatureEvents.GetPreviousTickEventInLane(previewTick);
-        if (prevTick < 0) return;
+        if (prevTick == LaneSet<TSData>.NO_TICK_EVENT) return;
 
         var representedData = Chart.SyncTrackInstrument.TimeSignatureEvents[prevTick];
-        var num = representedData.Numerator;
-        var denom = representedData.Denominator;
         
-        tsLabel.LabelText = $"{num} / {denom}";
-        displayedTS = new TSData(num, denom);
+        displayedTS = representedData;
         
-        tsLabel.UpdatePosition(Waveform.GetWaveformRatio(previewTick), boundaryReference.rect.height);
-        
+        tsLabel.InitializeEventAsPreviewer(previewTick, representedData);
         Show();
     }
 

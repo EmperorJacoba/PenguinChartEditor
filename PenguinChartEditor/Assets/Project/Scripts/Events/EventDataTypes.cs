@@ -35,7 +35,7 @@ public struct BPMData : IEquatable<BPMData>, IEventData
     public bool Equals(IEventData data) => data is BPMData other && Equals(other);
     public bool Equals(BPMData other) => BPMChange == other.BPMChange && Timestamp == other.Timestamp;
 
-    public override string ToString() => $"{BPMChange} @ {Timestamp}s, Anchor = {Anchor}";
+    public override string ToString() => $"{BPMChange}";
 
     public string[] ToChartFormat(int lane) => new string[1] { $"{BPM_IDENTIFIER} {BPMChange * BPM_CONVERSION}" };
 

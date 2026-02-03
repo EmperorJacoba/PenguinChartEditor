@@ -18,7 +18,7 @@ public class TSLabel : Label<TSData>
 
     public override void InitializeEvent(int tick)
     {
-        base.InitializeLabel(tick);
+        InitializeLabel(tick);
         tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsTimeSignatureEventValid(tick);
     }
 
@@ -43,12 +43,7 @@ public class TSLabel : Label<TSData>
 
         return new TSData(num, denom);
     }
-
-    protected override string ConvertDataToPreviewString()
-    {
-        return $"{Chart.SyncTrackInstrument.TimeSignatureEvents[Tick].Numerator} / {Chart.SyncTrackInstrument.TimeSignatureEvents[Tick].Denominator}";
-    }
-
+    
     #endregion
 
     public override void InitializeProperties(ILane parentLane)

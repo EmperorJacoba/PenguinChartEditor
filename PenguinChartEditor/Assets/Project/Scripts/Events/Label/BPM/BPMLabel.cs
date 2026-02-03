@@ -36,8 +36,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     {
         this.parentLane = (BPMLane)parentLane;
     }
-
-
+    
     #region Event Handlers
 
     // Overriden to make sure faulty/inaccurate data is not in Tempo dict after any large modifications
@@ -72,12 +71,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
         return new BPMData(bpmAsFloat, existingData.Timestamp, existingData.Anchor);
     }
-
-    protected override string ConvertDataToPreviewString()
-    {
-        return $"{Chart.SyncTrackInstrument.TempoEvents[Tick].BPMChange}";
-    }
-
+    
     #endregion
 
     #region Change BPM

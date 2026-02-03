@@ -227,15 +227,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
 
     protected static WaitForSeconds clickCooldown = new(doubleClickTime);
 
-    public void AddToSelection()
-    {
-        Selection.Add(Tick);
-    }
-
-    public void RemoveFromSelection()
-    {
-        Selection.Remove(Tick);
-    }
+    public void AddToSelection() => Selection.Add(Tick);
+    public void RemoveFromSelection() => Selection.Remove(Tick);
 
     #endregion
 }
