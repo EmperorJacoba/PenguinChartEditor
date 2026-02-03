@@ -51,10 +51,27 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
 
     public void InitializeEventAsPreviewer(int tick, IEventData data, ILane parentLane)
     {
+        Tick = tick;
+        representedData = (T)data;
         this.ParentLane = parentLane;
-        InitializeEventAsPreviewer(tick, (T)data);
+        
+        InitializeEventAsPreviewer();
     }
-    protected abstract void InitializeEventAsPreviewer(int tick, T data);
+    protected abstract void InitializeEventAsPreviewer();
+
+    public void InitializeEvent(int tick) => InitializeEvent(tick, LaneData[tick]);
+    private void InitializeEvent(int tick, T data)
+    {
+        Tick = tick;
+        representedData = data;
+        
+        InitializeEvent();
+        
+        if (!readOnly) CheckForSelection();
+    }
+
+    protected abstract void InitializeEvent();
+    
 
     #region Properties
     

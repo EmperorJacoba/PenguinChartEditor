@@ -46,25 +46,18 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
         laneID = (HeaderType)ParentLane.laneID;
     }
 
-    public void InitializeEvent(int tick)
+    protected override void InitializeEvent()
     {
-        Tick = tick;
-        representedData = LaneData[tick];
-
-        if (!readOnly) CheckForSelection();
-
-        UpdatePosition(Waveform.GetWaveformRatio(tick), parentGameInstrument.GetLocalStarpowerXCoordinate());
-        notePieces.UpdateSustainLength(tick, representedData.Sustain);
+        UpdatePosition(Waveform.GetWaveformRatio(Tick), parentGameInstrument.GetLocalStarpowerXCoordinate());
+        notePieces.UpdateSustainLength(Tick, representedData.Sustain);
     }
 
-    protected override void InitializeEventAsPreviewer(int tick, StarpowerEventData previewData)
+    protected override void InitializeEventAsPreviewer()
     {
         laneID = (HeaderType)ParentLane.laneID;
-
-        Tick = tick;
-
+        
         UpdatePositionAsPreviewer();
-        notePieces.UpdateSustainLength(tick, previewData.Sustain);
+        notePieces.UpdateSustainLength(Tick, representedData.Sustain);
         notePieces.ChangeColorToPreviewer();
     }
 

@@ -48,7 +48,6 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     #region Manual Input / Entry Box Handling
 
     protected abstract T ProcessUnsafeLabelString(string newVal);
-    public abstract void InitializeEvent(int tick);
     public abstract void InitializeProperties(ILane lane);
 
     private void ActivateManualInput()
@@ -107,25 +106,19 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 
     #region Init/Deinit Label
 
-    protected void InitializeLabel(int tick)
+    protected override void InitializeEvent()
     {
-        Tick = tick;
-        Visible = true;
-
-        representedData = LaneData[tick];
-
         LabelText = representedData.ToString();
-        if (!readOnly) CheckForSelection();
 
         UpdatePosition(Waveform.GetWaveformRatio(Tick), Chart.instance.SceneDetails.HighwayLength);
         
         if (editTick != Tick) DeactivateManualInput();
     }
 
-    protected override void InitializeEventAsPreviewer(int tick, T data)
+    protected abstract void InitializeLabel();
+
+    protected override void InitializeEventAsPreviewer()
     {
-        Tick = tick;
-        representedData = data;
         LabelText = representedData.ToString();
         
         UpdatePosition(Waveform.GetWaveformRatio(Tick), Chart.instance.SceneDetails.HighwayLength);

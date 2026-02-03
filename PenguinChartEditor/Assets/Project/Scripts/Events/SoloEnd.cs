@@ -17,23 +17,17 @@ public class SoloEnd : Event<SoloEventData>
     public override void CreateEvent(int newTick, SoloEventData newData) { } // unused - please remove from top-level
 
     public int representedTick;
-    public void InitializeEvent(SoloSectionLane parentLane, int startTick, int endTick)
+    protected override void InitializeEvent()
     {
-        ParentLane = parentLane;
-
         // Selection uses the startTick as the ID for all solo events.
         // The tick this represents is the end tick, but the selection depends on the start tick for continuity.
-        Tick = startTick;
-        representedTick = endTick;
+        representedTick = representedData.EndTick;
 
         UpdatePosition();
-
-        CheckForSelection();
     }
 
-    protected override void InitializeEventAsPreviewer(int tick, SoloEventData data)
+    protected override void InitializeEventAsPreviewer()
     {
-        representedTick = tick;
         UpdatePosition();
     }
 

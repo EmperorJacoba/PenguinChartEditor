@@ -18,23 +18,17 @@ public class Section : Event<SectionData>, IPoolable
         ParentLane = parentLane;
     }
 
-    public void InitializeEvent(int tick)
+    protected override void InitializeEvent()
     {
-        Tick = tick;
-        representedData = LaneData[tick];
-        
         if (Chart.LoadedInstrument != ParentInstrument) return;
 
         displayedSectionName.text = representedData.Name;
         
-        if (!readOnly) CheckForSelection();
         UpdatePosition();
     }
 
-    protected override void InitializeEventAsPreviewer(int previewTick, SectionData previewData)
+    protected override void InitializeEventAsPreviewer()
     {
-        Tick = previewTick;
-
         UpdatePosition();
     }
 

@@ -16,10 +16,9 @@ public class TSLabel : Label<TSData>
 
     public override int Lane => (int)SyncTrackInstrument.LaneOrientation.timeSignature;
 
-    public override void InitializeEvent(int tick)
+    protected override void InitializeLabel()
     {
-        InitializeLabel(tick);
-        tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsTimeSignatureEventValid(tick);
+        tsWarningAlert.Visible = !Chart.SyncTrackInstrument.IsTimeSignatureEventValid(Tick);
     }
 
     #region Conversions

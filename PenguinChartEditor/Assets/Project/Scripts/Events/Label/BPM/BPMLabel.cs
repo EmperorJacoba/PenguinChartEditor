@@ -25,11 +25,9 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
     #endregion
 
-    public override void InitializeEvent(int tick)
+    protected override void InitializeLabel()
     {
-        base.InitializeLabel(tick);
-        if (Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor) anchorIcon.Opacity = 1f;
-        else anchorIcon.Opacity = 0f;
+        anchorIcon.Opacity = Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor ? 1f : 0f;
     }
 
     public override void InitializeProperties(ILane parentLane)

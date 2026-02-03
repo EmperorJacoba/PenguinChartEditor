@@ -10,40 +10,33 @@ public class SoloPlate : Event<SoloEventData>
     [SerializeField] private TMP_Text percentage;
     [SerializeField] private TMP_Text counter;
 
-    public void InitializeEvent(SoloSectionLane parentLane, int startTick, int endTick)
+    protected override void InitializeEvent()
     {
-        ParentLane = parentLane;
-
-        Tick = startTick;
-
-        UpdatePosition(endTick);
+        UpdatePosition();
 
         var ticks = ParentInstrument.GetUniqueTickSet();
-        var totalNotes = ticks.Count(x => x >= startTick && x <= endTick);
-        var notesHit = ticks.Count(x => x >= startTick && x <= SongTime.SongPositionTicks);
+        var totalNotes = ticks.Count(x => x >= representedData.StartTick && x <= representedData.EndTick);
+        var notesHit = ticks.Count(x => x >= representedData.StartTick && x <= SongTime.SongPositionTicks);
 
         percentage.text = $"{Mathf.Floor((notesHit / (float)totalNotes) * 100)}%";
         counter.text = $"{notesHit} / {totalNotes}";
-
-        CheckForSelection();
     }
 
-    protected override void InitializeEventAsPreviewer(int tick, SoloEventData data)
+    protected override void InitializeEventAsPreviewer()
     {
-        Tick = tick;
-        UpdatePosition(data.EndTick);
+        UpdatePosition();
     }
 
-    private void UpdatePosition(int endTick)
+    private void UpdatePosition()
     {
         float zPosition;
         if (SongTime.SongPositionTicks < Tick)
         {
             zPosition = (float)(Waveform.GetWaveformRatio(Tick) * Highway3D.highwayLength);
         }
-        else if (SongTime.SongPositionTicks > endTick)
+        else if (SongTime.SongPositionTicks > representedData.EndTick)
         {
-            zPosition = (float)(Waveform.GetWaveformRatio(endTick) * Highway3D.highwayLength);
+            zPosition = (float)(Waveform.GetWaveformRatio(representedData.EndTick) * Highway3D.highwayLength);
         }
         else
         {

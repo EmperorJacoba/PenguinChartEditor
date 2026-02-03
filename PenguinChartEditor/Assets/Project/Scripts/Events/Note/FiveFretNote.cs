@@ -121,19 +121,14 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         laneID = (FiveFretInstrument.LaneOrientation)ParentLane.laneID;
     }
 
-    public void InitializeEvent(int tick)
+    protected override void InitializeEvent()
     {
-        Tick = tick;
-        representedData = LaneData[tick];
-
         bool isHeadVisible = CalculateHeadVisibility();
 
         notePieces.SetVisibility(isHeadVisible);
-
-        if (!readOnly) CheckForSelection();
-
+        
         UpdatePosition(
-            tick: AudioManager.AudioPlaying && !isHeadVisible ? SongTime.SongPositionTicks : tick 
+            tick: AudioManager.AudioPlaying && !isHeadVisible ? SongTime.SongPositionTicks : Tick
         );
 
         UpdateSustain(isHeadVisible);
@@ -150,17 +145,13 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         IsDefault = data.Default;
     }
 
-    protected override void InitializeEventAsPreviewer(int tick, FiveFretNoteData previewData)
+    protected override void InitializeEventAsPreviewer()
     {
         laneID = (FiveFretInstrument.LaneOrientation)ParentLane.laneID;
 
-        // do not use this with the previewer, use previewer's tick instead
-        // but this is here for the functions below
-        Tick = tick;
-
         UpdatePositionAsPreviewer();
-        UpdateSustain(previewData);
-        SetVisualProperties(previewData);
+        UpdateSustain(representedData);
+        SetVisualProperties(representedData);
     }
 
     private bool CalculateHeadVisibility()

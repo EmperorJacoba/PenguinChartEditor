@@ -24,6 +24,8 @@ public class SoloSection : MonoBehaviour, IPoolable
     public void InitializeProperties(ILane parentLane)
     {
         this.parentLane = (SoloSectionLane)parentLane;
+        platehead.ParentLane = parentLane;
+        plateheadReceiver.ParentLane = parentLane;
     }
 
     public void InitializeEvent(int tick)
@@ -33,8 +35,8 @@ public class SoloSection : MonoBehaviour, IPoolable
         int endTick = soloData.EndTick;
 
         UpdateOverlayProperties(startTick, endTick);
-        platehead.InitializeEvent(parentLane, startTick, endTick);
-        plateheadReceiver.InitializeEvent(parentLane, startTick, endTick);
+        platehead.InitializeEvent(tick);
+        plateheadReceiver.InitializeEvent(tick);
     }
     
     private void UpdateOverlayProperties(int startTick, int endTick)
