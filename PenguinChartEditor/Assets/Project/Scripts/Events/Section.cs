@@ -31,10 +31,8 @@ public class Section : Event<SectionData>, IPoolable
         UpdatePosition();
     }
 
-    public void InitializeEventAsPreviewer(SectionLane parentLane, int previewTick, SectionData previewData)
+    protected override void InitializeEventAsPreviewer(int previewTick, SectionData previewData)
     {
-        ParentLane = parentLane;
-
         Tick = previewTick;
 
         UpdatePosition();

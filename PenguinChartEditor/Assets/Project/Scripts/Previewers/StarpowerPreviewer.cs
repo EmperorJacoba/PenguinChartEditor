@@ -11,16 +11,12 @@ public class StarpowerPreviewer : Previewer
 
     #endregion
     
-    protected override void UpdatePreviewer()
+    protected override IEventData GetPreviewData()
     {
-        StarpowerEventData previewData = new(
+        return new StarpowerEventData(
             false,
             AppliedSustain
-            );
-        
-        starpowerEvent.InitializeEventAsPreviewer(lane, previewTick, previewData);
-
-        Show();
+        );
     }
 
     protected override bool IsHitPositionValid(Vector3 hitPosition)

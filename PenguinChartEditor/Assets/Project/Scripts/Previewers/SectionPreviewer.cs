@@ -16,4 +16,9 @@ public class SectionPreviewer : Previewer
     {
         throw new System.NotImplementedException();
     }
+
+    protected override IEventData GetPreviewData()
+    {
+        throw new System.NotImplementedException();
+    }
 }

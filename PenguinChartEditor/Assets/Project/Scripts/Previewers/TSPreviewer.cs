@@ -6,7 +6,6 @@ public class TSPreviewer : Previewer
     public static TSPreviewer instance { get; set; }
     [SerializeField] private TSLabel tsLabel;
     [SerializeField] private RectTransform boundaryReference;
-    private TSData displayedTS = new(4, 4);
 
     protected override void Awake()
     {
@@ -14,17 +13,12 @@ public class TSPreviewer : Previewer
         instance = this;
     }
 
-    protected override void UpdatePreviewer()
+    protected override IEventData GetPreviewData()
     {
-        var prevTick = Chart.SyncTrackInstrument.TimeSignatureEvents.GetPreviousTickEventInLane(previewTick);
-        if (prevTick == LaneSet<TSData>.NO_TICK_EVENT) return;
+        var prevTick = Chart.SyncTrackInstrument.TimeSignatureEvents.GetPreviousTickEventInLane(previewTick, inclusive: true);
+        Debug.Assert(prevTick != LaneSet<TSData>.NO_TICK_EVENT, "Time Signature events should always have a previous event (at least tick = 0)", this);
 
-        var representedData = Chart.SyncTrackInstrument.TimeSignatureEvents[prevTick];
-        
-        displayedTS = representedData;
-        
-        tsLabel.InitializeEventAsPreviewer(previewTick, representedData);
-        Show();
+        return Chart.SyncTrackInstrument.TimeSignatureEvents[prevTick];
     }
 
     protected override bool IsHitPositionValid(Vector3 hitPosition)
@@ -34,7 +28,7 @@ public class TSPreviewer : Previewer
 
     protected override void AddCurrentEventDataToLaneSet()
     {
-        tsLabel.CreateEvent(previewTick, displayedTS);
+        tsLabel.CreateEvent(previewTick, tsLabel.representedData);
         tsLabel.Selection.Clear();
     }
 }

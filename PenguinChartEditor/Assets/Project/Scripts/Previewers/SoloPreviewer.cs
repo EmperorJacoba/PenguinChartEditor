@@ -34,21 +34,24 @@ public class SoloPreviewer : Previewer
 
     protected override void UpdatePreviewer()
     {
-        var activeSoloEvents = 
-            ParentInstrument.SoloData.SoloEvents.Where
-            (
-                x => x.Value.StartTick <= previewTick && x.Value.EndTick >= previewTick
-            );
-
         var platePos = new Vector3(previewSoloPlate.transform.position.x, previewSoloPlate.transform.position.y, (float)Waveform.GetWaveformRatio(previewTick) * Highway3D.highwayLength);
-
-        var isSoloEventActive = activeSoloEvents.Any();
-
-        previewSoloPlate.Visible = !isSoloEventActive;
-        previewEndPlate.Visible = isSoloEventActive;
      
         previewSoloPlate.transform.position = platePos;
         previewEndPlate.transform.position = platePos;
+    }
+
+    public override void Show()
+    {
+        var isPreviewerInOpenSoloEvent = 
+            ParentInstrument.SoloData.SoloEvents.Any(x => x.Value.StartTick <= previewTick && x.Value.EndTick >= previewTick);
+        
+        previewSoloPlate.Visible = !isPreviewerInOpenSoloEvent;
+        previewEndPlate.Visible = isPreviewerInOpenSoloEvent;
+    }
+
+    protected override IEventData GetPreviewData()
+    {
+        throw new System.NotImplementedException("SoloPreviewer uses its own methods to update itself.");
     }
 
     protected override bool IsHitPositionValid(Vector3 hitPosition)
@@ -89,8 +92,4 @@ public class SoloPreviewer : Previewer
         previewEndPlate.Visible = false;
         previewSoloPlate.Visible = false;
     }
-
-    public override void Show() => throw new System.NotSupportedException(
-        "Show() cannot be called on SoloPreviewer. SoloPreviewer is made up of multiple events shown depending on its position on the track. Use individual visible attributes."
-        );
 }

@@ -13,8 +13,9 @@ public interface IEvent
     // Used in previewer to check placement conditions
     ISelection GetSelection();
     ILaneData GetLaneData();
-
     IInstrument ParentInstrument { get; }
+
+    void InitializeEventAsPreviewer(int tick, IEventData data, ILane parentLane);
 
     bool IsPreviewEvent { get; set; }
 
@@ -47,6 +48,13 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
     public bool readOnly = false;
     
     public abstract int Lane { get; }
+
+    public void InitializeEventAsPreviewer(int tick, IEventData data, ILane parentLane)
+    {
+        this.ParentLane = parentLane;
+        InitializeEventAsPreviewer(tick, (T)data);
+    }
+    protected abstract void InitializeEventAsPreviewer(int tick, T data);
 
     #region Properties
     

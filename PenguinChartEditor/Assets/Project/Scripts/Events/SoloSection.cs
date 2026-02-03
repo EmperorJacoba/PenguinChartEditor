@@ -36,7 +36,7 @@ public class SoloSection : MonoBehaviour, IPoolable
         platehead.InitializeEvent(parentLane, startTick, endTick);
         plateheadReceiver.InitializeEvent(parentLane, startTick, endTick);
     }
-
+    
     private void UpdateOverlayProperties(int startTick, int endTick)
     {
         float startPosition = startTick > Waveform.startTick ? (float)(Waveform.GetWaveformRatio(startTick) * Highway3D.highwayLength) : 0;

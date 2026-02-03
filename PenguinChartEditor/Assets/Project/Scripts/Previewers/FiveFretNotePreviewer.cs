@@ -41,7 +41,7 @@ public class FiveFretNotePreviewer : Previewer
 
     #endregion
 
-    protected override void UpdatePreviewer()
+    protected override IEventData GetPreviewData()
     {
         FiveFretNoteData.FlagType previewFlag;
         if (currentPlacementMode == NoteOption.natural)
@@ -55,15 +55,11 @@ public class FiveFretNotePreviewer : Previewer
             previewFlag = MapPlacementModeToFlag();
         }
 
-        FiveFretNoteData previewData = new(
+        return new FiveFretNoteData(
             sustain: AppliedSustain,
             flag: previewFlag,
             defaultOrientation: currentPlacementMode == NoteOption.natural
             );
-
-        note.InitializeEventAsPreviewer(lane, previewTick, previewData);
-
-        Show();
     }
 
     protected override bool IsHitPositionValid(Vector3 hitPosition)

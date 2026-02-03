@@ -28,6 +28,12 @@ public class SoloPlate : Event<SoloEventData>
         CheckForSelection();
     }
 
+    protected override void InitializeEventAsPreviewer(int tick, SoloEventData data)
+    {
+        Tick = tick;
+        UpdatePosition(data.EndTick);
+    }
+
     private void UpdatePosition(int endTick)
     {
         float zPosition;

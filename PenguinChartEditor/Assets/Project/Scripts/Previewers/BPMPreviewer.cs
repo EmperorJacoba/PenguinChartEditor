@@ -14,15 +14,13 @@ public class BPMPreviewer : Previewer
         instance = this;
     }
 
-    protected override void UpdatePreviewer()
+    protected override IEventData GetPreviewData()
     {
         var lastTick = Chart.SyncTrackInstrument.TempoEvents.GetPreviousTickEventInLane(previewTick, inclusive: true);
-        if (lastTick < 0) return;
-
-        var previewData = Chart.SyncTrackInstrument.TempoEvents[lastTick];
-        bpmLabel.InitializeEventAsPreviewer(previewTick, previewData);
         
-        Show();
+        Debug.Assert(lastTick != LaneSet<BPMData>.NO_TICK_EVENT, "There should always be a previous TempoEvent. Tick = 0 must exist.", this);
+
+        return Chart.SyncTrackInstrument.TempoEvents[lastTick];
     }
 
     protected override bool IsHitPositionValid(Vector3 hitPosition)

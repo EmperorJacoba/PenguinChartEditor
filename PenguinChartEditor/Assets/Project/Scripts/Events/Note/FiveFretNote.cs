@@ -150,14 +150,13 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         IsDefault = data.Default;
     }
 
-    public void InitializeEventAsPreviewer(FiveFretLane parentLane, int previewTick, FiveFretNoteData previewData)
+    protected override void InitializeEventAsPreviewer(int tick, FiveFretNoteData previewData)
     {
-        ParentLane = parentLane;
         laneID = (FiveFretInstrument.LaneOrientation)ParentLane.laneID;
 
         // do not use this with the previewer, use previewer's tick instead
         // but this is here for the functions below
-        Tick = previewTick;
+        Tick = tick;
 
         UpdatePositionAsPreviewer();
         UpdateSustain(previewData);

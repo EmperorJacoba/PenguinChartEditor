@@ -57,15 +57,14 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
         notePieces.UpdateSustainLength(tick, representedData.Sustain);
     }
 
-    public void InitializeEventAsPreviewer(StarpowerLane parentLane, int previewTick, StarpowerEventData previewData)
+    protected override void InitializeEventAsPreviewer(int tick, StarpowerEventData previewData)
     {
-        ParentLane = parentLane;
         laneID = (HeaderType)ParentLane.laneID;
 
-        Tick = previewTick;
+        Tick = tick;
 
         UpdatePositionAsPreviewer();
-        notePieces.UpdateSustainLength(previewTick, previewData.Sustain);
+        notePieces.UpdateSustainLength(tick, previewData.Sustain);
         notePieces.ChangeColorToPreviewer();
     }
 

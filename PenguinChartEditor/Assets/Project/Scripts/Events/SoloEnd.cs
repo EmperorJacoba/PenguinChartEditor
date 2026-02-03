@@ -31,7 +31,13 @@ public class SoloEnd : Event<SoloEventData>
         CheckForSelection();
     }
 
-    public void UpdatePosition()
+    protected override void InitializeEventAsPreviewer(int tick, SoloEventData data)
+    {
+        representedTick = tick;
+        UpdatePosition();
+    }
+
+    private void UpdatePosition()
     {
         double ratio = Waveform.GetWaveformRatio(representedTick);
         if (ratio >= 1)

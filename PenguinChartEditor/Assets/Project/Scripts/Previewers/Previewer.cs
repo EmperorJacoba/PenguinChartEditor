@@ -134,23 +134,17 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
         previewTick = tickCandidate;
         UpdatePreviewer();
+        
+        Show();
     }
-
-    /*
+    
     protected virtual void UpdatePreviewer()
     {
-        
+        previewerEventReference.InitializeEventAsPreviewer(previewTick, GetPreviewData(), parentLane);
     }
 
-    protected abstract IEventData GetPreviewData()
-    {
-        
-    } */
-
-    /// <summary>
-    /// Updates position and shows the previewer without any checks. 
-    /// </summary>
-    protected abstract void UpdatePreviewer();
+    protected abstract IEventData GetPreviewData();
+    
 
     public static bool IsPreviewerActive() => IsPreviewerActive(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
     public static bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)

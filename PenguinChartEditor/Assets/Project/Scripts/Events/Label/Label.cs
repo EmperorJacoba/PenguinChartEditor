@@ -122,7 +122,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
         if (editTick != Tick) DeactivateManualInput();
     }
 
-    public void InitializeEventAsPreviewer(int tick, T data)
+    protected override void InitializeEventAsPreviewer(int tick, T data)
     {
         Tick = tick;
         representedData = data;
