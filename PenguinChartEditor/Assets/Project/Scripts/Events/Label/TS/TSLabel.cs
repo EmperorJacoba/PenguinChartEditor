@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class TSLabel : Label<TSData>
 {
-    private TSLane parentLane;
-    
     #region Event Sets
     
     public override SelectionSet<TSData> Selection => Chart.SyncTrackInstrument.tsSelection;
@@ -14,7 +12,14 @@ public class TSLabel : Label<TSData>
 
     #endregion
 
-    public override int Lane => (int)SyncTrackInstrument.LaneOrientation.timeSignature;
+    public override int Lane
+    {
+        get
+        {
+            return (int)SyncTrackInstrument.LaneOrientation.timeSignature;
+        }
+        set {} // not needed
+    }
 
     protected override void InitializeLabel()
     {
@@ -44,9 +49,4 @@ public class TSLabel : Label<TSData>
     }
     
     #endregion
-
-    public override void InitializeProperties(ILane parentLane)
-    {
-        this.parentLane = (TSLane)parentLane;
-    }
 }

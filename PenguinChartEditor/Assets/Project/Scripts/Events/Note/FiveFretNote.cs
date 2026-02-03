@@ -2,18 +2,33 @@
 
 public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 {
-    protected override bool hasSustainTrail => true;
+    protected override bool HasSustainTrail => true;
+
+    #region Data References
+    
+    [SerializeField] private FiveFretAnatomy notePieces;
+
     protected override LaneSet<FiveFretNoteData> LaneData => _cachedDataRef;
     private LaneSet<FiveFretNoteData> _cachedDataRef;
     public override SelectionSet<FiveFretNoteData> Selection => _cachedSelectionRef;
     private SelectionSet<FiveFretNoteData> _cachedSelectionRef;
+    
+    public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
+    public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
+    
+    #endregion
 
+    #region Lane Setup
 
-    [SerializeField] private FiveFretAnatomy notePieces;
-
-    public Coroutine destructionCoroutine { get; set; }
-
-    public override int Lane => (int)laneID;
+    public override int Lane
+    {
+        get => (int)laneID;
+        set
+        {
+            laneID = (FiveFretInstrument.LaneOrientation)value;
+        }
+    }
+    
     public FiveFretInstrument.LaneOrientation laneID
     {
         get
@@ -35,6 +50,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     // starts as -1 so the redundancy check in laneIdentifier.set does not return true when setting lane to 0
     private FiveFretInstrument.LaneOrientation _li = (FiveFretInstrument.LaneOrientation)(-1);
 
+    [HideInInspector] public float xCoordinate;
+    
     private void CacheXCoordinate()
     {
         xCoordinate = parentGameInstrument.GetCenterXCoordinateFromLane((int)laneID);
@@ -46,7 +63,10 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         _cachedSelectionRef = (SelectionSet<FiveFretNoteData>)ParentInstrument.GetLaneSelection((int)laneID);
     }
 
-    [HideInInspector] public float xCoordinate;
+
+    #endregion
+
+    #region Properties
 
     public bool IsHopo
     {
@@ -107,35 +127,28 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
             tapStarpowerColorRefreshNeeded = true;
         }
     }
-
     private bool _isStarpower = false;
     private bool tapStarpowerColorRefreshNeeded = false;
 
-    public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
-    public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
-    public FiveFretInstrument ParentFiveFretInstrument => (FiveFretInstrument)ParentInstrument;
+    #endregion
 
-    public void InitializeProperties(ILane parentLane)
-    {
-        ParentLane = parentLane;
-        laneID = (FiveFretInstrument.LaneOrientation)ParentLane.laneID;
-    }
-
+    #region Init
+    
     protected override void InitializeEvent()
     {
         bool isHeadVisible = CalculateHeadVisibility();
 
         notePieces.SetVisibility(isHeadVisible);
-        
-        UpdatePosition(
-            tick: AudioManager.AudioPlaying && !isHeadVisible ? SongTime.SongPositionTicks : Tick
-        );
 
         UpdateSustain(isHeadVisible);
-
         SetVisualProperties(representedData);
     }
-
+    
+    protected override void InitializeEventAsPreviewer()
+    {
+        UpdateSustain(representedData);
+        SetVisualProperties(representedData);
+    }
 
     private void SetVisualProperties(FiveFretNoteData data)
     {
@@ -143,15 +156,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         IsHopo = (data.Flag == FiveFretNoteData.FlagType.hopo);
         IsTap = (data.Flag == FiveFretNoteData.FlagType.tap);
         IsDefault = data.Default;
-    }
-
-    protected override void InitializeEventAsPreviewer()
-    {
-        laneID = (FiveFretInstrument.LaneOrientation)ParentLane.laneID;
-
-        UpdatePositionAsPreviewer();
-        UpdateSustain(representedData);
-        SetVisualProperties(representedData);
     }
 
     private bool CalculateHeadVisibility()
@@ -163,16 +167,20 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
         }
         return true;
     }
+    
+    #endregion
 
-    private void UpdatePositionAsPreviewer() => UpdatePosition(Waveform.GetWaveformRatio(Tick), xCoordinate, PREVIEWER_Y_OFFSET);
-    private void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(Tick), xCoordinate);
-    private void UpdatePosition(int tick) => UpdatePosition(Waveform.GetWaveformRatio(tick), xCoordinate);
-    private void UpdatePosition(double percentOfTrack) => UpdatePosition(percentOfTrack, xCoordinate);
+    #region Pos/Sustain
 
-    private void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
+    protected override void UpdatePosition()
     {
-        var trackProportion = (float)percentOfTrack * parentGameInstrument.HighwayLength;
-        transform.localPosition = new Vector3(xPosition, yPosition, trackProportion);
+        var yPosition = IsPreviewEvent ? PREVIEWER_Y_OFFSET : 0;
+        transform.localPosition = 
+            new Vector3(
+                xCoordinate, 
+                yPosition, 
+                GetSpecifiedZ(AudioManager.AudioPlaying && !notePieces.IsNoteModelVisible ? SongTime.SongPositionTicks : Tick)
+                );
     }
 
     private void UpdateSustain(bool headOnly)
@@ -197,4 +205,6 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
     {
         notePieces.UpdateSustainLength(Tick, data.Sustain);
     }
+    
+    #endregion
 }

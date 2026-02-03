@@ -63,6 +63,8 @@ public struct FiveFretAnatomy
         if (noteModel.activeInHierarchy != visible) noteModel.SetActive(visible);
     }
 
+    public bool IsNoteModelVisible => noteModel.activeInHierarchy;
+
     public void UpdateSustainLength(int tick, int sustainLength)
     {
         var sustainTrackLength = Waveform.GetWaveformRatio(tick, sustainLength) * Highway3D.highwayLength;

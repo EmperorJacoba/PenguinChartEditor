@@ -2,9 +2,17 @@
 
 public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
 {
-    protected override bool hasSustainTrail => true;
-    public override int Lane => (int)laneID;
-    public HeaderType laneID
+    protected override bool HasSustainTrail => true;
+    public override int Lane
+    {
+        get => (int)laneID;
+        set
+        {
+            laneID = (HeaderType)value;
+        }
+    }
+
+    private HeaderType laneID
     {
         get
         {
@@ -37,36 +45,26 @@ public class StarpowerEvent : Event<StarpowerEventData>, IPoolable
     public override IInstrument ParentInstrument => Chart.StarpowerInstrument;
 
     public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
-
-    public Coroutine destructionCoroutine { get; set; }
-
-    public void InitializeProperties(ILane parentLane)
-    {
-        ParentLane = (StarpowerLane)parentLane;
-        laneID = (HeaderType)ParentLane.laneID;
-    }
-
+    
     protected override void InitializeEvent()
     {
-        UpdatePosition(Waveform.GetWaveformRatio(Tick), parentGameInstrument.GetLocalStarpowerXCoordinate());
         notePieces.UpdateSustainLength(Tick, representedData.Sustain);
     }
 
     protected override void InitializeEventAsPreviewer()
     {
-        laneID = (HeaderType)ParentLane.laneID;
-        
-        UpdatePositionAsPreviewer();
         notePieces.UpdateSustainLength(Tick, representedData.Sustain);
         notePieces.ChangeColorToPreviewer();
     }
 
-    private void UpdatePosition(double percentOfTrack, float xPosition, float yPosition = 0)
+    protected override void UpdatePosition()
     {
-        var trackProportion = (float)percentOfTrack * parentGameInstrument.HighwayLength;
-        transform.localPosition = new Vector3(xPosition, yPosition, trackProportion);
+        var yPosition = IsPreviewEvent ? PREVIEWER_Y_OFFSET : 0;
+        transform.localPosition = 
+            new Vector3(
+                parentGameInstrument.GetLocalStarpowerXCoordinate(), 
+                yPosition, 
+                GetDefaultZ()
+            );
     }
-
-    private void UpdatePositionAsPreviewer() => 
-        UpdatePosition(Waveform.GetWaveformRatio(Tick), parentGameInstrument.GetLocalStarpowerXCoordinate(), PREVIEWER_Y_OFFSET);
 }

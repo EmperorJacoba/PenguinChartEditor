@@ -4,13 +4,16 @@ using UnityEngine.EventSystems;
 
 public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 {
-    private BPMLane parentLane;
     #region Constants
 
     private const int SECONDS_PER_MINUTE = 60;
     private const int BPM_DIGIT_COUNT = 3;
 
-    public override int Lane => (int)SyncTrackInstrument.LaneOrientation.bpm;
+    public override int Lane
+    {
+        get => (int)SyncTrackInstrument.LaneOrientation.bpm;
+        set {} // not needed
+    }
 
     #endregion
 
@@ -28,11 +31,6 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     protected override void InitializeLabel()
     {
         anchorIcon.Opacity = Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor ? 1f : 0f;
-    }
-
-    public override void InitializeProperties(ILane parentLane)
-    {
-        this.parentLane = (BPMLane)parentLane;
     }
     
     #region Event Handlers

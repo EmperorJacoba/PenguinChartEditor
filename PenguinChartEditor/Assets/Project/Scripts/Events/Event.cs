@@ -10,7 +10,6 @@ public interface IEvent
     bool Visible { get; set; }
     int Lane { get; }
 
-    // Used in previewer to check placement conditions
     ISelection GetSelection();
     ILaneData GetLaneData();
     IInstrument ParentInstrument { get; }
@@ -39,23 +38,32 @@ public interface IEvent
 // Each event (including one tasked with event handler) has an assigned lane 
 // Lane assignment happens through lane properties/fields and through GetLaneData() which is a reference to its "instrument" lane data.
 // Use the interfaces guaranteed in IEvent above to access necessary functions/properties (add as needed)
-public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler where T : IEventData
+public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownHandler where T : IEventData
 {
     protected const float PREVIEWER_Y_OFFSET = 0.00001f;
     private const float doubleClickTime = 0.3f;
-
-    protected abstract bool hasSustainTrail { get; }
+    private const int RMB_ID = 1;
+    
     public bool readOnly = false;
     
-    public abstract int Lane { get; }
+    public abstract int Lane { get; set; }
+    
+    public Coroutine destructionCoroutine { get; set; }
+    
+    public void InitializeProperties(ILane parentLane)
+    {
+        ParentLane = parentLane;
+        Lane = ParentLane.laneID;
+    }
 
     public void InitializeEventAsPreviewer(int tick, IEventData data, ILane parentLane)
     {
         Tick = tick;
         representedData = (T)data;
-        this.ParentLane = parentLane;
+        InitializeProperties(parentLane);
         
         InitializeEventAsPreviewer();
+        UpdatePosition();
     }
     protected abstract void InitializeEventAsPreviewer();
 
@@ -66,17 +74,31 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         representedData = data;
         
         InitializeEvent();
+        UpdatePosition();
         
         if (!readOnly) CheckForSelection();
     }
 
     protected abstract void InitializeEvent();
-    
+    protected abstract void UpdatePosition();
 
+    // Chart.instance.SceneDetails.HighwayLength points to the SecretHighway, which is an invisible highway that exists
+    // to perform cross-lane movement even when there is no highway to cast to. The length of the SecretHighway is
+    // the same as all highways on the scene. If in future you want to have individual highway lengths, change this to reference
+    // the parentInstrument's highway3D highway length. Not already doing this because TempoMap uses UI elements which is different
+    // and SceneDetails already works out the conversion in 2D. 
+    protected float GetDefaultZ() => 
+        (float)(Waveform.GetWaveformRatio(Tick) * Chart.instance.SceneDetails.HighwayLength);
+
+    protected float GetSpecifiedZ(int tick) =>
+        (float)(Waveform.GetWaveformRatio(tick) * Chart.instance.SceneDetails.HighwayLength);
     #region Properties
     
-    public int Tick { get; protected set; } = -1;
-
+    public int Tick { get; private set; } = -1;
+    
+    protected abstract bool HasSustainTrail { get; }
+    public bool IsPreviewEvent { get; set; } = false;
+    
     public bool Selected
     {
         get
@@ -90,7 +112,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         }
     }
 
-    private const int RMB_ID = 1;
     private bool _selected = false;
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
 
@@ -161,7 +182,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
 
     #region Selections
 
-    public bool IsPreviewEvent { get; set; } = false;
     public virtual void OnPointerDown(PointerEventData pointerEventData)
     {
         if (IsPreviewEvent || readOnly) return;
@@ -179,7 +199,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
 
         CalculateSelectionStatus(pointerEventData);
 
-        if (hasSustainTrail && pointerEventData.button == PointerEventData.InputButton.Right)
+        if (HasSustainTrail && pointerEventData.button == PointerEventData.InputButton.Right)
         {
             if (Input.GetKey(KeyCode.LeftShift) || !UserSettings.ExtSustains)
             {
@@ -191,7 +211,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPointerDownHandler wher
         }
     }
 
-    protected void CheckForSelection()
+    private void CheckForSelection()
     {
         if (SelectionOverlay != null && Selection.Contains(Tick))
         {

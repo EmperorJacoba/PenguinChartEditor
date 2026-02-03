@@ -156,7 +156,8 @@ public class Chart : MonoBehaviour
         {
             if (value == 0) throw new ArgumentException("Resolution cannot be zero!");
             _chartRes = value;
-            _cachcut = (int)Math.Floor(((float)65 / 192) * (float)_chartRes);
+            // From .chart specifications (hopo cutoff). This is cached because this is frequently used.
+            _cachcut = (int)Math.Floor((65.0f / 192.0f) * _chartRes);
         }
     }
     private static int _chartRes = -1;

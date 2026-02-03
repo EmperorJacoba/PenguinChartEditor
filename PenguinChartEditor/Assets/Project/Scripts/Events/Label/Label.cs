@@ -32,8 +32,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 
     #region Setup
 
-    protected override bool hasSustainTrail => false;
-    public Coroutine destructionCoroutine { get; set; }
+    protected override bool HasSustainTrail => false;
 
     private void Start()
     {
@@ -48,7 +47,6 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     #region Manual Input / Entry Box Handling
 
     protected abstract T ProcessUnsafeLabelString(string newVal);
-    public abstract void InitializeProperties(ILane lane);
 
     private void ActivateManualInput()
     {
@@ -109,8 +107,8 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     protected override void InitializeEvent()
     {
         LabelText = representedData.ToString();
-
-        UpdatePosition(Waveform.GetWaveformRatio(Tick), Chart.instance.SceneDetails.HighwayLength);
+        
+        InitializeLabel();
         
         if (editTick != Tick) DeactivateManualInput();
     }
@@ -120,15 +118,15 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     protected override void InitializeEventAsPreviewer()
     {
         LabelText = representedData.ToString();
-        
-        UpdatePosition(Waveform.GetWaveformRatio(Tick), Chart.instance.SceneDetails.HighwayLength);
     }
 
-    public void UpdatePosition() => UpdatePosition(Waveform.GetWaveformRatio(Tick), Chart.instance.SceneDetails.HighwayLength);
-    public void UpdatePosition(double percentOfScreen, float screenHeight)
+    protected override void UpdatePosition()
     {
-        var yScreenProportion = (float)percentOfScreen * screenHeight;
-        transform.localPosition = new Vector3(transform.localPosition.x, yScreenProportion - (LabelRectTransform.rect.height / 2));
+        transform.localPosition = 
+            new Vector2(
+                transform.localPosition.x, 
+                GetDefaultZ() - (LabelRectTransform.rect.height / 2)
+                );
     }
 
     public virtual void SetLabelInactive()

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -6,14 +5,12 @@ using UnityEngine.EventSystems;
 
 public class SoloPlate : Event<SoloEventData>
 {
-    protected override bool hasSustainTrail => false;
+    protected override bool HasSustainTrail => false;
     [SerializeField] private TMP_Text percentage;
     [SerializeField] private TMP_Text counter;
 
     protected override void InitializeEvent()
     {
-        UpdatePosition();
-
         var ticks = ParentInstrument.GetUniqueTickSet();
         var totalNotes = ticks.Count(x => x >= representedData.StartTick && x <= representedData.EndTick);
         var notesHit = ticks.Count(x => x >= representedData.StartTick && x <= SongTime.SongPositionTicks);
@@ -24,15 +21,15 @@ public class SoloPlate : Event<SoloEventData>
 
     protected override void InitializeEventAsPreviewer()
     {
-        UpdatePosition();
+        
     }
 
-    private void UpdatePosition()
+    protected override void UpdatePosition()
     {
         float zPosition;
         if (SongTime.SongPositionTicks < Tick)
         {
-            zPosition = (float)(Waveform.GetWaveformRatio(Tick) * Highway3D.highwayLength);
+            zPosition = GetDefaultZ();
         }
         else if (SongTime.SongPositionTicks > representedData.EndTick)
         {
@@ -43,10 +40,20 @@ public class SoloPlate : Event<SoloEventData>
             zPosition = Mathf.Floor((float)Waveform.GetWaveformRatio(SongTime.SongPositionTicks) * Highway3D.highwayLength);
         }
 
-        transform.position = new Vector3(transform.position.x, transform.position.y, zPosition);
+        transform.position = 
+            new Vector3(
+                transform.position.x, 
+                transform.position.y, 
+                zPosition
+                );
     }
 
-    public override int Lane => IInstrument.SOLO_DATA_LANE_ID;
+    public override int Lane
+    {
+        get => IInstrument.SOLO_DATA_LANE_ID;
+        set {} // not needed
+    }
+
     public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
     public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
 

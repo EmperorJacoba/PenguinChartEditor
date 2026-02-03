@@ -4,8 +4,13 @@ using UnityEngine.EventSystems;
 
 public class SoloEnd : Event<SoloEventData>
 {
-    protected override bool hasSustainTrail => false;
-    public override int Lane => IInstrument.SOLO_DATA_LANE_ID;
+    protected override bool HasSustainTrail => false;
+    public override int Lane
+    {
+        get => IInstrument.SOLO_DATA_LANE_ID;
+        set {} // not needed
+    }
+
     public GameInstrument parentGameInstrument => ParentLane.parentGameInstrument;
 
     public override SelectionSet<SoloEventData> Selection => ParentInstrument.SoloData.SelectedEndEvents;
@@ -22,16 +27,14 @@ public class SoloEnd : Event<SoloEventData>
         // Selection uses the startTick as the ID for all solo events.
         // The tick this represents is the end tick, but the selection depends on the start tick for continuity.
         representedTick = representedData.EndTick;
-
-        UpdatePosition();
     }
 
     protected override void InitializeEventAsPreviewer()
     {
-        UpdatePosition();
+        
     }
 
-    private void UpdatePosition()
+    protected override void UpdatePosition()
     {
         double ratio = Waveform.GetWaveformRatio(representedTick);
         if (ratio >= 1)
@@ -39,6 +42,7 @@ public class SoloEnd : Event<SoloEventData>
             Visible = false;
             return;
         }
+        
         Visible = true;
 
         float zPosition = (float)(ratio * Highway3D.highwayLength);
