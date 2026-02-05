@@ -21,6 +21,8 @@ public class FocusCameraButtons : MonoBehaviour
         }
 
         mainCamera.transform.position += (Vector3.left * 10);
+        
+        Chart.InPlaceRefresh();
     }
 
     private void MoveCameraRight()
@@ -31,10 +33,14 @@ public class FocusCameraButtons : MonoBehaviour
         }
 
         mainCamera.transform.position += (Vector3.right * 10);
+        
+        Chart.InPlaceRefresh();
     }
 
     public void ResetCameraPosition()
     {
         mainCamera.transform.position = new Vector3(0, mainCamera.transform.position.y, mainCamera.transform.position.z);
+        
+        Chart.InPlaceRefresh();
     }
 }

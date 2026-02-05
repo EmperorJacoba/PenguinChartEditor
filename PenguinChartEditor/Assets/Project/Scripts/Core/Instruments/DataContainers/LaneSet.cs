@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public interface ILaneData
 {
@@ -272,6 +273,9 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     /// is in progress at targetTick, which will need to show feedback.</returns>
     public int GetFirstRelevantTick(int targetTick)
     {
+        // negative ints can be passed in here but that will cause this to die in a fiery flame
+        targetTick = Mathf.Max(0, targetTick);
+        
         // validate next and not previous tick because there is no need to
         // validate the previous tick in this scenario
         // if the previous tick is -1, then Contains fails every time 

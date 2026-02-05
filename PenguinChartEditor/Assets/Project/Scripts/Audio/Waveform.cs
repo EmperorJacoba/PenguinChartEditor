@@ -316,9 +316,12 @@ public class Waveform : MonoBehaviour
     // Key: Tick start point.
     private static SortedDictionary<int, CachedTimestampPosition> tickSecondValueMatch = new();
     private static int[] tickPositions;
-    public static double GetWaveformRatio(int tick)
+    public static double GetWaveformRatio(int tick, bool needsNegativeFallbackPosition = false)
     {
-        if (tick < startTick) return -1; // spawn outside camera zone
+        if (tick < startTick)
+        {
+            return needsNegativeFallbackPosition ? ManualGetWaveformRatio(tick) : -1.0f;
+        }
         if (tick >= endTick) return 1;
 
         int i = 0;
@@ -336,6 +339,17 @@ public class Waveform : MonoBehaviour
         // This formula w/o the offset will start generation at the beginning of the track and display incorrect data until startTime > 0.
         // The negative time offset is cached in CacheWaveformDetails(), and will be 0 in any case not described above.
         return (activeData.accumulatedSeconds + (activeData.secondsPerTick * (tick - key))) / timeShown + negativeTimePercentageOffset;
+    }
+    
+    /// <summary>
+    /// Very inefficient alternative method as an alternative for GetWaveformRatio. Needed for when the position of an event
+    /// in the negative is significant. 
+    /// </summary>
+    /// <param name="tick"></param>
+    /// <returns></returns>
+    public static double ManualGetWaveformRatio(int tick)
+    {
+        return (Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick) - startTime) / timeShown;
     }
 
     public static double GetWaveformRatio(int tick, int tickDuration)

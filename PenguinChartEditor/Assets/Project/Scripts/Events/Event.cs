@@ -50,6 +50,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
     
     public Coroutine destructionCoroutine { get; set; }
     
+    /// <summary>
+    /// Called once upon an event's creation. Since an event is always tied to the SpawningLane for which it was created,
+    /// ParentLane and its laneID will never change for the lifetime of the event.
+    /// </summary>
     public void InitializeProperties(ILane parentLane)
     {
         ParentLane = parentLane;
@@ -92,6 +96,9 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
 
     protected float GetSpecifiedZ(int tick) =>
         (float)(Waveform.GetWaveformRatio(tick) * Chart.instance.SceneDetails.HighwayLength);
+    
+    protected float GetGuaranteedNegativeZ() =>
+        (float)(Waveform.GetWaveformRatio(Tick, true) * Chart.instance.SceneDetails.HighwayLength);
     #region Properties
     
     public int Tick { get; private set; } = -1;

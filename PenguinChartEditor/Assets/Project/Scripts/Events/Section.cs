@@ -19,8 +19,6 @@ public class Section : Event<SectionData>, IPoolable
 
     protected override void InitializeEvent()
     {
-        if (Chart.LoadedInstrument != ParentInstrument) return;
-
         displayedSectionName.text = representedData.Name;
     }
 
@@ -35,7 +33,7 @@ public class Section : Event<SectionData>, IPoolable
             new Vector3(
                 Camera.main.transform.position.x,
                 transform.position.y,
-                GetDefaultZ()
+                GetGuaranteedNegativeZ()
             );
     }
 }

@@ -22,7 +22,7 @@ public class SceneDetails : MonoBehaviour
         {
             if (!is2D)
             {
-                return highway.localScale.z;
+                return Highway3D.highwayLength;
             }
             var screenRef = (RectTransform)highway;
             return screenRef.rect.height;
