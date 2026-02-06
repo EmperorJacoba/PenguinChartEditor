@@ -1,9 +1,24 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Section : Event<SectionData>
 {
     protected override bool HasSustainTrail => false;
+
+    private void Start()
+    {
+        sectionNameModifierInputField.onEndEdit.AddListener(x => HandleManualEndEdit(x));
+    }
+    
+    private void HandleManualEndEdit(string newSectionName)
+    {
+        LaneData[Tick] = new SectionData(newSectionName);
+
+        Chart.showPreviewers = true;
+        DeactivateManualInput();
+        Chart.InPlaceRefresh();
+    }
 
     public override int Lane
     {
@@ -15,17 +30,16 @@ public class Section : Event<SectionData>
     public override IInstrument ParentInstrument => Chart.SectionInstrument;
 
     [SerializeField] private TMP_Text displayedSectionName;
-    [SerializeField] private TMP_InputField sectionNameModifier;
+    [FormerlySerializedAs("sectionNameModifier")] [SerializeField] private TMP_InputField sectionNameModifierInputField;
 
     protected override void InitializeEvent()
     {
         displayedSectionName.text = representedData.Name;
+        
+        if (editTick != Tick) DeactivateManualInput();
     }
 
-    protected override void InitializeEventAsPreviewer()
-    {
-        
-    }
+    protected override void InitializeEventAsPreviewer() => InitializeEvent();
     
     protected override void UpdatePosition()
     {
@@ -35,5 +49,36 @@ public class Section : Event<SectionData>
                 transform.position.y,
                 GetGuaranteedNegativeZ()
             );
+    }
+
+    protected override bool HasDoubleClickAction() => true;
+    protected override void ExecuteDoubleClickAction() => ActivateManualInput();
+
+    private static int editTick = -1;
+    private void ActivateManualInput()
+    {
+        if (sectionNameModifierInputField == null) return;
+
+        if (!Visible || !LaneData.ContainsKey(Tick)) return;
+        
+        editTick = Tick;
+        displayedSectionName.gameObject.SetActive(false);
+        sectionNameModifierInputField.gameObject.SetActive(true);
+        sectionNameModifierInputField.ActivateInputField();
+        sectionNameModifierInputField.text = representedData.Name;
+
+        Chart.showPreviewers = false;
+        SongTime.DisableChartingInputMap();
+        
+        Chart.InPlaceRefresh();
+    }
+
+    private void DeactivateManualInput()
+    {
+        sectionNameModifierInputField.gameObject.SetActive(false);
+        displayedSectionName.gameObject.SetActive(true);
+        
+        Chart.showPreviewers = true;
+        SongTime.EnableChartingInputMap();
     }
 }

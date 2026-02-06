@@ -571,10 +571,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d01f836b05442c5804846116f5db806, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  readOnly: 1
   <SelectionOverlay>k__BackingField: {fileID: 7947320574844615416}
+  readOnly: 0
   displayedSectionName: {fileID: 2025134966028393918}
-  sectionNameModifier: {fileID: 1430152750357655431}
+  sectionNameModifierInputField: {fileID: 1430152750357655431}
 --- !u!65 &1482420110236185349
 BoxCollider:
   m_ObjectHideFlags: 0

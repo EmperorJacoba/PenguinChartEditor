@@ -51,17 +51,19 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     private void ActivateManualInput()
     {
         if (LabelEntryBox == null) return;
-        LabelEntryBox.gameObject.SetActive(true);
 
         if (!Visible || !LaneData.ContainsKey(Tick)) return;
         editTick = Tick;
-
+        
         LabelEntryBox.gameObject.SetActive(true);
         LabelEntryBox.ActivateInputField();
 
         LabelEntryBox.text = representedData.ToString();
+        
         Chart.showPreviewers = false;
         SongTime.DisableChartingInputMap();
+        
+        Chart.InPlaceRefresh();
     }
 
     /// <summary>
@@ -139,39 +141,8 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 
     #region Double Click Implementation (Activate Labels)
 
-    private int clickCount = 0;
-    public override void OnPointerDown(PointerEventData pointerEventData)
-    {
-        base.OnPointerDown(pointerEventData);
-
-        if (pointerEventData.button != PointerEventData.InputButton.Left || !LaneData.ContainsKey(Tick)) return;
-        
-        clickCount++;
-
-        // Double click functionality for manual entry of beatline number
-        // eventData.clickCount does not work here - pointerDown and pointerUp do not trigger click count for some reason
-        // so manual coroutine solution is here to circumvent that issue
-        if (!Input.GetKey(KeyCode.LeftControl) &&
-            Chart.IsModificationAllowed() && 
-            clickCount >= 2)
-        {
-            ActivateManualInput();
-            Chart.InPlaceRefresh();
-
-            // if you click too fast, clickCount will exceed 2
-            // at some point and will never be able to reset
-            // reset here to avoid arbitrarily bricked label object
-            clickCount = 0;
-        }
-
-        if (clickCount == 1 && gameObject.activeInHierarchy) StartCoroutine(TriggerDoubleClick());
-    }
-
-    private IEnumerator TriggerDoubleClick()
-    {
-        yield return clickCooldown;
-        clickCount = 0;
-    }
+    protected override bool HasDoubleClickAction() => true;
+    protected override void ExecuteDoubleClickAction() => ActivateManualInput();
 
     #endregion
 }

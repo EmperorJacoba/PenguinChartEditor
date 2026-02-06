@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -133,6 +135,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
     /// </remarks>
     protected abstract bool HasSustainTrail { get; }
     public bool IsPreviewEvent { get; set; } = false;
+
+    // ugh me when "you can't duplicate a serialized field" so you have to make a variable a function
+    protected virtual bool HasDoubleClickAction() => false;
+    protected virtual void ExecuteDoubleClickAction() {}
     
     public bool Selected
     {
@@ -226,6 +232,8 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
 
     #region Selections
 
+    private int clickCount = 0;
+    
     public virtual void OnPointerDown(PointerEventData pointerEventData)
     {
         if (IsPreviewEvent || readOnly) return;
@@ -240,9 +248,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
             ParentInstrument.DeleteTickInLane(Tick, Lane);
             return;
         }
-
+        
         CalculateSelectionStatus(pointerEventData);
 
+        // Sustain management/activation
         if (HasSustainTrail && pointerEventData.button == PointerEventData.InputButton.Right)
         {
             if (Input.GetKey(KeyCode.LeftShift) || !UserSettings.ExtSustains)
@@ -253,6 +262,35 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
             Selection.Add(Tick);
             Chart.InPlaceRefresh();
         }
+
+        if (!HasDoubleClickAction()) return;
+        
+        if (pointerEventData.button != PointerEventData.InputButton.Left || !LaneData.ContainsKey(Tick)) return;
+        
+        clickCount++;
+
+        // Double click functionality for manual entry of any info type - beatlines, sections
+        // eventData.clickCount does not work here - pointerDown and pointerUp do not trigger click count for some reason
+        // so manual coroutine solution is here to circumvent that issue
+        if (!Input.GetKey(KeyCode.LeftControl) && // explicitly for bpm label editing
+            Chart.IsModificationAllowed() && 
+            clickCount >= 2)
+        {
+            ExecuteDoubleClickAction();
+
+            // if you click too fast, clickCount will exceed 2
+            // at some point and will never be able to reset
+            // reset here to avoid arbitrarily bricked label object
+            clickCount = 0;
+        }
+
+        if (clickCount == 1 && Visible) StartCoroutine(TriggerDoubleClick());
+    }
+
+    private IEnumerator TriggerDoubleClick()
+    {
+        yield return clickCooldown;
+        clickCount = 0;
     }
 
     private void CheckForSelection()

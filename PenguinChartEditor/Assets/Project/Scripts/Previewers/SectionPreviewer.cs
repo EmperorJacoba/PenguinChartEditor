@@ -2,23 +2,20 @@
 
 public class SectionPreviewer : Previewer
 {
+    private string defaultSectionName = "[Section Name]";
+    
     protected override void AddCurrentEventDataToLaneSet()
     {
-        throw new System.NotImplementedException();
-    }
-
-    protected override void UpdatePreviewer()
-    {
-        throw new System.NotImplementedException();
+        Chart.SectionInstrument.GetLaneData().Add(previewTick, new SectionData(defaultSectionName));
     }
 
     protected override bool IsHitPositionValid(Vector3 hitPosition)
     {
-        throw new System.NotImplementedException();
+        return Chart.LoadedInstrument == Chart.SectionInstrument;
     }
 
     protected override IEventData GetPreviewData()
     {
-        throw new System.NotImplementedException();
+        return new SectionData(defaultSectionName);
     }
 }
