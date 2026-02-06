@@ -2,7 +2,6 @@ using UnityEngine;
 
 public abstract class BaseBeatline : MonoBehaviour, IPoolable
 {
-    protected InputMap inputMap;
     public int Tick { get; set; } = -1;
 
     public bool Visible

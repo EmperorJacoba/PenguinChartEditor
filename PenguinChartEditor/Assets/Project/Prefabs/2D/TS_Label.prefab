@@ -182,6 +182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 6993460132202874020}
+  readOnly: 0
   LabelRectTransform: {fileID: 7144059694187888909}
   LabelEntryBox: {fileID: 3242562178757419534}
   _labelText: {fileID: 7001498348270946396}
@@ -683,6 +684,7 @@ GameObject:
   - component: {fileID: 558086458455765703}
   - component: {fileID: 3242562178757419534}
   - component: {fileID: 8508250529310947878}
+  - component: {fileID: 5361710358235940247}
   m_Layer: 5
   m_Name: TSEntryBox
   m_TagString: Untagged
@@ -862,6 +864,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entryBox: {fileID: 3242562178757419534}
+--- !u!114 &5361710358235940247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6854207117225479928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac493207b50a40f2a47c2c1034abfe8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6993460132202874020
 GameObject:
   m_ObjectHideFlags: 0

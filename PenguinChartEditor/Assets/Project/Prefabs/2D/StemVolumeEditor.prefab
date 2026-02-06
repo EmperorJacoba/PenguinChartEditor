@@ -687,6 +687,7 @@ GameObject:
   - component: {fileID: 1577123262787174341}
   - component: {fileID: 8113998837988497844}
   - component: {fileID: 277217816389973643}
+  - component: {fileID: 8018246408194008941}
   m_Layer: 5
   m_Name: EntryBox
   m_TagString: Untagged
@@ -853,6 +854,18 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
+--- !u!114 &8018246408194008941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5297889275612727417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac493207b50a40f2a47c2c1034abfe8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5980864111287759570
 GameObject:
   m_ObjectHideFlags: 0

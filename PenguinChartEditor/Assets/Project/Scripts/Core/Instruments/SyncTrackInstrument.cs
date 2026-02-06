@@ -122,6 +122,7 @@ public class SyncTrackInstrument : IInstrument
         };
 
         inputMap.Charting.Delete.performed += x => DeleteSelection();
+        inputMap.Charting.ClearSelection.performed += x => ClearAllSelections();
         inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
     }
 

@@ -78,6 +78,7 @@ public class SectionInstrument : IInstrument
         inputMap.Charting.Delete.performed += x => DeleteSelection();
         inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
         inputMap.Charting.SelectAll.performed += x => selection.SelectAllInLane();
+        inputMap.Charting.ClearSelection.performed += x => ClearAllSelections();
     }
     
     #endregion

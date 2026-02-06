@@ -89,6 +89,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         inputMap.Charting.RMB.canceled += x => sustainer.ResetSustainChange();
         inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
         inputMap.Charting.SelectAll.performed += x => Lanes.SelectAll();
+        inputMap.Charting.ClearSelection.performed += x => ClearAllSelections();
     }
 
     #endregion

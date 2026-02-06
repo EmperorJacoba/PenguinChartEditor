@@ -66,7 +66,7 @@
                     "id": "98409934-89c1-4f4d-92d7-c136a3c1d550",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -75,7 +75,7 @@
                     "id": "6672d8ad-4c15-434b-9f23-e36ac389716a",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -84,7 +84,7 @@
                     "id": "5e5c11af-6e5b-4532-b4cd-28c167e4ba41",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -93,13 +93,22 @@
                     "id": "76bf97b5-fea5-48c9-9a88-138ff3a3e841",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
                     "name": "YDrag",
                     "type": "Value",
                     "id": "3c15a169-6bba-427d-8b7e-fcb67995686e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "XYDrag",
+                    "type": "Button",
+                    "id": "08597ac9-518a-4c1a-95e4-0209b4c34511",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -138,7 +147,7 @@
                     "id": "2855a36d-e9e8-4e33-bab6-2d348edf29fb",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -147,7 +156,7 @@
                     "id": "1e9f5248-591b-4dc9-a14f-a8476a8d99ab",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -156,7 +165,7 @@
                     "id": "b6b6c09f-b20b-441c-8cb1-ed2f5dcf5db7",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -165,7 +174,7 @@
                     "id": "3d3492a5-4e29-47e2-a119-286dfe3d24a9",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -174,7 +183,7 @@
                     "id": "0e5e0a7f-9556-48b1-9e4b-a3ba8c09cb4d",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -183,7 +192,7 @@
                     "id": "2920b52c-d0c4-4d6b-90de-1be64e5ab7aa",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -192,7 +201,7 @@
                     "id": "8ffa1688-3c79-4c07-aa18-d26b5b85c27e",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -201,7 +210,7 @@
                     "id": "4423d4dc-c4f6-4cf7-b4c7-3bb6a860a7c8",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -210,7 +219,7 @@
                     "id": "5a206963-7acd-463a-8168-e51927422df5",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -219,7 +228,7 @@
                     "id": "226aa47d-b1db-45e2-ae76-ed0cdb9b0e8e",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -228,17 +237,8 @@
                     "id": "92571698-6663-4b8a-87cc-47b5fe041722",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "XYDrag",
-                    "type": "Button",
-                    "id": "08597ac9-518a-4c1a-95e4-0209b4c34511",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
                 },
                 {
                     "name": "SetLane0",
@@ -318,13 +318,22 @@
                     "id": "8cbfc83d-6879-4459-9c4c-31c82122c8f8",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
                     "name": "ToggleSolos",
                     "type": "Button",
                     "id": "479056d3-c736-45a7-98f8-2bb448fbe94c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "DisableWhenInputActive",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ClearSelection",
+                    "type": "Button",
+                    "id": "8ff6e500-0640-43f9-8ea8-18c237e95883",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -1046,6 +1055,17 @@
                     "action": "ToggleSolos",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "245a2b49-3065-4e0e-b1ff-f5f0d1452bce",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ClearSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -1059,7 +1079,7 @@
                     "id": "a074e63d-5ef5-4144-b2a7-131445c16043",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "DisableModifiers",
+                    "interactions": "DisableModifiers,DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -1068,7 +1088,7 @@
                     "id": "0d6cad2f-8993-4ac0-b023-b3bada9c71cc",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "DisableModifiers",
+                    "interactions": "DisableModifiers,DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -1077,7 +1097,7 @@
                     "id": "5041fa30-05be-4699-b501-8ceb681d0034",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -1086,7 +1106,7 @@
                     "id": "ff00a0f8-bd38-4e4f-8847-048f1941fe0b",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -1095,7 +1115,7 @@
                     "id": "816115bb-21f3-4da1-b39c-94f8289bdcf8",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -1104,7 +1124,7 @@
                     "id": "7e577d58-2c09-4202-8dac-4b26ce43f966",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 },
                 {
@@ -1113,7 +1133,7 @@
                     "id": "42c29531-9e2d-4d79-ab3b-95cd3a3fedbd",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "DisableWhenInputActive",
                     "initialStateCheck": false
                 }
             ],

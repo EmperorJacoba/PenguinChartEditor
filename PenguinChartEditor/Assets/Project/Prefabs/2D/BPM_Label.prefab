@@ -315,6 +315,7 @@ GameObject:
   - component: {fileID: 5937403223488641381}
   - component: {fileID: 1450175509653743642}
   - component: {fileID: 7495996316370005151}
+  - component: {fileID: 7508420122039568508}
   m_Layer: 5
   m_Name: BPMEntryBox
   m_TagString: Untagged
@@ -481,6 +482,18 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
+--- !u!114 &7508420122039568508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726229587206270884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac493207b50a40f2a47c2c1034abfe8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4282045479885994295
 GameObject:
   m_ObjectHideFlags: 0
@@ -613,6 +626,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <SelectionOverlay>k__BackingField: {fileID: 1121742303537570907}
+  readOnly: 0
   LabelRectTransform: {fileID: 6354539702733570004}
   LabelEntryBox: {fileID: 7495996316370005151}
   _labelText: {fileID: 3351073637747353966}

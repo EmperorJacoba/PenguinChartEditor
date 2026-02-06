@@ -152,7 +152,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""98409934-89c1-4f4d-92d7-c136a3c1d550"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -161,7 +161,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""6672d8ad-4c15-434b-9f23-e36ac389716a"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -170,7 +170,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""5e5c11af-6e5b-4532-b4cd-28c167e4ba41"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -179,13 +179,22 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""76bf97b5-fea5-48c9-9a88-138ff3a3e841"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""YDrag"",
                     ""type"": ""Value"",
                     ""id"": ""3c15a169-6bba-427d-8b7e-fcb67995686e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""XYDrag"",
+                    ""type"": ""Button"",
+                    ""id"": ""08597ac9-518a-4c1a-95e4-0209b4c34511"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -224,7 +233,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""2855a36d-e9e8-4e33-bab6-2d348edf29fb"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -233,7 +242,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""1e9f5248-591b-4dc9-a14f-a8476a8d99ab"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -242,7 +251,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""b6b6c09f-b20b-441c-8cb1-ed2f5dcf5db7"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -251,7 +260,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""3d3492a5-4e29-47e2-a119-286dfe3d24a9"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -260,7 +269,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""0e5e0a7f-9556-48b1-9e4b-a3ba8c09cb4d"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -269,7 +278,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""2920b52c-d0c4-4d6b-90de-1be64e5ab7aa"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -278,7 +287,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""8ffa1688-3c79-4c07-aa18-d26b5b85c27e"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -287,7 +296,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""4423d4dc-c4f6-4cf7-b4c7-3bb6a860a7c8"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -296,7 +305,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""5a206963-7acd-463a-8168-e51927422df5"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -305,7 +314,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""226aa47d-b1db-45e2-ae76-ed0cdb9b0e8e"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -314,17 +323,8 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""92571698-6663-4b8a-87cc-47b5fe041722"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""XYDrag"",
-                    ""type"": ""Button"",
-                    ""id"": ""08597ac9-518a-4c1a-95e4-0209b4c34511"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""SetLane0"",
@@ -404,13 +404,22 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""8cbfc83d-6879-4459-9c4c-31c82122c8f8"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""ToggleSolos"",
                     ""type"": ""Button"",
                     ""id"": ""479056d3-c736-45a7-98f8-2bb448fbe94c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ClearSelection"",
+                    ""type"": ""Button"",
+                    ""id"": ""8ff6e500-0640-43f9-8ea8-18c237e95883"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -1132,6 +1141,17 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""action"": ""ToggleSolos"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""245a2b49-3065-4e0e-b1ff-f5f0d1452bce"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClearSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -1145,7 +1165,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""a074e63d-5ef5-4144-b2a7-131445c16043"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableModifiers"",
+                    ""interactions"": ""DisableModifiers,DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1154,7 +1174,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""0d6cad2f-8993-4ac0-b023-b3bada9c71cc"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableModifiers"",
+                    ""interactions"": ""DisableModifiers,DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1163,7 +1183,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""5041fa30-05be-4699-b501-8ceb681d0034"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1172,7 +1192,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""ff00a0f8-bd38-4e4f-8847-048f1941fe0b"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1181,7 +1201,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""816115bb-21f3-4da1-b39c-94f8289bdcf8"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1190,7 +1210,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""7e577d58-2c09-4202-8dac-4b26ce43f966"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1199,7 +1219,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""42c29531-9e2d-4d79-ab3b-95cd3a3fedbd"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -2394,6 +2414,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_Cut = m_Charting.FindAction("Cut", throwIfNotFound: true);
         m_Charting_SelectAll = m_Charting.FindAction("SelectAll", throwIfNotFound: true);
         m_Charting_YDrag = m_Charting.FindAction("YDrag", throwIfNotFound: true);
+        m_Charting_XYDrag = m_Charting.FindAction("XYDrag", throwIfNotFound: true);
         m_Charting_LMB = m_Charting.FindAction("LMB", throwIfNotFound: true);
         m_Charting_RMB = m_Charting.FindAction("RMB", throwIfNotFound: true);
         m_Charting_SustainDrag = m_Charting.FindAction("SustainDrag", throwIfNotFound: true);
@@ -2408,7 +2429,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_SustainMax = m_Charting.FindAction("SustainMax", throwIfNotFound: true);
         m_Charting_SustainCustom = m_Charting.FindAction("SustainCustom", throwIfNotFound: true);
         m_Charting_SustainExtended = m_Charting.FindAction("SustainExtended", throwIfNotFound: true);
-        m_Charting_XYDrag = m_Charting.FindAction("XYDrag", throwIfNotFound: true);
         m_Charting_SetLane0 = m_Charting.FindAction("SetLane0", throwIfNotFound: true);
         m_Charting_SetLane1 = m_Charting.FindAction("SetLane1", throwIfNotFound: true);
         m_Charting_SetLane2 = m_Charting.FindAction("SetLane2", throwIfNotFound: true);
@@ -2419,6 +2439,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_Charting_SetLane7 = m_Charting.FindAction("SetLane7", throwIfNotFound: true);
         m_Charting_SetEqualSpacing = m_Charting.FindAction("SetEqualSpacing", throwIfNotFound: true);
         m_Charting_ToggleSolos = m_Charting.FindAction("ToggleSolos", throwIfNotFound: true);
+        m_Charting_ClearSelection = m_Charting.FindAction("ClearSelection", throwIfNotFound: true);
         // ExternalCharting
         m_ExternalCharting = asset.FindActionMap("ExternalCharting", throwIfNotFound: true);
         m_ExternalCharting_IncreaseStep = m_ExternalCharting.FindAction("IncreaseStep", throwIfNotFound: true);
@@ -2545,6 +2566,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_Cut;
     private readonly InputAction m_Charting_SelectAll;
     private readonly InputAction m_Charting_YDrag;
+    private readonly InputAction m_Charting_XYDrag;
     private readonly InputAction m_Charting_LMB;
     private readonly InputAction m_Charting_RMB;
     private readonly InputAction m_Charting_SustainDrag;
@@ -2559,7 +2581,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_SustainMax;
     private readonly InputAction m_Charting_SustainCustom;
     private readonly InputAction m_Charting_SustainExtended;
-    private readonly InputAction m_Charting_XYDrag;
     private readonly InputAction m_Charting_SetLane0;
     private readonly InputAction m_Charting_SetLane1;
     private readonly InputAction m_Charting_SetLane2;
@@ -2570,6 +2591,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_Charting_SetLane7;
     private readonly InputAction m_Charting_SetEqualSpacing;
     private readonly InputAction m_Charting_ToggleSolos;
+    private readonly InputAction m_Charting_ClearSelection;
     /// <summary>
     /// Provides access to input actions defined in input action map "Charting".
     /// </summary>
@@ -2625,6 +2647,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Charting/YDrag".
         /// </summary>
         public InputAction @YDrag => m_Wrapper.m_Charting_YDrag;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/XYDrag".
+        /// </summary>
+        public InputAction @XYDrag => m_Wrapper.m_Charting_XYDrag;
         /// <summary>
         /// Provides access to the underlying input action "Charting/LMB".
         /// </summary>
@@ -2682,10 +2708,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @SustainExtended => m_Wrapper.m_Charting_SustainExtended;
         /// <summary>
-        /// Provides access to the underlying input action "Charting/XYDrag".
-        /// </summary>
-        public InputAction @XYDrag => m_Wrapper.m_Charting_XYDrag;
-        /// <summary>
         /// Provides access to the underlying input action "Charting/SetLane0".
         /// </summary>
         public InputAction @SetLane0 => m_Wrapper.m_Charting_SetLane0;
@@ -2725,6 +2747,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Charting/ToggleSolos".
         /// </summary>
         public InputAction @ToggleSolos => m_Wrapper.m_Charting_ToggleSolos;
+        /// <summary>
+        /// Provides access to the underlying input action "Charting/ClearSelection".
+        /// </summary>
+        public InputAction @ClearSelection => m_Wrapper.m_Charting_ClearSelection;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2784,6 +2810,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @YDrag.started += instance.OnYDrag;
             @YDrag.performed += instance.OnYDrag;
             @YDrag.canceled += instance.OnYDrag;
+            @XYDrag.started += instance.OnXYDrag;
+            @XYDrag.performed += instance.OnXYDrag;
+            @XYDrag.canceled += instance.OnXYDrag;
             @LMB.started += instance.OnLMB;
             @LMB.performed += instance.OnLMB;
             @LMB.canceled += instance.OnLMB;
@@ -2826,9 +2855,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SustainExtended.started += instance.OnSustainExtended;
             @SustainExtended.performed += instance.OnSustainExtended;
             @SustainExtended.canceled += instance.OnSustainExtended;
-            @XYDrag.started += instance.OnXYDrag;
-            @XYDrag.performed += instance.OnXYDrag;
-            @XYDrag.canceled += instance.OnXYDrag;
             @SetLane0.started += instance.OnSetLane0;
             @SetLane0.performed += instance.OnSetLane0;
             @SetLane0.canceled += instance.OnSetLane0;
@@ -2859,6 +2885,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @ToggleSolos.started += instance.OnToggleSolos;
             @ToggleSolos.performed += instance.OnToggleSolos;
             @ToggleSolos.canceled += instance.OnToggleSolos;
+            @ClearSelection.started += instance.OnClearSelection;
+            @ClearSelection.performed += instance.OnClearSelection;
+            @ClearSelection.canceled += instance.OnClearSelection;
         }
 
         /// <summary>
@@ -2903,6 +2932,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @YDrag.started -= instance.OnYDrag;
             @YDrag.performed -= instance.OnYDrag;
             @YDrag.canceled -= instance.OnYDrag;
+            @XYDrag.started -= instance.OnXYDrag;
+            @XYDrag.performed -= instance.OnXYDrag;
+            @XYDrag.canceled -= instance.OnXYDrag;
             @LMB.started -= instance.OnLMB;
             @LMB.performed -= instance.OnLMB;
             @LMB.canceled -= instance.OnLMB;
@@ -2945,9 +2977,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SustainExtended.started -= instance.OnSustainExtended;
             @SustainExtended.performed -= instance.OnSustainExtended;
             @SustainExtended.canceled -= instance.OnSustainExtended;
-            @XYDrag.started -= instance.OnXYDrag;
-            @XYDrag.performed -= instance.OnXYDrag;
-            @XYDrag.canceled -= instance.OnXYDrag;
             @SetLane0.started -= instance.OnSetLane0;
             @SetLane0.performed -= instance.OnSetLane0;
             @SetLane0.canceled -= instance.OnSetLane0;
@@ -2978,6 +3007,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @ToggleSolos.started -= instance.OnToggleSolos;
             @ToggleSolos.performed -= instance.OnToggleSolos;
             @ToggleSolos.canceled -= instance.OnToggleSolos;
+            @ClearSelection.started -= instance.OnClearSelection;
+            @ClearSelection.performed -= instance.OnClearSelection;
+            @ClearSelection.canceled -= instance.OnClearSelection;
         }
 
         /// <summary>
@@ -3702,6 +3734,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnYDrag(InputAction.CallbackContext context);
         /// <summary>
+        /// Method invoked when associated input action "XYDrag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXYDrag(InputAction.CallbackContext context);
+        /// <summary>
         /// Method invoked when associated input action "LMB" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -3800,13 +3839,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSustainExtended(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "XYDrag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnXYDrag(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "SetLane0" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -3876,6 +3908,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnToggleSolos(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ClearSelection" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClearSelection(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ExternalCharting" which allows adding and removing callbacks.

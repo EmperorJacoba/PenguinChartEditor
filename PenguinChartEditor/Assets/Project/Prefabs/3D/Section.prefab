@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7260118345181555777}
   - component: {fileID: 191965654936227012}
   - component: {fileID: 1430152750357655431}
+  - component: {fileID: 1098121745329410962}
   m_Layer: 0
   m_Name: InputField (TMP)
   m_TagString: Untagged
@@ -178,6 +179,18 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
+--- !u!114 &1098121745329410962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 308276570297745968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac493207b50a40f2a47c2c1034abfe8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1410018738292887369
 GameObject:
   m_ObjectHideFlags: 0

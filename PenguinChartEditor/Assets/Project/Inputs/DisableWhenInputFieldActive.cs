@@ -8,10 +8,8 @@ public class DisableWhenInputActive : IInputInteraction
 {
     public void Process(ref InputInteractionContext context)
     {
-        if (EventSystem.current.currentSelectedGameObject != null)
-        {
-            if (EventSystem.current.currentSelectedGameObject.name.Contains("Custom Input")) return;
-        }
+        // Lord help me if I ever accidentally select everything when testing an input field
+        if (PenguinInputField.IsInputFieldActive()) return;
 
         if (context.ControlIsActuated()) context.Performed();
     }

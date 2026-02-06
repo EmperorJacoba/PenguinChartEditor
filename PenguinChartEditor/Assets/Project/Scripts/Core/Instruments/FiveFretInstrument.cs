@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class FiveFretInstrument : IInstrument, ISustainableInstrument
 {
@@ -139,6 +140,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         inputMap.Charting.RMB.canceled += x => sustainer.ResetSustainChange();
         inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
         inputMap.Charting.SelectAll.performed += x => Lanes.SelectAll();
+        inputMap.Charting.ClearSelection.performed += x => ClearAllSelections();
     }
 
     #endregion
