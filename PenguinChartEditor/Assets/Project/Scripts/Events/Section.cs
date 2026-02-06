@@ -1,7 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 
-public class Section : Event<SectionData>, IPoolable
+public class Section : Event<SectionData>
 {
     protected override bool HasSustainTrail => false;
 

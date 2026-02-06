@@ -40,16 +40,22 @@ public interface IEvent
 // Use the interfaces guaranteed in IEvent above to access necessary functions/properties (add as needed)
 public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownHandler where T : IEventData
 {
+    #region Constants
+
     protected const float PREVIEWER_Y_OFFSET = 0.00001f;
     private const float doubleClickTime = 0.3f;
     private const int RMB_ID = 1;
     
-    public bool readOnly = false;
-    
-    public abstract int Lane { get; set; }
-    
+    #endregion
+
+    #region IPoolable implementation 
+
     public Coroutine destructionCoroutine { get; set; }
     
+    #endregion
+
+    #region Initialization
+
     /// <summary>
     /// Called once upon an event's creation. Since an event is always tied to the SpawningLane for which it was created,
     /// ParentLane and its laneID will never change for the lifetime of the event.
@@ -59,7 +65,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
         ParentLane = parentLane;
         Lane = ParentLane.laneID;
     }
-
+    
     public void InitializeEventAsPreviewer(int tick, IEventData data, ILane parentLane)
     {
         Tick = tick;
@@ -71,7 +77,12 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
     }
     protected abstract void InitializeEventAsPreviewer();
 
+    /// <summary>
+    /// Initialize event and automatically grab its corresponding data from its event dictionary. 
+    /// </summary>
+    /// <param name="tick">The tick representing this event</param>
     public void InitializeEvent(int tick) => InitializeEvent(tick, LaneData[tick]);
+    
     private void InitializeEvent(int tick, T data)
     {
         Tick = tick;
@@ -85,6 +96,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
 
     protected abstract void InitializeEvent();
     protected abstract void UpdatePosition();
+    
+    #endregion
+
+    #region Location Calculations
 
     // Chart.instance.SceneDetails.HighwayLength points to the SecretHighway, which is an invisible highway that exists
     // to perform cross-lane movement even when there is no highway to cast to. The length of the SecretHighway is
@@ -97,12 +112,25 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
     protected float GetSpecifiedZ(int tick) =>
         (float)(Waveform.GetWaveformRatio(tick) * Chart.instance.SceneDetails.HighwayLength);
     
+    /// <summary>
+    /// Waveform.GetWaveformRatio() deals only with positive cached tick:time ratios for efficiency, so if a negative z
+    /// is required (like in the case of spawning sections), this specifies explicit calculation of negative positions.
+    /// </summary>
+    /// <returns>
+    /// The Z coordinate in world space that corresponds to the event's tick, in relation to time t=SongTime.SongPositionSeconds.
+    /// </returns>
     protected float GetGuaranteedNegativeZ() =>
         (float)(Waveform.GetWaveformRatio(Tick, true) * Chart.instance.SceneDetails.HighwayLength);
+    
+    #endregion
+    
     #region Properties
     
     public int Tick { get; private set; } = -1;
     
+    /// <remarks>
+    /// Define as true if the event type is ISustainable. Remember to create a sustain tail object!
+    /// </remarks>
     protected abstract bool HasSustainTrail { get; }
     public bool IsPreviewEvent { get; set; } = false;
     
@@ -122,6 +150,11 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
     private bool _selected = false;
     [field: SerializeField] public GameObject SelectionOverlay { get; set; }
 
+    /// <remarks>
+    /// Wrapper for gameObject.activeInHierarchy and gameObject.SetActive(). Unity's InputActionMap works even when
+    /// game object is not enabled, so this does not interfere with inputs, unlike if events used Update() to poll for
+    /// inputs.
+    /// </remarks>
     public bool Visible
     {
         get
@@ -150,6 +183,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
 
     public T representedData;
 
+    public bool readOnly = false;
+    
+    public abstract int Lane { get; set; }
+    
     #endregion
 
     #region Data Access
