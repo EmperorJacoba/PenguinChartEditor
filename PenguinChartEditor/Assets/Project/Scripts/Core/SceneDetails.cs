@@ -39,11 +39,8 @@ public class SceneDetails : MonoBehaviour
 
     public int MatchXCoordinateToLane(float xCoordinate)
     {
-        if (currentScene == SceneType.fiveFretChart)
-        {
-            // Isolated algebraically & through testing. Works for any x coordinate on the highway (secret or visible).
-            return (int)Mathf.Floor((xCoordinate - highwayLeftEndCoordinate) / laneWidth);
-        }
+        // Isolated algebraically & through testing. Works for any x coordinate on the highway (secret or visible).
+        return (int)Mathf.Floor((xCoordinate - highwayLeftEndCoordinate) / laneWidth);
         throw new System.Exception("Error when matching X coordinate to a lane. Cursor is within highway bounds but not within a lane.");
     }
 

@@ -8,6 +8,7 @@ public class Section : Event<SectionData>
 
     private void Start()
     {
+        if (IsPreviewEvent) return;
         sectionNameModifierInputField.onEndEdit.AddListener(HandleManualEndEdit);
     }
     
@@ -77,6 +78,8 @@ public class Section : Event<SectionData>
 
     private void DeactivateManualInput()
     {
+        if (sectionNameModifierInputField == null) return;
+        
         sectionNameModifierInputField.gameObject.SetActive(false);
         displayedSectionName.gameObject.SetActive(true);
         

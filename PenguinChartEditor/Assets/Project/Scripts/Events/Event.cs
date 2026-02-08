@@ -134,7 +134,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
     /// Define as true if the event type is ISustainable. Remember to create a sustain tail object!
     /// </remarks>
     protected abstract bool HasSustainTrail { get; }
-    public bool IsPreviewEvent { get; set; } = false;
+    [field: SerializeField] public bool IsPreviewEvent { get; set; } = false;
 
     // ugh me when "you can't duplicate a serialized field" so you have to make a variable a function
     protected virtual bool HasDoubleClickAction() => false;
@@ -307,10 +307,23 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
 
     private static int lastTickSelection;
 
+    // If you've ended up here because selections aren't working during testing, here are some common fixes:
+    // - Check to make sure you're in selection mode
+    // - Check to make sure the object has a collider
+    // - Check to make sure the object is on the "Notes" layer in the inspector 
+    // - Check to make sure the Main Camera has a Physics Raycaster and that it is set up to detect ChartingHighway, Notes, and WorldButtons
+    // Can you tell I've had lots of issues with this? Because I have and it's one of these four every hecking time
+    // (hecking because it's not that big of a deal lmao)
+    // -Emperor
     protected void CalculateSelectionStatus(PointerEventData clickData) // refactor this pls
     {
         // Goal is to follow standard selection functionality of most productivity programs
-        if (clickData.button != PointerEventData.InputButton.Left || !Chart.IsSelectionAllowed()) return;
+        if (
+            clickData.button != PointerEventData.InputButton.Left 
+            || !Chart.IsSelectionAllowed() 
+            || Chart.LoadedInstrument != ParentInstrument
+            ) 
+            return;
 
         if (Input.GetKey(KeyCode.LeftShift))
         {

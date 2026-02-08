@@ -141,6 +141,7 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
 
         return relevantResult.worldPosition.z / Length;
     }
+    
     public void OnPointerDown(PointerEventData eventData)
     {
         if (eventData.button == PointerEventData.InputButton.Middle) return; // middle click scroll will clear selections otherwise

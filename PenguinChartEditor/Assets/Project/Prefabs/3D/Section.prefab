@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 191965654936227012}
   - component: {fileID: 1430152750357655431}
   - component: {fileID: 1098121745329410962}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: InputField (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 7910288390798901553}
   - component: {fileID: 2079063072112994764}
   - component: {fileID: 2025134966028393918}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -337,7 +337,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6997242789301082381}
   - component: {fileID: 7366695429671073567}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Text Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -391,7 +391,7 @@ GameObject:
   - component: {fileID: 6445588225440309124}
   - component: {fileID: 7170337087926313183}
   - component: {fileID: 2754533711926155757}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Placeholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -547,7 +547,7 @@ GameObject:
   - component: {fileID: 6805235679491019178}
   - component: {fileID: 3816114791925932025}
   - component: {fileID: 1482420110236185349}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Section
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -728,7 +728,7 @@ GameObject:
   - component: {fileID: 4446781941802659831}
   - component: {fileID: 3349621010069852835}
   - component: {fileID: 5294074128374346193}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -865,7 +865,7 @@ GameObject:
   - component: {fileID: 1599482927248997519}
   - component: {fileID: 5641301068473034881}
   - component: {fileID: 6045151131630280731}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -973,7 +973,7 @@ GameObject:
   - component: {fileID: 2555799977049780933}
   - component: {fileID: 8711742076950829971}
   - component: {fileID: 8959166796392372526}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}

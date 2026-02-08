@@ -27,16 +27,31 @@ public class SectionInstrument : IInstrument
 
     #region Selections
 
-    public void ClearAllSelections() => selection.Clear();
+    public void ClearAllSelections()
+    {
+        selection.Clear();
+        Chart.InPlaceRefresh();
+    }
     public bool NoteSelectionContains(int tick, int lane) => selection.Contains(tick);
     public int NoteSelectionCount => selection.Count();
     public void ShiftClickSelectLane(int start, int end, int lane) => selection.ShiftClickSelectInRange(start, end);
     public void ShiftClickSelect(int start, int end) => selection.ShiftClickSelectInRange(start, end);
     public void ShiftClickSelect(int tick) => selection.ShiftClickSelectInRange(tick, tick);
     public void ClearTickFromAllSelections(int tick) => selection.Remove(tick);
-    public void DeleteTicksInSelection() => selection.PopSelectedTicksFromLane();
+
+    public void DeleteTicksInSelection()
+    {
+        selection.PopSelectedTicksFromLane();
+        Chart.InPlaceRefresh();
+    }
+
     public bool IsNoteSelectionEmpty() => selection.Count == 0;
-    private void DeleteSelection() => selection.PopSelectedTicksFromLane();
+
+    private void DeleteSelection()
+    {
+        selection.PopSelectedTicksFromLane();
+        Chart.InPlaceRefresh();
+    }
     public ISelection GetLaneSelection(int lane) => selection;
     
     private void CheckForSelectionClear()
@@ -53,6 +68,41 @@ public class SectionInstrument : IInstrument
 
     public void DeleteTickInLane(int tick, int lane) => laneData.Remove(tick);
     public void DeleteAllEventsAtTick(int tick) => laneData.Remove(tick);
+
+    public void SetSectionSelectionName(string newName)
+    {
+        if (newName == MULTIPLE_SELECTION_WARNING) return;
+        
+        foreach (var section in selection)
+        {
+            laneData[section] = new SectionData(newName);
+        }
+        
+        Chart.InPlaceRefresh();
+    }
+
+    private const string MULTIPLE_SELECTION_WARNING = "[[Multiple Sections Selected]]";
+    public string GetSelectedSectionName()
+    {
+        string sectionName = null;
+        
+        // Allows for editing the names of multiple sections, while also warning about it.
+        foreach (var section in selection)
+        {
+            if (sectionName == null)
+            {
+                sectionName = laneData[section].Name;
+                continue;
+            }
+
+            if (sectionName != laneData[section].Name)
+            {
+                return MULTIPLE_SELECTION_WARNING;
+            }
+        }
+
+        return sectionName;
+    }
 
     #endregion
 

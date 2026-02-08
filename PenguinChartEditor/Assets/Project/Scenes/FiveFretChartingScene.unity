@@ -12346,6 +12346,7 @@ GameObject:
   - component: {fileID: 5334037120155310671}
   - component: {fileID: 4539702727571572368}
   - component: {fileID: 1991279692}
+  - component: {fileID: 5334037120155310672}
   m_Layer: 6
   m_Name: Cube
   m_TagString: ChartHighway
@@ -12841,6 +12842,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 832149484976071227}
   m_Mesh: {fileID: -5495902117074765545, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
+--- !u!114 &5334037120155310672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832149484976071227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b669c87a685428b8fc44a53905e257c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &5947725284938966067
 MonoBehaviour:
   m_ObjectHideFlags: 0

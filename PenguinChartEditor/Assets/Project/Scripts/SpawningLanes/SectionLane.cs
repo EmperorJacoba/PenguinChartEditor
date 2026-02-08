@@ -9,7 +9,8 @@ public class SectionLane : SpawningLane<Section>
     [SerializeField] private SectionPooler sectionPooler;
     protected override IPooler<Section> Pooler => sectionPooler;
 
-    private int SECTIONS_START_ZONE_BUFFER => Chart.Resolution * 12;
+    // FIXME: please make this less arbitrary...make it based on the hyperspeed or something
+    private static int SECTIONS_START_ZONE_BUFFER => Chart.Resolution * 12;
     
     protected override List<int> GetEventsToDisplay()
     {

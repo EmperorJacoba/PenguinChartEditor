@@ -149,7 +149,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     public static bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!Chart.showPreviewers || AudioManager.AudioPlaying ||
-            Chart.instance.SceneDetails.IsSceneOverlayUIHit() || 
+            Chart.instance.SceneDetails.IsSceneOverlayUIHit() || PenguinInputField.IsInputFieldActive() ||
             Input.GetMouseButton(RIGHT_MOUSE_ID) || // right mouse = sustaining or trying to delete
             !Chart.IsPlacementAllowed() ||
             percentOfScreenVertical < 0 ||

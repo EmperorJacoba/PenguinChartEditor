@@ -1,9 +1,29 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class SectionPreviewer : Previewer
 {
-    private string defaultSectionName = "[Section Name]";
-    
+    public static string defaultSectionName
+    {
+        get
+        {
+            return _sectN;
+        }
+        set
+        {
+            _sectN = value;
+            instance.UpdatePosition();
+        }
+    }
+
+    private static string _sectN = "[Section Name]";
+
+    private static SectionPreviewer instance;
+    private void Start()
+    {
+        instance = this;
+    }
+
     protected override void AddCurrentEventDataToLaneSet()
     {
         Chart.SectionInstrument.GetLaneData().Add(previewTick, new SectionData(defaultSectionName));

@@ -136,12 +136,16 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     }
     
     public bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
-    public void ClearAllSelections() => Lanes.ClearAllSelections();
+
+    public void ClearAllSelections()
+    {
+        Lanes.ClearAllSelections();
+        Chart.InPlaceRefresh();
+    }
 
     private void CheckForSelectionClear()
     {
-        if (Chart.LoadedInstrument != this) return;
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsMasterHighwayHit()) return;
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
 
         ClearAllSelections();
         Chart.InPlaceRefresh();
