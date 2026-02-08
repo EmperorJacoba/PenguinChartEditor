@@ -21,6 +21,8 @@ public class StarpowerPreviewer : Previewer
 
     protected override bool IsHitPositionValid(Vector3 hitPosition)
     {
+        if (Chart.LoadedInstrument != Chart.StarpowerInstrument) return false;
+        
         var starpowerXCoordinate = starpowerEvent.parentGameInstrument.GetGlobalStarpowerXCoordinate();
         var halfLaneWidth = Chart.instance.SceneDetails.laneWidth / 2;
         if (hitPosition.x < (starpowerXCoordinate - halfLaneWidth) || hitPosition.x > (starpowerXCoordinate + halfLaneWidth) || hitPosition.y < 0)

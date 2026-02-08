@@ -61,7 +61,7 @@ public class GameInstrument : MonoBehaviour
 
     public bool IsTickStarpower(int tick)
     {
-        if (Chart.LoadedInstrument != Chart.StarpowerInstrument) return false;
+        if (Chart.instance.SceneDetails.currentScene != SceneType.starpower) return false;
         return StarpowerLane.IsTickWithinStarpowerNote(tick);
     }
 }

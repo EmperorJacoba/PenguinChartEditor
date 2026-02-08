@@ -8,7 +8,7 @@ public class Section : Event<SectionData>
 
     private void Start()
     {
-        sectionNameModifierInputField.onEndEdit.AddListener(x => HandleManualEndEdit(x));
+        sectionNameModifierInputField.onEndEdit.AddListener(HandleManualEndEdit);
     }
     
     private void HandleManualEndEdit(string newSectionName)
@@ -35,6 +35,8 @@ public class Section : Event<SectionData>
     protected override void InitializeEvent()
     {
         displayedSectionName.text = representedData.Name;
+        
+        if (Chart.LoadedInstrument != ParentInstrument) Visible = false;
         
         if (editTick != Tick) DeactivateManualInput();
     }

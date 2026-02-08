@@ -73,12 +73,12 @@ public class SectionInstrument : IInstrument
         inputMap = new InputMap();
         inputMap.Enable();
 
-        inputMap.Charting.XYDrag.performed += x => MoveSelection();
-        inputMap.Charting.LMB.canceled += x => CompleteMove();
-        inputMap.Charting.Delete.performed += x => DeleteSelection();
-        inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
-        inputMap.Charting.SelectAll.performed += x => selection.SelectAllInLane();
-        inputMap.Charting.ClearSelection.performed += x => ClearAllSelections();
+        inputMap.Charting.XYDrag.performed += _ => MoveSelection();
+        inputMap.Charting.LMB.canceled += _ => CompleteMove();
+        inputMap.Charting.Delete.performed += _ => DeleteSelection();
+        inputMap.Charting.LMB.performed += _ => CheckForSelectionClear();
+        inputMap.Charting.SelectAll.performed += _ => selection.SelectAllInLane();
+        inputMap.Charting.ClearSelection.performed += _ => ClearAllSelections();
     }
     
     #endregion
