@@ -834,4 +834,14 @@ public class SyncTrackInstrument : IInstrument
     }
 
     #endregion
+
+    #region Not Implemented
+
+    public void SetSelectionToNewLane(int destinationLane)
+    {
+        throw new NotImplementedException("This instrument does not support setting selections to new lanes.");
+    }
+
+    #endregion
+
 }

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 
-public class FiveFretInstrument : IInstrument, ISustainableInstrument
+public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 {
     #region Constants
 
@@ -28,23 +26,15 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     #region Data Access
 
     private Lanes<FiveFretNoteData> Lanes { get; set; }
-    ILaneData IInstrument.GetLaneData(int lane) => Lanes.GetLane(lane);
-    ILaneData IInstrument.GetBarLaneData() => GetLaneData(LaneOrientation.open);
-    public LaneSet<FiveFretNoteData> GetLaneData(int lane) => Lanes.GetLane(lane);
+    public override ILaneData GetLaneData(int lane) => Lanes.GetLane(lane);
+    public override ILaneData GetBarLaneData() => GetLaneData(LaneOrientation.open);
     public LaneSet<FiveFretNoteData> GetLaneData(LaneOrientation lane) => Lanes.GetLane((int)lane);
 
-    ISelection IInstrument.GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
-    public SelectionSet<FiveFretNoteData> GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
+    public override ISelection GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
     public SelectionSet<FiveFretNoteData> GetLaneSelection(LaneOrientation lane) => Lanes.GetLaneSelection((int)lane);
 
-
-    public SoloDataSet SoloData { get; set; }
-    public InstrumentType InstrumentName { get; set; }
-    public DifficultyType Difficulty { get; set; }
-    public HeaderType InstrumentID => (HeaderType)((int)InstrumentName + (int)Difficulty);
-
-    private InputMap inputMap;
-
+    public override List<int> GetUniqueTickSet() => Lanes.GetUniqueTickSet();
+    
     #endregion
 
     #region LaneOrientation
@@ -95,8 +85,6 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         };
     }
 
-    public List<int> GetUniqueTickSet() => Lanes.GetUniqueTickSet();
-
     #endregion
 
     #region Constructor
@@ -104,7 +92,6 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     public FiveFretInstrument(HeaderType instrumentID, List<KeyValuePair<int, string>> instrumentInfo)
     {
         Lanes = new Lanes<FiveFretNoteData>(6);
-        SoloData = new SoloDataSet();
         sustainer = new SustainHelper<FiveFretNoteData>(this, Lanes, true);
 
         InstrumentName = InstrumentMetadata.GetInstrumentType(instrumentID);
@@ -121,35 +108,15 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
                 if (startTick == endTick) CheckForHopos((LaneOrientation)lane, startTick);
                 else CheckForHoposInRange(startTick, endTick);
             };
-            Lanes.UpdatesNeededInRange += (startTick, endTick) =>
-            {
-                CheckForHoposInRange(startTick, endTick);
-            };
+            Lanes.UpdatesNeededInRange += CheckForHoposInRange;
         }
-    }
-
-    public void SetUpInputMap()
-    {
-        inputMap = new InputMap();
-        inputMap.Enable();
-
-        inputMap.Charting.XYDrag.performed += x => MoveSelection();
-        inputMap.Charting.LMB.canceled += x => CompleteMove();
-        inputMap.Charting.Delete.performed += x => DeleteSelection();
-        inputMap.Charting.SustainDrag.performed += x => sustainer.SustainSelection();
-        inputMap.Charting.RMB.canceled += x => sustainer.ResetSustainChange();
-        inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
-        inputMap.Charting.SelectAll.performed += x => Lanes.SelectAll();
-        inputMap.Charting.ClearSelection.performed += x => ClearAllSelections();
     }
 
     #endregion
 
     #region Moving
 
-    private MoveHelper<FiveFretNoteData> mover = new();
-
-    private void MoveSelection()
+    protected override void InternalMoveSelection()
     {
         if (mover.Move2DSelection(this, Lanes, laneOrdering))
         {
@@ -158,7 +125,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         }
     }
 
-    private void CompleteMove()
+    protected override void InternalCompleteMove()
     {
         if (this != Chart.LoadedInstrument) return;
         Chart.showPreviewers = true;
@@ -172,38 +139,11 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     #endregion
 
     #region Add/Delete
+    
+    protected override void InternalDeleteTickInLane(int tick, int lane) => Lanes.PopTickFromLane(tick, lane);
+    protected override void InternalDeleteAllEventsAtTick(int tick) => Lanes.PopAllEventsAtTick(tick);
 
-    private void DeleteSelection()
-    {
-        if (Chart.LoadedInstrument != this) return;
-
-        SoloData.DeleteSelection();
-
-        if (NoteSelectionCount != 0)
-        {
-            var totalSelection = Lanes.GetUnifiedSelection();
-            Lanes.DeleteAllTicksInSelection();
-
-            CheckForHoposInRange(totalSelection.Min(), totalSelection.Max());
-        }
-
-        Chart.InPlaceRefresh();
-    }
-
-    public void DeleteTickInLane(int tick, int lane)
-    {
-        Lanes.PopTickFromLane(tick, lane);
-        Chart.InPlaceRefresh();
-    }
-
-    public void DeleteAllEventsAtTick(int tick)
-    {
-        SoloData.DeleteTick(tick);
-
-        Lanes.PopAllEventsAtTick(tick);
-        ClearAllSelections();
-    }
-
+    // needs to be ported up to base class
     public void AddData(int tick, LaneOrientation lane, FiveFretNoteData data)
     {
         var activeLane = Lanes.GetLane((int)lane);            
@@ -212,7 +152,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
         UpdateTickDataToMatch(tick, data);
 
         CheckForHopos(lane, tick);
-        ClampSustainsBefore(tick, lane);
+        ClampSustainsBefore(tick, (int)lane);
         ClearAllSelections();
     }
 
@@ -220,73 +160,34 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     #region Selections
 
-    public int NoteSelectionCount => Lanes.GetTotalSelectionCount();
+    #region Internal Overrides
 
-    public void ClearAllSelections()
-    {
-        Lanes.ClearAllSelections();
-        SoloData.ClearSelection();
-        
-        Chart.InPlaceRefresh();
-    }
-    public bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
-
-    public void DeleteTicksInSelection()
-    {
-        Lanes.DeleteAllTicksInSelection();
-        SoloData.DeleteSelection();
-    }
-
-    public void ShiftClickSelectLane(int start, int end, int lane)
-    {
-        if (lane == IInstrument.SOLO_DATA_LANE_ID)
-        {
-            SoloData.SelectTicksInRange(start, end);
-        }
-        else
-        {
-            Lanes.GetLaneSelection(lane).ShiftClickSelectInRange(start, end);
-        }
-    }
-
-    public void ShiftClickSelect(int start, int end)
-    {
-        Lanes.ShiftClickSelect(start, end);
-        SoloData.SelectTicksInRange(start, end);
-    }
-    public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
-
-    public void ClearTickFromAllSelections(int tick)
-    {
-        Lanes.ClearTickFromAllSelections(tick);
-        SoloData.RemoveTickFromAllSelections(tick);
-        Chart.InPlaceRefresh();
-    }
-
-    public void CheckForSelectionClear()
-    {
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
-
-        ClearAllSelections();
-        Chart.InPlaceRefresh();
-    }
-
-    public bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
-
-    // solos not here as of current
+    public override int NoteSelectionCount => Lanes.GetTotalSelectionCount();
+    public override bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
+    public override bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
     
-
-    public void SetSelectionToNewLane(LaneOrientation destinationLane)
+    protected override void InternalClearAllSelections() => Lanes.ClearAllSelections();
+    protected override void InternalDeleteTicksInSelection() => Lanes.DeleteAllTicksInSelection();
+    protected override void InternalShiftClickSelectLane(int start, int end, int lane) => Lanes.GetLaneSelection(lane).ShiftClickSelectInRange(start, end);
+    protected override void InternalShiftClickSelect(int start, int end) => Lanes.ShiftClickSelect(start, end);
+    protected override void InternalSelectAll() => Lanes.SelectAll();
+    protected override void InternalClearTickFromAllSelections(int tick) => Lanes.ClearTickFromAllSelections(tick);
+    
+    protected override void InternalSetSelectionToNewLane(int destinationLane)
     {
-        if (IsNoteSelectionEmpty()) return;
-
         var selectionMinMax = Lanes.GetSelectionBounds();
         Lanes.SetSelectionToNewLane((int)destinationLane);
-
         CheckForHoposInRange(selectionMinMax.min, selectionMinMax.max);
-
-        Chart.InPlaceRefresh();
     }
+    
+    protected override void InternalDeleteSelection()
+    {
+        var totalSelection = Lanes.GetUnifiedSelection();
+        Lanes.DeleteAllTicksInSelection();
+        CheckForHoposInRange(totalSelection.Min(), totalSelection.Max());
+    }
+    
+    #endregion
 
     public void NaturalizeSelection()
     {
@@ -455,20 +356,6 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     #endregion
 
-    #region Sustains
-
-    public SustainHelper<FiveFretNoteData> sustainer;
-    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
-    public void SetSelectionSustain(int ticks) => sustainer.SetSelectionSustain(ticks);
-    public void SetSelectionSustain(float bars) => sustainer.SetSelectionSustain(bars);
-    public void ValidateSustainsInRange(MinMaxTicks range) => ValidateSustainsInRange(range.min, range.max);
-    public void ValidateSustainsInRange(int startTick, int endTick) => sustainer.ValidateSustainsInRange(startTick, endTick);
-    public void ClampSustainsBefore(int tick, LaneOrientation lane) => sustainer.ClampSustainsBefore(tick, (int)lane);
-    public int CalculateSustainClamp(int sustainLength, int tick, LaneOrientation lane) => sustainer.CalculateSustainClamp(sustainLength, tick, (int)lane);
-    public int CalculateSustainClamp(int sustainLength, int tick, int lane) => sustainer.CalculateSustainClamp(sustainLength, tick, lane);
-
-    #endregion
-
     #region HOPOs
 
     public void CheckForHopos(LaneOrientation lane, int changedTick)
@@ -623,7 +510,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
 
     #region Import
 
-    public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    public override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
     {
         AddChartFormattedEventsToInstrument(Clipboard.ConvertToLineList(clipboardData, offset));
     }
@@ -808,7 +695,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     // currently only supports N events, need support for E solo/soloend
     // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)
     // throw away sustains that are too small (ms < user settings constant) (add setting to do extra validation, or do this when validators fail)
-    public List<string> ExportAllEvents()
+    public override List<string> ExportAllEvents()
     {
         List<string> notes = new();
         for (int i = 0; i < Lanes.Count; i++)
@@ -825,7 +712,7 @@ public class FiveFretInstrument : IInstrument, ISustainableInstrument
     }
 
     // no solos currently
-    public string ConvertSelectionToString()
+    public override string ConvertSelectionToString()
     {
         if (Lanes.GetUnifiedSelection().Count == 0) return "";
         var stringIDs = new List<KeyValuePair<int, string>>();

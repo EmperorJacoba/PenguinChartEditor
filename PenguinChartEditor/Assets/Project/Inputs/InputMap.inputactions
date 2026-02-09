@@ -156,7 +156,7 @@
                     "id": "1e9f5248-591b-4dc9-a14f-a8476a8d99ab",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "DisableWhenInputActive",
+                    "interactions": "DisableWhenInputActive,DisableModifiers",
                     "initialStateCheck": false
                 },
                 {

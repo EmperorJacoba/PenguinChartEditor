@@ -43,7 +43,6 @@ GameObject:
   - component: {fileID: 6996418852348705802}
   - component: {fileID: 6608688680790615053}
   - component: {fileID: 4491809273230476122}
-  - component: {fileID: 8087825451041153065}
   m_Layer: 6
   m_Name: Cube
   m_TagString: ChartHighway
@@ -119,28 +118,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8087825451041153065
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5218740921454497633}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -5495902117074765545, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
 --- !u!1 &8974281703401690028
 GameObject:
   m_ObjectHideFlags: 0

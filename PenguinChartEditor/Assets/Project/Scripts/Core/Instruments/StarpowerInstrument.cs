@@ -134,7 +134,14 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
                 );
         }
     }
-    
+
+    // Don't use this without making sure it's absolutely necessary. The two functions above are more aligned to this
+    // use case.
+    public void SetSelectionToNewLane(int destinationLane)
+    {
+        Lanes.SetSelectionToNewLane(destinationLane);
+    }
+
     public bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
 
     public void ClearAllSelections()

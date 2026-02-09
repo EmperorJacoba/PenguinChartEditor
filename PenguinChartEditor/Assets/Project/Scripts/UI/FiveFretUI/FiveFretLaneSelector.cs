@@ -13,5 +13,5 @@ public class FiveFretLaneSelector : MonoBehaviour
         laneButton.onClick.AddListener(TriggerSelectionUpdate);
     }
 
-    private void TriggerSelectionUpdate() => Chart.GetActiveInstrument<FiveFretInstrument>().SetSelectionToNewLane(lane);
+    private void TriggerSelectionUpdate() => Chart.LoadedInstrument.SetSelectionToNewLane((int)lane);
 }

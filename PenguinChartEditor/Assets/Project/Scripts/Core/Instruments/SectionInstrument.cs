@@ -221,11 +221,15 @@ public class SectionInstrument : IInstrument
 
     public SoloDataSet SoloData
     {
-        get { throw new NotImplementedException("Sections do not have solo events. If you are using the SoloEvent suite, it is not required."); }
-        set { throw new NotImplementedException("Sections do not have solo events. If you are using the SoloEvent suite, it is not required."); }
+        get => null;
+        set {}
     }
     public ILaneData GetBarLaneData() => throw new System.NotImplementedException("No bar lane in sections");
     public ILaneData GetLaneData(int lane) => laneData;
-    
+    public void SetSelectionToNewLane(int destinationLane)
+    {
+        throw new NotImplementedException("No cross-lane selections in this instrument.");
+    }
+
     #endregion
 }

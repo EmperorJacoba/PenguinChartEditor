@@ -100,8 +100,11 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     }
 
     protected abstract void InternalSelectAll();
-    public void SelectAll()
+
+    private void SelectAll()
     {
+        if (Chart.LoadedInstrument != this) return;
+        
         InternalSelectAll();
         SoloData?.SelectAll();
         
@@ -128,6 +131,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalShiftClickSelectLane(int start, int end, int lane);
     public void ShiftClickSelectLane(int start, int end, int lane)
     {
+        if (Chart.LoadedInstrument != this) return;
+        
         if (lane == IInstrument.SOLO_DATA_LANE_ID)
         {
             SoloData?.SelectTicksInRange(start, end);
@@ -141,6 +146,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalShiftClickSelect(int start, int end);
     public void ShiftClickSelect(int start, int end)
     {
+        if (Chart.LoadedInstrument != this) return;
+        
         InternalShiftClickSelect(start, end);
         SoloData?.SelectTicksInRange(start, end);
     }
@@ -150,6 +157,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalClearTickFromAllSelections(int tick);
     public void ClearTickFromAllSelections(int tick)
     {
+        if (Chart.LoadedInstrument != this) return;
+        
         InternalClearTickFromAllSelections(tick);
         SoloData.RemoveTickFromAllSelections(tick);
         
@@ -159,6 +168,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalDeleteTicksInSelection();
     public void DeleteTicksInSelection()
     {
+        if (Chart.LoadedInstrument != this) return;
+        
         InternalDeleteTicksInSelection();
         SoloData?.DeleteSelection();
         
@@ -175,6 +186,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalSetSelectionToNewLane(int destinationLane);
     public void SetSelectionToNewLane(int destinationLane)
     {
+        if (Chart.LoadedInstrument != this) return;
+        
         if (IsNoteSelectionEmpty()) return;
         
         InternalSetSelectionToNewLane(destinationLane);
@@ -189,6 +202,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalDeleteTickInLane(int tick, int lane);
     public void DeleteTickInLane(int tick, int lane)
     {
+        if (Chart.LoadedInstrument != this) return;
+        
         if (lane == IInstrument.SOLO_DATA_LANE_ID)
         {
             SoloData?.DeleteTick(tick);
@@ -204,6 +219,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalDeleteAllEventsAtTick(int tick);
     public void DeleteAllEventsAtTick(int tick)
     {
+        if (Chart.LoadedInstrument != this) return;
+        
         SoloData?.DeleteTick(tick);
         InternalDeleteAllEventsAtTick(tick);
         
@@ -251,7 +268,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     #endregion
 }
 
-public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustainableInstrument where T : IEventData
+public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustainableInstrument where T : IEventData, ISustainable
 {
     public override void SetUpInputMap()
     {
@@ -262,7 +279,8 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
     }
     
     // Remember to initialize in constructor.
-    public SustainHelper<FiveFretNoteData> sustainer;
+    protected SustainHelper<T> sustainer;
+    
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
     public void SetSelectionSustain(int ticks) => sustainer.SetSelectionSustain(ticks);
     public void SetSelectionSustain(float bars) => sustainer.SetSelectionSustain(bars);

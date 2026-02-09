@@ -56,6 +56,8 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
 
     public void ChangeModifier(FiveFretNotePreviewer.NoteOption newMode)
     {
+        if (Input.GetKey(KeyCode.LeftControl)) return;
+        
         var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
         if (!instrument.IsNoteSelectionEmpty())
         {
@@ -102,8 +104,6 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
 
     public void SetSelectionLane(FiveFretInstrument.LaneOrientation lane)
     {
-        var instrument = Chart.GetActiveInstrument<FiveFretInstrument>();
-
-        instrument.SetSelectionToNewLane(lane);
+        Chart.LoadedInstrument.SetSelectionToNewLane((int)lane);
     }
 }
