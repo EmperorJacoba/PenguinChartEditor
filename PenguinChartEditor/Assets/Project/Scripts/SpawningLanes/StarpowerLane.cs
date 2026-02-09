@@ -50,6 +50,9 @@ public class StarpowerLane : SpawningLane<StarpowerEvent>
         foreach (var eventTick in eventsToDisplay)
         {
             var data = Chart.StarpowerInstrument.GetLaneData(laneIdentifier)[eventTick];
+            
+            // Inclusive on beginning, not on end - this is intentional
+            // (I personally hate this specification. MS never showed this but it's standard in YARG & CH afaik.)
             if (tick >= eventTick && tick < eventTick + data.Sustain) return true;
         }
         return false;

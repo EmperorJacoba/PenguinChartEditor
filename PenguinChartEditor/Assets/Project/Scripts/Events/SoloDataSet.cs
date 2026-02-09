@@ -99,6 +99,12 @@ public class SoloDataSet
         }
     }
 
+    public void SelectAll()
+    {
+        SelectedStartEvents.SelectAllInLane();
+        SelectedEndEvents.SelectAllInLane();
+    }
+
     public void RemoveTickFromAllSelections(int tick)
     {
         SelectedStartEvents.Remove(tick);

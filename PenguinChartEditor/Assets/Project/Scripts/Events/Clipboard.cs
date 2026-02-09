@@ -50,6 +50,5 @@ public static class Clipboard
     {
         Copy();
         Chart.LoadedInstrument.DeleteTicksInSelection();
-        Chart.InPlaceRefresh();
     }
 }
