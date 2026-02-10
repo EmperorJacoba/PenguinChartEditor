@@ -273,6 +273,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         if (!mover.MoveInProgress) return;
 
         InternalCompleteMove();
+        
+        mover.Reset();
     }
 
     #endregion

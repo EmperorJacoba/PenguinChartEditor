@@ -3,72 +3,39 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-public class SectionInstrument : IInstrument
+public class SectionInstrument : BaseInstrument<SectionData>
 {
-    #region Attributes
-
-    public InstrumentType InstrumentName { get; set; } = InstrumentType.events;
-    public DifficultyType Difficulty { get; set; } = DifficultyType.easy;
-    public HeaderType InstrumentID { get; } = HeaderType.Events;
-    
-    #endregion
-
     #region Data Setup
 
     public LaneSet<SectionData> GetLaneData() => laneData;
-    private LaneSet<SectionData> laneData;
+    private readonly LaneSet<SectionData> laneData;
 
     public SelectionSet<SectionData> GetLaneSelection() => selection;
-    private SelectionSet<SectionData> selection;
+    private readonly SelectionSet<SectionData> selection;
+    public override ISelection GetLaneSelection(int lane) => selection;
     
-    public List<int> GetUniqueTickSet() => laneData.Keys.ToList();
+    public override List<int> GetUniqueTickSet() => laneData.Keys.ToList();
 
     #endregion
 
     #region Selections
-
-    public void ClearAllSelections()
-    {
-        selection.Clear();
-        Chart.InPlaceRefresh();
-    }
-    public bool NoteSelectionContains(int tick, int lane) => selection.Contains(tick);
-    public int NoteSelectionCount => selection.Count();
-    public void ShiftClickSelectLane(int start, int end, int lane) => selection.ShiftClickSelectInRange(start, end);
-    public void ShiftClickSelect(int start, int end) => selection.ShiftClickSelectInRange(start, end);
-    public void ShiftClickSelect(int tick) => selection.ShiftClickSelectInRange(tick, tick);
-    public void ClearTickFromAllSelections(int tick) => selection.Remove(tick);
-
-    public void DeleteTicksInSelection()
-    {
-        selection.PopSelectedTicksFromLane();
-        Chart.InPlaceRefresh();
-    }
-
-    public bool IsNoteSelectionEmpty() => selection.Count == 0;
-
-    private void DeleteSelection()
-    {
-        selection.PopSelectedTicksFromLane();
-        Chart.InPlaceRefresh();
-    }
-    public ISelection GetLaneSelection(int lane) => selection;
     
-    private void CheckForSelectionClear()
-    {
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
-        
-        ClearAllSelections();
-        Chart.InPlaceRefresh();
-    }
-    
+    public override bool NoteSelectionContains(int tick, int lane) => selection.Contains(tick);
+    public override int NoteSelectionCount => selection.Count();
+    public override bool IsNoteSelectionEmpty() => selection.Count == 0;
+
+    #region Internal Implementations
+
+    protected override void InternalSelectAll() => selection.SelectAllInLane();
+    protected override void InternalClearAllSelections() => selection.Clear();
+    protected override void InternalShiftClickSelectLane(int start, int end, int lane) => selection.ShiftClickSelectInRange(start, end);
+    protected override void InternalShiftClickSelect(int start, int end) => selection.ShiftClickSelectInRange(start, end);
+    protected override void InternalClearTickFromAllSelections(int tick) => selection.Remove(tick);
+    protected override void InternalDeleteTicksInSelection() => selection.PopSelectedTicksFromLane();
+    protected override void InternalDeleteSelection() => selection.PopSelectedTicksFromLane();
+
     #endregion
-
-    #region Add/Delete
-
-    public void DeleteTickInLane(int tick, int lane) => laneData.Remove(tick);
-    public void DeleteAllEventsAtTick(int tick) => laneData.Remove(tick);
-
+    
     public void SetSectionSelectionName(string newName)
     {
         if (newName == MULTIPLE_SELECTION_WARNING) return;
@@ -89,13 +56,18 @@ public class SectionInstrument : IInstrument
         // Allows for editing the names of multiple sections, while also warning about it.
         foreach (var section in selection)
         {
+            if (!selection.TryGetSelectedItem(section, out var sectionData))
+            {
+                continue;
+            }
+            
             if (sectionName == null)
             {
-                sectionName = laneData[section].Name;
+                sectionName = sectionData.Name;
                 continue;
             }
 
-            if (sectionName != laneData[section].Name)
+            if (sectionName != sectionData.Name)
             {
                 return MULTIPLE_SELECTION_WARNING;
             }
@@ -103,6 +75,13 @@ public class SectionInstrument : IInstrument
 
         return sectionName;
     }
+    
+    #endregion
+
+    #region Add/Delete
+
+    protected override void InternalDeleteTickInLane(int tick, int lane) => laneData.Remove(tick);
+    protected override void InternalDeleteAllEventsAtTick(int tick) => laneData.Remove(tick);
 
     #endregion
 
@@ -112,49 +91,24 @@ public class SectionInstrument : IInstrument
     {
         laneData = new LaneSet<SectionData>();
         selection = new SelectionSet<SectionData>(laneData);
-        mover = new MoveHelper<SectionData>();
         
         AddChartFormattedEventsToInstrument(events);
-    }
-    
-    private InputMap inputMap;
-    public void SetUpInputMap()
-    {
-        inputMap = new InputMap();
-        inputMap.Enable();
-
-        inputMap.Charting.XYDrag.performed += _ => MoveSelection();
-        inputMap.Charting.LMB.canceled += _ => CompleteMove();
-        inputMap.Charting.Delete.performed += _ => DeleteSelection();
-        inputMap.Charting.LMB.performed += _ => CheckForSelectionClear();
-        inputMap.Charting.SelectAll.performed += _ => selection.SelectAllInLane();
-        inputMap.Charting.ClearSelection.performed += _ => ClearAllSelections();
     }
     
     #endregion
 
     #region Moving
 
-    private MoveHelper<SectionData> mover;
+    protected override bool InternalMoveSelection() => mover.Move1DSelection(this, laneData, selection);
 
-    private void MoveSelection()
-    {
-        if (mover.Move1DSelection(this, laneData, selection))
-        {
-            Chart.InPlaceRefresh();
-        }
-    }
-
-    private void CompleteMove()
-    {
-        mover.Reset();
-    }
+    // No extra post-move actions needed.
+    protected override void InternalCompleteMove() {}
 
     #endregion
 
     #region Import
 
-    public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    public override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
     {
         throw new System.NotImplementedException();
     }
@@ -205,12 +159,12 @@ public class SectionInstrument : IInstrument
 
     #region Export
 
-    public string ConvertSelectionToString()
+    public override string ConvertSelectionToString()
     {
         throw new System.NotImplementedException();
     }
     
-    public List<string> ExportAllEvents()
+    public override List<string> ExportAllEvents()
     {
         throw new System.NotImplementedException();
     }
@@ -219,14 +173,14 @@ public class SectionInstrument : IInstrument
 
     #region Not Implemented
 
-    public SoloDataSet SoloData
+    public override SoloDataSet SoloData
     {
         get => null;
         set {}
     }
-    public ILaneData GetBarLaneData() => throw new System.NotImplementedException("No bar lane in sections");
-    public ILaneData GetLaneData(int lane) => laneData;
-    public void SetSelectionToNewLane(int destinationLane)
+    public override ILaneData GetBarLaneData() => throw new System.NotImplementedException("No bar lane in sections");
+    public override ILaneData GetLaneData(int lane) => laneData;
+    protected override void InternalSetSelectionToNewLane(int destinationLane)
     {
         throw new NotImplementedException("No cross-lane selections in this instrument.");
     }

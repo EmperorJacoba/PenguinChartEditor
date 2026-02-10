@@ -177,8 +177,6 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
     {
         ValidateSustainsInRange(mover.GetFinalValidationRange(currentLaneOrdering));
         currentLaneOrdering = null;
-
-        mover.Reset();
     }
 
     #endregion

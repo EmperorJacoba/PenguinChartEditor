@@ -126,6 +126,19 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
         selection = new HashSet<int>(newSelectionSet);
     }
 
+    public void Validate()
+    {
+        foreach (var tick in selection.Where(tick => !parentLane.Contains(tick)))
+        {
+            selection.Remove(tick);
+        }
+    }
+
+    public bool TryGetSelectedItem(int tick, out TValue item)
+    {
+        return parentLane.TryGetValue(tick, out item);
+    }
+
     public int GetFirstSelectedTick()
     {
         if (selection.Count > 0)
