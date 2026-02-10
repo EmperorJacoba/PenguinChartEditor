@@ -744,26 +744,9 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
             }
         }
 
-        foreach (var tick in tapTicks)
-        {
-            stringIDs.Add(
-                new KeyValuePair<int, string>(tick, TAP_ID)
-                );
-        }
-
-        foreach (var tick in strumTicks)
-        {
-            stringIDs.Add(
-                new KeyValuePair<int, string>(tick, EXPLICIT_STRUM_ID)
-                );
-        }
-
-        foreach (var tick in hopoTicks)
-        {
-            stringIDs.Add(
-                new KeyValuePair<int, string>(tick, EXPLICIT_HOPO_ID)
-                );
-        }
+        stringIDs.AddRange(tapTicks.Select(tick => new KeyValuePair<int, string>(tick, TAP_ID)));
+        stringIDs.AddRange(strumTicks.Select(tick => new KeyValuePair<int, string>(tick, EXPLICIT_STRUM_ID)));
+        stringIDs.AddRange(hopoTicks.Select(tick => new KeyValuePair<int, string>(tick, EXPLICIT_HOPO_ID)));
 
         stringIDs.Sort((a, b) => a.Key.CompareTo(b.Key));
 

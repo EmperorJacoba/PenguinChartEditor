@@ -348,6 +348,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
             {
                 Selection.Add(Tick);
             }
+            Chart.InPlaceRefresh();
         }
         // Regular click, no extra significant keybinds
         else
@@ -357,10 +358,9 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
                 ParentInstrument.ClearAllSelections();
             }
             Selection.Add(Tick);
+            Chart.InPlaceRefresh();
         }
-
-        Chart.InPlaceRefresh();
-
+        
         // Record the last selection data for shift-click selection
         if (Selection.Contains(Tick)) lastTickSelection = Tick;
     }

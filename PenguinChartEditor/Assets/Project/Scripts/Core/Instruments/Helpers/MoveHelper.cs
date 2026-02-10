@@ -117,4 +117,9 @@ public class MoveHelper<T> where T : IEventData
 
         return true;
     }
+
+    public void ForceMoveStart()
+    {
+        moveData.inProgress = true;
+    }
 }

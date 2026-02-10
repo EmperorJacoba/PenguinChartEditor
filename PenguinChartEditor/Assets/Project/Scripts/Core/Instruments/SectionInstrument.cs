@@ -89,6 +89,9 @@ public class SectionInstrument : BaseInstrument<SectionData>
 
     public SectionInstrument(List<KeyValuePair<int, string>> events)
     {
+        InstrumentName = InstrumentType.events;
+        Difficulty = DifficultyType.easy;
+        
         laneData = new LaneSet<SectionData>();
         selection = new SelectionSet<SectionData>(laneData);
         

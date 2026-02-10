@@ -55,6 +55,35 @@ public interface ISustainableInstrument
     public void SetSelectionSustain(float bars);
 }
 
+// How do I make my own instrument? A starting point:
+
+// The Instrument class is what all instruments MUST inherit from to cleanly fit into the current data structure of
+// Penguin. All instruments inherit from BaseInstrument, and instruments with sustain capability (like FiveFretInstrument
+// and StarpowerInstrument) inherit from BaseSustainableInstrument.
+
+// They do this to make refreshing on action miles easier.
+// For context, I originally just implemented the interface, 
+// and every time I would make a new instrument, I would forget to call Chart.InPlaceRefresh() when data changed
+// and wonder why the changes weren't showing up properly. :p
+
+// It also contains base capabilities for things like moving, selections, addition, and deletion, as well as tracking actions
+// for undo/redo capabilities. 
+
+// To make your own instrument, have it inherit from BaseInstrument or BaseSustainableInstrument, and then set up the data
+// structure you need (bare LaneSet<> and SelectionSet<> or Lanes<> object -
+// for single lane and multi-lane functionality, respectively - although you can technically use Lanes<> with one lane)
+
+// Plug in your lane data into the obvious overrides and then set up the custom functions you need.
+// The "obvious overrides" is anything that starts with "Internal". Internal functions are run at the chokepoint for where
+// all customized functionality runs in the base class. This is where the meat and bones functionality is, as well as any checks/validation
+// to go along with it. 
+
+// When you're making your own instrument, I would recommend looking at the most similar instrument to the new instrument
+// for a template on what to do. Feel free to ask me for any help!
+
+// - Emperor
+
+
 /// <summary>
 /// This class serves to automatically refresh charts, set up inputs, and call undo/redo actions
 /// to avoid running into the common error of
@@ -132,6 +161,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public void ShiftClickSelectLane(int start, int end, int lane)
     {
         if (Chart.LoadedInstrument != this) return;
+        ClearAllSelections();
         
         if (lane == IInstrument.SOLO_DATA_LANE_ID)
         {
@@ -147,6 +177,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public void ShiftClickSelect(int start, int end)
     {
         if (Chart.LoadedInstrument != this) return;
+        ClearAllSelections();
         
         InternalShiftClickSelect(start, end);
         SoloData?.SelectTicksInRange(start, end);
@@ -256,7 +287,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     private void MoveSelection()
     {
-        if (Chart.LoadedInstrument != this) return;
+        if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
         
         if (InternalMoveSelection())
         {
@@ -267,7 +298,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalCompleteMove();
     private void CompleteMove()
     {
-        if (Chart.LoadedInstrument != this) return;
+        if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
         Chart.showPreviewers = true;
 
         if (!mover.MoveInProgress) return;

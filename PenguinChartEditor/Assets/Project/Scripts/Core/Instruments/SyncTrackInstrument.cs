@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class SyncTrackInstrument : IInstrument
+public class SyncTrackInstrument : BaseInstrument<BPMData>
 {
     #region Constants
 
@@ -27,13 +27,13 @@ public class SyncTrackInstrument : IInstrument
     // Data types are fundamentally different, very hard to combine into one single Lanes object
     // Both are also structs because of their small (and repeatable) size.
     // Converting from IEventData to XData every time you want to get a statistic would be too much overhead. 
-    public LaneSet<BPMData> TempoEvents { get; set; }
-    public LaneSet<TSData> TimeSignatureEvents { get; set; }
+    public LaneSet<BPMData> TempoEvents { get; }
+    public LaneSet<TSData> TimeSignatureEvents { get; }
 
     public SelectionSet<BPMData> bpmSelection;
     public SelectionSet<TSData> tsSelection;
 
-    public ILaneData GetLaneData(int lane)
+    public override ILaneData GetLaneData(int lane)
     {
         var laneAsOrientation = (LaneOrientation)lane;
         if (laneAsOrientation == LaneOrientation.bpm)
@@ -43,9 +43,9 @@ public class SyncTrackInstrument : IInstrument
         return TimeSignatureEvents;
     }
 
-    public ILaneData GetBarLaneData() => throw new NullReferenceException("SyncTrackInstrument does not have a bar lane, as it does not use traditional instrument lanes.");
+    public override ILaneData GetBarLaneData() => throw new NullReferenceException("SyncTrackInstrument does not have a bar lane, as it does not use traditional instrument lanes.");
 
-    public ISelection GetLaneSelection(int lane)
+    public override ISelection GetLaneSelection(int lane)
     {
         var laneAsOrientation = (LaneOrientation)lane;
         if (laneAsOrientation == LaneOrientation.bpm)
@@ -55,29 +55,30 @@ public class SyncTrackInstrument : IInstrument
         return tsSelection;
     }
 
-    public bool IsNoteSelectionEmpty() => bpmSelection.Count == 0 && tsSelection.Count == 0;
+    public override bool IsNoteSelectionEmpty() => bpmSelection.Count == 0 && tsSelection.Count == 0;
 
-    public SoloDataSet SoloData
+    public override SoloDataSet SoloData
     {
-        get { throw new NotImplementedException("SyncTrack does not have solo events. If you are using the SoloEvent suite, it is not required."); }
-        set { throw new NotImplementedException("SyncTrack does not have solo events. If you are using the SoloEvent suite, it is not required."); }
+        get => null;
+        set {}
     }
-
-    public InstrumentType InstrumentName { get; set; } = InstrumentType.synctrack;
-    public DifficultyType Difficulty { get; set; } = DifficultyType.easy;
-    public HeaderType InstrumentID => HeaderType.SyncTrack;
-
-    public List<int> GetUniqueTickSet()
+    
+    public override List<int> GetUniqueTickSet()
     {
         var hashSet = Chart.SyncTrackInstrument.TempoEvents.ExportData().Keys.ToHashSet();
         hashSet.UnionWith(TimeSignatureEvents.ExportData().Keys.ToHashSet());
+        
         List<int> list = new(hashSet);
         list.Sort();
+        
         return list;
     }
 
     public SyncTrackInstrument(List<KeyValuePair<int, string>> fileData)
     {
+        InstrumentName = InstrumentType.synctrack;
+        Difficulty = DifficultyType.easy;
+        
         TempoEvents = new LaneSet<BPMData>(
             protectedTicks: new HashSet<int> { 0 }
             );
@@ -101,35 +102,16 @@ public class SyncTrackInstrument : IInstrument
         }
     }
 
-    private InputMap inputMap;
-    public void SetUpInputMap() 
-    {
-        inputMap = new InputMap();
-        inputMap.Enable();
-        inputMap.Charting.YDrag.performed += x => 
-        {
-            // Let BPM labels do their thing undisturbed if applicable
-            if (!Input.GetKey(KeyCode.LeftControl)) 
-                MoveSelection(); 
-        };
-
-        inputMap.Charting.LMB.canceled += x => CompleteMove();
-
-        inputMap.Charting.SelectAll.performed += x =>
-        {
-            bpmSelection.SelectAllInLane();
-            tsSelection.SelectAllInLane();
-        };
-
-        inputMap.Charting.Delete.performed += x => DeleteSelection();
-        inputMap.Charting.ClearSelection.performed += x => ClearAllSelections();
-        inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
-    }
-
     public enum LaneOrientation
     {
         bpm = 0,
         timeSignature = 1
+    }
+    
+    protected override void InternalSelectAll()
+    {
+        bpmSelection.SelectAllInLane();
+        tsSelection.SelectAllInLane();
     }
 
     #endregion
@@ -142,8 +124,10 @@ public class SyncTrackInstrument : IInstrument
     /// <summary>
     /// Runs every frame when Drag input action is active. 
     /// </summary>
-    private void MoveSelection()
+    protected override bool InternalMoveSelection()
     {
+        if (Input.GetKey(KeyCode.LeftControl)) return false;
+        
         var bpmMove = bpmMover.Move1DSelection(this, TempoEvents, bpmSelection);
         var tsMove = tsMover.Move1DSelection(this, TimeSignatureEvents, tsSelection);
         
@@ -152,16 +136,23 @@ public class SyncTrackInstrument : IInstrument
             RecalculateTempoEventDictionary();
         }
 
+        // FIXME: Investigate if we actually need a sync track refresh for both...only bpm applies really?
         if (bpmMove || tsMove)
         {
+            mover.ForceMoveStart();
             Chart.SyncTrackInPlaceRefresh();
         }
+        
+        // Always return false because BaseInstrument will do an unnecessary & invalid refresh upon a SyncTrack move.
+        // Because SyncTrack BPM changes physically change the waveform, the waveform must also be refreshed with the 
+        // refresh. Chart.InPlaceRefresh() is not enough.
+        return false;
     }
 
-    public void CompleteMove()
+    protected override void InternalCompleteMove()
     {
-        if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
-        
+        // Technically the base class does a reset of its own. Since SyncTrack is made up of two distinct tracks,
+        // Both move helpers must be reset individually. Overhead for Reset() in the base class shouldn't be much.
         bpmMover.Reset();
         tsMover.Reset();
 
@@ -172,10 +163,8 @@ public class SyncTrackInstrument : IInstrument
 
     #region Add/Delete
 
-    private void DeleteSelection()
+    protected override void InternalDeleteSelection()
     {
-        if (Chart.LoadedInstrument != this) return;
-
         if (bpmSelection.Count > 0)
         {
             TempoEvents.PopTicksFromSet(bpmSelection.ExportData());
@@ -189,31 +178,37 @@ public class SyncTrackInstrument : IInstrument
             tsSelection.Clear();
         }
 
+        // The base class also does a refresh...means this is a little less efficient. But oh well, what can you do.
+        // We need the special refresh, unfortunately. If you can find a not clunky solution for this issue please do.
         Chart.SyncTrackInPlaceRefresh();
     }
 
-    public void DeleteTickInLane(int tick, int lane)
+    protected override void InternalDeleteTickInLane(int tick, int lane)
     {
-        if (lane == (int)LaneOrientation.bpm)
+        switch (lane)
         {
-            if (!TempoEvents.Contains(tick)) return;
-            var poppedTick = TempoEvents.PopSingle(tick);
-            if (poppedTick == null) return;
+            case (int)LaneOrientation.bpm:
+            {
+                if (!TempoEvents.Contains(tick)) return;
+                var poppedTick = TempoEvents.PopSingle(tick);
+                if (poppedTick == null) return;
 
-            RecalculateTempoEventDictionary();
-        }
-
-        if (lane == (int)LaneOrientation.timeSignature)
-        {
-            if (!TimeSignatureEvents.Contains(tick)) return;
-            var poppedTick = TimeSignatureEvents.PopSingle(tick);
-            if (poppedTick == null) return;
+                RecalculateTempoEventDictionary();
+                break;
+            }
+            case (int)LaneOrientation.timeSignature:
+            {
+                if (!TimeSignatureEvents.Contains(tick)) return;
+                var poppedTick = TimeSignatureEvents.PopSingle(tick);
+                if (poppedTick == null) return;
+                break;
+            }
         }
 
         Chart.SyncTrackInPlaceRefresh();
     }
 
-    public void DeleteAllEventsAtTick(int tick)
+    protected override void InternalDeleteAllEventsAtTick(int tick)
     {
         if (TempoEvents.Contains(tick)) TempoEvents.PopSingle(tick);
         if (TimeSignatureEvents.Contains(tick)) TempoEvents.PopSingle(tick);
@@ -243,7 +238,7 @@ public class SyncTrackInstrument : IInstrument
     // maybe re-validate dictionary when exporting?
     // Effects currently unknown, but round off should fix it if anything
     // Please remove and re-think if any errors arise from exporting to different software/YARG/Clone Hero
-    // NO EVIDENCE FOR INACCURACY AT THIS TIME
+    // NO EVIDENCE FOR INACCURACY AT THIS TIME - if anything recalculations should resolve any
     public float CalculateLastBPMBeforeAnchor(int currentTick, float newTime)
     {
         var nextAnchor = GetNextAnchor(currentTick);
@@ -321,6 +316,7 @@ public class SyncTrackInstrument : IInstrument
 
             outputTempoEventsDict.Add(tick, timestamp);
         }
+        
         // Start new data with the song timestamp of the change
         double currentSongTime = outputTempoEventsDict[tickEvents[positionOfTick]].Timestamp;
         for (int i = positionOfTick + 1; i < tickEvents.Count; i++)
@@ -599,15 +595,8 @@ public class SyncTrackInstrument : IInstrument
     #endregion
 
     #region Selections
-
-    public void CheckForSelectionClear()
-    {
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
-
-        bpmSelection.Clear();
-        tsSelection.Clear();
-    }
-    public void DeleteTicksInSelection()
+    
+    protected override void InternalDeleteTicksInSelection()
     {
         bpmSelection.PopSelectedTicksFromLane();
         tsSelection.PopSelectedTicksFromLane();
@@ -615,13 +604,13 @@ public class SyncTrackInstrument : IInstrument
         RecalculateTempoEventDictionary();
     }
 
-    public void ClearAllSelections()
+    protected override void InternalClearAllSelections()
     {
         bpmSelection.Clear();
         tsSelection.Clear();
     }
 
-    public bool NoteSelectionContains(int tick, int lane)
+    public override bool NoteSelectionContains(int tick, int lane)
     {
         if ((LaneOrientation)lane == LaneOrientation.bpm)
         {
@@ -634,7 +623,7 @@ public class SyncTrackInstrument : IInstrument
         return false;
     }
 
-    public void ShiftClickSelectLane(int start, int end, int lane)
+    protected override void InternalShiftClickSelectLane(int start, int end, int lane)
     {
         var trackID = (LaneOrientation)lane;
 
@@ -648,26 +637,19 @@ public class SyncTrackInstrument : IInstrument
         }
     }
 
-    public void ShiftClickSelect(int start, int end)
+    protected override void InternalShiftClickSelect(int start, int end)
     {
-        bpmSelection.Clear();
-        tsSelection.Clear();
-
         bpmSelection.ShiftClickSelectInRange(start, end);
         tsSelection.ShiftClickSelectInRange(start, end);
     }
-
-    public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
-
-    public void ShiftClickSelect(int tick, bool temporary) => ShiftClickSelect(tick);
-
-    public void ClearTickFromAllSelections(int tick)
+    
+    protected override void InternalClearTickFromAllSelections(int tick)
     {
         bpmSelection.Remove(tick);
         tsSelection.Remove(tick);
     }
 
-    public string ConvertSelectionToString()
+    public override string ConvertSelectionToString()
     {
         var bpmSelectionData = bpmSelection.ExportNormalizedData();
         var tsSelectionData = tsSelection.ExportNormalizedData();
@@ -703,7 +685,7 @@ public class SyncTrackInstrument : IInstrument
         return combinedIDs.ToString();
     }
 
-    public int NoteSelectionCount
+    public override int NoteSelectionCount
     {
         get
         {
@@ -715,7 +697,7 @@ public class SyncTrackInstrument : IInstrument
 
     #region Parsing
 
-    public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    public override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
     {
         AddChartFormattedEventsToInstrument(Clipboard.ConvertToLineList(clipboardData, offset));
     }
@@ -796,7 +778,7 @@ public class SyncTrackInstrument : IInstrument
     
     #region Export
 
-    public List<string> ExportAllEvents()
+    public override List<string> ExportAllEvents()
     {
         var syncTrackStrings = ExportTempoEvents();
         syncTrackStrings.AddRange(ExportTimeSignatureEvents());
@@ -837,7 +819,7 @@ public class SyncTrackInstrument : IInstrument
 
     #region Not Implemented
 
-    public void SetSelectionToNewLane(int destinationLane)
+    protected override void InternalSetSelectionToNewLane(int destinationLane)
     {
         throw new NotImplementedException("This instrument does not support setting selections to new lanes.");
     }
