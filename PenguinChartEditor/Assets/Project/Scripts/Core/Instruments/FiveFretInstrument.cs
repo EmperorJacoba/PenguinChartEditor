@@ -116,24 +116,20 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     #region Moving
 
-    protected override void InternalMoveSelection()
+    protected override bool InternalMoveSelection()
     {
         if (mover.Move2DSelection(this, Lanes, laneOrdering))
         {
             CheckForHoposInRange(mover.GetChangingValidationRange());
-            Chart.InPlaceRefresh();
+            return true;
         }
+
+        return false;
     }
 
     protected override void InternalCompleteMove()
     {
-        if (this != Chart.LoadedInstrument) return;
-        Chart.showPreviewers = true;
-
-        if (!mover.MoveInProgress) return;
-
         ValidateSustainsInRange(mover.GetFinalValidationRange(laneOrdering));
-        mover.Reset();
     }
 
     #endregion

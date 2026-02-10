@@ -252,16 +252,26 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     
     protected MoveHelper<T> mover = new();
 
-    protected abstract void InternalMoveSelection();
+    protected abstract bool InternalMoveSelection();
 
     private void MoveSelection()
     {
-        InternalMoveSelection();
+        if (Chart.LoadedInstrument != this) return;
+        
+        if (InternalMoveSelection())
+        {
+            Chart.InPlaceRefresh();
+        }
     }
 
     protected abstract void InternalCompleteMove();
     private void CompleteMove()
     {
+        if (Chart.LoadedInstrument != this) return;
+        Chart.showPreviewers = true;
+
+        if (!mover.MoveInProgress) return;
+
         InternalCompleteMove();
     }
 

@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 /// <summary>
 /// Notes: The equivilent of LaneOrientation in this instrument is HeaderType - as each instrument track has independent starpower.
 /// </summary>
-public class StarpowerInstrument : IInstrument, ISustainableInstrument
+public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 {
     #region Constants
 
@@ -22,34 +21,17 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     #region Data Access
 
     /// <summary>
-    /// Access instrument data with GetLane(int), where int is casted version of HeaderType, since each traditional instrument has its own set of starpower events.
+    /// Access instrument data with GetLane(int), where int is casted version of HeaderType,
+    /// since each traditional instrument has its own set of starpower events.
     /// </summary>
     private Lanes<StarpowerEventData> Lanes;
-    ILaneData IInstrument.GetLaneData(int lane) => Lanes.GetLane(lane);
-    ILaneData IInstrument.GetBarLaneData()
-    {
-        throw new NotImplementedException($"Starpower does not have a bar lane. Please format the note receivers to access your intended instrument instead of the loaded instrument.");
-    }
-    ISelection IInstrument.GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
-
+    public override ILaneData GetLaneData(int lane) => Lanes.GetLane(lane);
     public LaneSet<StarpowerEventData> GetLaneData(HeaderType lane) => Lanes.GetLane((int)lane);
-    public LaneSet<StarpowerEventData> GetLaneData(int lane) => Lanes.GetLane(lane);
-
-    public SelectionSet<StarpowerEventData> GetLaneSelection(HeaderType lane) => Lanes.GetLaneSelection((int)lane);
-    public SelectionSet<StarpowerEventData> GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
-
-    public SoloDataSet SoloData
-    {
-        get { throw new NotImplementedException("Starpower does not have solo events. If you are using the SoloEvent suite, it is not required."); }
-        set { throw new NotImplementedException("Starpower does not have solo events. If you are using the SoloEvent suite, it is not required."); }
-    }
-    public InstrumentType InstrumentName { get; set; } = InstrumentType.starpower;
-    public DifficultyType Difficulty { get; set; } = DifficultyType.easy;
-    public HeaderType InstrumentID => HeaderType.Starpower;
-
-    public int NoteSelectionCount => Lanes.GetTotalSelectionCount();
-
-    public List<int> GetUniqueTickSet() => Lanes.GetUniqueTickSet();
+    public override List<int> GetUniqueTickSet() => Lanes.GetUniqueTickSet();
+    
+    
+    public override ISelection GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
+    public override int NoteSelectionCount => Lanes.GetTotalSelectionCount();
 
     #endregion
 
@@ -74,40 +56,16 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
         sustainer = new SustainHelper<StarpowerEventData>(this, Lanes, false);
     }
-
-
-    private InputMap inputMap;
-    public void SetUpInputMap()
-    {
-        inputMap = new InputMap();
-        inputMap.Enable();
-
-        inputMap.Charting.XYDrag.performed += x => MoveSelection();
-        inputMap.Charting.LMB.canceled += x => CompleteMove();
-        inputMap.Charting.Delete.performed += x => DeleteSelection();
-        inputMap.Charting.SustainDrag.performed += x => sustainer.SustainSelection();
-        inputMap.Charting.RMB.canceled += x => sustainer.ResetSustainChange();
-        inputMap.Charting.LMB.performed += x => CheckForSelectionClear();
-        inputMap.Charting.SelectAll.performed += x => Lanes.SelectAll();
-        inputMap.Charting.ClearSelection.performed += x => ClearAllSelections();
-    }
-
-    #endregion
-
-    #region Sustains
-
-    private SustainHelper<StarpowerEventData> sustainer;
     
-    public void SetSelectionSustain(float bars) => sustainer.SetSelectionSustain(bars);
-    public void SetSelectionSustain(int ticks) => sustainer.SetSelectionSustain(ticks);
-    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
-    public int CalculateSustainClamp(int sustainLength, int tick, int lane) => sustainer.CalculateSustainClamp(sustainLength, tick, lane);
-    public int CalculateSustainClamp(int sustainLength, int tick, HeaderType lane) => CalculateSustainClamp(sustainLength, tick, (int)lane);
-    private void ValidateSustainsInRange(int startTick, int endTick) => sustainer.ValidateSustainsInRange(startTick, endTick);
-    private void ValidateSustainsInRange(MinMaxTicks minMaxTicks) => sustainer.ValidateSustainsInRange(minMaxTicks);
     #endregion
-
+    
     #region Selections
+    
+    public override bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
+    public override bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
+    
+    // Pull this up to IInstrument
+    public void ClearLaneSelection(HeaderType lane) => Lanes.GetLaneSelection((int)lane).Clear();
 
     public void CopySelectionTo(InstrumentType targetInstrument, HashSet<DifficultyType> targetDifficulties)
     {
@@ -135,59 +93,23 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         }
     }
 
-    // Don't use this without making sure it's absolutely necessary. The two functions above are more aligned to this
-    // use case.
-    public void SetSelectionToNewLane(int destinationLane)
-    {
-        Lanes.SetSelectionToNewLane(destinationLane);
-    }
-
-    public bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
-
-    public void ClearAllSelections()
-    {
-        Lanes.ClearAllSelections();
-        Chart.InPlaceRefresh();
-    }
-
-    private void CheckForSelectionClear()
-    {
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
-
-        ClearAllSelections();
-        Chart.InPlaceRefresh();
-    }
-
-    private void DeleteSelection()
-    {
-        if (Chart.LoadedInstrument != this) return;
-
-        Lanes.DeleteAllTicksInSelection();
-
-        Chart.InPlaceRefresh();
-    }
-
-    public bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
-
-    public void ClearTickFromAllSelections(int tick) => Lanes.ClearTickFromAllSelections(tick);
-
-    public void ClearLaneSelection(HeaderType lane) => Lanes.GetLaneSelection((int)lane).Clear();
-
-    public void ShiftClickSelectLane(int start, int end, int lane)
-    {
+    #region Internal Overrides
+    
+    // Don't use this without making sure it's absolutely necessary.
+    // The two functions above, <Action>SelectionTo, are more aligned to this use case.
+    protected override void InternalSetSelectionToNewLane(int destinationLane) => Lanes.SetSelectionToNewLane(destinationLane);
+    
+    protected override void InternalClearAllSelections() => Lanes.ClearAllSelections();
+    protected override void InternalSelectAll() => Lanes.SelectAll();
+    protected override void InternalDeleteSelection() => Lanes.DeleteAllTicksInSelection();
+    protected override void InternalClearTickFromAllSelections(int tick) => Lanes.ClearTickFromAllSelections(tick);
+    protected override void InternalShiftClickSelectLane(int start, int end, int lane) =>
         Lanes.GetLaneSelection(lane).ShiftClickSelectInRange(start, end);
-    }
-
-    public void ShiftClickSelect(int start, int end)
-    {
+    protected override void InternalShiftClickSelect(int start, int end) =>
         Lanes.ShiftClickSelect(start, end, InstrumentSpawningManager.instance.GetActiveInstrumentIDs());
-    }
-
-    public void ShiftClickSelect(int tick)
-    {
-        Lanes.ShiftClickSelect(tick, tick, InstrumentSpawningManager.instance.GetActiveInstrumentIDs());
-    }
-
+    
+    #endregion
+    
     public void MakeSelectionUnison()
     {
         var selections = Lanes.GetTotalSelectionByLane();
@@ -232,46 +154,30 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     #endregion
 
     #region Add/Delete
-    public void DeleteAllEventsAtTick(int tick)
-    {
-        Lanes.PopAllEventsAtTick(tick);
-        Chart.InPlaceRefresh();
-    }
-
-    public void DeleteTickInLane(int tick, int lane)
-    {
-        Lanes.PopTickFromLane(tick, lane);
-        Chart.InPlaceRefresh();
-    }
-
-    public void DeleteTicksInSelection() => Lanes.DeleteAllTicksInSelection();
+    
+    protected override void InternalDeleteAllEventsAtTick(int tick) => Lanes.PopAllEventsAtTick(tick);
+    protected override void InternalDeleteTickInLane(int tick, int lane) => Lanes.PopTickFromLane(tick, lane);
+    protected override void InternalDeleteTicksInSelection() => Lanes.DeleteAllTicksInSelection();
 
     #endregion
 
     #region Moving
 
-    private MoveHelper<StarpowerEventData> mover = new();
     private LinkedList<int> currentLaneOrdering = null;
 
-    private void MoveSelection()
+    protected override bool InternalMoveSelection()
     {
-        if (Chart.LoadedInstrument != this) return;
         currentLaneOrdering ??= InstrumentSpawningManager.instance.GetCurrentInstrumentOrdering();
-        if (mover.Move2DSelection(this, Lanes, currentLaneOrdering))
-        {
-            Chart.InPlaceRefresh();
-        }
+        
+        // FIXME: Figure out if we need to validate sustains at the end of this (probably yes)
+        return mover.Move2DSelection(this, Lanes, currentLaneOrdering);
     }
 
-    private void CompleteMove()
+    protected override void InternalCompleteMove()
     {
-        if (this != Chart.LoadedInstrument) return;
-        Chart.showPreviewers = true;
-
-        if (!mover.MoveInProgress) return;
+        ValidateSustainsInRange(mover.GetFinalValidationRange(currentLaneOrdering));
         currentLaneOrdering = null;
 
-        // ValidateSustainsInRange(mover.GetFinalValidationRange(laneOrdering));
         mover.Reset();
     }
 
@@ -300,7 +206,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         }
     }
 
-    public void AddChartFormattedEventsToInstrument(Dictionary<HeaderType, List<KeyValuePair<int, string>>> chartData, int offset)
+    private void AddChartFormattedEventsToInstrument(Dictionary<HeaderType, List<KeyValuePair<int, string>>> chartData, int offset)
     {
         foreach (var headerData in chartData)
         {
@@ -324,7 +230,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
     }
 
     private StarpowerEventData defaultSPEvent = new(false, -1);
-    public static readonly string[] validStarpowerEvents = new string[2] { STARPOWER_ID, DRUM_FILL_ID };
+    private static readonly string[] validStarpowerEvents = new string[2] { STARPOWER_ID, DRUM_FILL_ID };
 
     public static bool IsSpecialEventStarpowerEvent(string[] partiallyParsedVals)
     {
@@ -368,7 +274,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         return true;
     }
 
-    public void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    public override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
     {
         var clipboardAsLines = clipboardData.Split(Environment.NewLine);
 
@@ -414,7 +320,7 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
 
     #region Export 
 
-    public string ConvertSelectionToString()
+    public override string ConvertSelectionToString()
     {
         StringBuilder stringifiedOutput = new();
 
@@ -437,10 +343,23 @@ public class StarpowerInstrument : IInstrument, ISustainableInstrument
         return stringifiedOutput.ToString();
     }
 
-    public List<string> ExportAllEvents()
+    public override List<string> ExportAllEvents()
     {
         throw new System.NotImplementedException();
     }
+
+    #endregion
+
+    #region Not Implemented
+
+    public override ILaneData GetBarLaneData() =>
+        throw new NotImplementedException($"Starpower does not have a bar lane. Please format the note receivers to access your intended instrument instead of the loaded instrument.");
+
+    public override SoloDataSet SoloData
+    {
+        get => null;
+        set {}
+    }    
 
     #endregion
 }

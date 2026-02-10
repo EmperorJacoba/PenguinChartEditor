@@ -238,13 +238,17 @@ public class UniversalMoveData<T> where T : IEventData
         int startValidationTick = int.MaxValue;
         int endValidationTick = -1;
 
-        for (int i = 0; i < movingDataSet.Count; i++)
+        var node = laneOrdering.First;
+        while (node != null)
         {
-            if (movingDataSet[i].Count > 0)
+            var laneKey = node.Value;
+            if (movingDataSet[laneKey].Count > 0)
             {
-                endValidationTick = Mathf.Max(movingDataSet[i].Keys.Max() + lastGhostStartTick, endValidationTick);
-                startValidationTick = Mathf.Min(movingDataSet[i].Keys.Min() + lastGhostStartTick, startValidationTick);
+                endValidationTick = Mathf.Max(movingDataSet[laneKey].Keys.Max() + lastGhostStartTick, endValidationTick);
+                startValidationTick = Mathf.Min(movingDataSet[laneKey].Keys.Min() + lastGhostStartTick, startValidationTick);
             }
+
+            node = node.Next;
         }
 
         return new MinMaxTicks(startValidationTick, endValidationTick);
