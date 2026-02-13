@@ -139,7 +139,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected abstract IEventData GetPreviewData();
 
-    private static bool IsPreviewerActive() => IsPreviewerActive(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
+    public static bool IsPreviewerActive() => IsPreviewerActive(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
     private static bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!Chart.showPreviewers || AudioManager.AudioPlaying ||

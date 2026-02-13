@@ -3109,6 +3109,7 @@ Transform:
   - {fileID: 1936119443}
   - {fileID: 183943802}
   - {fileID: 1754544328}
+  - {fileID: 1848535000}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &516075231
@@ -3125,7 +3126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   highway: {fileID: 2069553716}
   waveform: {fileID: 1754544326}
-  laneDetails: {fileID: 0}
+  laneDetails: {fileID: 764433765}
   instrumentID: 13
 --- !u!1 &536290877
 GameObject:
@@ -10798,6 +10799,11 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!4 &1848535000 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3291747298192205948, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+  m_PrefabInstance: {fileID: 685005769517003337}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1890081628
 GameObject:
   m_ObjectHideFlags: 0
@@ -12315,6 +12321,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ed7223c5220aec40859ced6cf6bcb5f, type: 3}
+--- !u!1001 &685005769517003337
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 516075230}
+    m_Modifications:
+    - target: {fileID: 3291747298192205948, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3291747298192205948, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3291747298192205948, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3291747298192205948, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3291747298192205948, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3291747298192205948, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3291747298192205948, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3291747298192205948, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3291747298192205948, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3291747298192205948, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6432402235201908673, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
+      propertyPath: m_Name
+      value: HighwayPointer
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 342b8efda91ea3641bfa0f1dba95ff5c, type: 3}
 --- !u!1 &832149484174674795
 GameObject:
   m_ObjectHideFlags: 0
