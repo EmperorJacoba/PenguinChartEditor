@@ -25,10 +25,4 @@ public class TSPreviewer : Previewer
     {
         return !(Input.mousePosition.x / Screen.width > 0.5f);
     }
-
-    protected override void AddCurrentEventDataToLaneSet()
-    {
-        tsLabel.CreateEvent(previewTick, tsLabel.representedData);
-        tsLabel.Selection.Clear();
-    }
 }

@@ -210,26 +210,6 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
 
     #endregion
 
-    #region CreateEvent
-
-    // This is the one edit-type action that I feel makes the most sense
-    // (and is the simplest)
-    // to just keep in the Event class.
-    public virtual void CreateEvent(int newTick, T newData)
-    {
-        // All editing of events does not come from adding an event that already exists
-        // Do not create event if one already exists at that point in the set
-        // If modification is required, user will drag/double click/delete etc.
-        if (LaneData.ContainsKey(newTick))
-        {
-            Selection.Clear();
-            return;
-        }
-        LaneData.Add(newTick, newData);
-    }
-
-    #endregion
-
     #region Selections
 
     private int clickCount = 0;

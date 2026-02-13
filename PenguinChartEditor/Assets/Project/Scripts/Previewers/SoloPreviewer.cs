@@ -34,7 +34,11 @@ public class SoloPreviewer : Previewer
 
     protected override void UpdatePreviewer()
     {
-        var platePos = new Vector3(previewSoloPlate.transform.position.x, previewSoloPlate.transform.position.y, (float)Waveform.GetWaveformRatio(previewTick) * Highway3D.highwayLength);
+        var platePos = new Vector3(
+            previewSoloPlate.transform.position.x, 
+            previewSoloPlate.transform.position.y, 
+            (float)Waveform.GetWaveformRatio(previewTick) * Highway3D.highwayLength
+            );
      
         previewSoloPlate.transform.position = platePos;
         previewEndPlate.transform.position = platePos;
@@ -49,6 +53,8 @@ public class SoloPreviewer : Previewer
         previewEndPlate.Visible = isPreviewerInOpenSoloEvent;
     }
 
+    // FIXME: Fix this so that UpdatePreviewer() & CreateEvent() doesn't have to be overriden - maybe change the preview event to
+    // a proper SoloEvent and then have it handle how to show a preview event there, depending on the data it's given?
     protected override IEventData GetPreviewData()
     {
         throw new System.NotImplementedException("SoloPreviewer uses its own methods to update itself.");
@@ -59,17 +65,25 @@ public class SoloPreviewer : Previewer
         return !(parentGameInstrument.GetCursorHighwayPosition().x < parentGameInstrument.HighwayRightEndCoordinate) &&
                UserSettings.SoloPlacingAllowed;
     }
+    
 
-    protected override void AddCurrentEventDataToLaneSet()
+    public override void CreateEvent()
     {
+        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || !Chart.IsPlacementAllowed()) return;
+        if (!IsPreviewerVisible()) return;
+        
+        // I have set up solo events weirdly so that they can be bundled together as one data. Please fix this
+        // so that solo data itself handles all this crap. Then this will no longer need to be overriden.
+        // Technically works so that's why I'm not fixing it now. 
+        
         var activeSoloEvents = ParentInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick <= previewTick && x.Value.EndTick >= previewTick);
 
-        if (activeSoloEvents.Count() == 0)
+        if (!activeSoloEvents.Any())
         {
-            var endTick = SongTime.SongLengthTicks;
+            var endTick = SongTime.SongLengthTicks - previewTick;
             var nextSoloEvent = ParentInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick > previewTick);
 
-            if (nextSoloEvent.Count() > 0) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
+            if (nextSoloEvent.Any()) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
 
             ParentInstrument.SoloData.SoloEvents.Add(previewTick, new SoloEventData(previewTick, endTick));
         }
@@ -85,6 +99,9 @@ public class SoloPreviewer : Previewer
             ParentInstrument.SoloData.SoloEvents.Remove(soloEventList[0]);
             ParentInstrument.SoloData.SoloEvents.Add(replacingEvent.StartTick, replacingEvent);
         }
+        
+        previewerEventReference.RemoveFromSelection();
+        Chart.InPlaceRefresh();
     }
 
     public override void Hide()

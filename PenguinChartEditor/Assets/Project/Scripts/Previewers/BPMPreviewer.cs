@@ -28,10 +28,4 @@ public class BPMPreviewer : Previewer
         // Cursor must be on right side of track (50%+)
         return !(Input.mousePosition.x / Screen.width <= 0.5f);
     }
-
-    protected override void AddCurrentEventDataToLaneSet()
-    {
-        bpmLabel.CreateEvent(previewTick, new BPMData(float.Parse(bpmLabel.LabelText), (float)timestamp, false));
-        bpmLabel.Selection.Clear();
-    }
 }

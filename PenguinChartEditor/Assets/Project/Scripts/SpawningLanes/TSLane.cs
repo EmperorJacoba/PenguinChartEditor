@@ -8,6 +8,8 @@ public class TSLane : SpawningLane<TSLabel>
 
     public override int laneID => (int)SyncTrackInstrument.LaneOrientation.timeSignature;
 
+    public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
+
     protected override IPooler<TSLabel> Pooler => pooler;
     protected override IPreviewer Previewer => TSPreviewer.instance;
 

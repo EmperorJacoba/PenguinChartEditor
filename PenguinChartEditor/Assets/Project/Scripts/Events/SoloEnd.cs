@@ -18,9 +18,7 @@ public class SoloEnd : Event<SoloEventData>
     protected override LaneSet<SoloEventData> LaneData => ParentInstrument.SoloData.SoloEvents;
 
     public override IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
-
-    public override void CreateEvent(int newTick, SoloEventData newData) { } // unused - please remove from top-level
-
+    
     public int representedTick;
     protected override void InitializeEvent()
     {

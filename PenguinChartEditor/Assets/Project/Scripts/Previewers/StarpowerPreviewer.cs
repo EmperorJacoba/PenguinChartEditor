@@ -31,19 +31,4 @@ public class StarpowerPreviewer : Previewer
         }
         return true;
     }
-
-    protected override void AddCurrentEventDataToLaneSet()
-    {
-        int sustain =
-            Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(previewTick, previewTick + AppliedSustain) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
-            0 : AppliedSustain;
-
-        actingStarpowerLane.Add(
-            previewTick,
-            new StarpowerEventData(
-                false,
-                sustain
-                )
-            );
-    }
 }

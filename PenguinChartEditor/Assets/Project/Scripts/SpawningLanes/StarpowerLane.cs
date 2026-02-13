@@ -17,6 +17,7 @@ public class StarpowerLane : SpawningLane<StarpowerEvent>
     public override int laneID => (int)laneIdentifier;
     [SerializeField] private StarpowerPooler pooler;
     protected override IPooler<StarpowerEvent> Pooler => pooler;
+    public override IInstrument ParentInstrument => Chart.StarpowerInstrument;
 
     protected override bool cullAtStrikelineOnPlay => false;
 

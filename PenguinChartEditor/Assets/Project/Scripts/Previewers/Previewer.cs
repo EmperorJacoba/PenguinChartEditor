@@ -24,37 +24,34 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     // to find the previewer in any given scene
     public static int previewTick = 0;
 
-    private static float defaultSustain
-    {
-        get => _defSust;
-        set
-        {
-            _defSust = value;
-            AppliedSustainUpdateNeeded?.Invoke();
-        }
-    }
-    private static float _defSust;
-    private delegate void SustainUpdateNeededDelegate();
-    private static event SustainUpdateNeededDelegate AppliedSustainUpdateNeeded;
+    private static float defaultSustain { get; set; }
+
     private static bool modeIsBars = false;
-    
-    protected int AppliedSustain { get; set; }
 
-    // FIXME: When calculating as bars, the applied sustain value must update when the time signature changes.
-    private void UpdateAppliedSustain()
+    // If you try to cache this, don't. It's not practical nor possible when accounting for sustain clamping.
+    // Performance seems to be OK with this solution. I'm sure there's a better one, though.
+    protected int AppliedSustain
     {
-        if (previewerEventReference.ParentInstrument is not ISustainableInstrument sustainableInstrument)
+        get
         {
-            throw new ArgumentException(
-                $"Tried to apply a sustain to a previewer that does not accept a sustain. " +
-                $"Please check to make sure that \n" +
-                $"a) The previewer's event's parent instrument is a sustainable instrument and\n" +
-                $"b) The instrument you're trying to apply a sustain to is properly set up to apply a sustain.");
+            if (previewerEventReference.ParentInstrument is not ISustainableInstrument sustainableInstrument)
+            {
+                throw new ArgumentException(
+                    $"Tried to apply a sustain to a previewer that does not accept a sustain. " +
+                    $"Please check to make sure that \n" +
+                    $"a) The previewer's event's parent instrument is a sustainable instrument and\n" +
+                    $"b) The instrument you're trying to apply a sustain to is properly set up to apply a sustain.");
+            }
+            
+            return sustainableInstrument.CalculateSustainClamp
+                (
+                    modeIsBars ? 
+                        Chart.SyncTrackInstrument.ConvertBarsToTicks(previewTick, defaultSustain) : 
+                        Mathf.CeilToInt(defaultSustain),
+                    previewTick, 
+                    parentLane.laneID
+                    );
         }
-
-        var calculatedSustainTicks =
-            modeIsBars ? Chart.SyncTrackInstrument.ConvertBarsToTicks(previewTick, defaultSustain) : Mathf.CeilToInt(defaultSustain);
-        AppliedSustain = sustainableInstrument.CalculateSustainClamp(calculatedSustainTicks, previewTick, parentLane.laneID);
     }
     
     /// <remarks>
@@ -98,16 +95,14 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     private ILane _pL;
 
     protected GameInstrument parentGameInstrument => parentLane.parentGameInstrument;
+    private IInstrument parentInstrument => parentLane.ParentInstrument;
 
     public virtual void CreateEvent()
     {
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || !Chart.IsPlacementAllowed()) return;
         if (!IsPreviewerVisible()) return;
 
-        AddCurrentEventDataToLaneSet(); // implemented locally
-
-        previewerEventReference.RemoveFromSelection();
-        Chart.InPlaceRefresh();
+        parentInstrument.CreateEvent(previewTick, parentLane.laneID, GetPreviewData());
     }
 
     protected virtual bool IsPreviewerVisible()
@@ -115,7 +110,6 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         return previewerEventReference.Visible;
     }
 
-    protected abstract void AddCurrentEventDataToLaneSet();
     public virtual void Hide() => previewerEventReference.Visible = false;
 
     public virtual void Show() => previewerEventReference.Visible = true;
@@ -145,8 +139,8 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected abstract IEventData GetPreviewData();
 
-    public static bool IsPreviewerActive() => IsPreviewerActive(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
-    public static bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
+    private static bool IsPreviewerActive() => IsPreviewerActive(Input.mousePosition.y / Screen.height, Input.mousePosition.x / Screen.width);
+    private static bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!Chart.showPreviewers || AudioManager.AudioPlaying ||
             Chart.instance.SceneDetails.IsSceneOverlayUIHit() || PenguinInputField.IsInputFieldActive() ||
@@ -165,8 +159,6 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected virtual void Awake()
     {
-        AppliedSustainUpdateNeeded += UpdateAppliedSustain;
-        
         inputMap = new InputMap();
         inputMap.Enable();
 

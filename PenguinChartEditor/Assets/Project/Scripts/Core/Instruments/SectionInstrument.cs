@@ -83,6 +83,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
     protected override void InternalDeleteTickInLane(int tick, int lane) => laneData.Remove(tick);
     protected override void InternalDeleteAllEventsAtTick(int tick) => laneData.Remove(tick);
 
+    protected override void InternalAddDataChecks(int tick, int lane) {} // no checks needed
     #endregion
 
     #region Constructor
@@ -182,7 +183,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
         set {}
     }
     public override ILaneData GetBarLaneData() => throw new System.NotImplementedException("No bar lane in sections");
-    public override ILaneData GetLaneData(int lane) => laneData;
+    protected override ILaneData InternalReturnLaneData(int lane) => laneData;
     protected override void InternalSetSelectionToNewLane(int destinationLane)
     {
         throw new NotImplementedException("No cross-lane selections in this instrument.");

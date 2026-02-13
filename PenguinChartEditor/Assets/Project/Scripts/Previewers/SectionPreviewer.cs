@@ -23,12 +23,7 @@ public class SectionPreviewer : Previewer
     {
         instance = this;
     }
-
-    protected override void AddCurrentEventDataToLaneSet()
-    {
-        Chart.SectionInstrument.GetLaneData().Add(previewTick, new SectionData(defaultSectionName));
-    }
-
+    
     protected override bool IsHitPositionValid(Vector3 hitPosition)
     {
         return Chart.LoadedInstrument == Chart.SectionInstrument;

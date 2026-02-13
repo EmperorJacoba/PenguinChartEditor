@@ -11,6 +11,7 @@ public class BPMLane : SpawningLane<BPMLabel>
     public override int laneID => (int)SyncTrackInstrument.LaneOrientation.bpm;
 
     protected override IPreviewer Previewer => BPMPreviewer.instance;
+    public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
 
     protected override List<int> GetEventsToDisplay()
     {

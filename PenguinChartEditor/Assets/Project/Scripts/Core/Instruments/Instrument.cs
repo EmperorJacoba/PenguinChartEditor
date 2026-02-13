@@ -20,6 +20,8 @@ public interface IInstrument
     public void ShiftClickSelect(int tick);
     public void ClearTickFromAllSelections(int tick);
 
+    public void CreateEvent(int tick, int lane, IEventData data);
+
     public void SetSelectionToNewLane(int destinationLane);
 
     List<int> GetUniqueTickSet();
@@ -110,11 +112,35 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public abstract void AddChartFormattedEventsToInstrument(string clipboardData, int offset);
     public abstract List<string> ExportAllEvents();
     
-    public abstract ILaneData GetLaneData(int lane);
     public abstract ILaneData GetBarLaneData();
     public abstract ISelection GetLaneSelection(int lane);
     public abstract bool IsNoteSelectionEmpty();
 
+    /// <remarks>
+    /// If you need to validate data upon data add, do it here.
+    /// </remarks>
+    /// <param name="tick"></param>
+    /// <param name="lane"></param>
+    /// <param name="data"></param>
+    protected abstract void InternalAddDataChecks(int tick, int lane);
+    public void CreateEvent(int tick, int lane, IEventData data)
+    {
+        GetLaneData(lane).Add(tick, data);
+        
+        InternalAddDataChecks(tick, lane);
+        
+        ClearAllSelections();
+        Chart.InPlaceRefresh();
+    }
+
+    // Just return Lanes.GetLaneData(lane) if the data system is normal.
+    protected abstract ILaneData InternalReturnLaneData(int lane);
+
+    public ILaneData GetLaneData(int lane)
+    {
+        return lane == IInstrument.SOLO_DATA_LANE_ID ? SoloData.SoloEvents : InternalReturnLaneData(lane);
+    }
+    
     #endregion
     
     #region Selections

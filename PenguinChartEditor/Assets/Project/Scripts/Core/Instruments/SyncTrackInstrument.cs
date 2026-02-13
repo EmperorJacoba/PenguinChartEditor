@@ -33,7 +33,7 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
     public SelectionSet<BPMData> bpmSelection;
     public SelectionSet<TSData> tsSelection;
 
-    public override ILaneData GetLaneData(int lane)
+    protected override ILaneData InternalReturnLaneData(int lane)
     {
         var laneAsOrientation = (LaneOrientation)lane;
         if (laneAsOrientation == LaneOrientation.bpm)
@@ -214,6 +214,17 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
         if (TimeSignatureEvents.Contains(tick)) TempoEvents.PopSingle(tick);
 
         Chart.SyncTrackInPlaceRefresh();
+    }
+
+    protected override void InternalAddDataChecks(int tick, int lane)
+    {
+        // this will run if a TS event is placed on the same tick as an existing BPM event
+        // it does the job though, close enough...shouldn't be that big of a performance issue
+        if (TempoEvents.Contains(tick))
+        {
+            RecalculateTempoEventDictionary();
+            Chart.SyncTrackInPlaceRefresh();
+        }
     }
 
     #endregion

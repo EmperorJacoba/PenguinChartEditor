@@ -88,6 +88,4 @@ public class SoloPlate : Event<SoloEventData>
 
         CalculateSelectionStatus(eventData);
     }
-
-    public override void CreateEvent(int newTick, SoloEventData newData) { } // please remove
 }

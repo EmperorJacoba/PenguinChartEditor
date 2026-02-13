@@ -26,7 +26,7 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
     #region Data Access
 
     private Lanes<FiveFretNoteData> Lanes { get; set; }
-    public override ILaneData GetLaneData(int lane) => Lanes.GetLane(lane);
+    protected override ILaneData InternalReturnLaneData(int lane) => Lanes.GetLane(lane);
     public override ILaneData GetBarLaneData() => GetLaneData(LaneOrientation.open);
     public LaneSet<FiveFretNoteData> GetLaneData(LaneOrientation lane) => Lanes.GetLane((int)lane);
 
@@ -138,18 +138,12 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
     
     protected override void InternalDeleteTickInLane(int tick, int lane) => Lanes.PopTickFromLane(tick, lane);
     protected override void InternalDeleteAllEventsAtTick(int tick) => Lanes.PopAllEventsAtTick(tick);
-
-    // needs to be ported up to base class
-    public void AddData(int tick, LaneOrientation lane, FiveFretNoteData data)
+    
+    protected override void InternalAddDataChecks(int tick, int lane)
     {
-        var activeLane = Lanes.GetLane((int)lane);            
-        activeLane[tick] = data;
-
-        UpdateTickDataToMatch(tick, data);
-
-        CheckForHopos(lane, tick);
-        ClampSustainsBefore(tick, (int)lane);
-        ClearAllSelections();
+        UpdateTickDataToMatch(tick, Lanes.GetLane(lane)[tick]);
+        CheckForHopos((LaneOrientation)lane, tick);
+        ClampSustainsBefore(tick, lane);
     }
 
     #endregion

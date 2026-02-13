@@ -32,20 +32,6 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
     {
         anchorIcon.Opacity = Chart.SyncTrackInstrument.TempoEvents[Tick].Anchor ? 1f : 0f;
     }
-    
-    #region Event Handlers
-
-    // Overriden to make sure faulty/inaccurate data is not in Tempo dict after any large modifications
-    public override void CreateEvent(int newTick, BPMData newData) => ExecuteWithRecalculate(() => base.CreateEvent(newTick, newData));
-
-    private void ExecuteWithRecalculate(Action action)
-    {
-        action();
-        Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
-        Chart.InPlaceRefresh();
-    }
-
-    #endregion
 
     #region Conversions
 

@@ -7,6 +7,7 @@ public interface ILane
 {
     public int laneID { get; }
     public GameInstrument parentGameInstrument { get; }
+    public IInstrument ParentInstrument { get; }
 }
 
 #endregion
@@ -48,7 +49,14 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
         }
     }
     private GameInstrument _gi;
-    public IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
+    
+    /// <remarks>
+    /// Override this if the instrument you're dealing with is funky. Key example: This is overriden for StarpowerLane
+    /// because the represented instrument of the parent GameInstrument is not the data it's modifying - as the GameInstrument
+    /// is representing the lane data of the actual instrument, whereas the StarpowerEvents are modifying StarpowerInstrument's
+    /// data associated with that instrument.
+    /// </remarks>
+    public virtual IInstrument ParentInstrument => parentGameInstrument.representedInstrument;
 
     #endregion
 

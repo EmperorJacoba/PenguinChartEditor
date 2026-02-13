@@ -83,21 +83,4 @@ public class FiveFretNotePreviewer : Previewer
 
         FiveFretNoteKeybindManager.UpdatePreviewer += UpdatePosition;
     }
-
-    protected override void AddCurrentEventDataToLaneSet()
-    {
-        var sustain =
-            Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(previewTick, previewTick + AppliedSustain) < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ?
-            0 : AppliedSustain;
-
-        parentFiveFretInstrument.AddData(
-            previewTick,
-            note.laneID,
-            new FiveFretNoteData(
-                sustain,
-                MapPlacementModeToFlag(),
-                currentPlacementMode == NoteOption.natural
-                )
-            );
-    }
 }
