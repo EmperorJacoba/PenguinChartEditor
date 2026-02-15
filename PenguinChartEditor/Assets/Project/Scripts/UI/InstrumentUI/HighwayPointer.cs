@@ -34,14 +34,19 @@ public class HighwayPointer : MonoBehaviour
             transform.position = invisiblePosition;
             return;
         }
+
+        var prop = parentInstrument.GetCursorHighwayProportion();
+        if (prop <= 0) return;
         
+        var tick = SongTime.CalculateGridSnappedTick(prop);
         transform.position = new Vector3(
             transform.position.x,
             transform.position.y,
             (float)(parentInstrument.HighwayLength * Waveform.GetWaveformRatio(
-                SongTime.CalculateGridSnappedTick(parentInstrument.GetCursorHighwayProportion())
-            ))
-        );
+                tick)
+            )); 
+
+        Previewer.previewTick = tick;
     }
 
     private Vector3 invisiblePosition => new(transform.position.x, transform.position.y, -10);

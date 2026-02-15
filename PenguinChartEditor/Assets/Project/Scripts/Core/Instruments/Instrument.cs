@@ -197,6 +197,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         {
             InternalShiftClickSelectLane(start, end, lane);
         }
+        
+        Chart.InPlaceRefresh();
     }
 
     protected abstract void InternalShiftClickSelect(int start, int end);
@@ -207,6 +209,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         
         InternalShiftClickSelect(start, end);
         SoloData?.SelectTicksInRange(start, end);
+        
+        Chart.InPlaceRefresh();
     }
 
     public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);

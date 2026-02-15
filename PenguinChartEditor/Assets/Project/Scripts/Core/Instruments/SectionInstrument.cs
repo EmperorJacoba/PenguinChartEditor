@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 public class SectionInstrument : BaseInstrument<SectionData>
@@ -114,7 +115,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
 
     public override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
     {
-        throw new System.NotImplementedException();
+        AddChartFormattedEventsToInstrument(Clipboard.ConvertToLineList(clipboardData, offset));
     }
 
     private void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> events)
@@ -138,7 +139,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
             var sectionEvent = splitEvent[1];
             
             // Change this to check for escape characters if any game ever supports quotations in a section/lyric.
-            sectionEvent = sectionEvent.Replace("\"", "");
+            sectionEvent = sectionEvent.Replace("\"", "").Trim();
 
             var splitSection = sectionEvent.Split(" ", 2);
 
@@ -157,6 +158,8 @@ public class SectionInstrument : BaseInstrument<SectionData>
             
             laneData.Add(@event.Key, new SectionData(splitSection[1]));
         }
+        
+        Chart.InPlaceRefresh();
     }
 
     #endregion
@@ -165,12 +168,29 @@ public class SectionInstrument : BaseInstrument<SectionData>
 
     public override string ConvertSelectionToString()
     {
-        throw new System.NotImplementedException();
+        StringBuilder notes = new();
+        var exportedSelection = selection.ExportNormalizedData();
+        
+        foreach (var note in exportedSelection)
+        {
+            var valueString = $"\t{note.Key} = {note.Value.ToChartFormat(0)[0]}";
+            notes.AppendLine(valueString);
+        }
+
+        return notes.ToString();
     }
     
     public override List<string> ExportAllEvents()
     {
-        throw new System.NotImplementedException();
+        List<string> sectionEvents = new();
+
+        foreach (var section in laneData)
+        {
+            var valueSection = $"\t{section.Key} = {section.Value.ToChartFormat(0)}";
+            sectionEvents.Add(valueSection);
+        }
+
+        return sectionEvents;
     }
 
     #endregion
