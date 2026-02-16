@@ -17774,18 +17774,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1465900806}
     m_Modifications:
-    - target: {fileID: 1302307378035698451, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
-      propertyPath: m_Colors.m_NormalColor.b
-      value: 0.44700226
-      objectReference: {fileID: 0}
-    - target: {fileID: 1302307378035698451, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
-      propertyPath: m_Colors.m_NormalColor.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1302307378035698451, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
-      propertyPath: m_Colors.m_NormalColor.r
-      value: 0.3679244
-      objectReference: {fileID: 0}
     - target: {fileID: 2728955328886321131, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -17873,14 +17861,6 @@ PrefabInstance:
     - target: {fileID: 6115493292326362948, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
       propertyPath: m_Name
       value: SongScrubber
-      objectReference: {fileID: 0}
-    - target: {fileID: 7407782418175534533, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7407782418175534533, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

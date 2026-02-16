@@ -85,6 +85,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
     protected override void InternalDeleteAllEventsAtTick(int tick) => laneData.Remove(tick);
 
     protected override void InternalAddDataChecks(int tick, int lane) {} // no checks needed
+    
     #endregion
 
     #region Constructor
