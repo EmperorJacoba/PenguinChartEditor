@@ -79,6 +79,8 @@ public interface ISustainableInstrument
 // The "obvious overrides" is anything that starts with "Internal". Internal functions are run at the chokepoint for where
 // all customized functionality runs in the base class. This is where the meat and bones functionality is, as well as any checks/validation
 // to go along with it. 
+// Why Internal instead of overrides? I hate overrides in this capacity. So clunky imo. Also Chart.InPlaceRefresh happens
+// after the meat and bones data change happens, which is usally where InternalXXXX() is.
 
 // When you're making your own instrument, I would recommend looking at the most similar instrument to the new instrument
 // for a template on what to do. Feel free to ask me for any help!

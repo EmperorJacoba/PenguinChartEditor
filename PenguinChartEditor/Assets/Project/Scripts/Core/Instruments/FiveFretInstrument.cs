@@ -521,8 +521,9 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
             var eventsAtTick = lines.Where(item => item.Key == uniqueTick).Select(item => item.Value).ToList();
 
             // we accept both data ripped straight from a .chart file
-            // or special penguin modifiers
+            // or special penguin modifiers (resulting from copy/paste action)
             // penguinHopo and penguinStrum correspond to FH (forced hopo) and FS (forced strum) events
+            // this is the only place where this is used - this does not happen on export as Penguin uses its own file format
             // this is because Penguin does not treat notes as forced/unforced
             // they are nondefault or default
             // meaning they either stay the way they are no matter what happens to the chart or don't

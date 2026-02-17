@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
+
+// Waveform is the central part of Penguin that ties everything together. Event spawning is heavily tied to the waveform
+// and getting most information about timing/positioning/etc is received as a direct result of contacting Waveform.
+// It's set up like this because the Waveform was the first thing I added as I thought it was the most essential part
+// of a charting program (as tempo mapping is almost entirely tied to one's ability to interpret a waveform). Waveform
+// also sets the spawning boundaries as a natural result of how it is generated.
 public class Waveform : MonoBehaviour
 {
     [SerializeField] private bool is2D = false;
@@ -193,8 +199,6 @@ public class Waveform : MonoBehaviour
     public static double endTime;
     public static double negativeTimePercentageOffset;
 
-
-
     #endregion
 
     #region Point Generation
@@ -247,7 +251,11 @@ public class Waveform : MonoBehaviour
 
         PointUpdateNeeded?.Invoke(lineRendererPositions);
     }
-
+    
+    // The idea is that there are multiple waveforms all showing the same data. Function above calculates the points,
+    // this sets every Waveform's points based on that calculation. Change this to calculate individual points here
+    // if people need different waveforms on each instrument. Careful with the implementation though because that
+    // could get real inefficient real quick. Don't recommend that feature, personally.
     private void ApplyGeneratedPositions(Vector3[] positions)
     {
         if (!WaveformData.ContainsKey(CurrentWaveform))
@@ -333,6 +341,7 @@ public class Waveform : MonoBehaviour
         int key = tickPositions[i];
         var activeData = tickSecondValueMatch[key];
 
+        // Note from later: Is this still true? I don't think it is
         // If the waveform's startTick is negative (e.g. when at the beginning of the song)
         // negativeTimePercentageOffset > 0 and this corrects for the void of data for the negative portions of the track]
         // Basically stores the start point of data on the track.

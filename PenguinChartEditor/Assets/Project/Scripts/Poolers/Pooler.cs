@@ -100,6 +100,11 @@ public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehavi
         for (int i = lastIndex; i < eventObjects.Count; i++)
         {
             eventObjects[i].Visible = false;
+            
+            // The destruction coroutine is a way to save system resources if the user changes the hyperspeed from something
+            // ridiculously high to something more normal, or other actions that involve a peak of objects/beats/notes
+            // and then a valley with none. No sense keeping 700,000 beatlines around if we don't need them. 
+            // Time to cull is controlled by user in settings.
             eventObjects[i].destructionCoroutine = StartCoroutine(DestructionTimer(eventObjects[i]));
         }
     }
@@ -114,15 +119,14 @@ public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehavi
     }
 
     /// <summary>
-    /// Waits for five seconds, and then destroys the pooled object.
+    /// Waits for some time, and then destroys the pooled object.
     /// <para> Used to avoid letting idle pooled objects take up resources
     /// in the background after a large hyperspeed change. </para>
     /// </summary>
-    /// <param name="beatline">The target beatline to destroy after five seconds.</param>
     /// <returns></returns>
     private IEnumerator DestructionTimer(T @object)
     {
-        yield return new WaitForSeconds(5.0f);
+        yield return new WaitForSeconds(UserSettings.TimeToCullObjects);
 
         if (@object != null && !@object.Visible)
         {

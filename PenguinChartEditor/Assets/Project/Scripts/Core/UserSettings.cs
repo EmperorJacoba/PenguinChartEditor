@@ -47,4 +47,6 @@ public static class UserSettings
     public static bool SoloPlacingAllowed { get; set; } = true;
 
     public static bool ShowSidebarSections { get; set; } = true;
+
+    public static float TimeToCullObjects { get; set; } = 5.0f;
 }

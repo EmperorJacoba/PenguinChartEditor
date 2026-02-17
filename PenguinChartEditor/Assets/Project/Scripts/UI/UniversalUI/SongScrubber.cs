@@ -17,18 +17,13 @@ public class SongScrubber : MonoBehaviour
         SongTime.TimeChanged += UpdateSongScrubber;
 
         scrubber.onValueChanged.AddListener(x => UpdateSongTimeFromScrubber(x));
-        AudioManager.PlaybackStateChanged += (playbackState =>
+        AudioManager.PlaybackStateChanged += playbackState =>
         {
             if (playbackState) scrubber.interactable = false;
             else scrubber.interactable = true;
-        });
+        };
 
-        var rect = GetComponent<RectTransform>();
         rectTransform = GetComponent<RectTransform>();
-        print(rect.rect.center); // (0, 540)
-        print(rect.rect.height); // 1080
-        print(rect.rect.size); // (75, 1080)
-        print(rect.pivot);
     }
     
     // Diagnostic: This function takes <0.05ms on average per frame during song playback.
@@ -61,9 +56,19 @@ public class SongScrubber : MonoBehaviour
     }
 
     private SortedDictionary<int, SectionData> representedData;
+    
     private void Update()
     {
+        // FIXME: Make this method of checking for updates to the SectionInstrument more efficient
+        // This isn't horribly inefficient time-wise (0.2ms per frame during testing in the editor) but this could
+        // ABSOLUTELY be made better. This is my "It's good enough" moment. 
+        // If you plan on improving this, a good method would be to make an event that tracks changes in SectionInstrument's
+        // LaneSet. There should be infrastructure in LaneSet that supports this already, but it might be a little rickety,
+        // since as of writing this, I have not touched it in a while (as it was a failed approach to trying to update
+        // HOPOs in FiveFretInstrument).
         var currentData = Chart.SectionInstrument.GetLaneData().ExportData();
+        
+                                                                                      // Not sure why JetBrains thinks this is a big deal - another fix here
         if (representedData is not null && representedData.Count == currentData.Count && representedData.SequenceEqual(currentData)) return;
         
         representedData = Chart.SectionInstrument.GetLaneData().ExportData();

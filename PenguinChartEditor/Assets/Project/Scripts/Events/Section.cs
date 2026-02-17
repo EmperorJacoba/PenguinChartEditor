@@ -35,9 +35,9 @@ public class Section : Event<SectionData>
 
     protected override void InitializeEvent()
     {
-        displayedSectionName.text = representedData.Name;
-        
         if (Chart.LoadedInstrument != ParentInstrument) Visible = false;
+        
+        displayedSectionName.text = representedData.Name;
         
         if (editTick != Tick) DeactivateManualInput();
     }

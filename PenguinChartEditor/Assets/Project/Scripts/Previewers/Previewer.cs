@@ -22,6 +22,10 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     // then this can be a property for the broad previewTick, while also making sense & being consistent
     // in the child classes. previewTick is used for clipboard calculations without needing
     // to find the previewer in any given scene
+    // Side note: This is also updated externally through the HighwayPointers in case there's a mismatch.
+    // I don't feel comfortable leaving the previewTick to be calculated by the HighwayPointer in the case it gets
+    // destroyed or runs after the previewer does. That's a whole host of problems I don't want to deal with. It's 
+    // just to make sure there isn't a visual mismatch when the previewer is disabled and the user's trying to paste.
     public static int previewTick = 0;
 
     private static float defaultSustain { get; set; }

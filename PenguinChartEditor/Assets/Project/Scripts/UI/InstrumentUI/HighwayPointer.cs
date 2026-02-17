@@ -27,6 +27,11 @@ public class HighwayPointer : MonoBehaviour
                 );
     }
 
+    // Having this in the update function is unavoidable since this is expected to update to the mouse grid so much.
+    // Also doesn't have much overhead weirdly enough. The main bottleneck would probably be the input field check if
+    // there are too many since that's O(n). 
+    // Side note on the song grid: as of writing this (2/16/26), Moonscraper 2 has an option to allow gridless
+    // placing, based on the one trailer from 12/25/25. Why is that a feature? You're just encouraging poor charting practices...
     private void Update()
     {
         if (AudioManager.AudioPlaying || Chart.instance.SceneDetails.IsSceneOverlayUIHit() || PenguinInputField.IsInputFieldActive())
@@ -49,5 +54,7 @@ public class HighwayPointer : MonoBehaviour
         Previewer.previewTick = tick;
     }
 
+    // Update() won't run if disabled. This is good enough. Causes a chuckle when you look at it in scene view.
+    // What are you pointing at, buddy? The pit of eternal nothingness? Lol, lmao even. 
     private Vector3 invisiblePosition => new(transform.position.x, transform.position.y, -10);
 }
