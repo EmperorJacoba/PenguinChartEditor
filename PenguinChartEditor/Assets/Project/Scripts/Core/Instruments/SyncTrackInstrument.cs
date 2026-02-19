@@ -229,6 +229,23 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
 
     #endregion
 
+    #region Undo/Redo
+
+    protected override void InternalSaveUndoData(UndoSnapshot<BPMData> undoAction) => throw new NotImplementedException();
+    protected override void InternalApplyUndoAction(UndoSnapshot<BPMData> undoAction) => throw new NotImplementedException();
+    
+    protected override void SaveUndoData()
+    {
+        
+    }
+
+    public override void PushUndoData(IUndoSnapshot undoSnapshot)
+    {
+        
+    }
+
+    #endregion
+
     #region Tempo
 
     public int GetNextAnchor(int currentTick)
@@ -838,3 +855,4 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
     #endregion
 
 }
+

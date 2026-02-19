@@ -47,6 +47,8 @@ public interface IInstrument
     public ILaneData GetBarLaneData();
     public ISelection GetLaneSelection(int lane);
     bool IsNoteSelectionEmpty();
+
+    void PushUndoData(IUndoSnapshot undoSnapshot);
 }
 
 public interface ISustainableInstrument
@@ -87,6 +89,10 @@ public interface ISustainableInstrument
 
 // - Emperor
 
+// FIXME: With the exception of SyncTrack (my design choice for that one was not the best, but I think it makes more sense
+// conceptually), single lane tracks can likely be replaced with a Lanes<T> object with one lane. Investigate this possibility.
+// Note: I think it is more clear with one LaneSet<> how the instrument functions, but it is probably easier to implement
+// new instruments with a Lanes<> object with only one lane.
 
 /// <summary>
 /// This class serves to automatically refresh charts, set up inputs, and call undo/redo actions
@@ -103,6 +109,35 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public DifficultyType Difficulty { get; set; }
     public HeaderType InstrumentID => (HeaderType)((int)InstrumentName + (int)Difficulty);
     public abstract int NoteSelectionCount { get; }
+    
+    #endregion
+
+    #region Undo/Redo
+
+    protected abstract void InternalSaveUndoData(UndoSnapshot<T> undoAction);
+    /// <remarks>
+    /// Override ONLY IN SYNCTRACK for the multi-type approach. In all other cases, apply the data to the undoAction
+    /// through InternalSaveUndoData().
+    /// </remarks>
+    protected virtual void SaveUndoData()
+    {
+        var undoAction = new UndoSnapshot<T>(this);
+        InternalSaveUndoData(undoAction);
+        UndoStack.instance.PushAction(undoAction);
+    }
+
+    protected abstract void InternalApplyUndoAction(UndoSnapshot<T> undoAction);
+
+    /// <remarks>
+    /// Override ONLY IN SYNCTRACK for the multi-type approach. In all other cases, run checks and other needed actions
+    /// through InternalApplyUndoAction().
+    /// </remarks>
+    public virtual void PushUndoData(IUndoSnapshot undoSnapshot)
+    {
+        var undoAction = undoSnapshot as UndoSnapshot<T>;
+        InternalApplyUndoAction(undoAction);
+        Chart.InPlaceRefresh();
+    }
     
     #endregion
 

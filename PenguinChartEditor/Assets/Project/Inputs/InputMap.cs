@@ -233,7 +233,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""2855a36d-e9e8-4e33-bab6-2d348edf29fb"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -251,7 +251,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""b6b6c09f-b20b-441c-8cb1-ed2f5dcf5db7"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -260,7 +260,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""3d3492a5-4e29-47e2-a119-286dfe3d24a9"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1221,6 +1221,24 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Undo"",
+                    ""type"": ""Button"",
+                    ""id"": ""b2dbea9b-b43b-4709-a8e2-05d99b422b4e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Redo"",
+                    ""type"": ""Button"",
+                    ""id"": ""9c186cab-03bc-4100-bac4-dfe28902f616"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""DisableWhenInputActive"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1344,6 +1362,116 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""action"": ""SwitchNotePlacementMode"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""3e43348a-c061-4905-9669-b3c1d5b81abd"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Undo"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""8fdbcfbf-2aad-4781-98cd-ea9e9cb77a67"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Undo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""bb35623d-e1a0-499a-adae-3e233b5f4543"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Undo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""4270d6dd-a162-4dfa-a2f9-cbd56d7fe989"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""47345497-7f16-4af8-bd4d-b785d99190b4"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""659371f6-8790-4ce6-8adc-5d9e6c89f299"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Two Modifiers"",
+                    ""id"": ""351210f3-45c2-4d24-868c-5c5c62d69627"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""08b91c8c-ea52-4673-80cc-48c50df943ee"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""2372ccf5-aa39-4adb-9fba-19aa49e30cbd"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""fcbedbfa-9b23-4d37-bafa-01d99fec6590"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -2449,6 +2577,8 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_ExternalCharting_PlayPause = m_ExternalCharting.FindAction("PlayPause", throwIfNotFound: true);
         m_ExternalCharting_Metronome = m_ExternalCharting.FindAction("Metronome", throwIfNotFound: true);
         m_ExternalCharting_SwitchNotePlacementMode = m_ExternalCharting.FindAction("SwitchNotePlacementMode", throwIfNotFound: true);
+        m_ExternalCharting_Undo = m_ExternalCharting.FindAction("Undo", throwIfNotFound: true);
+        m_ExternalCharting_Redo = m_ExternalCharting.FindAction("Redo", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -3054,6 +3184,8 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_ExternalCharting_PlayPause;
     private readonly InputAction m_ExternalCharting_Metronome;
     private readonly InputAction m_ExternalCharting_SwitchNotePlacementMode;
+    private readonly InputAction m_ExternalCharting_Undo;
+    private readonly InputAction m_ExternalCharting_Redo;
     /// <summary>
     /// Provides access to input actions defined in input action map "ExternalCharting".
     /// </summary>
@@ -3093,6 +3225,14 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "ExternalCharting/SwitchNotePlacementMode".
         /// </summary>
         public InputAction @SwitchNotePlacementMode => m_Wrapper.m_ExternalCharting_SwitchNotePlacementMode;
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/Undo".
+        /// </summary>
+        public InputAction @Undo => m_Wrapper.m_ExternalCharting_Undo;
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/Redo".
+        /// </summary>
+        public InputAction @Redo => m_Wrapper.m_ExternalCharting_Redo;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -3140,6 +3280,12 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SwitchNotePlacementMode.started += instance.OnSwitchNotePlacementMode;
             @SwitchNotePlacementMode.performed += instance.OnSwitchNotePlacementMode;
             @SwitchNotePlacementMode.canceled += instance.OnSwitchNotePlacementMode;
+            @Undo.started += instance.OnUndo;
+            @Undo.performed += instance.OnUndo;
+            @Undo.canceled += instance.OnUndo;
+            @Redo.started += instance.OnRedo;
+            @Redo.performed += instance.OnRedo;
+            @Redo.canceled += instance.OnRedo;
         }
 
         /// <summary>
@@ -3172,6 +3318,12 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @SwitchNotePlacementMode.started -= instance.OnSwitchNotePlacementMode;
             @SwitchNotePlacementMode.performed -= instance.OnSwitchNotePlacementMode;
             @SwitchNotePlacementMode.canceled -= instance.OnSwitchNotePlacementMode;
+            @Undo.started -= instance.OnUndo;
+            @Undo.performed -= instance.OnUndo;
+            @Undo.canceled -= instance.OnUndo;
+            @Redo.started -= instance.OnRedo;
+            @Redo.performed -= instance.OnRedo;
+            @Redo.canceled -= instance.OnRedo;
         }
 
         /// <summary>
@@ -3972,6 +4124,20 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSwitchNotePlacementMode(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Undo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUndo(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Redo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRedo(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
