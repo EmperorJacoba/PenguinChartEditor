@@ -125,12 +125,15 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
     /// <summary>
     /// Runs every frame when Drag input action is active. 
     /// </summary>
-    protected override bool InternalMoveSelection()
+    protected override bool InternalMoveSelection(out bool firstFrame)
     {
+        firstFrame = false;
         if (Input.GetKey(KeyCode.LeftControl)) return false;
         
-        var bpmMove = bpmMover.Move1DSelection(this, TempoEvents, bpmSelection);
-        var tsMove = tsMover.Move1DSelection(this, TimeSignatureEvents, tsSelection);
+        var bpmMove = bpmMover.Move1DSelection(this, TempoEvents, bpmSelection, out var moveStartedB);
+        var tsMove = tsMover.Move1DSelection(this, TimeSignatureEvents, tsSelection, out var moveStartedT);
+
+        firstFrame = moveStartedB || moveStartedT;
         
         if (bpmMove)
         {
@@ -163,6 +166,24 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
     #endregion
 
     #region Add/Delete
+
+    public void OverwriteData<T>(int tick, T newData)
+    {
+        SaveUndoData();
+
+        switch (newData)
+        {
+            case BPMData bpmData:
+                TempoEvents[tick] = bpmData;
+                Chart.SyncTrackInstrument.RecalculateTempoEventDictionary(tick);
+                break;
+            case TSData tsData:
+                TimeSignatureEvents[tick] = tsData;
+                break;
+            default:
+                throw new ArgumentException($"Incorrect T passed into SyncTrackInstrument.OverwriteData. Expected BPMData or TSData, got {typeof(T)}");
+        }
+    }
 
     protected override void InternalDeleteSelection()
     {
@@ -236,7 +257,7 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
     protected override void InternalApplyUndoAction(UndoSnapshot<BPMData> undoAction) => throw new NotImplementedException();
     
     
-    protected override void SaveUndoData()
+    public override void SaveUndoData()
     {
         var undoAction = new SyncTrackUndoSnapshot(TempoEvents, TimeSignatureEvents);
         UndoStack.instance.PushAction(undoAction);

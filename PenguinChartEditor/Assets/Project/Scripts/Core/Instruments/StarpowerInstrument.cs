@@ -68,6 +68,7 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     public void CopySelectionTo(InstrumentType targetInstrument, HashSet<DifficultyType> targetDifficulties)
     {
+        SaveUndoData();
         var selectionData = Lanes.GetUnifiedSelectionWithData();
         
         foreach (var trackDiff in targetDifficulties)
@@ -81,6 +82,7 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     public void MoveSelectionTo(InstrumentType targetInstrument, HashSet<DifficultyType> targetDifficulties)
     {
+        SaveUndoData();
         var selectionData = Lanes.CutUnifiedSelectionWithData();
         
         foreach (var trackDiff in targetDifficulties)
@@ -111,6 +113,8 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
     
     public void MakeSelectionUnison()
     {
+        SaveUndoData();
+        
         var selections = Lanes.GetTotalSelectionByLane();
         var minMaxTicks = Lanes.GetSelectionBounds();
 
@@ -134,6 +138,8 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     public void IsolateSelection()
     {
+        SaveUndoData();
+        
         var selections = Lanes.GetTotalSelectionByLane();
         var minMaxTicks = Lanes.GetSelectionBounds();
 
@@ -182,12 +188,12 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     private LinkedList<int> currentLaneOrdering = null;
 
-    protected override bool InternalMoveSelection()
+    protected override bool InternalMoveSelection(out bool firstFrame)
     {
         currentLaneOrdering ??= InstrumentSpawningManager.instance.GetCurrentInstrumentOrdering();
         
         // FIXME: Figure out if we need to validate sustains at the end of this (probably yes)
-        return mover.Move2DSelection(this, Lanes, currentLaneOrdering);
+        return mover.Move2DSelection(this, Lanes, currentLaneOrdering, out firstFrame);
     }
 
     protected override void InternalCompleteMove()

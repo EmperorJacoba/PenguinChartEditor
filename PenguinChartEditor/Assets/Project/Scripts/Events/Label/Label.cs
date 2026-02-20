@@ -75,10 +75,8 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 
     private void HandleManualEndEdit(string newVal)
     {
-        LaneData[Tick] = ProcessUnsafeLabelString(newVal);
-
-        if (typeof(T) == typeof(BPMData)) Chart.SyncTrackInstrument.RecalculateTempoEventDictionary(Tick);
-
+        Chart.SyncTrackInstrument.OverwriteData(Tick, ProcessUnsafeLabelString(newVal));
+        
         ConcludeManualEdit();
         Chart.SyncTrackInPlaceRefresh();
     }

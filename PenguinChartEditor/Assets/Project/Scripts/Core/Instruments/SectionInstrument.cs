@@ -81,6 +81,13 @@ public class SectionInstrument : BaseInstrument<SectionData>
 
     #region Add/Delete
 
+    public void OverwriteData(int tick, SectionData data)
+    {
+        SaveUndoData();
+
+        laneData[tick] = data;
+    }
+
     protected override void InternalDeleteTickInLane(int tick, int lane) => laneData.Remove(tick);
     protected override void InternalDeleteAllEventsAtTick(int tick) => laneData.Remove(tick);
 
@@ -105,7 +112,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
 
     #region Moving
 
-    protected override bool InternalMoveSelection() => mover.Move1DSelection(this, laneData, selection);
+    protected override bool InternalMoveSelection(out bool firstFrame) => mover.Move1DSelection(this, laneData, selection, out firstFrame);
 
     // No extra post-move actions needed.
     protected override void InternalCompleteMove() {}

@@ -24,7 +24,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         sustainData = new SustainData<T>();
     }
 
-    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) 
+    public bool ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) 
     {
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
@@ -38,7 +38,11 @@ public class SustainHelper<T> where T : IEventData, ISustainable
             UpdateSustain(@event.Tick, @event.Lane, sustainClamp);
             @event.AddToSelection();
             Chart.InPlaceRefresh();
+
+            return true;
         }
+
+        return false;
     }
 
     public static int GetCurrentMouseTick()

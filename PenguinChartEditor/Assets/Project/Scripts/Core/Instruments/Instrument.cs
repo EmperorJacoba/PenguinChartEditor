@@ -49,11 +49,12 @@ public interface IInstrument
     bool IsNoteSelectionEmpty();
 
     void PushUndoData(IUndoSnapshot undoSnapshot);
+    void SaveUndoData();
 }
 
-public interface ISustainableInstrument
+public interface ISustainableInstrument : IInstrument
 {
-    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event);
+    public bool ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event);
     public int CalculateSustainClamp(int sustainLength, int tick, int lane);
     public void SetSelectionSustain(int ticks);
     public void SetSelectionSustain(float bars);
@@ -122,7 +123,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     /// Override ONLY IN SYNCTRACK for the multi-type approach. In all other cases, apply the data to the undoAction
     /// through InternalSaveUndoData().
     /// </remarks>
-    protected virtual void SaveUndoData()
+    public virtual void SaveUndoData()
     {
         var undoAction = new UndoSnapshot<T>(this);
         InternalSaveUndoData(undoAction);
@@ -173,6 +174,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalAddDataChecks(int tick, int lane);
     public void CreateEvent(int tick, int lane, IEventData data)
     {
+        SaveUndoData();
         GetLaneData(lane).Add(tick, data);
         
         InternalAddDataChecks(tick, lane);
@@ -220,6 +222,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         // Very important, otherwise if some selections remain in error upon an instrument switch, then data will be
         // unexpectantly deleted.
         if (Chart.LoadedInstrument != this) return;
+        
+        SaveUndoData();
 
         SoloData?.DeleteSelection();
 
@@ -278,7 +282,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public void DeleteTicksInSelection()
     {
         if (Chart.LoadedInstrument != this) return;
-        
+        SaveUndoData();
         InternalDeleteTicksInSelection();
         SoloData?.DeleteSelection();
         
@@ -296,6 +300,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public void SetSelectionToNewLane(int destinationLane)
     {
         if (Chart.LoadedInstrument != this) return;
+     
+        SaveUndoData();
         
         if (IsNoteSelectionEmpty()) return;
         
@@ -312,6 +318,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public void DeleteTickInLane(int tick, int lane)
     {
         if (Chart.LoadedInstrument != this) return;
+        SaveUndoData();
         
         if (lane == IInstrument.SOLO_DATA_LANE_ID)
         {
@@ -329,6 +336,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public void DeleteAllEventsAtTick(int tick)
     {
         if (Chart.LoadedInstrument != this) return;
+        
+        SaveUndoData();
         
         SoloData?.DeleteTick(tick);
         InternalDeleteAllEventsAtTick(tick);
@@ -361,14 +370,17 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     
     protected MoveHelper<T> mover = new();
 
-    protected abstract bool InternalMoveSelection();
+    protected abstract bool InternalMoveSelection(out bool firstFrame);
 
     private void MoveSelection()
     {
         if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
         
-        if (InternalMoveSelection())
+        if (InternalMoveSelection(out var firstFrame))
         {
+            // FIXME: Possible edge case here: user starts moving, and then mid-move, undos. Old data is applied, move lost.
+            // Maybe do this on complete move instead? But that has its own issues...
+            if (firstFrame) SaveUndoData();
             Chart.InPlaceRefresh();
         }
     }
@@ -402,12 +414,32 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
     // Remember to initialize in constructor.
     protected SustainHelper<T> sustainer;
     
-    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
-    public void SetSelectionSustain(int ticks) => sustainer.SetSelectionSustain(ticks);
-    public void SetSelectionSustain(float bars) => sustainer.SetSelectionSustain(bars);
-    public void ValidateSustainsInRange(MinMaxTicks range) => ValidateSustainsInRange(range.min, range.max);
-    public void ValidateSustainsInRange(int startTick, int endTick) => sustainer.ValidateSustainsInRange(startTick, endTick);
-    public void ClampSustainsBefore(int tick, int lane) => sustainer.ClampSustainsBefore(tick, lane);
+    // Save managed in sustain trail so that undo action reverts to pre-change, not to the last grid-snapped tick
+    public bool ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
+
+    public void SetSelectionSustain(int ticks)
+    {
+        SaveUndoData();
+        sustainer.SetSelectionSustain(ticks);
+    }
+
+    public void SetSelectionSustain(float bars)
+    {
+        SaveUndoData();
+        sustainer.SetSelectionSustain(bars);
+    }
+
+    protected void ValidateSustainsInRange(MinMaxTicks range) => ValidateSustainsInRange(range.min, range.max);
+
+    protected void ValidateSustainsInRange(int startTick, int endTick)
+    {
+        sustainer.ValidateSustainsInRange(startTick, endTick);
+    }
+
+    protected void ClampSustainsBefore(int tick, int lane)
+    {
+        sustainer.ClampSustainsBefore(tick, lane);
+    }
     public int CalculateSustainClamp(int sustainLength, int tick, int lane) => sustainer.CalculateSustainClamp(sustainLength, tick, lane);
 }
 

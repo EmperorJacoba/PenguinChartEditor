@@ -20,8 +20,9 @@ public class MoveHelper<T> where T : IEventData
     // 1D in this context means just one lane, no cross-LaneSet<> movement needed - e.g TempoEvents, Sections, etc.
     
     /// <returns>Were there any meaningful changes to the Lanes dataset?</returns>
-    public bool Move2DSelection(IInstrument instrument, Lanes<T> laneData, LinkedList<int> laneProgression)
+    public bool Move2DSelection(IInstrument instrument, Lanes<T> laneData, LinkedList<int> laneProgression, out bool actionStarted)
     {
+        actionStarted = false;
         if (instrument != Chart.LoadedInstrument || !Chart.IsModificationAllowed()) return false;
 
         if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress) return false;
@@ -54,6 +55,7 @@ public class MoveHelper<T> where T : IEventData
                 laneData
                 );
             Chart.showPreviewers = false;
+            actionStarted = true;
             return false;
         }
 
@@ -73,8 +75,9 @@ public class MoveHelper<T> where T : IEventData
         return true;
     }
 
-    public bool Move1DSelection(IInstrument instrument, LaneSet<T> lane, SelectionSet<T> selection)
+    public bool Move1DSelection(IInstrument instrument, LaneSet<T> lane, SelectionSet<T> selection, out bool actionStarted)
     {
+        actionStarted = false;
         if (instrument != Chart.LoadedInstrument || !Chart.IsModificationAllowed()) return false;
         
         var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
@@ -97,6 +100,7 @@ public class MoveHelper<T> where T : IEventData
                 selection
             );
             Chart.showPreviewers = false;
+            actionStarted = true;
             return false;
         }
 

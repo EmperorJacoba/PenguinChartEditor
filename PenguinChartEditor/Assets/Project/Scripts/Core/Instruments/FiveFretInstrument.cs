@@ -116,9 +116,9 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     #region Moving
 
-    protected override bool InternalMoveSelection()
+    protected override bool InternalMoveSelection(out bool firstFrame)
     {
-        if (mover.Move2DSelection(this, Lanes, laneOrdering))
+        if (mover.Move2DSelection(this, Lanes, laneOrdering, out firstFrame))
         {
             CheckForHoposInRange(mover.GetChangingValidationRange());
             return true;
@@ -197,6 +197,8 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     public void NaturalizeSelection()
     {
+        SaveUndoData();
+        
         var totalSelectionSet = Lanes.GetUnifiedSelection();
 
         if (totalSelectionSet.Count == 0) return;
@@ -230,6 +232,8 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     public void SetSelectionToFlag(FiveFretNoteData.FlagType flag)
     {
+        SaveUndoData();
+        
         var currentSelection = Lanes.GetUnifiedSelection();
         if (currentSelection.Count == 0) return;
 
@@ -251,6 +255,8 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     public void SetEqualSpacing()
     {
+        SaveUndoData();
+        
         var currentSelection = Lanes.GetTotalSelectionByLane();
         var totalSelectionSet = Lanes.GetUnifiedSelection().ToList();
 
@@ -293,6 +299,7 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     #region Flag Changes
 
+    // Undo does not apply - used only by internal funcs
     private void ChangeTickFlag(int targetTick, int previousTick, FiveFretNoteData.FlagType flag)
     {
         if (flag == FiveFretNoteData.FlagType.tap)
@@ -317,7 +324,8 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
         }
         SetAllEventsAtTickTo(targetTick, flag);
     }
-
+    
+    // Undo does not apply - used only by internal funcs
     private void ChangeTickFlag(int targetTick, int previousTick, LaneOrientation targetLane, FiveFretNoteData.FlagType flag)
     {
         if (!Lanes.GetLane((int)targetLane).Contains(targetTick))
@@ -334,6 +342,7 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
         else ChangeTickFlag(targetTick, previousTick, flag);
     }
 
+    // Undo does not apply. Undo saved in pre-add check.
     private void UpdateTickDataToMatch(int tick, FiveFretNoteData data)
     {
         var @default = data.Default;
@@ -364,6 +373,7 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     #region HOPOs
 
+    // Undo does not apply. This happens as a result of another action.
     public void CheckForHopos(LaneOrientation lane, int changedTick)
     {
         bool nextTickHopo = false;
@@ -446,6 +456,8 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
     public void ToggleTaps()
     {
         if (Chart.LoadedInstrument != this) return;
+        
+        SaveUndoData();
 
         var allTicksSelected = Lanes.GetUnifiedSelection();
 
