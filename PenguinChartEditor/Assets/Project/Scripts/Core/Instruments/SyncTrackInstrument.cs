@@ -255,13 +255,13 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
 
     protected override void InternalSaveUndoData(UndoSnapshot<BPMData> undoAction) => throw new NotImplementedException();
     protected override void InternalApplyUndoAction(UndoSnapshot<BPMData> undoAction) => throw new NotImplementedException();
-    
-    
-    public override void SaveUndoData()
+
+
+    protected override IUndoSnapshot CreateUndoSnapshot()
     {
-        var undoAction = new SyncTrackUndoSnapshot(TempoEvents, TimeSignatureEvents);
-        UndoStack.instance.PushAction(undoAction);
+        return new SyncTrackUndoSnapshot(TempoEvents, TimeSignatureEvents);
     }
+    
 
     public override void PushUndoData(IUndoSnapshot undoSnapshot)
     {

@@ -119,15 +119,26 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     // interface that allows exporting and importing data as a Dictionary regardless of lane count. Very doable!
     
     protected abstract void InternalSaveUndoData(UndoSnapshot<T> undoAction);
+
+    public void SaveUndoData()
+    {
+        ApplyUndoDataToStack(CreateUndoSnapshot());
+    }
+    
     /// <remarks>
     /// Override ONLY IN SYNCTRACK for the multi-type approach. In all other cases, apply the data to the undoAction
     /// through InternalSaveUndoData().
     /// </remarks>
-    public virtual void SaveUndoData()
+    protected virtual IUndoSnapshot CreateUndoSnapshot()
     {
         var undoAction = new UndoSnapshot<T>(this);
         InternalSaveUndoData(undoAction);
-        UndoStack.instance.PushAction(undoAction);
+        return undoAction;
+    }
+
+    protected void ApplyUndoDataToStack(IUndoSnapshot undoSnapshot)
+    {
+        UndoStack.instance.PushAction(undoSnapshot);
     }
 
     protected abstract void InternalApplyUndoAction(UndoSnapshot<T> undoAction);
@@ -174,12 +185,19 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalAddDataChecks(int tick, int lane);
     public void CreateEvent(int tick, int lane, IEventData data)
     {
-        SaveUndoData();
-        GetLaneData(lane).Add(tick, data);
+        ClearAllSelections();
+        var snap = CreateUndoSnapshot();
+        if (GetLaneData(lane).Add(tick, data))
+        {
+            ApplyUndoDataToStack(snap);
+        }
+        else
+        {
+            return;
+        }
         
         InternalAddDataChecks(tick, lane);
-        
-        ClearAllSelections();
+
         Chart.InPlaceRefresh();
     }
 

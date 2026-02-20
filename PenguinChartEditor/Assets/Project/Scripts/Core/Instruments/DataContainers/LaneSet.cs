@@ -14,7 +14,7 @@ public interface ILaneData
     int GetPreviousTickEventInLane(int currentTick, bool inclusive = false);
     List<int> GetRelevantTicksInRange(int startTick, int endTick);
 
-    void Add(int tick, IEventData data);
+    bool Add(int tick, IEventData data);
 }
 
 
@@ -54,14 +54,25 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         laneData = new SortedDictionary<int, TValue>();
     }
 
-    void ILaneData.Add(int tick, IEventData data) => Add(tick, (TValue)data);
-    public void Add(int key, TValue value)
+    bool ILaneData.Add(int tick, IEventData data) => Add(tick, (TValue)data);
+    void IDictionary<int, TValue>.Add(int key, TValue value) => Add(key, value);
+    public bool Add(int key, TValue value)
     {
-        if (key < 0) return;
+        if (key < 0) return false;
 
-        laneData.Remove(key);
-        laneData.Add(key, value);
+        if (laneData.TryGetValue(key, out var data))
+        {
+            if (data.Equals(value))
+            {
+                return false;
+            }
+        }
+
+        laneData[key] = value;
+
         UpdatesNeededInRange?.Invoke(key, key);
+
+        return true;
     }
 
     public void Clear()

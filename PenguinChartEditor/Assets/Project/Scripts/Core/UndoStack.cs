@@ -30,6 +30,7 @@ public class UndoStack : MonoBehaviour
 
     private void Undo()
     {
+        if (undoStack.Count == 0) return;
         var undoAction = undoStack.Pop();
         undoAction.RestoreSnapshot();
         redoStack.Push(undoAction);
@@ -38,6 +39,7 @@ public class UndoStack : MonoBehaviour
 
     private void Redo()
     {
+        if (redoStack.Count == 0) return;
         var redoAction = redoStack.Pop();
         redoAction.RestoreSnapshot();
         undoStack.Push(redoAction);
