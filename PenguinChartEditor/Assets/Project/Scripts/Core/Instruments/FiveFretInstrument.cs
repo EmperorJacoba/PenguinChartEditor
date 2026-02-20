@@ -133,6 +133,22 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
     }
 
     #endregion
+    
+    #region Undo/Redo
+
+    protected override void InternalSaveUndoData(UndoSnapshot<FiveFretNoteData> undoAction)
+    {
+        undoAction.SaveData(Lanes);
+    }
+
+    protected override void InternalApplyUndoAction(UndoSnapshot<FiveFretNoteData> undoAction)
+    {
+        // no checks needed since pushed data theoretically exists from a correct state
+        // if the state is not correct, then that's a different issue
+        Lanes.OverwriteLaneData(undoAction.GetStoredMultiLaneData());
+    }
+
+    #endregion
 
     #region Add/Delete
     
@@ -500,7 +516,7 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     #region Import
 
-    public override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    protected override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
     {
         AddChartFormattedEventsToInstrument(Clipboard.ConvertToLineList(clipboardData, offset));
     }

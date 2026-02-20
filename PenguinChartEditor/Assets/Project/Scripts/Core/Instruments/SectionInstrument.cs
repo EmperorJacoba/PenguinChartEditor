@@ -111,10 +111,24 @@ public class SectionInstrument : BaseInstrument<SectionData>
     protected override void InternalCompleteMove() {}
 
     #endregion
+    
+    #region Undo/Redo
+
+    protected override void InternalApplyUndoAction(UndoSnapshot<SectionData> undoAction)
+    {
+        laneData.OverwriteLaneDataWith(undoAction.GetStoredLaneData());
+    }
+
+    protected override void InternalSaveUndoData(UndoSnapshot<SectionData> undoAction)
+    {
+        undoAction.SaveData(laneData);
+    }
+
+    #endregion
 
     #region Import
 
-    public override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    protected override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
     {
         AddChartFormattedEventsToInstrument(Clipboard.ConvertToLineList(clipboardData, offset));
     }

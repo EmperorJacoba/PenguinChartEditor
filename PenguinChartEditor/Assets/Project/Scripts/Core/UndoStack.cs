@@ -13,8 +13,11 @@ public class UndoStack : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        instance.undoStack = new Stack<IUndoSnapshot>();
+        instance.redoStack = new Stack<IUndoSnapshot>();
 
         inputMap = new InputMap();
+        inputMap.Enable();
         inputMap.ExternalCharting.Undo.performed += _ => Undo();
         inputMap.ExternalCharting.Redo.performed += _ => Redo();
     }
@@ -31,6 +34,7 @@ public class UndoStack : MonoBehaviour
         undoAction.RestoreSnapshot();
         redoStack.Push(undoAction);
     }
+    
 
     private void Redo()
     {
@@ -84,8 +88,8 @@ public class UndoSnapshot<T> : IUndoSnapshot where T : IEventData
 
 public class SyncTrackUndoSnapshot : IUndoSnapshot
 {
-    private SortedDictionary<int, BPMData> bpmSave;
-    private SortedDictionary<int, TSData> tsSave;
+    public SortedDictionary<int, BPMData> bpmSave { get; }
+    public SortedDictionary<int, TSData> tsSave { get; }
 
     public IInstrument originationInstrument => Chart.SyncTrackInstrument;
 

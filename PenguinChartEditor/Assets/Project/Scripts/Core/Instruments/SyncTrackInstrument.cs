@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 
 public class SyncTrackInstrument : BaseInstrument<BPMData>
@@ -234,14 +235,19 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
     protected override void InternalSaveUndoData(UndoSnapshot<BPMData> undoAction) => throw new NotImplementedException();
     protected override void InternalApplyUndoAction(UndoSnapshot<BPMData> undoAction) => throw new NotImplementedException();
     
+    
     protected override void SaveUndoData()
     {
-        
+        var undoAction = new SyncTrackUndoSnapshot(TempoEvents, TimeSignatureEvents);
+        UndoStack.instance.PushAction(undoAction);
     }
 
     public override void PushUndoData(IUndoSnapshot undoSnapshot)
     {
-        
+        var snapshot = undoSnapshot as SyncTrackUndoSnapshot;
+
+        TempoEvents.OverwriteLaneDataWith(snapshot.bpmSave);
+        TimeSignatureEvents.OverwriteLaneDataWith(snapshot.tsSave);
     }
 
     #endregion
@@ -725,7 +731,7 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
 
     #region Parsing
 
-    public override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    protected override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
     {
         AddChartFormattedEventsToInstrument(Clipboard.ConvertToLineList(clipboardData, offset));
     }

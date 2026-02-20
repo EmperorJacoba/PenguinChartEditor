@@ -13,8 +13,7 @@ public static class Clipboard
         var userText = ClipboardService.GetText();
         var offset = Previewer.previewTick;
 
-        Chart.LoadedInstrument.AddChartFormattedEventsToInstrument(userText, offset);
-        Chart.InPlaceRefresh();
+        Chart.LoadedInstrument.PasteDataToInstrument(userText, offset);
     }
 
     public static List<KeyValuePair<int, string>> ConvertToLineList(string clipboardData, int offset)

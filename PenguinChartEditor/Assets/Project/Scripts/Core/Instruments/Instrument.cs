@@ -32,7 +32,7 @@ public interface IInstrument
     void SetUpInputMap();
 
     string ConvertSelectionToString();
-    void AddChartFormattedEventsToInstrument(string clipboardData, int offset);
+    void PasteDataToInstrument(string clipboardData, int offset);
 
     void DeleteTicksInSelection();
     void DeleteTickInLane(int tick, int lane);
@@ -114,6 +114,9 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     #region Undo/Redo
 
+    // FIXME: This functionality can likely be simplified with a unified generic push and save action. Would require an
+    // interface that allows exporting and importing data as a Dictionary regardless of lane count. Very doable!
+    
     protected abstract void InternalSaveUndoData(UndoSnapshot<T> undoAction);
     /// <remarks>
     /// Override ONLY IN SYNCTRACK for the multi-type approach. In all other cases, apply the data to the undoAction
@@ -146,7 +149,15 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public abstract bool NoteSelectionContains(int tick, int lane);
     public abstract List<int> GetUniqueTickSet();
     public abstract string ConvertSelectionToString();
-    public abstract void AddChartFormattedEventsToInstrument(string clipboardData, int offset);
+
+    public void PasteDataToInstrument(string clipboardData, int offset)
+    {
+        SaveUndoData();
+        AddChartFormattedEventsToInstrument(clipboardData, offset);
+        Chart.InPlaceRefresh();
+    }
+    
+    protected abstract void AddChartFormattedEventsToInstrument(string clipboardData, int offset);
     public abstract List<string> ExportAllEvents();
     
     public abstract ILaneData GetBarLaneData();

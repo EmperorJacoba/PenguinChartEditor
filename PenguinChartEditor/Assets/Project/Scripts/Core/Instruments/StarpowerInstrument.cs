@@ -152,6 +152,20 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     #endregion
 
+    #region Undo/Redo
+
+    protected override void InternalSaveUndoData(UndoSnapshot<StarpowerEventData> undoAction)
+    {
+        undoAction.SaveData(Lanes);
+    }
+
+    protected override void InternalApplyUndoAction(UndoSnapshot<StarpowerEventData> undoAction)
+    {
+        Lanes.OverwriteLaneData(undoAction.GetStoredMultiLaneData());
+    }
+
+    #endregion
+
     #region Add/Delete
     
     protected override void InternalDeleteAllEventsAtTick(int tick) => Lanes.PopAllEventsAtTick(tick);
@@ -275,7 +289,7 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         return true;
     }
 
-    public override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    protected override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
     {
         var clipboardAsLines = clipboardData.Split(Environment.NewLine);
 
