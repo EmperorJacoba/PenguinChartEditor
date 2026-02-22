@@ -20,17 +20,14 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     #region Data Access
 
+    protected override IMultiLaneController LaneController => Lanes;
+
     /// <summary>
     /// Access instrument data with GetLane(int), where int is casted version of HeaderType,
     /// since each traditional instrument has its own set of starpower events.
     /// </summary>
     private Lanes<StarpowerEventData> Lanes;
-    protected override ILaneData InternalReturnLaneData(int lane) => Lanes.GetLane(lane);
     public LaneSet<StarpowerEventData> GetLaneData(HeaderType lane) => Lanes.GetLane((int)lane);
-    public override List<int> GetUniqueTickSet() => Lanes.GetUniqueTickSet();
-    
-    public override ISelection GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
-    public override int NoteSelectionCount => Lanes.GetTotalSelectionCount();
 
     #endregion
 
@@ -59,9 +56,6 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
     #endregion
     
     #region Selections
-    
-    public override bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
-    public override bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
     
     // Pull this up to IInstrument
     public void ClearLaneSelection(HeaderType lane) => Lanes.GetLaneSelection((int)lane).Clear();
@@ -99,16 +93,9 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
     // Don't use this without making sure it's absolutely necessary.
     // The two functions above, <Action>SelectionTo, are more aligned to this use case.
     protected override void InternalSetSelectionToNewLane(int destinationLane) => Lanes.SetSelectionToNewLane(destinationLane);
-    
-    protected override void InternalClearAllSelections() => Lanes.ClearAllSelections();
-    protected override void InternalSelectAll() => Lanes.SelectAll();
-    protected override void InternalDeleteSelection() => Lanes.DeleteAllTicksInSelection();
-    protected override void InternalClearTickFromAllSelections(int tick) => Lanes.ClearTickFromAllSelections(tick);
-    protected override void InternalShiftClickSelectLane(int start, int end, int lane) =>
-        Lanes.GetLaneSelection(lane).ShiftClickSelectInRange(start, end);
-    protected override void InternalShiftClickSelect(int start, int end) =>
-        Lanes.ShiftClickSelect(start, end, InstrumentSpawningManager.instance.GetActiveInstrumentIDs());
-    
+
+    protected override List<int> targetLanes => InstrumentSpawningManager.instance.GetActiveInstrumentIDs();
+
     #endregion
     
     public void MakeSelectionUnison()
@@ -174,9 +161,6 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     #region Add/Delete
     
-    protected override void InternalDeleteAllEventsAtTick(int tick) => Lanes.PopAllEventsAtTick(tick);
-    protected override void InternalDeleteTickInLane(int tick, int lane) => Lanes.PopTickFromLane(tick, lane);
-    protected override void InternalDeleteTicksInSelection() => Lanes.DeleteAllTicksInSelection();
     protected override void InternalAddDataChecks(int tick, int lane)
     {
         ClampSustainsBefore(tick, lane);
@@ -366,7 +350,7 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     public override List<string> ExportAllEvents()
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     #endregion

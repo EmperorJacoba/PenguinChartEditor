@@ -15,7 +15,6 @@ public interface IMultiLaneController
     public MinMaxTicks GetSelectionBounds();
 
     public bool AnyLaneContainsTick(int tick);
-    public TickBounds GetTickEventBounds(int tick);
 
     public HashSet<int> GetUnifiedSelection();
     public int GetTotalSelectionCount();
@@ -24,12 +23,13 @@ public interface IMultiLaneController
     
     void ClearAllSelections();
     void ClearTickFromAllSelections(int tick);
-    void RemoveTickFromTotalSelection(int tick);
     void SelectAll();
-    bool DeleteAllTicksInSelection();
+    bool DeleteSelection();
     void ShiftClickSelect(int start, int end);
     void ShiftClickSelect(int start, int end, List<int> targetLanes);
 
+    void DeleteAllEventsAtTick(int tick);
+    void DeleteTickInLane(int tick, int lane);
 }
 
 public class Lanes<T> : IMultiLaneController where T : IEventData
@@ -291,14 +291,6 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         }
     }
 
-    public void RemoveTickFromTotalSelection(int tick)
-    {
-        foreach (var selection in selections.Values)
-        {
-            selection.Remove(tick);
-        }
-    }
-
     public void SelectAll()
     {
         foreach (var selection in selections.Values)
@@ -342,7 +334,7 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
     public SortedDictionary<int, T> CutUnifiedSelectionWithData()
     {
         var selection = GetUnifiedSelectionWithData();
-        DeleteAllTicksInSelection();
+        DeleteSelection();
         
         return selection;
     }
@@ -449,7 +441,9 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         }
         return subtractedData;
     }
-    
+
+    public void DeleteAllEventsAtTick(int tick) => PopAllEventsAtTick(tick);
+
     public Dictionary<int, SortedDictionary<int, T>> PopAllEventsAtTick(int tick)
     {
         var poppedOutput = MakeEmptyDataSet();
@@ -463,6 +457,11 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         }
 
         return poppedOutput;
+    }
+
+    public void DeleteTickInLane(int tick, int lane)
+    {
+        PopTickFromLane(tick, lane);
     }
 
     public Dictionary<int, SortedDictionary<int, T>> PopTickFromLane(int tick, int lane)
@@ -481,7 +480,7 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         return poppedOutput;
     }
     
-    public bool DeleteAllTicksInSelection()
+    public bool DeleteSelection()
     {
         if (GetTotalSelectionCount() == 0) return false;
         foreach (var selection in selections.Values)
@@ -567,6 +566,173 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
     {
         var output = selections.Where(selection => selection.Value.Count != 0).Aggregate("", (current, selection) => current + $"{selection.Key}: {selection.Value.Count}");
         MonoBehaviour.print(output);
+    }
+}
+
+/// <remarks>Access TempoEvents with Lane = 0. Access TimeSignatureEvents with Lane = 1.</remarks>
+public class SyncTrackLanes : IMultiLaneController
+{
+    // Data types are fundamentally different, very hard to combine into one single Lanes object
+    // Both are also structs because of their small (and repeatable) size.
+    // Converting from IEventData to XData every time you want to get a statistic would be too much overhead. 
+    public LaneSet<BPMData> TempoEvents { get; } // Lane = 0
+    public LaneSet<TSData> TimeSignatureEvents { get; } // Lane = 1
+
+    public SelectionSet<BPMData> bpmSelection;
+    public SelectionSet<TSData> tsSelection;
+
+    public SyncTrackLanes()
+    {
+        TempoEvents = new LaneSet<BPMData>(
+            protectedTicks: new HashSet<int> { 0 }
+        );
+        
+        TimeSignatureEvents = new LaneSet<TSData>(
+            protectedTicks: new HashSet<int> { 0 }
+        );
+
+        bpmSelection = new SelectionSet<BPMData>(TempoEvents);
+        tsSelection = new SelectionSet<TSData>(TimeSignatureEvents);
+    }
+    
+    public ILaneData GetLane(int lane) => lane == 0 ? TempoEvents : TimeSignatureEvents;
+    public ISelection GetLaneSelection(int lane) => lane == 0 ? bpmSelection : tsSelection;
+
+    public bool TryGetTick(int lane, int tick, out IEventData data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<int> GetUniqueTickSet()
+    {
+        var hashSet = TempoEvents.ExportData().Keys.ToHashSet();
+        hashSet.UnionWith(TimeSignatureEvents.ExportData().Keys.ToHashSet());
+        
+        List<int> list = new(hashSet);
+        list.Sort();
+        
+        return list;
+    }
+
+    public int GetFirstSelectionTick()
+    {
+        HashSet<int> minSelectionTicks = new();
+        
+        if (bpmSelection.Count > 0) minSelectionTicks.Add(bpmSelection.Min());
+        if (tsSelection.Count > 0) minSelectionTicks.Add(tsSelection.Min());
+        
+        return minSelectionTicks.Count > 0 ? minSelectionTicks.Min() : SelectionSet<BPMData>.NONE_SELECTED;
+    }
+
+    public MinMaxTicks GetSelectionBounds()
+    {
+        MinMaxTracker tracker = new(2);
+        
+        if (bpmSelection.Count > 0) tracker.AddTickMinMax(bpmSelection.Min(), bpmSelection.Max());
+        if (tsSelection.Count > 0) tracker.AddTickMinMax(tsSelection.Min(), bpmSelection.Max());
+
+        return tracker.GetAbsoluteMinMax();
+    }
+
+    public bool AnyLaneContainsTick(int tick) => TempoEvents.Contains(tick) || TimeSignatureEvents.Contains(tick);
+    
+    public HashSet<int> GetUnifiedSelection()
+    {
+        HashSet<int> ticks = new();
+        ticks.UnionWith(bpmSelection);
+        ticks.UnionWith(tsSelection);
+        return ticks;
+    }
+
+    public int GetTotalSelectionCount() => bpmSelection.Count + tsSelection.Count;
+    public bool IsSelectionEmpty() => GetTotalSelectionCount() == 0;
+
+    public Dictionary<int, HashSet<int>> GetTotalSelectionByLane()
+    {
+        return new Dictionary<int, HashSet<int>>()
+        {
+            {0, bpmSelection.GetSelectedTicks()},
+            {1, tsSelection.GetSelectedTicks()}
+        };
+    }
+
+    public void ClearAllSelections()
+    {
+        bpmSelection.Clear();
+        tsSelection.Clear();
+    }
+
+    public void ClearTickFromAllSelections(int tick)
+    {
+        bpmSelection.Remove(tick);
+        tsSelection.Remove(tick);
+    }
+
+    public void SelectAll()
+    {
+        bpmSelection.SelectAllInLane();
+        tsSelection.SelectAllInLane();
+    }
+
+    public void DeleteAllEventsAtTick(int tick)
+    {
+        if (TempoEvents.Contains(tick)) TempoEvents.PopSingle(tick);
+        if (TimeSignatureEvents.Contains(tick)) TimeSignatureEvents.PopSingle(tick);
+
+        Chart.SyncTrackInPlaceRefresh();
+    }
+
+    public void DeleteTickInLane(int tick, int lane)
+    {
+        switch (lane)
+        {
+            case 0:
+            {
+                if (!TempoEvents.Contains(tick)) return;
+                var poppedTick = TempoEvents.PopSingle(tick);
+                if (poppedTick == null) return;
+
+                Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
+                break;
+            }
+            case 1:
+            {
+                if (!TimeSignatureEvents.Contains(tick)) return;
+                var poppedTick = TimeSignatureEvents.PopSingle(tick);
+                if (poppedTick == null) return;
+                break;
+            }
+        }
+        
+        Chart.SyncTrackInPlaceRefresh();
+    }
+
+    public bool DeleteSelection()
+    {
+        if (IsSelectionEmpty()) return false;
+        if (bpmSelection.Count > 0)
+        {
+            bpmSelection.PopSelectedTicksFromLane();
+            Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();        
+        }
+        tsSelection.PopSelectedTicksFromLane();
+        
+        // The base instrument also does a refresh...means this is a little less efficient. But oh well, what can you do.
+        // We need the special refresh, unfortunately. If you can find a not clunky solution for this issue please do.
+        Chart.SyncTrackInPlaceRefresh();
+        return true;
+    }
+
+    public void ShiftClickSelect(int start, int end)
+    {
+        bpmSelection.ShiftClickSelectInRange(start, end);
+        tsSelection.ShiftClickSelectInRange(start, end);
+    }
+
+    public void ShiftClickSelect(int start, int end, List<int> targetLanes)
+    {
+        if (targetLanes.Contains(0)) bpmSelection.ShiftClickSelectInRange(start, end);
+        if (targetLanes.Contains(1)) tsSelection.ShiftClickSelectInRange(start, end);
     }
 }
 

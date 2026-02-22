@@ -8,32 +8,11 @@ public class SectionInstrument : BaseInstrument<SectionData>
 {
     #region Data Setup
 
-    public LaneSet<SectionData> GetLaneData() => laneData;
-    private readonly LaneSet<SectionData> laneData;
+    protected override IMultiLaneController LaneController => Lanes;
+    private readonly Lanes<SectionData> Lanes;
 
-    public SelectionSet<SectionData> GetLaneSelection() => selection;
-    private readonly SelectionSet<SectionData> selection;
-    public override ISelection GetLaneSelection(int lane) => selection;
-    
-    public override List<int> GetUniqueTickSet() => laneData.Keys.ToList();
-
-    #endregion
-
-    #region Selections
-    
-    public override bool NoteSelectionContains(int tick, int lane) => selection.Contains(tick);
-    public override int NoteSelectionCount => selection.Count();
-    public override bool IsNoteSelectionEmpty() => selection.Count == 0;
-
-    #region Internal Implementations
-
-    protected override void InternalSelectAll() => selection.SelectAllInLane();
-    protected override void InternalClearAllSelections() => selection.Clear();
-    protected override void InternalShiftClickSelectLane(int start, int end, int lane) => selection.ShiftClickSelectInRange(start, end);
-    protected override void InternalShiftClickSelect(int start, int end) => selection.ShiftClickSelectInRange(start, end);
-    protected override void InternalClearTickFromAllSelections(int tick) => selection.Remove(tick);
-    protected override void InternalDeleteTicksInSelection() => selection.PopSelectedTicksFromLane();
-    protected override void InternalDeleteSelection() => selection.PopSelectedTicksFromLane();
+    public LaneSet<SectionData> GetLaneData() => Lanes.GetLane(0);
+    public SelectionSet<SectionData> GetLaneSelection() => Lanes.GetLaneSelection(0);
 
     #endregion
     
@@ -41,9 +20,9 @@ public class SectionInstrument : BaseInstrument<SectionData>
     {
         if (newName == MULTIPLE_SELECTION_WARNING) return;
         
-        foreach (var section in selection)
+        foreach (var section in GetLaneSelection())
         {
-            laneData[section] = new SectionData(newName);
+            GetLaneData()[section] = new SectionData(newName);
         }
         
         Chart.InPlaceRefresh();
@@ -53,6 +32,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
     public string GetSelectedSectionName()
     {
         string sectionName = null;
+        var selection = GetLaneSelection();
         
         // Allows for editing the names of multiple sections, while also warning about it.
         foreach (var section in selection)
@@ -77,20 +57,15 @@ public class SectionInstrument : BaseInstrument<SectionData>
         return sectionName;
     }
     
-    #endregion
-
     #region Add/Delete
 
     public void OverwriteData(int tick, SectionData data)
     {
         SaveUndoData();
 
-        laneData[tick] = data;
+        GetLaneData()[tick] = data;
     }
-
-    protected override void InternalDeleteTickInLane(int tick, int lane) => laneData.Remove(tick);
-    protected override void InternalDeleteAllEventsAtTick(int tick) => laneData.Remove(tick);
-
+    
     protected override void InternalAddDataChecks(int tick, int lane) {} // no checks needed
     
     #endregion
@@ -101,9 +76,8 @@ public class SectionInstrument : BaseInstrument<SectionData>
     {
         InstrumentName = InstrumentType.events;
         Difficulty = DifficultyType.easy;
-        
-        laneData = new LaneSet<SectionData>();
-        selection = new SelectionSet<SectionData>(laneData);
+
+        Lanes = new Lanes<SectionData>(1);
         
         AddChartFormattedEventsToInstrument(events);
     }
@@ -112,7 +86,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
 
     #region Moving
 
-    protected override bool InternalMoveSelection(out bool firstFrame) => mover.Move1DSelection(this, laneData, selection, out firstFrame);
+    protected override bool InternalMoveSelection(out bool firstFrame) => mover.Move1DSelection(this, GetLaneData(), GetLaneSelection(), out firstFrame);
 
     // No extra post-move actions needed.
     protected override void InternalCompleteMove() {}
@@ -123,12 +97,12 @@ public class SectionInstrument : BaseInstrument<SectionData>
 
     protected override void InternalApplyUndoAction(UndoSnapshot<SectionData> undoAction)
     {
-        laneData.OverwriteLaneDataWith(undoAction.GetStoredLaneData());
+        GetLaneData().OverwriteLaneDataWith(undoAction.GetStoredLaneData());
     }
 
     protected override void InternalSaveUndoData(UndoSnapshot<SectionData> undoAction)
     {
-        undoAction.SaveData(laneData);
+        undoAction.SaveData(GetLaneData());
     }
 
     #endregion
@@ -178,10 +152,10 @@ public class SectionInstrument : BaseInstrument<SectionData>
                 }
             }
             
-            laneData.Add(@event.Key, new SectionData(splitSection[1]));
+            GetLaneData().Add(@event.Key, new SectionData(splitSection[1]));
         }
         
-        Chart.InPlaceRefresh();
+        if (Chart.SyncTrackInstrument is not null) Chart.InPlaceRefresh();
     }
 
     #endregion
@@ -191,7 +165,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
     public override string ConvertSelectionToString()
     {
         StringBuilder notes = new();
-        var exportedSelection = selection.ExportNormalizedData();
+        var exportedSelection = GetLaneSelection().ExportNormalizedData();
         
         foreach (var note in exportedSelection)
         {
@@ -206,7 +180,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
     {
         List<string> sectionEvents = new();
 
-        foreach (var section in laneData)
+        foreach (var section in GetLaneData())
         {
             var valueSection = $"\t{section.Key} = {section.Value.ToChartFormat(0)}";
             sectionEvents.Add(valueSection);
@@ -225,7 +199,6 @@ public class SectionInstrument : BaseInstrument<SectionData>
         set {}
     }
     public override ILaneData GetBarLaneData() => throw new System.NotImplementedException("No bar lane in sections");
-    protected override ILaneData InternalReturnLaneData(int lane) => laneData;
     protected override void InternalSetSelectionToNewLane(int destinationLane)
     {
         throw new NotImplementedException("No cross-lane selections in this instrument.");

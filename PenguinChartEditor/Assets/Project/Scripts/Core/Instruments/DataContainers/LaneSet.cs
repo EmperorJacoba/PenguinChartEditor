@@ -15,6 +15,7 @@ public interface ILaneData
     List<int> GetRelevantTicksInRange(int startTick, int endTick);
 
     bool Add(int tick, IEventData data);
+    bool Remove(int tick);
 }
 
 

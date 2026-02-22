@@ -34,7 +34,7 @@ public interface IInstrument
     string ConvertSelectionToString();
     void PasteDataToInstrument(string clipboardData, int offset);
 
-    void DeleteTicksInSelection();
+    void DeleteSelection();
     void DeleteTickInLane(int tick, int lane);
     void DeleteAllEventsAtTick(int tick);
 
@@ -104,12 +104,13 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 {
     #region Abstract Implemented Data
 
+    protected abstract IMultiLaneController LaneController { get; }
     // Override and set to null if the instrument does not have solos.
     public virtual SoloDataSet SoloData { get; set; } = new();
     public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
     public HeaderType InstrumentID => (HeaderType)((int)InstrumentName + (int)Difficulty);
-    public abstract int NoteSelectionCount { get; }
+    public int NoteSelectionCount => LaneController.GetTotalSelectionCount();
     
     #endregion
 
@@ -158,8 +159,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     #region Abstract Implemented Funcs
 
-    public abstract bool NoteSelectionContains(int tick, int lane);
-    public abstract List<int> GetUniqueTickSet();
+    public bool NoteSelectionContains(int tick, int lane) => LaneController.GetLaneSelection(lane).Contains(tick);
+    public List<int> GetUniqueTickSet() => LaneController.GetUniqueTickSet();
     public abstract string ConvertSelectionToString();
 
     public void PasteDataToInstrument(string clipboardData, int offset)
@@ -173,8 +174,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public abstract List<string> ExportAllEvents();
     
     public abstract ILaneData GetBarLaneData();
-    public abstract ISelection GetLaneSelection(int lane);
-    public abstract bool IsNoteSelectionEmpty();
+    public ISelection GetLaneSelection(int lane) => LaneController.GetLaneSelection(lane);
+    public bool IsNoteSelectionEmpty() => LaneController.IsSelectionEmpty();
 
     /// <remarks>
     /// If you need to validate data upon data add, do it here.
@@ -201,41 +202,36 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         Chart.InPlaceRefresh();
     }
 
-    // Just return Lanes.GetLaneData(lane) if the data system is normal.
-    protected abstract ILaneData InternalReturnLaneData(int lane);
-
     public ILaneData GetLaneData(int lane)
     {
-        return lane == IInstrument.SOLO_DATA_LANE_ID ? SoloData.SoloEvents : InternalReturnLaneData(lane);
+        return lane == IInstrument.SOLO_DATA_LANE_ID ? SoloData.SoloEvents : LaneController.GetLane(lane);
     }
     
     #endregion
     
     #region Selections
     
-    protected abstract void InternalClearAllSelections();
     public void ClearAllSelections()
     {
-        InternalClearAllSelections();
+        LaneController.ClearAllSelections();
         SoloData?.ClearSelection();
         
         Chart.InPlaceRefresh();
     }
-
-    protected abstract void InternalSelectAll();
-
+    
     private void SelectAll()
     {
         if (Chart.LoadedInstrument != this) return;
         
-        InternalSelectAll();
+        LaneController.SelectAll();
         SoloData?.SelectAll();
         
         Chart.InPlaceRefresh();
     }
 
-    protected abstract void InternalDeleteSelection();
-    private void DeleteSelection()
+    protected virtual void InternalDeleteSelectionChecks() {}
+
+    public void DeleteSelection()
     {
         // Very important, otherwise if some selections remain in error upon an instrument switch, then data will be
         // unexpectantly deleted.
@@ -247,13 +243,13 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
         if (NoteSelectionCount != 0)
         {
-            InternalDeleteSelection();
+            LaneController.DeleteSelection();
+            InternalDeleteSelectionChecks();
         }
 
         Chart.InPlaceRefresh();
     }
 
-    protected abstract void InternalShiftClickSelectLane(int start, int end, int lane);
     public void ShiftClickSelectLane(int start, int end, int lane)
     {
         if (Chart.LoadedInstrument != this) return;
@@ -265,19 +261,27 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         }
         else
         {
-            InternalShiftClickSelectLane(start, end, lane);
+            LaneController.GetLaneSelection(lane).ShiftClickSelectInRange(start, end);
         }
         
         Chart.InPlaceRefresh();
     }
 
-    protected abstract void InternalShiftClickSelect(int start, int end);
+    protected virtual List<int> targetLanes => null;
     public void ShiftClickSelect(int start, int end)
     {
         if (Chart.LoadedInstrument != this) return;
         ClearAllSelections();
-        
-        InternalShiftClickSelect(start, end);
+
+        // override throughpoint for StarpowerInstrument
+        if (targetLanes is not null)
+        {
+            LaneController.ShiftClickSelect(start, end, targetLanes);
+        }
+        else
+        {
+            LaneController.ShiftClickSelect(start, end);
+        }
         SoloData?.SelectTicksInRange(start, end);
         
         Chart.InPlaceRefresh();
@@ -285,24 +289,12 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     public void ShiftClickSelect(int tick) => ShiftClickSelect(tick, tick);
 
-    protected abstract void InternalClearTickFromAllSelections(int tick);
     public void ClearTickFromAllSelections(int tick)
     {
         if (Chart.LoadedInstrument != this) return;
         
-        InternalClearTickFromAllSelections(tick);
+        LaneController.ClearTickFromAllSelections(tick);
         SoloData.RemoveTickFromAllSelections(tick);
-        
-        Chart.InPlaceRefresh();
-    }
-
-    protected abstract void InternalDeleteTicksInSelection();
-    public void DeleteTicksInSelection()
-    {
-        if (Chart.LoadedInstrument != this) return;
-        SaveUndoData();
-        InternalDeleteTicksInSelection();
-        SoloData?.DeleteSelection();
         
         Chart.InPlaceRefresh();
     }
@@ -332,7 +324,6 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     #region Delete
 
-    protected abstract void InternalDeleteTickInLane(int tick, int lane);
     public void DeleteTickInLane(int tick, int lane)
     {
         if (Chart.LoadedInstrument != this) return;
@@ -344,13 +335,12 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         }
         else
         {
-            InternalDeleteTickInLane(tick, lane);
+            LaneController.DeleteTickInLane(tick, lane);
         }
         
         Chart.InPlaceRefresh();
     }
 
-    protected abstract void InternalDeleteAllEventsAtTick(int tick);
     public void DeleteAllEventsAtTick(int tick)
     {
         if (Chart.LoadedInstrument != this) return;
@@ -358,7 +348,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         SaveUndoData();
         
         SoloData?.DeleteTick(tick);
-        InternalDeleteAllEventsAtTick(tick);
+        LaneController.DeleteAllEventsAtTick(tick);
         
         ClearAllSelections();
     }

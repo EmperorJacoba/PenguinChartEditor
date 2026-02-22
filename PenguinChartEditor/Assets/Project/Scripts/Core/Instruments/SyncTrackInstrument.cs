@@ -25,71 +25,29 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
 
     #region Data/Setup
 
+    protected override IMultiLaneController LaneController => Lanes;
+    private SyncTrackLanes Lanes;
+
     // Data types are fundamentally different, very hard to combine into one single Lanes object
     // Both are also structs because of their small (and repeatable) size.
     // Converting from IEventData to XData every time you want to get a statistic would be too much overhead. 
-    public LaneSet<BPMData> TempoEvents { get; }
-    public LaneSet<TSData> TimeSignatureEvents { get; }
-
-    public SelectionSet<BPMData> bpmSelection;
-    public SelectionSet<TSData> tsSelection;
-
-    protected override ILaneData InternalReturnLaneData(int lane)
-    {
-        var laneAsOrientation = (LaneOrientation)lane;
-        if (laneAsOrientation == LaneOrientation.bpm)
-        {
-            return TempoEvents;
-        }
-        return TimeSignatureEvents;
-    }
+    public LaneSet<BPMData> TempoEvents => Lanes.TempoEvents;
+    public LaneSet<TSData> TimeSignatureEvents => Lanes.TimeSignatureEvents;
 
     public override ILaneData GetBarLaneData() => throw new NullReferenceException("SyncTrackInstrument does not have a bar lane, as it does not use traditional instrument lanes.");
-
-    public override ISelection GetLaneSelection(int lane)
-    {
-        var laneAsOrientation = (LaneOrientation)lane;
-        if (laneAsOrientation == LaneOrientation.bpm)
-        {
-            return bpmSelection;
-        }
-        return tsSelection;
-    }
-
-    public override bool IsNoteSelectionEmpty() => bpmSelection.Count == 0 && tsSelection.Count == 0;
-
+    
     public override SoloDataSet SoloData
     {
         get => null;
         set {}
-    }
-    
-    public override List<int> GetUniqueTickSet()
-    {
-        var hashSet = Chart.SyncTrackInstrument.TempoEvents.ExportData().Keys.ToHashSet();
-        hashSet.UnionWith(TimeSignatureEvents.ExportData().Keys.ToHashSet());
-        
-        List<int> list = new(hashSet);
-        list.Sort();
-        
-        return list;
     }
 
     public SyncTrackInstrument(List<KeyValuePair<int, string>> fileData)
     {
         InstrumentName = InstrumentType.synctrack;
         Difficulty = DifficultyType.easy;
-        
-        TempoEvents = new LaneSet<BPMData>(
-            protectedTicks: new HashSet<int> { 0 }
-            );
-        
-        TimeSignatureEvents = new LaneSet<TSData>(
-            protectedTicks: new HashSet<int> { 0 }
-            );
 
-        bpmSelection = new SelectionSet<BPMData>(TempoEvents);
-        tsSelection = new SelectionSet<TSData>(TimeSignatureEvents);
+        Lanes = new SyncTrackLanes();
 
         AddChartFormattedEventsToInstrument(fileData);
         if (TempoEvents.Count == 0)
@@ -108,12 +66,6 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
         bpm = 0,
         timeSignature = 1
     }
-    
-    protected override void InternalSelectAll()
-    {
-        bpmSelection.SelectAllInLane();
-        tsSelection.SelectAllInLane();
-    }
 
     #endregion
 
@@ -130,8 +82,8 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
         firstFrame = false;
         if (Input.GetKey(KeyCode.LeftControl)) return false;
         
-        var bpmMove = bpmMover.Move1DSelection(this, TempoEvents, bpmSelection, out var moveStartedB);
-        var tsMove = tsMover.Move1DSelection(this, TimeSignatureEvents, tsSelection, out var moveStartedT);
+        var bpmMove = bpmMover.Move1DSelection(this, TempoEvents, Lanes.bpmSelection, out var moveStartedB);
+        var tsMove = tsMover.Move1DSelection(this, TimeSignatureEvents, Lanes.tsSelection, out var moveStartedT);
 
         firstFrame = moveStartedB || moveStartedT;
         
@@ -183,59 +135,6 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
             default:
                 throw new ArgumentException($"Incorrect T passed into SyncTrackInstrument.OverwriteData. Expected BPMData or TSData, got {typeof(T)}");
         }
-    }
-
-    protected override void InternalDeleteSelection()
-    {
-        if (bpmSelection.Count > 0)
-        {
-            TempoEvents.PopTicksFromSet(bpmSelection.ExportData());
-            RecalculateTempoEventDictionary();
-            bpmSelection.Clear();
-        }
-
-        if (tsSelection.Count > 0)
-        {
-            TimeSignatureEvents.PopTicksFromSet(tsSelection.ExportData());
-            tsSelection.Clear();
-        }
-
-        // The base class also does a refresh...means this is a little less efficient. But oh well, what can you do.
-        // We need the special refresh, unfortunately. If you can find a not clunky solution for this issue please do.
-        Chart.SyncTrackInPlaceRefresh();
-    }
-
-    protected override void InternalDeleteTickInLane(int tick, int lane)
-    {
-        switch (lane)
-        {
-            case (int)LaneOrientation.bpm:
-            {
-                if (!TempoEvents.Contains(tick)) return;
-                var poppedTick = TempoEvents.PopSingle(tick);
-                if (poppedTick == null) return;
-
-                RecalculateTempoEventDictionary();
-                break;
-            }
-            case (int)LaneOrientation.timeSignature:
-            {
-                if (!TimeSignatureEvents.Contains(tick)) return;
-                var poppedTick = TimeSignatureEvents.PopSingle(tick);
-                if (poppedTick == null) return;
-                break;
-            }
-        }
-
-        Chart.SyncTrackInPlaceRefresh();
-    }
-
-    protected override void InternalDeleteAllEventsAtTick(int tick)
-    {
-        if (TempoEvents.Contains(tick)) TempoEvents.PopSingle(tick);
-        if (TimeSignatureEvents.Contains(tick)) TempoEvents.PopSingle(tick);
-
-        Chart.SyncTrackInPlaceRefresh();
     }
 
     protected override void InternalAddDataChecks(int tick, int lane)
@@ -650,64 +549,11 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
     #endregion
 
     #region Selections
-    
-    protected override void InternalDeleteTicksInSelection()
-    {
-        bpmSelection.PopSelectedTicksFromLane();
-        tsSelection.PopSelectedTicksFromLane();
-
-        RecalculateTempoEventDictionary();
-    }
-
-    protected override void InternalClearAllSelections()
-    {
-        bpmSelection.Clear();
-        tsSelection.Clear();
-    }
-
-    public override bool NoteSelectionContains(int tick, int lane)
-    {
-        if ((LaneOrientation)lane == LaneOrientation.bpm)
-        {
-            return bpmSelection.Contains(tick);
-        }
-        else if ((LaneOrientation)lane == LaneOrientation.timeSignature)
-        {
-            return tsSelection.Contains(tick);
-        }
-        return false;
-    }
-
-    protected override void InternalShiftClickSelectLane(int start, int end, int lane)
-    {
-        var trackID = (LaneOrientation)lane;
-
-        if (trackID == LaneOrientation.bpm)
-        {
-            bpmSelection.ShiftClickSelectInRange(start, end);
-        }
-        else
-        {
-            tsSelection.ShiftClickSelectInRange(start, end);
-        }
-    }
-
-    protected override void InternalShiftClickSelect(int start, int end)
-    {
-        bpmSelection.ShiftClickSelectInRange(start, end);
-        tsSelection.ShiftClickSelectInRange(start, end);
-    }
-    
-    protected override void InternalClearTickFromAllSelections(int tick)
-    {
-        bpmSelection.Remove(tick);
-        tsSelection.Remove(tick);
-    }
 
     public override string ConvertSelectionToString()
     {
-        var bpmSelectionData = bpmSelection.ExportNormalizedData();
-        var tsSelectionData = tsSelection.ExportNormalizedData();
+        var bpmSelectionData = Lanes.bpmSelection.ExportNormalizedData();
+        var tsSelectionData = Lanes.tsSelection.ExportNormalizedData();
         var stringIDs = new List<KeyValuePair<int, string>>();
 
         foreach (var item in bpmSelectionData)
@@ -738,14 +584,6 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
             combinedIDs.AppendLine($"\t{id.Key} = {id.Value}");
         }
         return combinedIDs.ToString();
-    }
-
-    public override int NoteSelectionCount
-    {
-        get
-        {
-            return bpmSelection.Count + tsSelection.Count;
-        }
     }
 
     #endregion

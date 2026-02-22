@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TSLabel : Label<TSData>
 {
     #region Event Sets
     
-    public override SelectionSet<TSData> Selection => Chart.SyncTrackInstrument.tsSelection;
+    public override SelectionSet<TSData> Selection => Chart.SyncTrackInstrument.GetLaneSelection(1) as SelectionSet<TSData>;
     protected override LaneSet<TSData> LaneData => Chart.SyncTrackInstrument.TimeSignatureEvents;
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
     [SerializeField] private Warning tsWarningAlert;

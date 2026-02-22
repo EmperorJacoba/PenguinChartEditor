@@ -5,6 +5,8 @@ using System.Linq;
 public interface ISelection
 {
     bool Remove(int key);
+    bool Contains(int tick);
+    void ShiftClickSelectInRange(int start, int end);
 }
 
 /// <summary>

@@ -25,15 +25,13 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     #region Data Access
 
+    protected override IMultiLaneController LaneController => Lanes;
+
     private Lanes<FiveFretNoteData> Lanes { get; set; }
-    protected override ILaneData InternalReturnLaneData(int lane) => Lanes.GetLane(lane);
     public override ILaneData GetBarLaneData() => GetLaneData(LaneOrientation.open);
     public LaneSet<FiveFretNoteData> GetLaneData(LaneOrientation lane) => Lanes.GetLane((int)lane);
 
-    public override ISelection GetLaneSelection(int lane) => Lanes.GetLaneSelection(lane);
     public SelectionSet<FiveFretNoteData> GetLaneSelection(LaneOrientation lane) => Lanes.GetLaneSelection((int)lane);
-
-    public override List<int> GetUniqueTickSet() => Lanes.GetUniqueTickSet();
     
     #endregion
 
@@ -152,9 +150,6 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     #region Add/Delete
     
-    protected override void InternalDeleteTickInLane(int tick, int lane) => Lanes.PopTickFromLane(tick, lane);
-    protected override void InternalDeleteAllEventsAtTick(int tick) => Lanes.PopAllEventsAtTick(tick);
-    
     protected override void InternalAddDataChecks(int tick, int lane)
     {
         UpdateTickDataToMatch(tick, Lanes.GetLane(lane)[tick]);
@@ -167,30 +162,18 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
     #region Selections
 
     #region Internal Overrides
-
-    public override int NoteSelectionCount => Lanes.GetTotalSelectionCount();
-    public override bool NoteSelectionContains(int tick, int lane) => Lanes.GetLaneSelection(lane).Contains(tick);
-    public override bool IsNoteSelectionEmpty() => Lanes.IsSelectionEmpty();
-    
-    protected override void InternalClearAllSelections() => Lanes.ClearAllSelections();
-    protected override void InternalDeleteTicksInSelection() => Lanes.DeleteAllTicksInSelection();
-    protected override void InternalShiftClickSelectLane(int start, int end, int lane) => Lanes.GetLaneSelection(lane).ShiftClickSelectInRange(start, end);
-    protected override void InternalShiftClickSelect(int start, int end) => Lanes.ShiftClickSelect(start, end);
-    protected override void InternalSelectAll() => Lanes.SelectAll();
-    protected override void InternalClearTickFromAllSelections(int tick) => Lanes.ClearTickFromAllSelections(tick);
     
     protected override void InternalSetSelectionToNewLane(int destinationLane)
     {
         var selectionMinMax = Lanes.GetSelectionBounds();
-        Lanes.SetSelectionToNewLane((int)destinationLane);
+        Lanes.SetSelectionToNewLane(destinationLane);
         CheckForHoposInRange(selectionMinMax.min, selectionMinMax.max);
     }
     
-    protected override void InternalDeleteSelection()
+    // FIXME: Only check in the range of the deletion.
+    protected override void InternalDeleteSelectionChecks()
     {
-        var totalSelection = Lanes.GetUnifiedSelection();
-        Lanes.DeleteAllTicksInSelection();
-        CheckForHoposInRange(totalSelection.Min(), totalSelection.Max());
+        CheckForHoposInRange(0, SongTime.SongLengthTicks);
     }
     
     #endregion

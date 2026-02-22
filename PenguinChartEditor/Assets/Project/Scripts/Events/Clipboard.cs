@@ -48,6 +48,6 @@ public static class Clipboard
     public static void Cut()
     {
         Copy();
-        Chart.LoadedInstrument.DeleteTicksInSelection();
+        Chart.LoadedInstrument.DeleteSelection();
     }
 }
