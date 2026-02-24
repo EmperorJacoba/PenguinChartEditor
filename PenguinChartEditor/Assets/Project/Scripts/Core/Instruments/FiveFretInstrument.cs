@@ -423,10 +423,16 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
     public bool PreviewTickHopo(LaneOrientation lane, int tick)
     {
         var ticks = Lanes.GetTickEventBounds(tick);
+        
+        // Second clause states that placing a note where one already exists when the note count == 1 does not change
+        // chord status. Not having this clause causes some issues when Previewers try to repeat add new data to an instrument
+        // (if a user holds down for any period of time following an addition of data)
+        var isTickChordAfterChange = Lanes.GetTickCountAtTick(tick) > 0 &&
+                                        !(Lanes.GetTickCountAtTick(tick) == 1 && Lanes.GetLane((int)lane).Contains(tick));
 
         if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
             tick - ticks.prev < Chart.HopoCutoff &&
-            (Lanes.GetTickCountAtTick(tick) == 0 && !Lanes.GetLane((int)lane).Contains(ticks.prev))
+            (!isTickChordAfterChange && !Lanes.GetLane((int)lane).Contains(ticks.prev))
             ) return true;
 
         return false;

@@ -15,6 +15,8 @@ public interface ILaneData
     List<int> GetRelevantTicksInRange(int startTick, int endTick);
 
     bool Add(int tick, IEventData data);
+    public bool CreateEvent(int tick, IEventData newData, out AddDataPackage actionInfo);
+    
     bool Remove(int tick);
 }
 
@@ -25,6 +27,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 {
     public const int NO_TICK_EVENT = -1;
     private SortedDictionary<int, TValue> laneData;
+    private readonly int laneID;
 
     public delegate void UpdateNeededDelegate(int startTick, int endTick);
 
@@ -44,14 +47,18 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     public readonly HashSet<int> protectedTicks = new();
 
     public SortedDictionary<int, TValue> ExportData() => new(laneData);
-    public LaneSet(HashSet<int> protectedTicks)
+    public LaneSet(int laneID, HashSet<int> protectedTicks)
     {
+        this.laneID = laneID;
+        
         laneData = new SortedDictionary<int, TValue>();
         this.protectedTicks = protectedTicks;
     }
 
-    public LaneSet()
+    public LaneSet(int laneID)
     {
+        this.laneID = laneID;
+        
         laneData = new SortedDictionary<int, TValue>();
     }
 
@@ -73,6 +80,30 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         UpdatesNeededInRange?.Invoke(key, key);
 
+        return true;
+    }
+
+    public bool CreateEvent(int tick, IEventData newData, out AddDataPackage actionInfo) => 
+        TypedCreateEvent(tick, (TValue)newData, out actionInfo);
+    
+    public bool TypedCreateEvent(int tick, TValue newData, out AddDataPackage actionInfo)
+    {
+        actionInfo = new AddDataPackage(tick, laneID, newData);
+
+        if (tick < 0) return false;
+        
+        if (laneData.TryGetValue(tick, out var oldData))
+        {
+            if (oldData.Equals(newData))
+            {
+                return false;
+            }
+
+            actionInfo = new AddDataPackage(tick, laneID, newData, oldData);
+        }
+
+        laneData[tick] = newData;
+        
         return true;
     }
 

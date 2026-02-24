@@ -49,4 +49,6 @@ public static class UserSettings
     public static bool ShowSidebarSections { get; set; } = true;
 
     public static float TimeToCullObjects { get; set; } = 5.0f;
+
+    public static int MaximumSavedUndoActions { get; set; } = 1024;
 }

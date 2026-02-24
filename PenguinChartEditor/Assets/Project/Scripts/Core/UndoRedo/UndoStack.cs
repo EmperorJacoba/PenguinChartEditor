@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class UndoStack : MonoBehaviour
 {
-    private Stack<IUndoSnapshot> undoStack;
-    private Stack<IUndoSnapshot> redoStack;
+    private FiniteStack<IUndoSnapshot> undoStack;
+    private FiniteStack<IUndoSnapshot> redoStack;
 
     public static UndoStack instance;
 
@@ -13,8 +13,8 @@ public class UndoStack : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        instance.undoStack = new Stack<IUndoSnapshot>();
-        instance.redoStack = new Stack<IUndoSnapshot>();
+        instance.undoStack = new FiniteStack<IUndoSnapshot>(UserSettings.MaximumSavedUndoActions);
+        instance.redoStack = new FiniteStack<IUndoSnapshot>(UserSettings.MaximumSavedUndoActions);
 
         inputMap = new InputMap();
         inputMap.Enable();
@@ -31,31 +31,47 @@ public class UndoStack : MonoBehaviour
     private void Undo()
     {
         if (undoStack.Count == 0) return;
+        
         var undoAction = undoStack.Pop();
-        undoAction.RestoreSnapshot();
+        undoAction.Undo();
         redoStack.Push(undoAction);
+        
+        Chart.InPlaceRefresh();
     }
     
 
     private void Redo()
     {
         if (redoStack.Count == 0) return;
+        
         var redoAction = redoStack.Pop();
-        redoAction.RestoreSnapshot();
+        redoAction.Redo();
         undoStack.Push(redoAction);
+        
+        Chart.InPlaceRefresh();
     }
 }
 
 public interface IUndoSnapshot
 {
-    IInstrument originationInstrument { get; }
-    void RestoreSnapshot();
+    IInstrument parentInstrument { get; }
+    void Undo();
+    void Redo();
 }
 
 public class UndoSnapshot<T> : IUndoSnapshot where T : IEventData
 {
     private Dictionary<int, SortedDictionary<int, T>> storedData;
-    public IInstrument originationInstrument { get; }
+    public IInstrument parentInstrument { get; }
+    public void Undo()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Redo()
+    {
+        throw new NotImplementedException();
+    }
 
     public void SaveData(LaneSet<T> originationLane)
     {
@@ -79,12 +95,12 @@ public class UndoSnapshot<T> : IUndoSnapshot where T : IEventData
     
     public UndoSnapshot(IInstrument originationInstrument)
     {
-        this.originationInstrument = originationInstrument;
+        this.parentInstrument = originationInstrument;
     }
 
     public void RestoreSnapshot()
     {
-        originationInstrument.PushUndoData(this);
+        parentInstrument.PushUndoData(this);
     }
 }
 
@@ -93,11 +109,20 @@ public class SyncTrackUndoSnapshot : IUndoSnapshot
     public SortedDictionary<int, BPMData> bpmSave { get; }
     public SortedDictionary<int, TSData> tsSave { get; }
 
-    public IInstrument originationInstrument => Chart.SyncTrackInstrument;
+    public IInstrument parentInstrument => Chart.SyncTrackInstrument;
+    public void Undo()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Redo()
+    {
+        throw new NotImplementedException();
+    }
 
     public void RestoreSnapshot()
     {
-        originationInstrument.PushUndoData(this);
+        parentInstrument.PushUndoData(this);
     }
 
     public SyncTrackUndoSnapshot(LaneSet<BPMData> tempo, LaneSet<TSData> ts)

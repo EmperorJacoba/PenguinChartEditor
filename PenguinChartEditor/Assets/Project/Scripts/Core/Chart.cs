@@ -213,8 +213,8 @@ public class Chart : MonoBehaviour
 
         LoadFile();
         
-        // LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.guitar).ToList()[0]; 
-        LoadedInstrument = SyncTrackInstrument;
+        LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.guitar).ToList()[0]; 
+        // LoadedInstrument = SyncTrackInstrument;
         // LoadedInstrument = StarpowerInstrument;
 
         inputMap = new InputMap();
@@ -242,6 +242,12 @@ public class Chart : MonoBehaviour
         {
             print("Bounced attempted refresh as data has not yet been loaded. " +
                   "Please make sure you are calling refresh at the right time.");
+            return;
+        }
+
+        if (instance.SceneDetails.currentScene == SceneType.tempoMap)
+        {
+            SyncTrackInPlaceRefresh();
             return;
         }
         

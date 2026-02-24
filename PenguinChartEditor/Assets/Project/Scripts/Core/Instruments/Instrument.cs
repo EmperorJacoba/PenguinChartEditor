@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 // this is untyped because these methods (by design) apply regardless of type. Specify type in calls to an instrument
@@ -50,6 +51,9 @@ public interface IInstrument
 
     void PushUndoData(IUndoSnapshot undoSnapshot);
     void SaveUndoData();
+
+    public void UndoAdd(AddDataPackage actionInfo);
+    public void RedoAdd(AddDataPackage actionInfo);
 }
 
 public interface ISustainableInstrument : IInstrument
@@ -146,14 +150,15 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     /// </remarks>
     protected virtual IUndoSnapshot CreateUndoSnapshot()
     {
-        var undoAction = new UndoSnapshot<T>(this);
-        InternalSaveUndoData(undoAction);
-        return undoAction;
+        // var undoAction = new UndoSnapshot<T>(this);
+        // InternalSaveUndoData(undoAction);
+        // return undoAction;
+        return null;
     }
 
     protected void ApplyUndoDataToStack(IUndoSnapshot undoSnapshot)
     {
-        UndoStack.instance.PushAction(undoSnapshot);
+        // UndoStack.instance.PushAction(undoSnapshot);
     }
 
     protected abstract void InternalApplyUndoAction(UndoSnapshot<T> undoAction);
@@ -287,11 +292,10 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalAddDataChecks(int tick, int lane);
     public void CreateEvent(int tick, int lane, IEventData data)
     {
-        ClearAllSelections();
-        var snap = CreateUndoSnapshot();
-        if (GetLaneData(lane).Add(tick, data))
+        if (GetLaneData(lane).CreateEvent(tick, data, out var actionInfo))
         {
-            ApplyUndoDataToStack(snap);
+            var undoAction = new SingleAddSnapshot(this, actionInfo);
+            UndoStack.instance.PushAction(undoAction);
         }
         else
         {
@@ -300,7 +304,24 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         
         InternalAddDataChecks(tick, lane);
 
-        Chart.InPlaceRefresh();
+        ClearAllSelections();
+    }
+
+    public void UndoAdd(AddDataPackage actionInfo)
+    {
+        if (actionInfo.removedDataExists)
+        {
+            GetLaneData(actionInfo.lane).CreateEvent(actionInfo.tick, actionInfo.removedData, out _);
+        }
+        else
+        {
+            GetLaneData(actionInfo.lane).Remove(actionInfo.tick);
+        }
+    }
+
+    public void RedoAdd(AddDataPackage actionInfo)
+    {
+        GetLaneData(actionInfo.lane).CreateEvent(actionInfo.tick, actionInfo.addedData, out _);
     }
     
     #endregion

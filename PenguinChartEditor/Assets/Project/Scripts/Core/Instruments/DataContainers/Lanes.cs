@@ -77,7 +77,7 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
 
         for (int i = 0; i < laneCount; i++)
         {
-            lanes[i] = new LaneSet<T>();
+            lanes[i] = new LaneSet<T>(i);
             selections[i] = new SelectionSet<T>(lanes[i]);
         }
     }
@@ -89,7 +89,7 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
 
         foreach (var id in laneIDs)
         {
-            lanes[id] = new LaneSet<T>();
+            lanes[id] = new LaneSet<T>(id);
             selections[id] = new SelectionSet<T>(lanes[id]);
         }
     }
@@ -584,10 +584,12 @@ public class SyncTrackLanes : IMultiLaneController
     public SyncTrackLanes()
     {
         TempoEvents = new LaneSet<BPMData>(
+            0,
             protectedTicks: new HashSet<int> { 0 }
         );
         
         TimeSignatureEvents = new LaneSet<TSData>(
+            1,
             protectedTicks: new HashSet<int> { 0 }
         );
 
