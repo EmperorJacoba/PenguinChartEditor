@@ -357,7 +357,7 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
     #region HOPOs
 
     // Undo does not apply. This happens as a result of another action.
-    public void CheckForHopos(LaneOrientation lane, int changedTick)
+    private void CheckForHopos(LaneOrientation lane, int changedTick)
     {
         bool nextTickHopo = false;
         bool currentTickHopo = false;
@@ -384,8 +384,8 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
         }
     }
 
-    public void CheckForHoposInRange(MinMaxTicks range) => CheckForHoposInRange(range.min, range.max);
-    public void CheckForHoposInRange(int startTick, int endTick)
+    private void CheckForHoposInRange(MinMaxTicks range) => CheckForHoposInRange(range.min, range.max);
+    private void CheckForHoposInRange(int startTick, int endTick)
     {
         var uniqueTicks = GetUniqueTickSet();
 
@@ -466,7 +466,7 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
         Chart.InPlaceRefresh();
     }
 
-    public bool IsTickTap(int tick)
+    private bool IsTickTap(int tick)
     {
         for (int i = 0; i < Lanes.Count; i++)
         {
@@ -481,7 +481,7 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
         return false;
     }
 
-    public bool IsTickDefault(int tick)
+    private bool IsTickDefault(int tick)
     {
         for (int i = 0; i < Lanes.Count; i++)
         {
@@ -492,7 +492,7 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
         return true;
     }
 
-    public bool IsTickNaturallyChangable(int tick)
+    private bool IsTickNaturallyChangable(int tick)
     {
         for (int i = 0; i < Lanes.Count; i++)
         {

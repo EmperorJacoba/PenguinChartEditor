@@ -155,7 +155,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
             GetLaneData().Add(@event.Key, new SectionData(splitSection[1]));
         }
         
-        if (Chart.SyncTrackInstrument is not null) Chart.InPlaceRefresh();
+        Chart.InPlaceRefresh();
     }
 
     #endregion

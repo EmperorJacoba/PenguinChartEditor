@@ -238,6 +238,12 @@ public class Chart : MonoBehaviour
 
     public static void InPlaceRefresh()
     {
+        if (SyncTrackInstrument is null)
+        {
+            print("Bounced attempted refresh as data has not yet been loaded. " +
+                  "Please make sure you are calling refresh at the right time.");
+        }
+        
         InPlaceRefreshNeeded?.Invoke(); // shortcut for all lanes to update
     }
 
