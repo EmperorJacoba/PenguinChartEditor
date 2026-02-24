@@ -242,6 +242,7 @@ public class Chart : MonoBehaviour
         {
             print("Bounced attempted refresh as data has not yet been loaded. " +
                   "Please make sure you are calling refresh at the right time.");
+            return;
         }
         
         InPlaceRefreshNeeded?.Invoke(); // shortcut for all lanes to update

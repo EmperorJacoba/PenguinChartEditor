@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BeatlineLane : BaseBeatlineLane<Beatline> // BPMData is not acted upon here - any calls to it happen in base.Awake()
+public class BeatlineLane : BaseBeatlineLane<Beatline> 
 {
     [SerializeField] private BeatlinePooler pooler;
 
