@@ -117,14 +117,22 @@ public class DeleteSelectionSnapshot : IUndoSnapshot
 {
     // Save selection. Reinstate selection for undo, delete ticks in selection for redo
     public IInstrument parentInstrument { get; }
+    private ISelectionSnapshot actionInfo;
+    
     public void Undo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.UndoDeleteSelection(actionInfo);
     }
 
     public void Redo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.RedoDeleteSelection(actionInfo);
+    }
+
+    public DeleteSelectionSnapshot(IInstrument parentInstrument, ISelectionSnapshot actionInfo)
+    {
+        this.parentInstrument = parentInstrument;
+        this.actionInfo = actionInfo;
     }
 }
 
@@ -178,6 +186,35 @@ public class SustainSelectionSnapshot : IUndoSnapshot
 public class MoveSelectionSnapshot : IUndoSnapshot
 {
     // Save maximum range of data (between paste location and original location of notes). Swap ranges out for undo/redo.
+    public IInstrument parentInstrument { get; }
+    public void Undo()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Redo()
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public class BPMDragChangeSnapshot : IUndoSnapshot
+{
+    // Save BPM event pre-drag. Undo restores old data, redo restores dragged data.
+    public IInstrument parentInstrument { get; }
+    public void Undo()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Redo()
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public class InputFieldEditSnapshot : IUndoSnapshot
+{
     public IInstrument parentInstrument { get; }
     public void Undo()
     {

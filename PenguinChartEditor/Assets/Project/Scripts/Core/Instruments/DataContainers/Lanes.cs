@@ -31,6 +31,10 @@ public interface IMultiLaneController
     void DeleteAllEventsAtTick(int tick);
     void DeleteTickInLane(int tick, int lane);
     IEventData PopTickFromLane(int tick, int lane);
+
+    ISelectionSnapshot TakeSelectionSnapshot();
+    void ReinstateSelectionSnapshot(ISelectionSnapshot selectionSnapshot);
+    public void DeleteFromSelectionSnapshot(ISelectionSnapshot selectionSnapshot);
 }
 
 public class Lanes<T> : IMultiLaneController where T : IEventData
@@ -210,9 +214,48 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         return exportedData;
     }
 
+    public Dictionary<int, SortedDictionary<int, T>> ExportSelectionData()
+    {
+        var exportedData = MakeEmptyDataSet();
+        foreach (var selection in selections)
+        {
+            exportedData[selection.Key] = selection.Value.ExportData();
+        }
+
+        return exportedData;
+    }
+
     #endregion
 
     #region Selections
+
+    public ISelectionSnapshot TakeSelectionSnapshot() => new SelectionSnapshot<T>(this);
+
+    public void ReinstateSelectionSnapshot(ISelectionSnapshot selectionSnapshot)
+    {
+        var selectionTyped = selectionSnapshot as SelectionSnapshot<T>;
+
+        foreach (var dataSegment in selectionTyped.savedSelectionData)
+        {
+            var laneData = lanes[dataSegment.Key];
+
+            foreach (var item in dataSegment.Value)
+            {
+                laneData[item.Key] = item.Value;
+            }
+        }
+    }
+
+    public void DeleteFromSelectionSnapshot(ISelectionSnapshot selectionSnapshot)
+    {
+        var selectionTyped = selectionSnapshot as SelectionSnapshot<T>;
+
+        foreach (var dataSegment in selectionTyped.savedSelectionData)
+        {
+            lanes[dataSegment.Key].DeleteTicksFromSet(dataSegment.Value.Keys);
+        }
+    }
+    
     
     public int GetFirstSelectionTick()
     {
@@ -701,6 +744,35 @@ public class SyncTrackLanes : IMultiLaneController
         }
         
         return data;
+    }
+
+    public ISelectionSnapshot TakeSelectionSnapshot() => new SyncTrackSelectionSnapshot(this);
+    
+    public void ReinstateSelectionSnapshot(ISelectionSnapshot selectionSnapshot)
+    {
+        var selectionTyped = selectionSnapshot as SyncTrackSelectionSnapshot;
+
+        foreach (var bpm in selectionTyped.bpmSelection)
+        {
+            TempoEvents[bpm.Key] = bpm.Value;
+        }
+
+        foreach (var ts in selectionTyped.tsSelection)
+        {
+            TimeSignatureEvents[ts.Key] = ts.Value;
+        }
+        
+        Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
+    }
+
+    public void DeleteFromSelectionSnapshot(ISelectionSnapshot selectionSnapshot)
+    {
+        var selectionTyped = selectionSnapshot as SyncTrackSelectionSnapshot;
+        
+        TempoEvents.DeleteTicksFromSet(selectionTyped.bpmSelection.Keys);
+        TimeSignatureEvents.DeleteTicksFromSet(selectionTyped.tsSelection.Keys);
+        
+        Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
     }
 
     public bool DeleteSelection()

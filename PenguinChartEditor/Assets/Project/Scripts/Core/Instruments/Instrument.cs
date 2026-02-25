@@ -57,6 +57,9 @@ public interface IInstrument
 
     public void RedoDeleteSingle(DeleteSingleDataPackage actionInfo);
     public void UndoDeleteSingle(DeleteSingleDataPackage actionInfo);
+
+    public void RedoDeleteSelection(ISelectionSnapshot actionInfo);
+    public void UndoDeleteSelection(ISelectionSnapshot actionInfo);
 }
 
 public interface ISustainableInstrument : IInstrument
@@ -191,8 +194,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void AddChartFormattedEventsToInstrument(string clipboardData, int offset);
 
     #endregion
-    
-    #region Selections
+
+    #region Selections (undoable)
     
     protected abstract void InternalSetSelectionToNewLane(int destinationLane);
     public void SetSelectionToNewLane(int destinationLane)
@@ -207,6 +210,10 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         
         Chart.InPlaceRefresh();
     }
+    
+    #endregion
+    
+    #region Selections (Non-undoable)
     
     public void ClearAllSelections()
     {
@@ -333,6 +340,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     
     protected virtual void InternalDeleteChecks() {}
 
+    #region DeleteSingle
+    
     public void DeleteTickInLane(int tick, int lane)
     {
         if (Chart.LoadedInstrument != this || !LaneController.GetLane(lane).Contains(tick)) return;
@@ -367,6 +376,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     {
         LaneController.PopTickFromLane(actionInfo.tick, actionInfo.lane);
     }
+    
+    #endregion
 
     public void DeleteAllEventsAtTick(int tick)
     {
@@ -381,25 +392,33 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         ClearAllSelections();
     }
     
-
     public void DeleteSelection()
     {
         // Very important, otherwise if some selections remain in error upon an instrument switch, then data will be
         // unexpectantly deleted.
         if (Chart.LoadedInstrument != this) return;
-        
-        SaveUndoData();
 
         SoloData?.DeleteSelection();
 
         if (NoteSelectionCount != 0)
         {
+            var undoAction = new DeleteSelectionSnapshot(this, LaneController.TakeSelectionSnapshot());
             LaneController.DeleteSelection();
-            InternalDeleteChecks();
+            UndoStack.instance.PushAction(undoAction);
         }
 
         InternalDeleteChecks();
         Chart.InPlaceRefresh();
+    }
+    
+    public void UndoDeleteSelection(ISelectionSnapshot actionInfo)
+    {
+        LaneController.ReinstateSelectionSnapshot(actionInfo);
+    }
+
+    public void RedoDeleteSelection(ISelectionSnapshot actionInfo)
+    {
+        LaneController.DeleteFromSelectionSnapshot(actionInfo);
     }
     
     #endregion
