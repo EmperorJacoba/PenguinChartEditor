@@ -148,6 +148,13 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
         }
     }
 
+    // FIXME: Pass something in here so that RTED (expensive call) only runs when tempo events are modified
+    protected override void InternalDeleteChecks()
+    {
+        RecalculateTempoEventDictionary();
+        Chart.SyncTrackInPlaceRefresh();
+    }
+
     #endregion
 
     #region Undo/Redo

@@ -15,9 +15,11 @@ public interface ILaneData
     List<int> GetRelevantTicksInRange(int startTick, int endTick);
 
     bool Add(int tick, IEventData data);
-    public bool CreateEvent(int tick, IEventData newData, out AddDataPackage actionInfo);
+    public bool CreateEvent(int tick, IEventData newData, out AddSingleDataPackage actionInfo);
     
     bool Remove(int tick);
+
+    HashSet<int> protectedTicks { get; }
 }
 
 
@@ -44,7 +46,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     /// Users should edit tick 0 events for TS & BPM, not delete them.
     /// Also allows future devs to protect other ticks from deletion if need be.
     /// </summary>
-    public readonly HashSet<int> protectedTicks = new();
+    public HashSet<int> protectedTicks { get; } = new();
 
     public SortedDictionary<int, TValue> ExportData() => new(laneData);
     public LaneSet(int laneID, HashSet<int> protectedTicks)
@@ -83,12 +85,12 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         return true;
     }
 
-    public bool CreateEvent(int tick, IEventData newData, out AddDataPackage actionInfo) => 
+    public bool CreateEvent(int tick, IEventData newData, out AddSingleDataPackage actionInfo) => 
         TypedCreateEvent(tick, (TValue)newData, out actionInfo);
     
-    public bool TypedCreateEvent(int tick, TValue newData, out AddDataPackage actionInfo)
+    public bool TypedCreateEvent(int tick, TValue newData, out AddSingleDataPackage actionInfo)
     {
-        actionInfo = new AddDataPackage(tick, laneID, newData);
+        actionInfo = new AddSingleDataPackage(tick, laneID, newData);
 
         if (tick < 0) return false;
         
@@ -99,7 +101,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
                 return false;
             }
 
-            actionInfo = new AddDataPackage(tick, laneID, newData, oldData);
+            actionInfo = new AddSingleDataPackage(tick, laneID, newData, oldData);
         }
 
         laneData[tick] = newData;
@@ -180,19 +182,25 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         return returnVal;
     }
 
-    public SortedDictionary<int, TValue> PopSingle(int tick)
+    public IEventData PopSingle(int tick)
     {
         if (protectedTicks.Contains(tick)) return null;
-
         laneData.Remove(tick, out var data);
 
         UpdatesNeededInRange?.Invoke(tick, tick);
 
-        return 
-        new SortedDictionary<int, TValue>
-        {
-            {tick, data}
-        };
+        return data;
+    }
+
+    public TValue PopSingleTyped(int tick)
+    {
+        if (protectedTicks.Contains(tick)) return default;
+        
+        laneData.Remove(tick, out var data);
+
+        UpdatesNeededInRange?.Invoke(tick, tick);
+
+        return data;
     }
 
     public void InvokeForSetEnds(SortedDictionary<int, TValue> subtractedTicksSet) => InvokeForSetEnds(subtractedTicksSet, offset: 0);

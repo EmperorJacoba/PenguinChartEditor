@@ -1,9 +1,12 @@
-﻿// Corresponds to CreateEvent()
-public class SingleAddSnapshot : IUndoSnapshot
+﻿#region AddSingle
+
+// Corresponds to CreateEvent()
+public class AddSingleUndoSnapshot : IUndoSnapshot
 {
     // Save overwritten data, if it exists and varies. Delete tick in lane and reinstate old note for undo, vice versa for redo 
+    
     public IInstrument parentInstrument { get; }
-    private AddDataPackage actionInfo;
+    private AddSingleDataPackage actionInfo;
     
     public void Undo()
     {
@@ -15,22 +18,22 @@ public class SingleAddSnapshot : IUndoSnapshot
         parentInstrument.RedoAdd(actionInfo);
     }
 
-    public SingleAddSnapshot(IInstrument parentInstrument, AddDataPackage actionInfo)
+    public AddSingleUndoSnapshot(IInstrument parentInstrument, AddSingleDataPackage actionInfo)
     {
         this.parentInstrument = parentInstrument;
         this.actionInfo = actionInfo;
     }
 }
 
-public struct AddDataPackage
+public struct AddSingleDataPackage
 {
-    public IEventData addedData;
-    public IEventData removedData;
-    public bool removedDataExists;
-    public int tick;
-    public int lane;
+    public readonly IEventData addedData;
+    public readonly IEventData removedData;
+    public readonly bool removedDataExists;
+    public readonly int tick;
+    public readonly int lane;
     
-    public AddDataPackage(int tick, int lane, IEventData addedData, IEventData removedData)
+    public AddSingleDataPackage(int tick, int lane, IEventData addedData, IEventData removedData)
     {
         this.tick = tick;
         this.lane = lane;
@@ -39,31 +42,59 @@ public struct AddDataPackage
         removedDataExists = true;
     }
 
-    public AddDataPackage(int tick, int lane, IEventData addedData)
+    public AddSingleDataPackage(int tick, int lane, IEventData addedData)
     {
         this.tick = tick;
         this.lane = lane;
         this.addedData = addedData;
-        removedData = default;
+        removedData = default; // Use default! IEventData is a struct! Not nullable!!
         removedDataExists = false;
     }
 }
 
+#endregion
+
+#region DeleteSingle
+
 // Corresponds to DeleteTickInLane()
-public class SingleDeleteSnapshot : IUndoSnapshot
+public class DeleteSingleUndoSnapshot : IUndoSnapshot
 {
     // Save deleted note. Reinstate deleted note for undo, delete tick in lane for redo.
     public IInstrument parentInstrument { get; }
+    private readonly DeleteSingleDataPackage actionInfo;
+    
     public void Undo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.UndoDeleteSingle(actionInfo);
     }
 
     public void Redo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.RedoDeleteSingle(actionInfo);
+    }
+
+    public DeleteSingleUndoSnapshot(IInstrument parentInstrument, DeleteSingleDataPackage actionInfo)
+    {
+        this.parentInstrument = parentInstrument;
+        this.actionInfo = actionInfo;
     }
 }
+
+public struct DeleteSingleDataPackage
+{
+    public readonly int tick;
+    public readonly int lane;
+    public readonly IEventData deletedData;
+
+    public DeleteSingleDataPackage(int tick, int lane, IEventData deletedData)
+    {
+        this.tick = tick;
+        this.lane = lane;
+        this.deletedData = deletedData;
+    }
+}
+
+#endregion
 
 // Corresponds to any by-and-large selection change. Examples: Setting a selection to all taps/hopos, applying equal spacing
 public class SelectionChangeSnapshot : IUndoSnapshot

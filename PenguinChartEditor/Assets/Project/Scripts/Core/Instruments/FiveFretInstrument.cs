@@ -171,7 +171,7 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
     }
     
     // FIXME: Only check in the range of the deletion.
-    protected override void InternalDeleteSelectionChecks()
+    protected override void InternalDeleteChecks()
     {
         CheckForHoposInRange(0, SongTime.SongLengthTicks);
     }
@@ -262,13 +262,13 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
             foreach (var selectedNote in new HashSet<int>(laneSelection))
             {
-                var tickData = changingLane.PopSingle(selectedNote);
-                if (tickData == null) continue;
+                var tickData = changingLane.PopSingleTyped(selectedNote);
+                if (tickData == default) continue; // default should be FlagType = 0 which is invalid, meaning that data will never exist. Low priority issue
 
                 var index = totalSelectionSet.BinarySearch(selectedNote);
                 var equalSpacingTick = (index * evenSpacingDistance) + firstTick;
 
-                changingLane[equalSpacingTick] = tickData.First().Value;
+                changingLane[equalSpacingTick] = tickData;
                 laneSelection.Add(equalSpacingTick);
             }
         }

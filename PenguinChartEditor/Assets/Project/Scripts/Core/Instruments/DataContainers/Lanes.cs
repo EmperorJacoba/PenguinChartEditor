@@ -30,6 +30,7 @@ public interface IMultiLaneController
 
     void DeleteAllEventsAtTick(int tick);
     void DeleteTickInLane(int tick, int lane);
+    IEventData PopTickFromLane(int tick, int lane);
 }
 
 public class Lanes<T> : IMultiLaneController where T : IEventData
@@ -452,32 +453,20 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         {
             if (lane.Value.Contains(tick))
             {
-                poppedOutput[lane.Key] = lane.Value.PopSingle(tick);
+                lane.Value.PopSingle(tick);
             }
         }
 
         return poppedOutput;
     }
 
-    public void DeleteTickInLane(int tick, int lane)
+    public void DeleteTickInLane(int tick, int lane) => PopTickFromLane(tick, lane);
+    public IEventData PopTickFromLane(int tick, int lane) => PopTickFromLaneTyped(tick, lane);
+    public T PopTickFromLaneTyped(int tick, int lane)
     {
-        PopTickFromLane(tick, lane);
-    }
-
-    public Dictionary<int, SortedDictionary<int, T>> PopTickFromLane(int tick, int lane)
-    {
-        if (!lanes[lane].Contains(tick)) return null;
-
-        var poppedOutput = MakeEmptyDataSet();
-
-        var poppedTick = lanes[lane].PopSingle(tick);
-        if (poppedTick == null) return null;
-
-        poppedOutput[lane] = poppedTick;
-
+        var data = lanes[lane].PopSingleTyped(tick);
         selections[lane].Remove(tick);
-
-        return poppedOutput;
+        return data;
     }
     
     public bool DeleteSelection()
@@ -684,29 +673,34 @@ public class SyncTrackLanes : IMultiLaneController
         Chart.SyncTrackInPlaceRefresh();
     }
 
-    public void DeleteTickInLane(int tick, int lane)
+    public void DeleteTickInLane(int tick, int lane) => PopTickFromLane(tick, lane);
+
+    public IEventData PopTickFromLane(int tick, int lane)
     {
+        IEventData data = default;
         switch (lane)
         {
             case 0:
             {
-                if (!TempoEvents.Contains(tick)) return;
-                var poppedTick = TempoEvents.PopSingle(tick);
-                if (poppedTick == null) return;
+                if (TempoEvents.protectedTicks.Contains(tick)) return null;
+                
+                data = TempoEvents.PopSingle(tick);
 
                 Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
+                Chart.SyncTrackInPlaceRefresh();
+                
                 break;
             }
             case 1:
             {
-                if (!TimeSignatureEvents.Contains(tick)) return;
-                var poppedTick = TimeSignatureEvents.PopSingle(tick);
-                if (poppedTick == null) return;
+                if (TimeSignatureEvents.protectedTicks.Contains(tick)) return null;
+                
+                data = TimeSignatureEvents.PopSingle(tick);
                 break;
             }
         }
         
-        Chart.SyncTrackInPlaceRefresh();
+        return data;
     }
 
     public bool DeleteSelection()

@@ -52,8 +52,11 @@ public interface IInstrument
     void PushUndoData(IUndoSnapshot undoSnapshot);
     void SaveUndoData();
 
-    public void UndoAdd(AddDataPackage actionInfo);
-    public void RedoAdd(AddDataPackage actionInfo);
+    public void UndoAdd(AddSingleDataPackage actionInfo);
+    public void RedoAdd(AddSingleDataPackage actionInfo);
+
+    public void RedoDeleteSingle(DeleteSingleDataPackage actionInfo);
+    public void UndoDeleteSingle(DeleteSingleDataPackage actionInfo);
 }
 
 public interface ISustainableInstrument : IInstrument
@@ -294,7 +297,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     {
         if (GetLaneData(lane).CreateEvent(tick, data, out var actionInfo))
         {
-            var undoAction = new SingleAddSnapshot(this, actionInfo);
+            var undoAction = new AddSingleUndoSnapshot(this, actionInfo);
             UndoStack.instance.PushAction(undoAction);
         }
         else
@@ -307,7 +310,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         ClearAllSelections();
     }
 
-    public void UndoAdd(AddDataPackage actionInfo)
+    public void UndoAdd(AddSingleDataPackage actionInfo)
     {
         if (actionInfo.removedDataExists)
         {
@@ -319,7 +322,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         }
     }
 
-    public void RedoAdd(AddDataPackage actionInfo)
+    public void RedoAdd(AddSingleDataPackage actionInfo)
     {
         GetLaneData(actionInfo.lane).CreateEvent(actionInfo.tick, actionInfo.addedData, out _);
     }
@@ -327,10 +330,13 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     #endregion
 
     #region Delete
+    
+    protected virtual void InternalDeleteChecks() {}
 
     public void DeleteTickInLane(int tick, int lane)
     {
-        if (Chart.LoadedInstrument != this) return;
+        if (Chart.LoadedInstrument != this || !LaneController.GetLane(lane).Contains(tick)) return;
+        
         SaveUndoData();
         
         if (lane == IInstrument.SOLO_DATA_LANE_ID)
@@ -339,10 +345,27 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         }
         else
         {
-            LaneController.DeleteTickInLane(tick, lane);
+            var poppedData = LaneController.PopTickFromLane(tick, lane);
+
+            // Happens when user tries to delete tick 0 in SyncTrack, which is not a valid operation.
+            if (poppedData is null) return;
+            
+            var undoAction = new DeleteSingleUndoSnapshot(this, new DeleteSingleDataPackage(tick, lane, poppedData));
+            UndoStack.instance.PushAction(undoAction);
         }
         
+        InternalDeleteChecks();
         Chart.InPlaceRefresh();
+    }
+
+    public void UndoDeleteSingle(DeleteSingleDataPackage actionInfo)
+    {
+        GetLaneData(actionInfo.lane).CreateEvent(actionInfo.tick, actionInfo.deletedData, out _);
+    }
+
+    public void RedoDeleteSingle(DeleteSingleDataPackage actionInfo)
+    {
+        LaneController.PopTickFromLane(actionInfo.tick, actionInfo.lane);
     }
 
     public void DeleteAllEventsAtTick(int tick)
@@ -354,10 +377,10 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         SoloData?.DeleteTick(tick);
         LaneController.DeleteAllEventsAtTick(tick);
         
+        InternalDeleteChecks();
         ClearAllSelections();
     }
     
-    protected virtual void InternalDeleteSelectionChecks() {}
 
     public void DeleteSelection()
     {
@@ -372,9 +395,10 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         if (NoteSelectionCount != 0)
         {
             LaneController.DeleteSelection();
-            InternalDeleteSelectionChecks();
+            InternalDeleteChecks();
         }
 
+        InternalDeleteChecks();
         Chart.InPlaceRefresh();
     }
     
