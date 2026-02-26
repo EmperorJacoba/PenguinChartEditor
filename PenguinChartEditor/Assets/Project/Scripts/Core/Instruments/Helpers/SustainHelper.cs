@@ -24,25 +24,19 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         sustainData = new SustainData<T>();
     }
 
-    public bool ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) 
+    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event)
     {
-        if (pointerEventData.button == PointerEventData.InputButton.Right)
+        parentInstrument.ClearAllSelections();
+        var sustainClamp = GetCurrentMouseTick() - @event.Tick;
+        if (Input.GetKey(KeyCode.LeftShift) || !independentLanes)
         {
-            parentInstrument.ClearAllSelections();
-            var sustainClamp = GetCurrentMouseTick() - @event.Tick;
-            if (Input.GetKey(KeyCode.LeftShift) || !independentLanes)
-            {
-                parentInstrument.ShiftClickSelect(@event.Tick);
-                ShiftClickSustainClamp(@event.Tick, sustainClamp);
-            }
-            UpdateSustain(@event.Tick, @event.Lane, sustainClamp);
-            @event.AddToSelection();
-            Chart.InPlaceRefresh();
-
-            return true;
+            parentInstrument.ShiftClickSelect(@event.Tick);
+            ShiftClickSustainClamp(@event.Tick, sustainClamp);
         }
 
-        return false;
+        UpdateSustain(@event.Tick, @event.Lane, sustainClamp);
+        @event.AddToSelection();
+        Chart.InPlaceRefresh();
     }
 
     public static int GetCurrentMouseTick()

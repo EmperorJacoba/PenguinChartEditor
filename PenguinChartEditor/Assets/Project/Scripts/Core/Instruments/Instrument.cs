@@ -511,13 +511,14 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
     // Save managed in sustain trail so that undo action reverts to pre-change, not to the last grid-snapped tick
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event, bool firstFrame)
     {
-        MonoBehaviour.print("Running");
-        if (sustainer.ChangeSustainFromTrail(pointerEventData, @event) && firstFrame)
+        if (firstFrame)
         {
             MonoBehaviour.print("Created empty undo action");
             openUndoAction = new SingleSustainSnapshot(this,
                 new SingleSustainDataPackage(@event.Tick, @event.Lane, (ISustainable)@event.representedData));
         }
+
+        sustainer.ChangeSustainFromTrail(pointerEventData, @event);
     }
 
     public void CompleteOpenSingleSustainUndoAction(IEvent @event)
