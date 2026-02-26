@@ -112,12 +112,14 @@ public class SelectionChangeSnapshot : IUndoSnapshot
     }
 }
 
+#region DeleteSelection
+
 // Corresponds to DeleteSelection()
 public class DeleteSelectionSnapshot : IUndoSnapshot
 {
     // Save selection. Reinstate selection for undo, delete ticks in selection for redo
     public IInstrument parentInstrument { get; }
-    private ISelectionSnapshot actionInfo;
+    private readonly ISelectionSnapshot actionInfo;
     
     public void Undo()
     {
@@ -135,6 +137,8 @@ public class DeleteSelectionSnapshot : IUndoSnapshot
         this.actionInfo = actionInfo;
     }
 }
+
+#endregion
 
 public class PasteSnapshot : IUndoSnapshot
 {
@@ -156,14 +160,44 @@ public class SingleSustainSnapshot : IUndoSnapshot
 {
     // Save original sustain. Reinstate original sustain for undo, reinstate new sustain for redo.
     public IInstrument parentInstrument { get; }
+    private ISustainableInstrument parentSustainableInstrument => parentInstrument as ISustainableInstrument;
+    
+    private readonly SingleSustainDataPackage actionInfo;
+    
     public void Undo()
     {
-        throw new System.NotImplementedException();
+        parentSustainableInstrument.UndoSingleSustain(actionInfo);
     }
 
     public void Redo()
     {
-        throw new System.NotImplementedException();
+        parentSustainableInstrument.RedoSingleSustain(actionInfo);
+    }
+
+    public SingleSustainSnapshot(IInstrument parentInstrument, SingleSustainDataPackage actionInfo)
+    {
+        this.parentInstrument = parentInstrument;
+        this.actionInfo = actionInfo;
+    }
+
+    public void CloseAction(ISustainable newSustainData)
+    {
+        actionInfo.addedData = newSustainData;
+    }
+}
+
+public class SingleSustainDataPackage
+{
+    public readonly int tick;
+    public readonly int lane;
+    public readonly ISustainable oldData;
+    public ISustainable addedData;
+
+    public SingleSustainDataPackage(int tick, int lane, ISustainable oldData)
+    {
+        this.tick = tick;
+        this.lane = lane;
+        this.oldData = oldData;
     }
 }
 

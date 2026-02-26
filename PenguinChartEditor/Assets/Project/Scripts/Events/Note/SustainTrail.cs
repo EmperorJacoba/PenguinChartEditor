@@ -14,15 +14,12 @@ public class SustainTrail : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     private bool firstFrame = true;
     public void OnPointerDown(PointerEventData pointerEventData)
     {
-        if (parentInstrument.ChangeSustainFromTrail(pointerEventData, parentNote) && firstFrame)
-        {
-            parentInstrument.SaveUndoData();
-            firstFrame = false;
-        }
+        parentInstrument.ChangeSustainFromTrail(pointerEventData, parentNote, firstFrame);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
         firstFrame = true;
+        parentInstrument.CompleteOpenSingleSustainUndoAction(parentNote);
     }
 }

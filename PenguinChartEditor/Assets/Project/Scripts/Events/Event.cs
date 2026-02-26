@@ -15,6 +15,7 @@ public interface IEvent
     ISelection GetSelection();
     ILaneData GetLaneData();
     IInstrument ParentInstrument { get; }
+    IEventData representedData { get; }
 
     void InitializeEventAsPreviewer(int tick, IEventData data, ILane parentLane);
 
@@ -187,6 +188,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
     }
     private ILane _parLane;
 
+    IEventData IEvent.representedData => representedData;
     public T representedData;
 
     public bool readOnly = false;

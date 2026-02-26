@@ -64,10 +64,14 @@ public interface IInstrument
 
 public interface ISustainableInstrument : IInstrument
 {
-    public bool ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event);
+    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event, bool firstFrame);
     public int CalculateSustainClamp(int sustainLength, int tick, int lane);
     public void SetSelectionSustain(int ticks);
     public void SetSelectionSustain(float bars);
+    
+    public void CompleteOpenSingleSustainUndoAction(IEvent @event);
+    public void RedoSingleSustain(SingleSustainDataPackage actionInfo);
+    public void UndoSingleSustain(SingleSustainDataPackage actionInfo);
 }
 
 // How do I make my own instrument? A starting point:
@@ -93,7 +97,7 @@ public interface ISustainableInstrument : IInstrument
 // all customized functionality runs in the base class. This is where the meat and bones functionality is, as well as any checks/validation
 // to go along with it. 
 // Why Internal instead of overrides? I hate overrides in this capacity. So clunky imo. Also Chart.InPlaceRefresh happens
-// after the meat and bones data change happens, which is usally where InternalXXXX() is.
+// after the meat and bones data change happens, which is usually where InternalXXXX() is.
 
 // When you're making your own instrument, I would recommend looking at the most similar instrument to the new instrument
 // for a template on what to do. Feel free to ask me for any help!
@@ -115,15 +119,18 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     #region Data Access
 
     protected abstract IMultiLaneController LaneController { get; }
+    
     public ILaneData GetLaneData(int lane) =>
         lane == IInstrument.SOLO_DATA_LANE_ID ? SoloData.SoloEvents : LaneController.GetLane(lane);
-    public int NoteSelectionCount => LaneController.GetTotalSelectionCount();
-    public bool NoteSelectionContains(int tick, int lane) => LaneController.GetLaneSelection(lane).Contains(tick);
-    public List<int> GetUniqueTickSet() => LaneController.GetUniqueTickSet();
+    public abstract ILaneData GetBarLaneData(); // so that note receivers can all punch up upon an open note/kick note
+    
     public ISelection GetLaneSelection(int lane) => LaneController.GetLaneSelection(lane);
     public bool IsNoteSelectionEmpty() => LaneController.IsSelectionEmpty();
     
-    public abstract ILaneData GetBarLaneData();
+    public int NoteSelectionCount => LaneController.GetTotalSelectionCount();
+    public bool NoteSelectionContains(int tick, int lane) => LaneController.GetLaneSelection(lane).Contains(tick);
+    
+    public List<int> GetUniqueTickSet() => LaneController.GetUniqueTickSet();
     
     // Override and set to null if the instrument does not have solos.
     public virtual SoloDataSet SoloData { get; set; } = new();
@@ -391,6 +398,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         InternalDeleteChecks();
         ClearAllSelections();
     }
+
+    #region DeleteSelection
     
     public void DeleteSelection()
     {
@@ -420,6 +429,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     {
         LaneController.DeleteFromSelectionSnapshot(actionInfo);
     }
+    
+    #endregion
     
     #endregion
 
@@ -495,9 +506,40 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
     
     // Remember to initialize in constructor.
     protected SustainHelper<T> sustainer;
-    
+
+    private SingleSustainSnapshot openUndoAction;
     // Save managed in sustain trail so that undo action reverts to pre-change, not to the last grid-snapped tick
-    public bool ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event) => sustainer.ChangeSustainFromTrail(pointerEventData, @event);
+    public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event, bool firstFrame)
+    {
+        MonoBehaviour.print("Running");
+        if (sustainer.ChangeSustainFromTrail(pointerEventData, @event) && firstFrame)
+        {
+            MonoBehaviour.print("Created empty undo action");
+            openUndoAction = new SingleSustainSnapshot(this,
+                new SingleSustainDataPackage(@event.Tick, @event.Lane, (ISustainable)@event.representedData));
+        }
+    }
+
+    public void CompleteOpenSingleSustainUndoAction(IEvent @event)
+    {
+        if (openUndoAction is null) return;
+        
+        MonoBehaviour.print("Completing empty undo action");
+        openUndoAction.CloseAction((ISustainable)@event.representedData);
+        UndoStack.instance.PushAction(openUndoAction);
+
+        openUndoAction = null;
+    }
+
+    public void UndoSingleSustain(SingleSustainDataPackage actionInfo)
+    {
+        GetLaneData(actionInfo.lane).Add(actionInfo.tick, (IEventData)actionInfo.oldData);
+    }
+
+    public void RedoSingleSustain(SingleSustainDataPackage actionInfo)
+    {
+        GetLaneData(actionInfo.lane).Add(actionInfo.tick, (IEventData)actionInfo.addedData);
+    }
 
     public void SetSelectionSustain(int ticks)
     {
