@@ -1,6 +1,8 @@
 ﻿#region AddSingle
 
 // Corresponds to CreateEvent()
+using System.Collections.Generic;
+
 public class AddSingleUndoSnapshot : IUndoSnapshot
 {
     // Save overwritten data, if it exists and varies. Delete tick in lane and reinstate old note for undo, vice versa for redo 
@@ -155,6 +157,8 @@ public class PasteSnapshot : IUndoSnapshot
     }
 }
 
+#region SingleSustain (sustain from sustain trail)
+
 // Corresponds to changing the sustain from a tail.
 public class SingleSustainSnapshot : IUndoSnapshot
 {
@@ -180,26 +184,31 @@ public class SingleSustainSnapshot : IUndoSnapshot
         this.actionInfo = actionInfo;
     }
 
-    public void CloseAction(ISustainable newSustainData)
-    {
-        actionInfo.addedData = newSustainData;
-    }
+    public void CloseAction() => actionInfo.SaveAddedSustainData();
 }
 
 public class SingleSustainDataPackage
 {
     public readonly int tick;
-    public readonly int lane;
-    public readonly ISustainable oldData;
-    public ISustainable addedData;
+    public readonly Dictionary<int, IEventData> oldData;
+    public Dictionary<int, IEventData> addedData;
 
-    public SingleSustainDataPackage(int tick, int lane, ISustainable oldData)
+    private readonly IMultiLaneController parentLaneController;
+
+    public SingleSustainDataPackage(int tick, IMultiLaneController laneController)
     {
         this.tick = tick;
-        this.lane = lane;
-        this.oldData = oldData;
+        parentLaneController = laneController;
+        oldData = laneController.GetAllTickDataAtTick(tick);
+    }
+
+    public void SaveAddedSustainData()
+    {
+        addedData = parentLaneController.GetAllTickDataAtTick(tick);
     }
 }
+
+#endregion
 
 // Corresponds to SustainSelection()
 public class SustainSelectionSnapshot : IUndoSnapshot

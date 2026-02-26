@@ -507,6 +507,8 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
     // Remember to initialize in constructor.
     protected SustainHelper<T> sustainer;
 
+    #region SingleSustain (sustain from trail)
+    
     private SingleSustainSnapshot openUndoAction;
     // Save managed in sustain trail so that undo action reverts to pre-change, not to the last grid-snapped tick
     public void ChangeSustainFromTrail(PointerEventData pointerEventData, IEvent @event, bool firstFrame)
@@ -515,7 +517,7 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
         {
             MonoBehaviour.print("Created empty undo action");
             openUndoAction = new SingleSustainSnapshot(this,
-                new SingleSustainDataPackage(@event.Tick, @event.Lane, (ISustainable)@event.representedData));
+                new SingleSustainDataPackage(@event.Tick, LaneController));
         }
 
         sustainer.ChangeSustainFromTrail(pointerEventData, @event);
@@ -526,7 +528,7 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
         if (openUndoAction is null) return;
         
         MonoBehaviour.print("Completing empty undo action");
-        openUndoAction.CloseAction((ISustainable)@event.representedData);
+        openUndoAction.CloseAction();
         UndoStack.instance.PushAction(openUndoAction);
 
         openUndoAction = null;
@@ -534,13 +536,15 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
 
     public void UndoSingleSustain(SingleSustainDataPackage actionInfo)
     {
-        GetLaneData(actionInfo.lane).Add(actionInfo.tick, (IEventData)actionInfo.oldData);
+        LaneController.ReinstateTickSnapshot(actionInfo.tick, actionInfo.oldData);
     }
 
     public void RedoSingleSustain(SingleSustainDataPackage actionInfo)
     {
-        GetLaneData(actionInfo.lane).Add(actionInfo.tick, (IEventData)actionInfo.addedData);
+        LaneController.ReinstateTickSnapshot(actionInfo.tick, actionInfo.addedData);
     }
+    
+    #endregion
 
     public void SetSelectionSustain(int ticks)
     {

@@ -35,6 +35,9 @@ public interface IMultiLaneController
     ISelectionSnapshot TakeSelectionSnapshot();
     void ReinstateSelectionSnapshot(ISelectionSnapshot selectionSnapshot);
     public void DeleteFromSelectionSnapshot(ISelectionSnapshot selectionSnapshot);
+
+    public Dictionary<int, IEventData> GetAllTickDataAtTick(int tick);
+    public void ReinstateTickSnapshot(int tick, Dictionary<int, IEventData> tickData);
 }
 
 public class Lanes<T> : IMultiLaneController where T : IEventData
@@ -594,6 +597,29 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         }
     }
     
+    public Dictionary<int, IEventData> GetAllTickDataAtTick(int tick)
+    {
+        var dictionary = new Dictionary<int, IEventData>();
+
+        foreach (var lane in lanes)
+        {
+            if (lane.Value.TryGetValue(tick, out var data))
+            {
+                dictionary[lane.Key] = data;
+            }
+        }
+
+        return dictionary;
+    }
+
+    public void ReinstateTickSnapshot(int tick, Dictionary<int, IEventData> tickData)
+    {
+        foreach (var lane in tickData)
+        {
+            lanes[lane.Key].CreateEvent(tick, lane.Value, out _);
+        }
+    }
+
     public void DebugPrintSelectionCount()
     {
         var output = selections.Where(selection => selection.Value.Count != 0).Aggregate("", (current, selection) => current + $"{selection.Key}: {selection.Value.Count}");
@@ -801,6 +827,37 @@ public class SyncTrackLanes : IMultiLaneController
     {
         if (targetLanes.Contains(0)) bpmSelection.ShiftClickSelectInRange(start, end);
         if (targetLanes.Contains(1)) tsSelection.ShiftClickSelectInRange(start, end);
+    }
+
+    public Dictionary<int, IEventData> GetAllTickDataAtTick(int tick)
+    {
+        var dictionary = new Dictionary<int, IEventData>();
+        
+        if (TempoEvents.TryGetValue(tick, out var bpmData))
+        {
+            dictionary[0] = bpmData;
+        }
+
+        if (TimeSignatureEvents.TryGetValue(tick, out var tsData))
+        {
+            dictionary[1] = tsData;
+        }
+
+        return dictionary;
+    }
+
+    public void ReinstateTickSnapshot(int tick, Dictionary<int, IEventData> tickData)
+    {
+        if (tickData.TryGetValue(0, out var data))
+        {
+            TempoEvents.CreateEvent(tick, data, out _);
+            Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
+        }
+
+        if (tickData.TryGetValue(1, out var tsData))
+        {
+            TimeSignatureEvents.CreateEvent(tick, tsData, out _);
+        }
     }
 }
 
