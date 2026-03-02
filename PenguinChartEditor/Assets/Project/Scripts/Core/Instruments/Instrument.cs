@@ -60,6 +60,9 @@ public interface IInstrument
 
     public void RedoDeleteSelection(ISelectionSnapshot actionInfo);
     public void UndoDeleteSelection(ISelectionSnapshot actionInfo);
+
+    public void ReinstateSelectionChange(ISelectionSnapshot incomingSelectionSnapshot,
+        ISelectionSnapshot removingSelectionSnapshot);
 }
 
 public interface ISustainableInstrument : IInstrument
@@ -154,7 +157,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     public void SaveUndoData()
     {
-        ApplyUndoDataToStack(CreateUndoSnapshot());
+        // ApplyUndoDataToStack(CreateUndoSnapshot());
     }
     
     /// <remarks>
@@ -167,11 +170,6 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         // InternalSaveUndoData(undoAction);
         // return undoAction;
         return null;
-    }
-
-    protected void ApplyUndoDataToStack(IUndoSnapshot undoSnapshot)
-    {
-        // UndoStack.instance.PushAction(undoSnapshot);
     }
 
     protected abstract void InternalApplyUndoAction(UndoSnapshot<T> undoAction);
@@ -208,14 +206,22 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public void SetSelectionToNewLane(int destinationLane)
     {
         if (Chart.LoadedInstrument != this) return;
-     
-        SaveUndoData();
-        
         if (IsNoteSelectionEmpty()) return;
+
+        var undoAction = new SelectionChangeSnapshot(this, LaneController);
         
         InternalSetSelectionToNewLane(destinationLane);
         
+        undoAction.CloseAction();
+        UndoStack.instance.PushAction(undoAction);
+        
         Chart.InPlaceRefresh();
+    }
+
+    public void ReinstateSelectionChange(ISelectionSnapshot incomingSelectionSnapshot, ISelectionSnapshot removingSelectionSnapshot)
+    {
+        LaneController.ReinstateSelectionSnapshot(incomingSelectionSnapshot, removingSelectionSnapshot);
+        ClearAllSelectionsNoRefresh();
     }
     
     #endregion
@@ -228,6 +234,12 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         SoloData?.ClearSelection();
         
         Chart.InPlaceRefresh();
+    }
+
+    private void ClearAllSelectionsNoRefresh()
+    {
+        LaneController.ClearAllSelections();
+        SoloData?.ClearSelection();
     }
     
     private void SelectAll()
@@ -353,8 +365,6 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     {
         if (Chart.LoadedInstrument != this || !LaneController.GetLane(lane).Contains(tick)) return;
         
-        SaveUndoData();
-        
         if (lane == IInstrument.SOLO_DATA_LANE_ID)
         {
             SoloData?.DeleteTick(tick);
@@ -412,7 +422,9 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         if (NoteSelectionCount != 0)
         {
             var undoAction = new DeleteSelectionSnapshot(this, LaneController.TakeSelectionSnapshot());
+            
             LaneController.DeleteSelection();
+            
             UndoStack.instance.PushAction(undoAction);
         }
 
@@ -546,18 +558,32 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
     
     #endregion
 
+    #region SetSelectionSustain
+    
     public void SetSelectionSustain(int ticks)
     {
-        SaveUndoData();
+        var undoAction = new SelectionChangeSnapshot(this, LaneController);
         sustainer.SetSelectionSustain(ticks);
+        
+        undoAction.CloseAction();
+        UndoStack.instance.PushAction(undoAction);
     }
 
     public void SetSelectionSustain(float bars)
     {
-        SaveUndoData();
+        var undoAction = new SelectionChangeSnapshot(this, LaneController);
         sustainer.SetSelectionSustain(bars);
+        undoAction.CloseAction();
+        
+        UndoStack.instance.PushAction(undoAction);
     }
-
+    
+    #endregion
+    
+    // ------
+    
+    // These actions are not undoable because they are internal checks that run after other undoable actions.
+    
     protected void ValidateSustainsInRange(MinMaxTicks range) => ValidateSustainsInRange(range.min, range.max);
 
     protected void ValidateSustainsInRange(int startTick, int endTick)

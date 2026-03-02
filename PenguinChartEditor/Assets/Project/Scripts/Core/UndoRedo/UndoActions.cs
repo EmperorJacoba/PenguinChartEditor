@@ -98,20 +98,35 @@ public struct DeleteSingleDataPackage
 
 #endregion
 
-// Corresponds to any by-and-large selection change. Examples: Setting a selection to all taps/hopos, applying equal spacing
+// Corresponds to any in-place selection change. Examples: Setting a selection to all taps/hopos
 public class SelectionChangeSnapshot : IUndoSnapshot
 {
     // Save selection with changes (for redo), save without changes (for undo), apply as needed
     public IInstrument parentInstrument { get; }
+    private IMultiLaneController laneController;
+
+    private ISelectionSnapshot oldData;
+    private ISelectionSnapshot addedData;
+    
     public void Undo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.ReinstateSelectionChange(oldData, addedData);
     }
 
     public void Redo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.ReinstateSelectionChange(addedData, oldData);
     }
+
+    public SelectionChangeSnapshot(IInstrument parentInstrument, IMultiLaneController laneController)
+    {
+        this.parentInstrument = parentInstrument;
+        this.laneController = laneController;
+
+        oldData = laneController.TakeSelectionSnapshot();
+    }
+
+    public void CloseAction() => addedData = laneController.TakeSelectionSnapshot();
 }
 
 #region DeleteSelection

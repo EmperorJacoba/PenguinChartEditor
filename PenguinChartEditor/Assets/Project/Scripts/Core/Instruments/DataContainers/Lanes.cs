@@ -38,6 +38,9 @@ public interface IMultiLaneController
 
     public Dictionary<int, IEventData> GetAllTickDataAtTick(int tick);
     public void ReinstateTickSnapshot(int tick, Dictionary<int, IEventData> tickData);
+
+    public void ReinstateSelectionSnapshot(ISelectionSnapshot incomingSelectionData,
+        ISelectionSnapshot removingSelectionData);
 }
 
 public class Lanes<T> : IMultiLaneController where T : IEventData
@@ -240,12 +243,21 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
 
         foreach (var dataSegment in selectionTyped.savedSelectionData)
         {
+            lanes[dataSegment.Key].AddTicksFromSet(dataSegment.Value);
             var laneData = lanes[dataSegment.Key];
+        }
+    }
 
-            foreach (var item in dataSegment.Value)
-            {
-                laneData[item.Key] = item.Value;
-            }
+    public void ReinstateSelectionSnapshot(ISelectionSnapshot incomingSelectionData,
+        ISelectionSnapshot removingSelectionData)
+    {
+        var selectionIncTyped = incomingSelectionData as SelectionSnapshot<T>;
+        var selectionRemTyped = removingSelectionData as SelectionSnapshot<T>;
+
+        foreach (var dataSegment in selectionRemTyped.savedSelectionData)
+        {
+            lanes[dataSegment.Key].DeleteTicksFromSet(dataSegment.Value.Keys);
+            lanes[dataSegment.Key].AddTicksFromSet(selectionIncTyped.savedSelectionData[dataSegment.Key]);
         }
     }
 
@@ -789,6 +801,19 @@ public class SyncTrackLanes : IMultiLaneController
         }
         
         Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
+    }
+
+    public void ReinstateSelectionSnapshot(ISelectionSnapshot incomingSelectionData,
+        ISelectionSnapshot removingSelectionData)
+    {
+        var typedIncData = incomingSelectionData as SyncTrackSelectionSnapshot;
+        var typedRemData = removingSelectionData as SyncTrackSelectionSnapshot;
+
+        TempoEvents.DeleteTicksFromSet(typedRemData.bpmSelection.Keys);
+        TimeSignatureEvents.DeleteTicksFromSet(typedRemData.tsSelection.Keys);
+        
+        TempoEvents.AddTicksFromSet(typedIncData.bpmSelection);
+        TimeSignatureEvents.AddTicksFromSet(typedIncData.tsSelection);
     }
 
     public void DeleteFromSelectionSnapshot(ISelectionSnapshot selectionSnapshot)

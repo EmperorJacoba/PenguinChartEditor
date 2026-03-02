@@ -284,6 +284,14 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         }
     }
 
+    public void AddTicksFromSet(SortedDictionary<int, TValue> dataset)
+    {
+        foreach (var item in dataset)
+        {
+            laneData[item.Key] = item.Value;
+        }
+    }
+
     public void DeleteTicksFromSet(IEnumerable<int> keys)
     {
         foreach (var tick in keys)

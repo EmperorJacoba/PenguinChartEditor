@@ -21,13 +21,13 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
     private HashSet<int> selection = new();
     public int Count => selection.Count;
 
-
     private LaneSet<TValue> parentLane;
 
     public SortedDictionary<int, TValue> ExportData()
     {
         SortedDictionary<int, TValue> receiver = new();
-        foreach (var tick in selection)
+        var tempSelection = new HashSet<int>(selection);
+        foreach (var tick in tempSelection)
         {
             if (parentLane.Contains(tick))
             {

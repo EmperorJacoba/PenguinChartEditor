@@ -180,12 +180,11 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     public void NaturalizeSelection()
     {
-        SaveUndoData();
-        
         var totalSelectionSet = Lanes.GetUnifiedSelection();
-
         if (totalSelectionSet.Count == 0) return;
 
+        var undoAction = new SelectionChangeSnapshot(this, LaneController);
+        
         for (int i = 0; i < Lanes.Count; i++)
         {
             var changingLane = Lanes.GetLane(i);
@@ -209,17 +208,20 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
         // (or will have a corrected calculation on the
         // off-chance that it was missed somewhere down the line)
         CheckForHoposInRange(totalSelectionSet.Min(), totalSelectionSet.Max());
+        
+        undoAction.CloseAction();
+        UndoStack.instance.PushAction(undoAction);
 
         Chart.InPlaceRefresh();
     }
 
     public void SetSelectionToFlag(FiveFretNoteData.FlagType flag)
     {
-        SaveUndoData();
-        
         var currentSelection = Lanes.GetUnifiedSelection();
         if (currentSelection.Count == 0) return;
-
+        
+        var undoAction = new SelectionChangeSnapshot(this, LaneController);
+        
         for (int i = 0; i < Lanes.Count; i++)
         {
             var changingLane = Lanes.GetLane(i);
@@ -232,20 +234,23 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
                 changingLane[selectedNote] = new FiveFretNoteData(tickData.Sustain, flag, false);
             }
         }
+        
+        undoAction.CloseAction();
+        UndoStack.instance.PushAction(undoAction);
 
         Chart.InPlaceRefresh();
     }
 
     public void SetEqualSpacing()
     {
-        SaveUndoData();
-        
         var currentSelection = Lanes.GetTotalSelectionByLane();
         var totalSelectionSet = Lanes.GetUnifiedSelection().ToList();
 
         // equal spacing has no effect for selections of size 0-2
         if (totalSelectionSet.Count < 3) return;
 
+        var undoAction = new SelectionChangeSnapshot(this, LaneController);
+        
         totalSelectionSet.Sort();
 
         var firstTick = totalSelectionSet.Min();
@@ -274,6 +279,9 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
         }
         CheckForHoposInRange(firstTick, lastTick);
         ValidateSustainsInRange(firstTick, lastTick);
+        
+        undoAction.CloseAction();
+        UndoStack.instance.PushAction(undoAction);
 
         Chart.InPlaceRefresh();
     }
@@ -441,51 +449,6 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
     #endregion
 
     #region Taps
-
-    public void ToggleTaps()
-    {
-        if (Chart.LoadedInstrument != this) return;
-        
-        SaveUndoData();
-
-        var allTicksSelected = Lanes.GetUnifiedSelection();
-
-        bool toggleToTaps = true;
-        foreach (var tick in allTicksSelected)
-        {
-            if (IsTickTap(tick)) toggleToTaps = false;
-        }
-
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            var lane = Lanes.GetLane(i);
-            foreach (var tick in allTicksSelected)
-            {
-                if (!lane.Contains(tick)) continue;
-
-                lane[tick] = toggleToTaps ? lane[tick].ExportWithNewFlag(FiveFretNoteData.FlagType.tap) : lane[tick].ExportWithNewFlag(FiveFretNoteData.FlagType.hopo);
-            }
-        }
-
-        if (!toggleToTaps) CheckForHoposInRange(allTicksSelected.Min(), allTicksSelected.Max());
-
-        Chart.InPlaceRefresh();
-    }
-
-    private bool IsTickTap(int tick)
-    {
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            var lane = Lanes.GetLane(i);
-            if (!lane.Contains(tick)) continue;
-
-            if (lane[tick].Flag == FiveFretNoteData.FlagType.tap)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private bool IsTickDefault(int tick)
     {
