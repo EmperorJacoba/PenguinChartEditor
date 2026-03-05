@@ -162,6 +162,8 @@ public class DeleteSelectionSnapshot : IUndoSnapshot
 
 #endregion
 
+#region Paste
+
 public class PasteSnapshot : IUndoSnapshot
 {
     // Save notes falling in paste range. Delete notes in paste range and reinstate old notes for undo, vice versa for redo
@@ -195,6 +197,8 @@ public struct PasteDataPackage
         this.pasteData = pasteData;
     }
 }
+
+#endregion
 
 #region SingleSustain (sustain from sustain trail)
 
@@ -254,15 +258,36 @@ public class SustainSelectionSnapshot : IUndoSnapshot
 {
     // Save selection's original data. Reinstate old data for undo, reinstate new data for redo.
     public IInstrument parentInstrument { get; }
+    private SustainSelectionDataPackage actionInfo;
     public void Undo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.ReinstateSelectionChange(actionInfo.preSustain, actionInfo.postSustain);
     }
 
     public void Redo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.ReinstateSelectionChange(actionInfo.postSustain, actionInfo.preSustain);
     }
+
+    public SustainSelectionSnapshot(IInstrument parentInstrument, ISelectionSnapshot preSustainData)
+    {
+        this.parentInstrument = parentInstrument;
+        actionInfo = new SustainSelectionDataPackage
+        {
+            preSustain = preSustainData
+        };
+    }
+
+    public void CloseAction(ISelectionSnapshot postSustainData)
+    {
+        actionInfo.postSustain = postSustainData;
+    }
+}
+
+public class SustainSelectionDataPackage
+{
+    public ISelectionSnapshot preSustain;
+    public ISelectionSnapshot postSustain;
 }
 
 public class MoveSelectionSnapshot : IUndoSnapshot

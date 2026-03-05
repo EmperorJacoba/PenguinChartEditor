@@ -550,7 +550,6 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
     {
         if (firstFrame)
         {
-            MonoBehaviour.print("Created empty undo action");
             openUndoAction = new SingleSustainSnapshot(this,
                 new SingleSustainDataPackage(@event.Tick, LaneController));
         }

@@ -6,7 +6,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
 {
     private SustainData<T> sustainData = new();
 
-    private readonly Lanes<T> laneData;
+    private readonly Lanes<T> laneController;
     private readonly IInstrument parentInstrument;
 
     private readonly bool obeyExtendedSustainSetting;
@@ -15,12 +15,15 @@ public class SustainHelper<T> where T : IEventData, ISustainable
     public SustainHelper(IInstrument parentInstrument, Lanes<T> lanes, bool obeyExtended)
     {
         obeyExtendedSustainSetting = obeyExtended;
-        laneData = lanes;
+        laneController = lanes;
         this.parentInstrument = parentInstrument;
     }
 
     public void ResetSustainChange()
     {
+        if (!sustainData.sustainInProgress) return;
+        
+        sustainData.CompleteAction();
         sustainData = new SustainData<T>();
     }
 
@@ -39,7 +42,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         Chart.InPlaceRefresh();
     }
 
-    public static int GetCurrentMouseTick()
+    private static int GetCurrentMouseTick()
     {
         var newHighwayPercent = Chart.instance.SceneDetails.GetCursorHighwayProportion();
 
@@ -68,11 +71,11 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         if (!sustainData.sustainInProgress)
         {
             // directly access parent lane here to avoid reassigning the local shortcut variable
-            sustainData = new SustainData<T>(laneData.GetTotalSelectionByLane(), currentMouseTick);
+            sustainData = new SustainData<T>(parentInstrument, laneController, currentMouseTick);
             return;
         }
 
-        foreach (var lane in laneData.ExportData())
+        foreach (var lane in laneController.ExportData())
         {
             var laneTicks = sustainData.sustainingTicks[lane.Key];
             var workingLane = lane.Value;
@@ -102,7 +105,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         // clamp based on this lane only (ignore other lane overlap)
         if (independentLanes)
         {
-            var currentLane = laneData.GetLane(lane);
+            var currentLane = laneController.GetLane(lane);
             if (!currentLane.Contains(tick)) return;
 
             currentLane[tick] = (T)currentLane[tick].ExportWithNewSustain(
@@ -112,12 +115,12 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         // clamp based on ALL lanes
         else
         {
-            var ticks = laneData.GetTickEventBounds(tick);
+            var ticks = laneController.GetTickEventBounds(tick);
             var calculatedCurrentSustain = CalculateSustainClamp(newSustain, tick, lane);
 
-            foreach (var lanePairing in laneData.LaneKeys)
+            foreach (var lanePairing in laneController.LaneKeys)
             {
-                var iteratorLane = laneData.GetLane(lanePairing);
+                var iteratorLane = laneController.GetLane(lanePairing);
 
                 if (iteratorLane.Contains(tick))
                 {
@@ -131,8 +134,8 @@ public class SustainHelper<T> where T : IEventData, ISustainable
     {
         int nextTick =
             independentLanes ? 
-            laneData.GetLane(lane).GetNextTickEventInLane(tick) : 
-            laneData.GetTickEventBounds(tick).next;
+            laneController.GetLane(lane).GetNextTickEventInLane(tick) : 
+            laneController.GetTickEventBounds(tick).next;
 
         int clampedSustain = sustainLength;
         if (nextTick != LaneSet<FiveFretNoteData>.NO_TICK_EVENT)
@@ -158,11 +161,11 @@ public class SustainHelper<T> where T : IEventData, ISustainable
 
     private void ShiftClickSustainClamp(int tick, int tickLength)
     {
-        foreach (var lane in laneData.LaneKeys)
+        foreach (var lane in laneController.LaneKeys)
         {
-            if (laneData.GetLane(lane).ContainsKey(tick))
+            if (laneController.GetLane(lane).ContainsKey(tick))
             {
-                laneData.GetLane(lane)[tick] = (T)laneData.GetLane(lane)[tick].ExportWithNewSustain(tickLength);
+                laneController.GetLane(lane)[tick] = (T)laneController.GetLane(lane)[tick].ExportWithNewSustain(tickLength);
             }
         }
     }
@@ -171,7 +174,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
     {
         if (independentLanes)
         {
-            var extendedLaneRef = laneData.GetLane(lane);
+            var extendedLaneRef = laneController.GetLane(lane);
             if (!extendedLaneRef.Contains(tick)) return;
 
             UpdateSustain(tick, lane, extendedLaneRef[tick].Sustain);
@@ -180,9 +183,9 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         {
             var smallestSustain = int.MaxValue;
 
-            foreach (var laneKey in laneData.LaneKeys)
+            foreach (var laneKey in laneController.LaneKeys)
             {
-                var laneRef = laneData.GetLane(laneKey);
+                var laneRef = laneController.GetLane(laneKey);
                 if (!laneRef.Contains(tick)) continue;
 
                 if (laneRef[tick].Sustain < smallestSustain) smallestSustain = laneRef[tick].Sustain;
@@ -195,14 +198,14 @@ public class SustainHelper<T> where T : IEventData, ISustainable
     public void ValidateSustainsInRange(MinMaxTicks range) => ValidateSustainsInRange(range.min, range.max);
     public void ValidateSustainsInRange(int startTick, int endTick)
     {
-        var uniqueTicks = laneData.GetUniqueTickSet();
+        var uniqueTicks = laneController.GetUniqueTickSet();
         var uniqueTicksInRange = uniqueTicks.Where(tick => tick >= startTick && tick <= endTick).ToList();
 
         if (independentLanes)
         {
-            foreach (var laneKey in laneData.LaneKeys)
+            foreach (var laneKey in laneController.LaneKeys)
             {
-                var currentLane = laneData.GetLane(laneKey);
+                var currentLane = laneController.GetLane(laneKey);
                 ClampSustainsBefore(startTick, laneKey);
 
                 for (int index = 0; index < uniqueTicksInRange.Count(); index++)
@@ -235,7 +238,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
             return;
         }
 
-        foreach (var laneKey in laneData.LaneKeys)
+        foreach (var laneKey in laneController.LaneKeys)
         {
             ClampLaneEventsBefore(tick, laneKey);
         }
@@ -243,7 +246,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
 
     private void ClampLaneEventsBefore(int tick, int lane)
     {
-        var currentLane = laneData.GetLane(lane);
+        var currentLane = laneController.GetLane(lane);
 
         var clampTargetTick = currentLane.GetPreviousTickEventInLane(tick);
         if (clampTargetTick == LaneSet<FiveFretNoteData>.NO_TICK_EVENT) return;
@@ -256,9 +259,9 @@ public class SustainHelper<T> where T : IEventData, ISustainable
 
     public void SetSelectionSustain(int ticks)
     {
-        var currentSelection = laneData.GetTotalSelectionByLane();
+        var currentSelection = laneController.GetTotalSelectionByLane();
 
-        foreach (var laneKey in laneData.LaneKeys)
+        foreach (var laneKey in laneController.LaneKeys)
         {
             var laneSelection = currentSelection[laneKey];
             if (laneSelection.Count == 0) continue;
@@ -274,9 +277,9 @@ public class SustainHelper<T> where T : IEventData, ISustainable
 
     public void SetSelectionSustain(float bars)
     {
-        var currentSelection = laneData.GetTotalSelectionByLane();
+        var currentSelection = laneController.GetTotalSelectionByLane();
 
-        foreach (var laneKey in laneData.LaneKeys)
+        foreach (var laneKey in laneController.LaneKeys)
         {
             var laneSelection = currentSelection[laneKey];
             if (laneSelection.Count == 0) continue;
