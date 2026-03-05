@@ -5,7 +5,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-public class SyncTrackInstrument : BaseInstrument<BPMData>
+public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
 {
     #region Constants
 
@@ -597,12 +597,7 @@ public class SyncTrackInstrument : BaseInstrument<BPMData>
 
     #region Parsing
 
-    protected override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
-    {
-        AddChartFormattedEventsToInstrument(Clipboard.ConvertToLineList(clipboardData, offset));
-    }
-
-    public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
+    protected override void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
     {
         HashSet<int> anchoredTicks = new(); // allows for versitility if A event comes before or after tempo event proper
 

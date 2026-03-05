@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class SectionInstrument : BaseInstrument<SectionData>
+public sealed class SectionInstrument : BaseInstrument<SectionData>
 {
     #region Data Setup
 
@@ -109,12 +109,7 @@ public class SectionInstrument : BaseInstrument<SectionData>
 
     #region Import
 
-    protected override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
-    {
-        AddChartFormattedEventsToInstrument(Clipboard.ConvertToLineList(clipboardData, offset));
-    }
-
-    private void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> events)
+    protected override void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> events)
     {
         foreach (var @event in events)
         {

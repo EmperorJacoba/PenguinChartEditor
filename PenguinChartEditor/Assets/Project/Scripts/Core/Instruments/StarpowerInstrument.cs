@@ -211,6 +211,13 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         }
     }
 
+    protected override void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
+    {
+        throw new NotImplementedException(
+            "Clipboard logic should be overridden for SP instrument. " +
+            "SP data is dealt with on an instrument:data basis, not through a list of raw events.");
+    }
+
     private void AddChartFormattedEventsToInstrument(Dictionary<HeaderType, List<KeyValuePair<int, string>>> chartData, int offset)
     {
         foreach (var headerData in chartData)
@@ -279,7 +286,7 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         return true;
     }
 
-    protected override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    protected override PasteSnapshot AddChartFormattedEventsToInstrument(string clipboardData, int offset)
     {
         var clipboardAsLines = clipboardData.Split(Environment.NewLine);
 
@@ -318,7 +325,16 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
             }
         }
 
+        var min = parsedSections.Values.SelectMany(list => list).Min(kvp => (int?)kvp.Key);
+        var max = parsedSections.Values.SelectMany(list => list).Max(kvp => (int?)kvp.Key);
+
+        if (min is null || max is null) return null;
+        var prePaste = LaneController.PopTicksInRange((int)min, (int)max);
+        
         AddChartFormattedEventsToInstrument(parsedSections, offset);
+        
+        var postPaste = LaneController.PeekTicksInRange((int)min, (int)max);
+        return new PasteSnapshot(this, new PasteDataPackage(prePaste, postPaste));
     }
 
     #endregion

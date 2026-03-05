@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public interface ILaneData
 {
@@ -269,6 +270,17 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         // InvokeForSetEnds(subtractedTicks);
 
         return subtractedTicks;
+    }
+
+    public SortedDictionary<int, TValue> PeekTicksInRange(int startTick, int endTick)
+    {
+        return new SortedDictionary<int, TValue>(
+                laneData.Where(
+                    kvp => kvp.Key >= startTick && kvp.Key <= endTick
+                    ).ToDictionary(
+                    kvp => kvp.Key, kvp => kvp.Value
+                    )
+                );
     }
 
     public void OverwriteTicksFromSet(HashSet<int> ticks, SortedDictionary<int, TValue> dataset)

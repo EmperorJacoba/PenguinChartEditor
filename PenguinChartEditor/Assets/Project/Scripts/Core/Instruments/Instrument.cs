@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -192,11 +193,33 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public abstract string ConvertSelectionToString();
     public void PasteDataToInstrument(string clipboardData, int offset)
     {
-        SaveUndoData();
-        AddChartFormattedEventsToInstrument(clipboardData, offset);
+        var undoAction = AddChartFormattedEventsToInstrument(clipboardData, offset);
+        if (undoAction is null) return;
+        
+        UndoStack.instance.PushAction(undoAction);
         Chart.InPlaceRefresh();
     }
-    protected abstract void AddChartFormattedEventsToInstrument(string clipboardData, int offset);
+
+    // Overridden in StarpowerInstrument because SP deals with events on an instrument:data basis due to its structure.
+    protected virtual PasteSnapshot AddChartFormattedEventsToInstrument(string clipboardData, int offset)
+    {
+        var lines = Clipboard.ConvertToLineList(clipboardData, offset);
+        
+        var uniqueTicks = lines.Select(item => item.Key).ToHashSet();
+        if (uniqueTicks.Count == 0) return null;
+
+        var minMaxTicks = new MinMaxTicks(uniqueTicks.Min(), uniqueTicks.Max());
+        var prePasteSnapshot = LaneController.PopTicksInRange(minMaxTicks.min, minMaxTicks.max);
+        
+        AddChartFormattedEventsToInstrument(lines);
+
+        var postPasteSnapshot = LaneController.PeekTicksInRange(minMaxTicks.min, minMaxTicks.max);
+        
+        return new PasteSnapshot(this, new PasteDataPackage(prePasteSnapshot, postPasteSnapshot));
+    }
+    
+    protected abstract void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines);
+    
 
     #endregion
 

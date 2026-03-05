@@ -10,6 +10,11 @@ public class SelectionSnapshot<T> : ISelectionSnapshot where T : IEventData
     {
         savedSelectionData = laneController.ExportSelectionData();
     }
+
+    public SelectionSnapshot(Dictionary<int, SortedDictionary<int, T>> poppedData)
+    {
+        savedSelectionData = poppedData;
+    }
 }
 
 public class SyncTrackSelectionSnapshot : ISelectionSnapshot
@@ -21,5 +26,11 @@ public class SyncTrackSelectionSnapshot : ISelectionSnapshot
     {
         bpmSelection = laneController.bpmSelection.ExportData();
         tsSelection = laneController.tsSelection.ExportData();
+    }
+
+    public SyncTrackSelectionSnapshot(SortedDictionary<int, BPMData> bpmSnap, SortedDictionary<int, TSData> tsSnap)
+    {
+        bpmSelection = bpmSnap;
+        tsSelection = tsSnap;
     }
 }

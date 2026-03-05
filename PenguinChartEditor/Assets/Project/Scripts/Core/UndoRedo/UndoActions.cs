@@ -1,8 +1,9 @@
-﻿#region AddSingle
-
-// Corresponds to CreateEvent()
+﻿using System;
 using System.Collections.Generic;
 
+#region AddSingle
+
+// Corresponds to CreateEvent()
 public class AddSingleUndoSnapshot : IUndoSnapshot
 {
     // Save overwritten data, if it exists and varies. Delete tick in lane and reinstate old note for undo, vice versa for redo 
@@ -98,6 +99,8 @@ public struct DeleteSingleDataPackage
 
 #endregion
 
+#region SelectionChange
+
 // Corresponds to any in-place selection change. Examples: Setting a selection to all taps/hopos
 public class SelectionChangeSnapshot : IUndoSnapshot
 {
@@ -128,6 +131,8 @@ public class SelectionChangeSnapshot : IUndoSnapshot
 
     public void CloseAction() => addedData = laneController.TakeSelectionSnapshot();
 }
+
+#endregion
 
 #region DeleteSelection
 
@@ -161,14 +166,33 @@ public class PasteSnapshot : IUndoSnapshot
 {
     // Save notes falling in paste range. Delete notes in paste range and reinstate old notes for undo, vice versa for redo
     public IInstrument parentInstrument { get; }
+    private PasteDataPackage actionInfo;
     public void Undo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.ReinstateSelectionChange(actionInfo.prePasteData, actionInfo.pasteData);
     }
 
     public void Redo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.ReinstateSelectionChange(actionInfo.pasteData, actionInfo.prePasteData);
+    }
+
+    public PasteSnapshot(IInstrument parentInstrument, PasteDataPackage actionInfo)
+    {
+        this.parentInstrument = parentInstrument;
+        this.actionInfo = actionInfo;
+    }
+}
+
+public struct PasteDataPackage
+{
+    public readonly ISelectionSnapshot prePasteData;
+    public readonly ISelectionSnapshot pasteData;
+
+    public PasteDataPackage(ISelectionSnapshot prePasteData, ISelectionSnapshot pasteData)
+    {
+        this.prePasteData = prePasteData;
+        this.pasteData = pasteData;
     }
 }
 

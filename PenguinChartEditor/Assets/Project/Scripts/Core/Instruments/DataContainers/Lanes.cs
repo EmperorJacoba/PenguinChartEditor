@@ -41,6 +41,9 @@ public interface IMultiLaneController
 
     public void ReinstateSelectionSnapshot(ISelectionSnapshot incomingSelectionData,
         ISelectionSnapshot removingSelectionData);
+
+    ISelectionSnapshot PopTicksInRange(int startTick, int endTick);
+    ISelectionSnapshot PeekTicksInRange(int startTick, int endTick);
 }
 
 public class Lanes<T> : IMultiLaneController where T : IEventData
@@ -178,6 +181,10 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         return new TickBounds(prev, next);
     }
     
+    // FIXME:   Reduce expensive call to aggregate lane data as a sorted list by tracking tick modifications over time.
+    //          Would reduce this O(nlogn) call (0.5-1ms on average) to O(1) over time 
+    //          This would also require ALL add commands, delete commands, modifications to go through the lane controller.
+    //          New approach would be annoying to initially implement but would likely be worth it in the long run.
     /// <returns>Sorted List of all ticks present in the lane data defined in this object.</returns>
     public List<int> GetUniqueTickSet()
     {
@@ -490,15 +497,21 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         }
         else PopTicksInRange(tick, tick);
     }
+
+    ISelectionSnapshot IMultiLaneController.PopTicksInRange(int startTick, int endTick) =>
+        new SelectionSnapshot<T>(PopTicksInRange(startTick, endTick));
     
     public Dictionary<int, SortedDictionary<int, T>> PopTicksInRange(int startTick, int endTick)
     {
-        var subtractedData = MakeEmptyDataSet();
-        foreach (var lane in lanes)
-        {
-            subtractedData[lane.Key] = lane.Value.PopTicksInRange(startTick, endTick);
-        }
-        return subtractedData;
+        return lanes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.PopTicksInRange(startTick, endTick));
+    }
+
+    ISelectionSnapshot IMultiLaneController.PeekTicksInRange(int startTick, int endTick) =>
+        new SelectionSnapshot<T>(PeekTicksInRange(startTick, endTick));
+
+    public Dictionary<int, SortedDictionary<int, T>> PeekTicksInRange(int startTick, int endTick)
+    {
+        return lanes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.PeekTicksInRange(startTick, endTick));
     }
 
     public void DeleteAllEventsAtTick(int tick) => PopAllEventsAtTick(tick);
@@ -783,6 +796,19 @@ public class SyncTrackLanes : IMultiLaneController
         
         return data;
     }
+    
+    ISelectionSnapshot IMultiLaneController.PopTicksInRange(int startTick, int endTick) =>
+        new SyncTrackSelectionSnapshot(
+            TempoEvents.PopTicksInRange(startTick, endTick), 
+            TimeSignatureEvents.PopTicksInRange(startTick, endTick)
+            );
+    
+    ISelectionSnapshot IMultiLaneController.PeekTicksInRange(int startTick, int endTick) =>
+        new SyncTrackSelectionSnapshot(
+            TempoEvents.PeekTicksInRange(startTick, endTick), 
+            TimeSignatureEvents.PeekTicksInRange(startTick, endTick)
+            );
+    
 
     public ISelectionSnapshot TakeSelectionSnapshot() => new SyncTrackSelectionSnapshot(this);
     

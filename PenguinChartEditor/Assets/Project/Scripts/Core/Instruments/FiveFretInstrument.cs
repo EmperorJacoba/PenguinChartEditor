@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
+public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 {
     #region Constants
 
@@ -480,22 +480,15 @@ public class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 
     #region Import
 
-    protected override void AddChartFormattedEventsToInstrument(string clipboardData, int offset)
-    {
-        AddChartFormattedEventsToInstrument(Clipboard.ConvertToLineList(clipboardData, offset));
-    }
-
     // Prepare for indentation hell.
-    public void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
+    protected override void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines)
     {
+        // FIXME: This value is already generated in the base class for the undo action.
         HashSet<int> uniqueTicks = lines.Select(item => item.Key).ToHashSet();
         HashSet<int> flippedTicks = new(); // ticks that will be traditionally forced
 
         SoloEventData openSoloEvent = new(-1);
-
-        if (uniqueTicks.Count == 0) return;
-        Lanes.PopTicksInRange(uniqueTicks.Min(), uniqueTicks.Max());
-
+        
         foreach (var uniqueTick in uniqueTicks)
         {
             var eventsAtTick = lines.Where(item => item.Key == uniqueTick).Select(item => item.Value).ToList();
