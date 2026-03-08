@@ -360,6 +360,31 @@ public class MoveSelectionSnapshot : IUndoSnapshot
     public void CloseAction(AddDataInRangeSnapshot addAction) => this.addAction = addAction;
 }
 
+public class DualMoveSelectionSnapshot : IUndoSnapshot
+{
+    public IInstrument parentInstrument => Chart.SyncTrackInstrument;
+    private MoveSelectionSnapshot action1;
+    private MoveSelectionSnapshot action2;
+    
+    public void Undo()
+    {
+        action1?.Undo();
+        action2?.Undo();
+    }
+
+    public void Redo()
+    {
+        action1?.Redo();
+        action2?.Redo();
+    }
+
+    public DualMoveSelectionSnapshot(MoveSelectionSnapshot action1, MoveSelectionSnapshot action2)
+    {
+        this.action1 = action1;
+        this.action2 = action2;
+    }
+}
+
 public class BPMDragChangeSnapshot : IUndoSnapshot
 {
     // Save BPM event pre-drag. Undo restores old data, redo restores dragged data.

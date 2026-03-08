@@ -111,10 +111,17 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
     {
         // Technically the base class does a reset of its own. Since SyncTrack is made up of two distinct tracks,
         // Both move helpers must be reset individually. Overhead for Reset() in the base class shouldn't be much.
-        bpmMover.Reset();
-        tsMover.Reset();
+
+        mover.Reset();
+        MoveUndoStackPushAction();
 
         Chart.SyncTrackInPlaceRefresh();
+    }
+
+    protected override void MoveUndoStackPushAction()
+    {
+        var undoAction = new DualMoveSelectionSnapshot(bpmMover.Reset(), tsMover.Reset());
+        UndoStack.instance.PushAction(undoAction);
     }
 
     #endregion

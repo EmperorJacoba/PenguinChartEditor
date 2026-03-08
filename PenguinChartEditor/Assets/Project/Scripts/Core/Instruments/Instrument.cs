@@ -520,10 +520,14 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
         if (!mover.MoveInProgress) return;
         
+        MoveUndoStackPushAction();
+        InternalCompleteMove();
+    }
+
+    protected virtual void MoveUndoStackPushAction()
+    {
         var undoAction = mover.Reset();
         UndoStack.instance.PushAction(undoAction);
-        
-        InternalCompleteMove();
     }
 
     #endregion
