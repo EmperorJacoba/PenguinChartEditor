@@ -143,7 +143,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
     {
         // no checks needed since pushed data theoretically exists from a correct state
         // if the state is not correct, then that's a different issue
-        Lanes.OverwriteLaneData(undoAction.GetStoredMultiLaneData());
+        Lanes.OverwriteAllLaneData(undoAction.GetStoredMultiLaneData());
     }
 
     #endregion

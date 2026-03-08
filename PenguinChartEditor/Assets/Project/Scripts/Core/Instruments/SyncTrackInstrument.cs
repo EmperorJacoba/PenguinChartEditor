@@ -173,8 +173,8 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
     {
         var snapshot = undoSnapshot as SyncTrackUndoSnapshot;
 
-        TempoEvents.OverwriteLaneDataWith(snapshot.bpmSave);
-        TimeSignatureEvents.OverwriteLaneDataWith(snapshot.tsSave);
+        TempoEvents.OverwriteAllLaneDataWith(snapshot.bpmSave);
+        TimeSignatureEvents.OverwriteAllLaneDataWith(snapshot.tsSave);
     }
 
     #endregion

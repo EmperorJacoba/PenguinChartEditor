@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 #region AddSingle
 
@@ -253,6 +252,8 @@ public class SingleSustainDataPackage
 
 #endregion
 
+#region SustainSelection (sustain from note head)
+
 // Corresponds to SustainSelection()
 public class SustainSelectionSnapshot : IUndoSnapshot
 {
@@ -290,19 +291,72 @@ public class SustainSelectionDataPackage
     public ISelectionSnapshot postSustain;
 }
 
-public class MoveSelectionSnapshot : IUndoSnapshot
+#endregion
+
+public class AddDataInRangeSnapshot : IUndoSnapshot
 {
-    // Save maximum range of data (between paste location and original location of notes). Swap ranges out for undo/redo.
     public IInstrument parentInstrument { get; }
+    public AddDataInRangeDataPackage actionInfo;
+    
     public void Undo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.ReinstateSelectionChange(actionInfo.overwrittenData, actionInfo.incomingData);
     }
 
     public void Redo()
     {
-        throw new System.NotImplementedException();
+        parentInstrument.ReinstateSelectionChange(actionInfo.incomingData, actionInfo.overwrittenData);
     }
+
+    public AddDataInRangeSnapshot(IInstrument parentInstrument, AddDataInRangeDataPackage actionInfo)
+    {
+        this.parentInstrument = parentInstrument;
+        this.actionInfo = actionInfo;
+    }
+}
+
+public struct AddDataInRangeDataPackage
+{
+    public readonly ISelectionSnapshot overwrittenData;
+    public readonly ISelectionSnapshot incomingData;
+
+    public AddDataInRangeDataPackage(ISelectionSnapshot overwrittenData, ISelectionSnapshot incomingData)
+    {
+        this.overwrittenData = overwrittenData;
+        this.incomingData = incomingData;
+    }
+}
+
+public class MoveSelectionSnapshot : IUndoSnapshot
+{
+    // Take a snapshot pre-move of only the moving data. 
+    // Upon move completion, take a snapshot of the data that existed from lastGhostStartPaste and end
+    
+    // Undo: Replace selection snapshots - Wipe data in range of start paste and end paste, add back saved data from that range
+    
+    public IInstrument parentInstrument { get; }
+    private DeleteSelectionSnapshot deleteAction;
+    private AddDataInRangeSnapshot addAction;
+    
+    public void Undo()
+    {
+        deleteAction.Undo();
+        addAction.Undo();
+    }
+
+    public void Redo()
+    {
+        deleteAction.Redo();
+        addAction.Redo();
+    }
+
+    public MoveSelectionSnapshot(IInstrument parentInstrument, DeleteSelectionSnapshot deleteAction)
+    {
+        this.deleteAction = deleteAction;
+        this.parentInstrument = parentInstrument;
+    }
+
+    public void CloseAction(AddDataInRangeSnapshot addAction) => this.addAction = addAction;
 }
 
 public class BPMDragChangeSnapshot : IUndoSnapshot

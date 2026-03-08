@@ -8,13 +8,14 @@ public class MoveHelper<T> where T : IEventData
     public bool MoveInProgress => moveData.inProgress;
     public MinMaxTicks GetFinalValidationRange(LinkedList<int> laneProgression) => moveData.GetChangedDataRange(laneProgression);
     public MinMaxTicks GetChangingValidationRange() => new(moveData.lastGhostStartTick, moveData.lastGhostEndTick);
-
-
+    
     public void Reset()
     {
         Chart.showPreviewers = true;
         moveData = new UniversalMoveData<T>();
     }
+
+    private MoveSelectionSnapshot openUndoAction;
     
     // 2D in this context means [lane X data] dataset (multiple lanes) - e.g. any traditional instrument (guitar)
     // 1D in this context means just one lane, no cross-LaneSet<> movement needed - e.g TempoEvents, Sections, etc.
@@ -48,20 +49,20 @@ public class MoveHelper<T> where T : IEventData
 
         if (!moveData.inProgress && (tickMovement || laneMovement))
         {
-            // optimize call
             moveData = new UniversalMoveData<T>(
                 currentMouseTick,
                 currentLane: currentMouseLane,
                 laneData
                 );
+            
             Chart.showPreviewers = false;
             actionStarted = true;
             return false;
         }
 
         if (!(tickMovement || laneMovement)) return false;
-
-        laneData.OverwriteLaneData(moveData.preMoveData);
+        
+        laneData.OverwriteAllLaneData(moveData.preMoveData);
 
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
         var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
@@ -104,7 +105,7 @@ public class MoveHelper<T> where T : IEventData
             return false;
         }
 
-        lane.OverwriteLaneDataWith(moveData.preMoveData[0]);
+        lane.OverwriteAllLaneDataWith(moveData.preMoveData[0]);
 
         var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
 

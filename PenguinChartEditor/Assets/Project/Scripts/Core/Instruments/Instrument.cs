@@ -500,9 +500,6 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         
         if (InternalMoveSelection(out var firstFrame))
         {
-            // FIXME: Possible edge case here: user starts moving, and then mid-move, undos. Old data is applied, move lost.
-            // Maybe do this on complete move instead? But that has its own issues...
-            if (firstFrame) SaveUndoData();
             Chart.InPlaceRefresh();
         }
     }

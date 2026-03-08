@@ -251,7 +251,6 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         foreach (var dataSegment in selectionTyped.savedSelectionData)
         {
             lanes[dataSegment.Key].AddTicksFromSet(dataSegment.Value);
-            var laneData = lanes[dataSegment.Key];
         }
     }
 
@@ -432,11 +431,19 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
 
     #region Overwrite
 
-    public void OverwriteLaneData(Dictionary<int, SortedDictionary<int, T>> newData)
+    public void OverwriteAllLaneData(Dictionary<int, SortedDictionary<int, T>> newData)
     { 
         foreach (var newDataLane in newData)
         {
-            lanes[newDataLane.Key].OverwriteLaneDataWith(newDataLane.Value);
+            lanes[newDataLane.Key].OverwriteAllLaneDataWith(newDataLane.Value);
+        }
+    }
+    
+    public void OverwriteTicksFromSet(Dictionary<int, SortedDictionary<int, T>> newData)
+    {
+        foreach (var newDataLane in newData)
+        {
+            lanes[newDataLane.Key].AddTicksFromSet(newDataLane.Value);
         }
     }
 

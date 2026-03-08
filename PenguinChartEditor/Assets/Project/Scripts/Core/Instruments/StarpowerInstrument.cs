@@ -154,7 +154,7 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     protected override void InternalApplyUndoAction(UndoSnapshot<StarpowerEventData> undoAction)
     {
-        Lanes.OverwriteLaneData(undoAction.GetStoredMultiLaneData());
+        Lanes.OverwriteAllLaneData(undoAction.GetStoredMultiLaneData());
     }
 
     #endregion

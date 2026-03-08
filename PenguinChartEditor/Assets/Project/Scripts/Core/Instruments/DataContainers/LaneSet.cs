@@ -23,23 +23,21 @@ public interface ILaneData
     HashSet<int> protectedTicks { get; }
 }
 
-
 // remember to set up TS/BPM
 // do not use LaneSet.Add/LaneSet.Delete when doing batch add/delete => only first and last ticks need update trigger
 public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue : IEventData
 {
+    #region Constants
+    
     public const int NO_TICK_EVENT = -1;
+    
+    #endregion
+
+    #region Underlying data
+
     private SortedDictionary<int, TValue> laneData;
     private readonly int laneID;
-
-    public delegate void UpdateNeededDelegate(int startTick, int endTick);
-
-    /// <summary>
-    /// Invoked whenever a hopo check needs to happen at a certain tick. 
-    /// When invoked, the tick from the delegate should be checked to see if it or its surrounding ticks have changed hopo status.
-    /// </summary>
-    public event UpdateNeededDelegate UpdatesNeededInRange;
-
+    
     /// <summary>
     /// Used to prevent the TS and BPM events at tick 0 from being deleted.
     /// If TS and BPM events at tick 0 are deleted, the chart has no place to start its beatline calculations from.
@@ -48,8 +46,32 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     /// Also allows future devs to protect other ticks from deletion if need be.
     /// </summary>
     public HashSet<int> protectedTicks { get; } = new();
-
+    
     public SortedDictionary<int, TValue> ExportData() => new(laneData);
+    
+    // refactor this out - make redundant
+    public void Clear() => laneData.Clear();
+    public void Update(SortedDictionary<int, TValue> newEvents) => laneData = newEvents;
+    
+
+    #endregion
+
+    #region UpdatesNeededInRange
+
+    // This needs to be removed. All add actions go through different spots now and should NEVER happen through LaneSet
+    
+    public delegate void UpdateNeededDelegate(int startTick, int endTick);
+
+    /// <summary>
+    /// Invoked whenever a hopo check needs to happen at a certain tick. 
+    /// When invoked, the tick from the delegate should be checked to see if it or its surrounding ticks have changed hopo status.
+    /// </summary>
+    public event UpdateNeededDelegate UpdatesNeededInRange;
+
+    #endregion
+    
+    #region Constructor
+    
     public LaneSet(int laneID, HashSet<int> protectedTicks)
     {
         this.laneID = laneID;
@@ -64,6 +86,10 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         
         laneData = new SortedDictionary<int, TValue>();
     }
+    
+    #endregion
+    
+    #region Add
 
     bool ILaneData.Add(int tick, IEventData data) => Add(tick, (TValue)data);
     void IDictionary<int, TValue>.Add(int key, TValue value) => Add(key, value);
@@ -109,33 +135,38 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         
         return true;
     }
-
-    public void Clear()
+    
+    public void AddTicksFromSet(SortedDictionary<int, TValue> dataset)
     {
-        laneData.Clear();
+        foreach (var item in dataset)
+        {
+            laneData[item.Key] = item.Value;
+        }
     }
 
-    public bool Contains(KeyValuePair<int, TValue> item)
+    public void AddTicksFromSet(SortedDictionary<int, TValue> dataset,
+        out SortedDictionary<int, TValue> overwrittenData)
     {
-        return laneData.ContainsKey(item.Key);
-    }
+        overwrittenData = new SortedDictionary<int, TValue>();
+        foreach (var item in dataset)
+        {
+            if (laneData.TryGetValue(item.Key, out var data))
+            {
+                overwrittenData[item.Key] = data;
+            }
 
-    public bool Contains(int tick)
-    {
-        return ContainsKey(tick);
-    }
-
-    public bool ContainsKey(int key)
-    {
-        return laneData.ContainsKey(key);
-    }
-
-    // refactor this out - make redundant
-    public void Update(SortedDictionary<int, TValue> newEvents)
-    {
-        laneData = newEvents;
+            laneData[item.Key] = item.Value;
+        }
     }
     
+    #endregion
+
+    #region Contains
+    
+    public bool Contains(KeyValuePair<int, TValue> item) => laneData.ContainsKey(item.Key);
+    public bool Contains(int tick) => ContainsKey(tick);
+    public bool ContainsKey(int key) => laneData.ContainsKey(key);
+
     public bool ContainsTickInRangeExclusive(int startRange, int endRange)
     {
         var keyList = Keys.ToList();
@@ -147,15 +178,12 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         // Index will either be the index of startRange + 1 (extremely unlikely)
         // or the next element larger than the start of the range.
-        if (keyList[index] < endRange) return true;
-        return false;
+        return keyList[index] < endRange;
     }
-
-    public bool ContainsTickInHopoRange(int startTick, bool positive)
-    {
-        if (positive) return ContainsTickInRangeExclusive(startTick, startTick + Chart.HopoCutoff);
-        return ContainsTickInRangeExclusive(startTick, startTick - Chart.HopoCutoff);
-    }
+    
+    #endregion
+    
+    #region Remove
 
     public bool Remove(int tick)
     {
@@ -182,10 +210,25 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         UpdatesNeededInRange?.Invoke(tick, tick);
         return returnVal;
     }
+    
+    public void DeleteTicksFromSet(IEnumerable<int> keys)
+    {
+        foreach (var tick in keys)
+        {
+            laneData.Remove(tick);
+        }
+    }
+    
+    #endregion
 
+    #region Pop
+
+    #region Single
+    
     public IEventData PopSingle(int tick)
     {
         if (protectedTicks.Contains(tick)) return null;
+        
         laneData.Remove(tick, out var data);
 
         UpdatesNeededInRange?.Invoke(tick, tick);
@@ -203,75 +246,53 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         return data;
     }
-
-    public void InvokeForSetEnds(SortedDictionary<int, TValue> subtractedTicksSet) => InvokeForSetEnds(subtractedTicksSet, offset: 0);
-
-    public void InvokeForSetEnds(SortedDictionary<int, TValue> subtractedTicksSet, int offset)
-    {
-        if (subtractedTicksSet.Count == 0) return;
-
-        var keys = subtractedTicksSet.Keys;
-
-        Chart.Log($"{keys}");
-        UpdatesNeededInRange(keys.Min(), keys.Max());
-    }
-
-    private void InvokeForSetEnds(HashSet<int> ticksAdded)
-    {
-        if (ticksAdded.Count == 0) return;
-
-        UpdatesNeededInRange(ticksAdded.Min(), ticksAdded.Max());
-    }
+    
+    #endregion
 
     /// <summary>
     /// Returns removed ticks.
     /// </summary>
     /// <param name="tickData"></param>
     /// <returns></returns>
-    public SortedDictionary<int, TValue> PopTicksFromSet(SortedDictionary<int, TValue> tickData) => PopTicksFromSet(tickData.Select(kvp => kvp.Key).ToHashSet());
+    public SortedDictionary<int, TValue> PopTicksFromSet(SortedDictionary<int, TValue> tickData) => 
+        PopTicksFromSet(tickData.Select(kvp => kvp.Key).ToHashSet());
 
     public SortedDictionary<int, TValue> PopTicksFromSet(HashSet<int> tickData)
     {
         SortedDictionary<int, TValue> subtractedTicks = new();
-        foreach (var tick in tickData)
+        foreach (var tick in tickData.Where(tick => !protectedTicks.Contains(tick) && Contains(tick)))
         {
-            if (protectedTicks.Contains(tick)) continue;
-
-            if (Contains(tick))
-            {
-                laneData.Remove(tick, out TValue data);
-                subtractedTicks.Add(tick, data);
-            }
+            laneData.Remove(tick, out var data);
+            subtractedTicks.Add(tick, data);
         }
-
-        // InvokeForSetEnds(subtractedTicks);
-
+        
         return subtractedTicks;
     }
 
     public SortedDictionary<int, TValue> PopTicksInRange(MinMaxTicks minMaxTicks) =>
         PopTicksInRange(minMaxTicks.min, minMaxTicks.max);
+    
     public SortedDictionary<int, TValue> PopTicksInRange(int startTick, int endTick)
     {
         SortedDictionary<int, TValue> subtractedTicks = new();
         var ticksToDelete = GetOverwritableDictEvents(startTick, endTick);
 
-        foreach (var tick in ticksToDelete)
+        foreach (var tick in ticksToDelete.Where(tick => !protectedTicks.Contains(tick) && Contains(tick)))
         {
-            if (protectedTicks.Contains(tick)) continue;
-
-            if (Contains(tick))
-            {
-                laneData.Remove(tick, out TValue data);
-                subtractedTicks.Add(tick, data);
-            }
+            laneData.Remove(tick, out var data);
+            subtractedTicks.Add(tick, data);
         }
-
-        // InvokeForSetEnds(subtractedTicks);
-
+        
         return subtractedTicks;
     }
+    
+    private HashSet<int> GetOverwritableDictEvents(int startPasteTick, int endPasteTick) => 
+        Keys.ToList().Where(x => x >= startPasteTick && x <= endPasteTick).ToHashSet();
+    
+    #endregion
 
+    #region Peek
+    
     public SortedDictionary<int, TValue> PeekTicksInRange(int startTick, int endTick)
     {
         return new SortedDictionary<int, TValue>(
@@ -282,73 +303,45 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
                     )
                 );
     }
+    
+    #endregion
 
+    #region Overwrite
+    
     public void OverwriteTicksFromSet(HashSet<int> ticks, SortedDictionary<int, TValue> dataset)
     {
         foreach (var tick in ticks)
         {
-            if (laneData.ContainsKey(tick))
-            {
-                laneData.Remove(tick);
-            }
-            if (!dataset.ContainsKey(tick)) continue;
-            laneData.Add(tick, dataset[tick]);
-        }
-    }
-
-    public void AddTicksFromSet(SortedDictionary<int, TValue> dataset)
-    {
-        foreach (var item in dataset)
-        {
-            laneData[item.Key] = item.Value;
-        }
-    }
-
-    public void DeleteTicksFromSet(IEnumerable<int> keys)
-    {
-        foreach (var tick in keys)
-        {
             laneData.Remove(tick);
+            
+            if (!dataset.TryGetValue(tick, out var value)) continue;
+            
+            laneData.Add(tick, value);
         }
     }
 
-    public void OverwriteLaneDataWith(SortedDictionary<int, TValue> data)
-    {
+    public void OverwriteAllLaneDataWith(SortedDictionary<int, TValue> data) => 
         laneData = new SortedDictionary<int, TValue>(data);
-    }
 
     public void OverwriteDataWithOffset(SortedDictionary<int, TValue> data, int tickOffset)
     {
         foreach (var tick in data)
         {
-            var targetPasteTick = tickOffset + tick.Key;
-            if (targetPasteTick < 0 || targetPasteTick > SongTime.SongLengthTicks) continue;
-            if (laneData.ContainsKey(targetPasteTick))
-            {
-                laneData.Remove(targetPasteTick);
-            }
-            laneData.Add(targetPasteTick, tick.Value);
+            var targetTick = tickOffset + tick.Key;
+            if (targetTick < 0 || targetTick > SongTime.SongLengthTicks) continue;
+
+            laneData[targetTick] = tick.Value;
         }
     }
-
-
-    private int BinarySearchForTick(int currentTick, out List<int> tickTimeKeys)
-    {
-        tickTimeKeys = Keys.ToList();
-        return tickTimeKeys.BinarySearch(currentTick);
-    }
-
-    private HashSet<int> GetOverwritableDictEvents(int startPasteTick, int endPasteTick)
-    {
-        return Keys.ToList().Where(x => x >= startPasteTick && x <= endPasteTick).ToHashSet();
-    }
+    
+    #endregion
+    
+    #region Relevant Tick
+    
+    private static int ValidateEvent(int tickEvent) => tickEvent == NO_TICK_EVENT ? SongTime.SongLengthTicks + 1 : tickEvent;
 
     public int GetFirstRelevantTick() => GetFirstRelevantTick(SongTime.SongPositionTicks);
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="TSustain">Any type of event data that has a sustain field. See FiveFretNoteData, GHLNoteData, etc.</typeparam>
+    
     /// <param name="targetTick"></param>
     /// <returns>The next tick in this lane that needs to show feedback. 
     /// Returns the previous tick in the lane if the sustain of that note 
@@ -383,9 +376,11 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
     public int GetNextRelevantTick() => GetNextRelevantTick(SongTime.SongPositionTicks);
     public int GetNextRelevantTick(int targetTick) => ValidateEvent(GetNextTickEventInLane(targetTick));
+    
+    #endregion
 
-    private int ValidateEvent(int tickEvent) => tickEvent == NO_TICK_EVENT ? SongTime.SongLengthTicks + 1 : tickEvent;
-
+    #region Tick Sustain
+    
     public int GetTickSustain(int tick)
     {
         if (Contains(tick) && this[tick] is ISustainable sustainData)
@@ -394,11 +389,20 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         }
         return 0;
     }
+    
+    #endregion
+
+    #region Tick triangulation
+    
+    private int BinarySearchForTick(int currentTick, out List<int> tickTimeKeys)
+    {
+        tickTimeKeys = Keys.ToList();
+        return tickTimeKeys.BinarySearch(currentTick);
+    }
 
     /// <summary>
     /// Get the tick event before a specified tick. Returns -1 (LaneSet.NO_TICK_EVENT) if there is none.
     /// </summary>
-    /// <param name="currentTick"></param>
     /// <returns></returns>
     public int GetPreviousTickEventInLane(int currentTick, bool inclusive = false)
     {
@@ -412,8 +416,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         if (~index == tickTimeKeys.Count) index = tickTimeKeys.Count - 1;
         else index = ~index - 1;
 
-        if (index < 0) return NO_TICK_EVENT;
-        return tickTimeKeys[index];
+        return index < 0 ? NO_TICK_EVENT : tickTimeKeys[index];
     }
     
     public int GetNextTickEventInLane(int currentTick, bool inclusive = false)
@@ -424,12 +427,13 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         // bitwise complement is negative
         if (index >= 0) return inclusive ? tickTimeKeys[index] : tickTimeKeys[index + 1];
-        else index = ~index;
+        
+        index = ~index;
 
         return tickTimeKeys[index];
     }
 
-    // Uses array and not list for easy range segmenting
+    // Uses array and not list for easy range segmenting, accounts for sustains
     public List<int> GetRelevantTicksInRange(int startTick, int endTick)
     {
         if (Count == 0) return new List<int>();
@@ -460,8 +464,9 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         var finalList = tickList.GetRange(startIndex, (endIndex + 1) - startIndex);
         return finalList;
     }
-
-
+    
+    #endregion
+    
     #region Unmodified IDictionary Implementations
 
     public void Add(KeyValuePair<int, TValue> item)
