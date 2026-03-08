@@ -208,10 +208,10 @@ public class SustainHelper<T> where T : IEventData, ISustainable
                 var currentLane = laneController.GetLane(laneKey);
                 ClampSustainsBefore(startTick, laneKey);
 
-                for (int index = 0; index < uniqueTicksInRange.Count(); index++)
+                foreach (var uniqueTick in uniqueTicksInRange)
                 {
-                    int tick = uniqueTicksInRange[index];
-                    if (currentLane.Contains(tick)) ValidateSustain(uniqueTicksInRange[index], laneKey);
+                    int tick = uniqueTick;
+                    if (currentLane.Contains(tick)) ValidateSustain(uniqueTick, laneKey);
                 }
             }
         }

@@ -263,7 +263,11 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         foreach (var dataSegment in selectionRemTyped.savedSelectionData)
         {
             lanes[dataSegment.Key].DeleteTicksFromSet(dataSegment.Value.Keys);
-            lanes[dataSegment.Key].AddTicksFromSet(selectionIncTyped.savedSelectionData[dataSegment.Key]);
+
+            if (selectionIncTyped.savedSelectionData.TryGetValue(dataSegment.Key, out var tickSet))
+            {
+                lanes[dataSegment.Key].AddTicksFromSet(tickSet);
+            }
         }
     }
 
@@ -451,10 +455,8 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
     {
         MinMaxTracker tracker = new(Count);
 
-        foreach(var newDataLane in newData)
+        foreach (var newDataLane in newData.Where(newDataLane => newDataLane.Value.Count != 0))
         {
-            if (newDataLane.Value.Count == 0) continue;
-
             lanes[newDataLane.Key].OverwriteDataWithOffset(newDataLane.Value, offset);
             var keys = newDataLane.Value.Keys;
             tracker.AddTickMinMax(keys.Min(), keys.Max());
@@ -462,6 +464,26 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
 
         var ticks = tracker.GetAbsoluteMinMax();
         UpdatesNeededInRange?.Invoke(ticks.min, ticks.max);
+    }
+    
+    public void AddTicksFromSet(Dictionary<int, SortedDictionary<int, T>> newData, out ISelectionSnapshot overwrittenDataSnapshot)
+    {
+        MinMaxTracker tracker = new(Count);
+        Dictionary<int, SortedDictionary<int, T>> overwrittenDataByLane = new();
+        
+        foreach (var newDataLane in newData.Where(newDataLane => newDataLane.Value.Count != 0))
+        {
+            lanes[newDataLane.Key].AddTicksFromSet(newDataLane.Value, out var overwrittenData);
+            overwrittenDataByLane[newDataLane.Key] = overwrittenData;
+            
+            var keys = newDataLane.Value.Keys;
+            tracker.AddTickMinMax(keys.Min(), keys.Max());
+        }
+
+        var ticks = tracker.GetAbsoluteMinMax();
+        UpdatesNeededInRange?.Invoke(ticks.min, ticks.max);
+
+        overwrittenDataSnapshot = new SelectionSnapshot<T>(overwrittenDataByLane);
     }
 
     public void OverwriteTicksFromSet(Dictionary<int, SortedDictionary<int, T>> newData, Dictionary<int, HashSet<int>> ticks)
@@ -635,7 +657,7 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
 
         foreach (var lane in lanes)
         {
-            if (lane.Value.TryGetValue(tick, out var data))
+            if (lane.Value.TryGetValue(tick, out IEventData data))
             {
                 dictionary[lane.Key] = data;
             }
@@ -891,12 +913,12 @@ public class SyncTrackLanes : IMultiLaneController
     {
         var dictionary = new Dictionary<int, IEventData>();
         
-        if (TempoEvents.TryGetValue(tick, out var bpmData))
+        if (TempoEvents.TryGetValue(tick, out IEventData bpmData))
         {
             dictionary[0] = bpmData;
         }
 
-        if (TimeSignatureEvents.TryGetValue(tick, out var tsData))
+        if (TimeSignatureEvents.TryGetValue(tick, out IEventData tsData))
         {
             dictionary[1] = tsData;
         }

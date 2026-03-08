@@ -489,8 +489,16 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     #endregion
 
     #region Moving
-    
-    protected MoveHelper<T> mover = new();
+
+    protected MoveHelper<T> mover
+    {
+        get
+        {
+            _m ??= new MoveHelper<T>(this);
+            return _m;
+        }
+    }
+    private MoveHelper<T> _m;
 
     protected abstract bool InternalMoveSelection(out bool firstFrame);
 
@@ -511,10 +519,11 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         Chart.showPreviewers = true;
 
         if (!mover.MoveInProgress) return;
-
-        InternalCompleteMove();
         
-        mover.Reset();
+        var undoAction = mover.Reset();
+        UndoStack.instance.PushAction(undoAction);
+        
+        InternalCompleteMove();
     }
 
     #endregion

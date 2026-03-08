@@ -17,6 +17,8 @@ public interface ILaneData
 
     bool Add(int tick, IEventData data);
     public bool CreateEvent(int tick, IEventData newData, out AddSingleDataPackage actionInfo);
+
+    bool TryGetValue(int key, out IEventData data);
     
     bool Remove(int tick);
 
@@ -138,6 +140,8 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     
     public void AddTicksFromSet(SortedDictionary<int, TValue> dataset)
     {
+        if (dataset is null) return;
+        
         foreach (var item in dataset)
         {
             laneData[item.Key] = item.Value;
@@ -181,6 +185,22 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         return keyList[index] < endRange;
     }
     
+    #endregion
+    
+    #region TryGet
+
+    public bool TryGetValue(int key, out IEventData data)
+    {
+        data = null;
+        if (laneData.TryGetValue(key, out var value))
+        {
+            data = value;
+            return true;
+        }
+
+        return false;
+    }
+
     #endregion
     
     #region Remove

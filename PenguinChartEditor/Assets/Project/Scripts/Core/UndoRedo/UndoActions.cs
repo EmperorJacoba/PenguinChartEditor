@@ -337,6 +337,7 @@ public class MoveSelectionSnapshot : IUndoSnapshot
     public IInstrument parentInstrument { get; }
     private DeleteSelectionSnapshot deleteAction;
     private AddDataInRangeSnapshot addAction;
+    private DeleteSelectionSnapshot sustainAction;
     
     public void Undo()
     {

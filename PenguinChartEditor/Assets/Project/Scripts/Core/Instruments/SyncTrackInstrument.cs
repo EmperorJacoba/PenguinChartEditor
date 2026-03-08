@@ -48,6 +48,8 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
         Difficulty = DifficultyType.easy;
 
         Lanes = new SyncTrackLanes();
+        bpmMover = new MoveHelper<BPMData>(this);
+        tsMover = new MoveHelper<TSData>(this);
 
         AddChartFormattedEventsToInstrument(fileData);
         if (TempoEvents.Count == 0)
@@ -71,8 +73,8 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
 
     #region Movement
 
-    private MoveHelper<BPMData> bpmMover = new();
-    private MoveHelper<TSData> tsMover = new();
+    private readonly MoveHelper<BPMData> bpmMover;
+    private readonly MoveHelper<TSData> tsMover;
 
     /// <summary>
     /// Runs every frame when Drag input action is active. 
@@ -82,8 +84,8 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
         firstFrame = false;
         if (Input.GetKey(KeyCode.LeftControl)) return false;
         
-        var bpmMove = bpmMover.Move1DSelection(this, TempoEvents, Lanes.bpmSelection, out var moveStartedB);
-        var tsMove = tsMover.Move1DSelection(this, TimeSignatureEvents, Lanes.tsSelection, out var moveStartedT);
+        var bpmMove = bpmMover.Move1DSelection(TempoEvents, Lanes.bpmSelection, out var moveStartedB);
+        var tsMove = tsMover.Move1DSelection(TimeSignatureEvents, Lanes.tsSelection, out var moveStartedT);
 
         firstFrame = moveStartedB || moveStartedT;
         

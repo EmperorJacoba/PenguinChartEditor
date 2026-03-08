@@ -86,7 +86,7 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
 
     #region Moving
 
-    protected override bool InternalMoveSelection(out bool firstFrame) => mover.Move1DSelection(this, GetLaneData(), GetLaneSelection(), out firstFrame);
+    protected override bool InternalMoveSelection(out bool firstFrame) => mover.Move1DSelection(GetLaneData(), GetLaneSelection(), out firstFrame);
 
     // No extra post-move actions needed.
     protected override void InternalCompleteMove() {}

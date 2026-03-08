@@ -7,12 +7,14 @@ using UnityEngine;
 // Two dimensions in this scenario meaning across time and lanes. Enables lane-to-lane movement.
 public class UniversalMoveData<T> where T : IEventData
 {
-    public bool inProgress = false;
+    public bool inProgress;
 
     public readonly int firstMouseTick;
     public int lastMouseTick;
+    
     public readonly int firstLane;
     public int lastLane;
+    
     public readonly int firstSelectionTick;
 
     /// <summary>
@@ -37,6 +39,27 @@ public class UniversalMoveData<T> where T : IEventData
             }
             return lastGhostStartTick + maxTicks.Max();
         }
+    }
+
+    public ISelectionSnapshot GetOverwrittenMoveData()
+    {
+        var overwrittenTicks = MakeEmptyDataSet();
+        foreach (var lanePair in preMoveData)
+        {
+            var lane = lanePair.Value;
+            foreach (var tick in originalMovingDataSet[lanePair.Key].Keys)
+            {
+                var pasteTick = tick + lastGhostStartTick;
+                if (pasteTick < 0 || pasteTick > SongTime.SongLengthTicks) continue;
+                
+                if (lane.TryGetValue(pasteTick, out var data))
+                {
+                    overwrittenTicks[lanePair.Key].Add(pasteTick, data);
+                }
+            }
+        }
+
+        return new SelectionSnapshot<T>(overwrittenTicks);
     }
 
     /// <summary>
@@ -134,28 +157,26 @@ public class UniversalMoveData<T> where T : IEventData
     {
         var boundsCorrectedData = MakeEmptyDataSet();
 
-        foreach (var movingLane in originalMovingDataSet)
+        foreach (var laneID in originalMovingDataSet.Select(movingLane => movingLane.Key))
         {
-            var laneID = movingLane.Key;
-
-            var data = new SortedDictionary<int, T>(originalMovingDataSet[laneID]);
-            boundsCorrectedData[laneID] = data;
-
-            foreach (var item in new SortedDictionary<int, T>(data))
+            boundsCorrectedData[laneID] = new SortedDictionary<int, T>();
+            
+            foreach (var item in new SortedDictionary<int, T>(originalMovingDataSet[laneID]))
             {
-                if (item.Key + lastGhostStartTick < 0)
+                var targetMoveTick = item.Key + lastGhostStartTick;
+                if (targetMoveTick < 0)
                 {
-                    boundsCorrectedData[laneID].Remove(item.Key);
                     boundsCorrectedData[laneID][0] = item.Value;
                     continue;
                 }
 
-                if (item.Key + lastGhostStartTick > SongTime.SongLengthTicks)
+                if (targetMoveTick > SongTime.SongLengthTicks)
                 {
-                    boundsCorrectedData[laneID].Remove(item.Key);
                     boundsCorrectedData[laneID][SongTime.SongLengthTicks] = item.Value;
                     continue;
                 }
+
+                boundsCorrectedData[laneID][targetMoveTick] = item.Value;
             }
         }
 
@@ -166,7 +187,10 @@ public class UniversalMoveData<T> where T : IEventData
     public Dictionary<int, SortedDictionary<int, T>> GetMoveData(int laneShift, LinkedList<int> laneOrdering)
     {
         var boundsCorrectedData = OneDGetMoveData();
-        if (laneShift == 0 || laneOrdering.Count <= 1) return boundsCorrectedData;
+        if (laneShift == 0 || laneOrdering.Count <= 1)
+        {
+            return boundsCorrectedData;
+        }
 
         var laneSmooshOutput = MakeEmptyDataSet();
 

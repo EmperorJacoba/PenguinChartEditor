@@ -177,12 +177,12 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         currentLaneOrdering ??= InstrumentSpawningManager.instance.GetCurrentInstrumentOrdering();
         
         // FIXME: Figure out if we need to validate sustains at the end of this (probably yes)
-        return mover.Move2DSelection(this, Lanes, currentLaneOrdering, out firstFrame);
+        return mover.Move2DSelection(Lanes, currentLaneOrdering, out firstFrame);
     }
 
     protected override void InternalCompleteMove()
     {
-        ValidateSustainsInRange(mover.GetFinalValidationRange(currentLaneOrdering));
+        ValidateSustainsInRange(mover.GetFinalValidationRange());
         currentLaneOrdering = null;
     }
 

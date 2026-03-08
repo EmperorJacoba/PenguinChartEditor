@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteData>
 {
@@ -116,7 +117,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
 
     protected override bool InternalMoveSelection(out bool firstFrame)
     {
-        if (mover.Move2DSelection(this, Lanes, laneOrdering, out firstFrame))
+        if (mover.Move2DSelection(Lanes, laneOrdering, out firstFrame))
         {
             CheckForHoposInRange(mover.GetChangingValidationRange());
             return true;
@@ -127,7 +128,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
 
     protected override void InternalCompleteMove()
     {
-        ValidateSustainsInRange(mover.GetFinalValidationRange(laneOrdering));
+        ValidateSustainsInRange(mover.GetFinalValidationRange());
     }
 
     #endregion
