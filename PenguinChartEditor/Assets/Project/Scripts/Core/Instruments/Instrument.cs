@@ -528,10 +528,10 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
         if (!mover.MoveInProgress) return;
         
+        InternalCompleteMoveChecks();
+        
         var undoAction = mover.Reset();
         UndoStack.instance.PushAction(undoAction);
-        
-        InternalCompleteMoveChecks();
     }
 
     #endregion
@@ -615,7 +615,13 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
     }
     
     #endregion
-    
+
+    protected override void InternalCompleteMoveChecks()
+    {
+        mover.SaveCutoffSustainData(LaneController);
+        ValidateSustainsInRange(mover.GetFinalValidationRange());
+    }
+
     // ------
     
     // These actions are not undoable because they are internal checks that run after other undoable actions.

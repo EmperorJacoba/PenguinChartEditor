@@ -45,6 +45,53 @@ public class MoveHelper<T> where T : IEventData
         return openUndoAction;
     }
 
+    public void SaveCutoffSustainData(IMultiLaneController laneController)
+    {
+        var selectionSnap = lastMoveAction.actionInfo.incomingData as SelectionSnapshot<T>;
+        Debug.Assert(selectionSnap is not null);
+
+        var sustainableInstrument = parentInstrument as ISustainableInstrument;
+        Debug.Assert(sustainableInstrument is not null);
+
+        Dictionary<int, SortedDictionary<int, T>> savedSustainData = new();
+        Dictionary<int, SortedDictionary<int, T>> postMoveSustainData = new();
+
+        foreach (var lane in selectionSnap.savedSelectionData)
+        {
+            if (lane.Value.Count == 0) continue;
+            
+            var checkTick = laneController.GetLane(lane.Key).GetPreviousTickEventInLane(lane.Value.Keys.First());
+            if (!laneController.TryGetTick(lane.Key, checkTick, out var data)) return;
+
+            var sustainData = data as ISustainable;
+            Debug.Assert(sustainData is not null);
+
+            var clampedSustainValue =
+                sustainableInstrument.CalculateSustainClamp(sustainData.Sustain, checkTick, lane.Key);
+            
+            if (clampedSustainValue != sustainData.Sustain)
+            {
+                savedSustainData[lane.Key] = new SortedDictionary<int, T>();
+                postMoveSustainData[lane.Key] = new SortedDictionary<int, T>();
+                
+                savedSustainData[lane.Key].Add(checkTick, (T)data);
+
+                sustainData.Sustain = clampedSustainValue;
+                
+                postMoveSustainData[lane.Key].Add(checkTick, (T)sustainData);
+            }
+        }
+
+        openUndoAction.sustainAction = 
+            new AddDataInRangeSnapshot(
+                parentInstrument,
+                new AddDataInRangeDataPackage(
+                    new SelectionSnapshot<T>(savedSustainData), 
+                    new SelectionSnapshot<T>(postMoveSustainData)
+                    )
+                );
+    }
+    
     public MoveHelper(IInstrument parentInstrument)
     {
         this.parentInstrument = parentInstrument;

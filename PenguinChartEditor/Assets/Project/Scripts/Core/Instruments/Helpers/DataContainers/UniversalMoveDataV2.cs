@@ -29,7 +29,6 @@ public class UniversalMoveDataV2
         firstSelectionTick = laneController.GetFirstSelectionTick();
 
         originalMoveDataNormalized = laneController.TakeNormalizedSelectionSnapshot();
-        MonoBehaviour.print(originalMoveDataNormalized);
 
         inProgress = true;
     }
@@ -46,15 +45,12 @@ public class UniversalMoveDataV2
     {
         var tickDelta = lastMouseTick - firstMouseTick;
         var scaledSnapshot = originalMoveDataNormalized.ScaleSelectionSnapshot(firstSelectionTick + tickDelta);
-
-        MonoBehaviour.print(scaledSnapshot);
         
         if (laneProgression is null) return scaledSnapshot;
         
         var laneDelta = lastMouseLane - firstMouseLane;
         var shiftedSnapshot = scaledSnapshot.ShiftSnapshotLanes(laneDelta, laneProgression);
 
-        MonoBehaviour.print(shiftedSnapshot);
         return shiftedSnapshot;
     }
 }

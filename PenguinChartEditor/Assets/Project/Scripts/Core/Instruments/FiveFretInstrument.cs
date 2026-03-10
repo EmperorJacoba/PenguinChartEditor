@@ -120,11 +120,6 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
         CheckForHoposInRange(mover.GetChangingValidationRange());
     }
 
-    protected override void InternalCompleteMoveChecks()
-    {
-        ValidateSustainsInRange(mover.GetFinalValidationRange());
-    }
-
     protected override LinkedList<int> GetLaneProgression() => laneOrdering;
 
     #endregion

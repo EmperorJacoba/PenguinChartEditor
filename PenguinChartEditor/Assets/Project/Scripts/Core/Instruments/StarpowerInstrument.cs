@@ -172,11 +172,6 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     protected override LinkedList<int> GetLaneProgression() => InstrumentSpawningManager.instance.GetCurrentInstrumentOrdering();
 
-    protected override void InternalCompleteMoveChecks()
-    {
-        ValidateSustainsInRange(mover.GetFinalValidationRange());
-    }
-
     #endregion
 
     #region Import

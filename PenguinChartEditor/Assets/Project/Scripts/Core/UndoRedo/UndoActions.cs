@@ -343,18 +343,20 @@ public class MoveSelectionSnapshot : IUndoSnapshot
     public IInstrument parentInstrument { get; }
     private DeleteSelectionSnapshot deleteAction;
     private AddDataInRangeSnapshot addAction;
-    private DeleteSelectionSnapshot sustainAction;
+    public AddDataInRangeSnapshot sustainAction;
     
     public void Undo()
     {
         deleteAction.Undo();
         addAction.Undo();
+        sustainAction?.Undo();
     }
 
     public void Redo()
     {
         deleteAction.Redo();
         addAction.Redo();
+        sustainAction?.Redo();
     }
 
     public MoveSelectionSnapshot(IInstrument parentInstrument, DeleteSelectionSnapshot deleteAction)
