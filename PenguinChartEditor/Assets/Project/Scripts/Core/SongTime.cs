@@ -151,6 +151,9 @@ public class SongTime : MonoBehaviour
         else NegativeTimeChange?.Invoke();
     }
 
+    public static int CalculateCurrentMouseTick() =>
+        CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
+
     public static int CalculateGridSnappedTick(float percentOfHighway)
     {
         var cursorTimestamp = (percentOfHighway * Waveform.timeShown) + Waveform.startTime;

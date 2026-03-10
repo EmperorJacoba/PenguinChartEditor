@@ -170,20 +170,11 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     #region Moving
 
-    private LinkedList<int> currentLaneOrdering = null;
+    protected override LinkedList<int> GetLaneProgression() => InstrumentSpawningManager.instance.GetCurrentInstrumentOrdering();
 
-    protected override bool InternalMoveSelection(out bool firstFrame)
-    {
-        currentLaneOrdering ??= InstrumentSpawningManager.instance.GetCurrentInstrumentOrdering();
-        
-        // FIXME: Figure out if we need to validate sustains at the end of this (probably yes)
-        return mover.Move2DSelection(Lanes, currentLaneOrdering, out firstFrame);
-    }
-
-    protected override void InternalCompleteMove()
+    protected override void InternalCompleteMoveChecks()
     {
         ValidateSustainsInRange(mover.GetFinalValidationRange());
-        currentLaneOrdering = null;
     }
 
     #endregion

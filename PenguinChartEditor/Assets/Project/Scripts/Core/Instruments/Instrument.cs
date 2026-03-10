@@ -500,19 +500,27 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     }
     private MoveHelper<T> _m;
 
-    protected abstract bool InternalMoveSelection(out bool firstFrame);
+    /// <remarks>Run any mid-move checks like hopo checking here.</remarks>
+    protected virtual void InternalMoveSelectionChecks() {}
+    
+    /// <remarks>SyncTrack uses this to avoid moving on left control input to allow for bpm adjustments.
+    /// Should not need to be overridden anywhere else.</remarks> 
+    protected virtual bool IsMoveActionValid() => true;
+
+    protected virtual LinkedList<int> GetLaneProgression() => null;
 
     private void MoveSelection()
     {
         if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
-        
-        if (InternalMoveSelection(out var firstFrame))
+
+        if (mover.MoveSelection(LaneController, GetLaneProgression()) && IsMoveActionValid())
         {
+            InternalMoveSelectionChecks();
             Chart.InPlaceRefresh();
         }
     }
 
-    protected abstract void InternalCompleteMove();
+    protected virtual void InternalCompleteMoveChecks() {}
     private void CompleteMove()
     {
         if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
@@ -520,14 +528,10 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
         if (!mover.MoveInProgress) return;
         
-        MoveUndoStackPushAction();
-        InternalCompleteMove();
-    }
-
-    protected virtual void MoveUndoStackPushAction()
-    {
         var undoAction = mover.Reset();
         UndoStack.instance.PushAction(undoAction);
+        
+        InternalCompleteMoveChecks();
     }
 
     #endregion

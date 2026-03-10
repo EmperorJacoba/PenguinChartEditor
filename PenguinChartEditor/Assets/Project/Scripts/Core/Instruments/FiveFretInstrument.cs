@@ -115,21 +115,17 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
 
     #region Moving
 
-    protected override bool InternalMoveSelection(out bool firstFrame)
+    protected override void InternalMoveSelectionChecks()
     {
-        if (mover.Move2DSelection(Lanes, laneOrdering, out firstFrame))
-        {
-            CheckForHoposInRange(mover.GetChangingValidationRange());
-            return true;
-        }
-
-        return false;
+        CheckForHoposInRange(mover.GetChangingValidationRange());
     }
 
-    protected override void InternalCompleteMove()
+    protected override void InternalCompleteMoveChecks()
     {
         ValidateSustainsInRange(mover.GetFinalValidationRange());
     }
+
+    protected override LinkedList<int> GetLaneProgression() => laneOrdering;
 
     #endregion
     

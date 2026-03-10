@@ -83,15 +83,6 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
     }
     
     #endregion
-
-    #region Moving
-
-    protected override bool InternalMoveSelection(out bool firstFrame) => mover.Move1DSelection(GetLaneData(), GetLaneSelection(), out firstFrame);
-
-    // No extra post-move actions needed.
-    protected override void InternalCompleteMove() {}
-
-    #endregion
     
     #region Undo/Redo
 

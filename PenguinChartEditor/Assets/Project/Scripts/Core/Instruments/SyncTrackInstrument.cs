@@ -76,52 +76,15 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
     private readonly MoveHelper<BPMData> bpmMover;
     private readonly MoveHelper<TSData> tsMover;
 
-    /// <summary>
-    /// Runs every frame when Drag input action is active. 
-    /// </summary>
-    protected override bool InternalMoveSelection(out bool firstFrame)
+    protected override bool IsMoveActionValid()
     {
-        firstFrame = false;
-        if (Input.GetKey(KeyCode.LeftControl)) return false;
-        
-        var bpmMove = bpmMover.Move1DSelection(TempoEvents, Lanes.bpmSelection, out var moveStartedB);
-        var tsMove = tsMover.Move1DSelection(TimeSignatureEvents, Lanes.tsSelection, out var moveStartedT);
-
-        firstFrame = moveStartedB || moveStartedT;
-        
-        if (bpmMove)
-        {
-            RecalculateTempoEventDictionary();
-        }
-
-        // FIXME: Investigate if we actually need a sync track refresh for both...only bpm applies really?
-        if (bpmMove || tsMove)
-        {
-            mover.ForceMoveStart();
-            Chart.SyncTrackInPlaceRefresh();
-        }
-        
-        // Always return false because BaseInstrument will do an unnecessary & invalid refresh upon a SyncTrack move.
-        // Because SyncTrack BPM changes physically change the waveform, the waveform must also be refreshed with the 
-        // refresh. Chart.InPlaceRefresh() is not enough.
-        return false;
+        return !Input.GetKey(KeyCode.LeftControl);
     }
 
-    protected override void InternalCompleteMove()
+    protected override void InternalMoveSelectionChecks()
     {
-        // Technically the base class does a reset of its own. Since SyncTrack is made up of two distinct tracks,
-        // Both move helpers must be reset individually. Overhead for Reset() in the base class shouldn't be much.
-
-        mover.Reset();
-        MoveUndoStackPushAction();
-
+        RecalculateTempoEventDictionary();
         Chart.SyncTrackInPlaceRefresh();
-    }
-
-    protected override void MoveUndoStackPushAction()
-    {
-        var undoAction = new DualMoveSelectionSnapshot(bpmMover.Reset(), tsMover.Reset());
-        UndoStack.instance.PushAction(undoAction);
     }
 
     #endregion

@@ -61,6 +61,27 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
         return receiver;
     }
 
+    public SortedDictionary<int, TValue> ExportNormalizedDataWithoutProtectedTicks()
+    {
+        var receiver = new SortedDictionary<int, TValue>();
+        
+        foreach (var selectedTick in new HashSet<int>(selection))
+        {
+            if (parentLane.protectedTicks.Contains(selectedTick)) continue;
+            
+            if (parentLane.Contains(selectedTick))
+            {
+                receiver.Add(selectedTick, parentLane[selectedTick]);
+            }
+            else
+            {
+                selection.Remove(selectedTick);
+            }
+        }
+
+        return receiver;
+    }
+
     public HashSet<int> GetSelectedTicks()
     {
         foreach (var tick in new HashSet<int>(selection))
@@ -162,6 +183,15 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
         return receiver;
     }
 
+    public void SelectTicksFromSet(SortedDictionary<int, TValue> incomingSelection)
+    {
+        selection.Clear();
+        foreach (var tick in incomingSelection)
+        {
+            selection.Add(tick.Key);
+        }
+    }
+    
     public void ApplyScaledSelection(HashSet<int> normalizedSelection, int scalar)
     {
         HashSet<int> receiver = new();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public interface IMultiLaneController
@@ -44,6 +45,10 @@ public interface IMultiLaneController
 
     ISelectionSnapshot PopTicksInRange(int startTick, int endTick);
     ISelectionSnapshot PeekTicksInRange(int startTick, int endTick);
+    ISelectionSnapshot TakeNormalizedSelectionSnapshot();
+
+    public void AddTicksFromSet(ISelectionSnapshot incomingData, out ISelectionSnapshot overwrittenData);
+    void SelectTicksFromSnapshot(ISelectionSnapshot newMoveData);
 }
 
 public class Lanes<T> : IMultiLaneController where T : IEventData
@@ -281,7 +286,6 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         }
     }
     
-    
     public int GetFirstSelectionTick()
     {
         HashSet<int> minSelectionTicks = new();
@@ -465,6 +469,12 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         var ticks = tracker.GetAbsoluteMinMax();
         UpdatesNeededInRange?.Invoke(ticks.min, ticks.max);
     }
+
+    public void AddTicksFromSet(ISelectionSnapshot incomingData, out ISelectionSnapshot overwrittenData)
+    {
+        var dataTyped = incomingData as SelectionSnapshot<T>;
+        AddTicksFromSet(dataTyped.savedSelectionData, out overwrittenData);
+    }
     
     public void AddTicksFromSet(Dictionary<int, SortedDictionary<int, T>> newData, out ISelectionSnapshot overwrittenDataSnapshot)
     {
@@ -595,13 +605,13 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
     {
         foreach (var lane in lanes)
         {
-            var removableData = lane.Value.Where
+            var removableData = Enumerable.ToHashSet(lane.Value.Where
             (
                 kvp =>
                     kvp.Key >= startTick &&
                     kvp.Key <= endTick &&
                     !selections[lane.Key].Contains(kvp.Key)
-            ).ToHashSet();
+            ));
                 
             foreach (var @event in removableData)
             {
@@ -679,6 +689,26 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         var output = selections.Where(selection => selection.Value.Count != 0).Aggregate("", (current, selection) => current + $"{selection.Key}: {selection.Value.Count}");
         MonoBehaviour.print(output);
     }
+
+    public ISelectionSnapshot TakeNormalizedSelectionSnapshot()
+    {
+        var selectionNormalized = ExportNormalizedSelection();
+        return new SelectionSnapshot<T>(selectionNormalized);
+    }
+    
+    public void SelectTicksFromSnapshot(ISelectionSnapshot newMoveData)
+    {
+        var selectionTyped = newMoveData as SelectionSnapshot<T>;
+        var data = selectionTyped.savedSelectionData;
+
+        foreach (var lane in data)
+        {
+            var laneID = lane.Key;
+            var laneData = lane.Value;
+            
+            selections[laneID].SelectTicksFromSet(laneData);
+        }
+    }
 }
 
 /// <remarks>Access TempoEvents with Lane = 0. Access TimeSignatureEvents with Lane = 1.</remarks>
@@ -712,15 +742,12 @@ public class SyncTrackLanes : IMultiLaneController
     public ILaneData GetLane(int lane) => lane == 0 ? TempoEvents : TimeSignatureEvents;
     public ISelection GetLaneSelection(int lane) => lane == 0 ? bpmSelection : tsSelection;
 
-    public bool TryGetTick(int lane, int tick, out IEventData data)
-    {
-        throw new NotImplementedException();
-    }
+    public bool TryGetTick(int lane, int tick, out IEventData data) => GetLane(lane).TryGetValue(tick, out data);
 
     public List<int> GetUniqueTickSet()
     {
-        var hashSet = TempoEvents.ExportData().Keys.ToHashSet();
-        hashSet.UnionWith(TimeSignatureEvents.ExportData().Keys.ToHashSet());
+        var hashSet = Enumerable.ToHashSet(TempoEvents.ExportData().Keys);
+        hashSet.UnionWith(Enumerable.ToHashSet(TimeSignatureEvents.ExportData().Keys));
         
         List<int> list = new(hashSet);
         list.Sort();
@@ -938,6 +965,30 @@ public class SyncTrackLanes : IMultiLaneController
         {
             TimeSignatureEvents.CreateEvent(tick, tsData, out _);
         }
+    }
+
+    public ISelectionSnapshot TakeNormalizedSelectionSnapshot()
+    {
+        return new SyncTrackSelectionSnapshot(bpmSelection.ExportNormalizedDataWithoutProtectedTicks(),
+            tsSelection.ExportNormalizedDataWithoutProtectedTicks());
+    }
+
+    public void AddTicksFromSet(ISelectionSnapshot incomingData, out ISelectionSnapshot overwrittenData)
+    {
+        var selectionSnapshotTyped = incomingData as SyncTrackSelectionSnapshot;
+        
+        TempoEvents.AddTicksFromSet(selectionSnapshotTyped.bpmSelection, out var bData);
+        TimeSignatureEvents.AddTicksFromSet(selectionSnapshotTyped.tsSelection, out var tData);
+
+        overwrittenData = new SyncTrackSelectionSnapshot(bData, tData);
+    }
+
+    public void SelectTicksFromSnapshot(ISelectionSnapshot newMoveData)
+    {
+        var selectionSnapshotTyped = newMoveData as SyncTrackSelectionSnapshot;
+        
+        bpmSelection.SelectTicksFromSet(selectionSnapshotTyped.bpmSelection);
+        tsSelection.SelectTicksFromSet(selectionSnapshotTyped.tsSelection);
     }
 }
 

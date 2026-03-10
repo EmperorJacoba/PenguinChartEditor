@@ -293,6 +293,8 @@ public class SustainSelectionDataPackage
 
 #endregion
 
+#region AddDataInRange (for move)
+
 public class AddDataInRangeSnapshot : IUndoSnapshot
 {
     public IInstrument parentInstrument { get; }
@@ -326,6 +328,10 @@ public struct AddDataInRangeDataPackage
         this.incomingData = incomingData;
     }
 }
+
+#endregion
+
+#region MoveSelection
 
 public class MoveSelectionSnapshot : IUndoSnapshot
 {
@@ -384,6 +390,8 @@ public class DualMoveSelectionSnapshot : IUndoSnapshot
         this.action2 = action2;
     }
 }
+
+#endregion
 
 public class BPMDragChangeSnapshot : IUndoSnapshot
 {
