@@ -4,16 +4,25 @@ using UnityEngine;
 
 public class MoveHelper<T> where T : IEventData
 {
-    private UniversalMoveData<T> moveData = new();
-    private UniversalMoveDataV2 moveDataV2 = new();
-
-    public bool MoveInProgress => moveDataV2.inProgress;
+    private UniversalMoveDataV2 moveData = new();
+    private readonly IInstrument parentInstrument;
+    public bool MoveInProgress => moveData.inProgress;
+    
+    private MoveSelectionSnapshot openUndoAction;
+    private AddDataInRangeSnapshot lastMoveAction;
+    
+    private void OpenUndoAction(IMultiLaneController laneController)
+    {
+        openUndoAction = new MoveSelectionSnapshot(parentInstrument,
+            new DeleteSelectionSnapshot(parentInstrument, laneController.TakeSelectionSnapshot()));
+    }
 
     public MinMaxTicks GetFinalValidationRange()
     {
         var selectionSnap = lastMoveAction.actionInfo.incomingData as SelectionSnapshot<T>;
+        Debug.Assert(selectionSnap is not null);
 
-        MinMaxTracker tracker = new MinMaxTracker(selectionSnap.savedSelectionData.Count);
+        var tracker = new MinMaxTracker(selectionSnap.savedSelectionData.Count);
         foreach (var lane in selectionSnap.savedSelectionData.Where(lane => lane.Value.Count != 0))
         {
             var min = lane.Value.Keys.Min();
@@ -23,19 +32,15 @@ public class MoveHelper<T> where T : IEventData
         return tracker.GetAbsoluteMinMax();
     }
 
-    // FIXME: Change back to the start and end points of the moving data set.
+    // FIXME: Change back to the start and end points of the moving data set. 
     public MinMaxTicks GetChangingValidationRange() => new(0, SongTime.SongLengthTicks);
-
-    private readonly IInstrument parentInstrument;
     
     public MoveSelectionSnapshot Reset()
     {
-        openUndoAction.CloseAction(
-            lastMoveAction
-            );
+        openUndoAction.CloseAction(lastMoveAction);
         
         Chart.showPreviewers = true;
-        moveDataV2 = new UniversalMoveDataV2();
+        moveData = new UniversalMoveDataV2();
         
         return openUndoAction;
     }
@@ -45,13 +50,11 @@ public class MoveHelper<T> where T : IEventData
         this.parentInstrument = parentInstrument;
     }
 
-    private MoveSelectionSnapshot openUndoAction;
-    
-    private AddDataInRangeSnapshot lastMoveAction;
-
-    /// Pass in laneProgression as null to single a 1-dimensional movement.
+    /// <remarks>Pass in laneProgression as null to signal a 1-dimensional (no cross-lane) movement.</remarks>
+    /// <returns>Were there any meaningful changes to the Lanes dataset?</returns>
     public bool MoveSelection(IMultiLaneController laneController, LinkedList<int> laneProgression)
     {
+        // Basic discriminates when moving does not apply
         if (
             parentInstrument != Chart.LoadedInstrument || 
             !Chart.IsModificationAllowed() || 
@@ -59,24 +62,31 @@ public class MoveHelper<T> where T : IEventData
             ) 
             return false;
         
+        // Don't start a move if over UI elements. But OK if a move is already happening. Don't stop in the middle.
         if (
             Chart.instance.SceneDetails.IsSceneOverlayUIHit() && 
-            !moveDataV2.inProgress
+            !moveData.inProgress
             ) 
             return false;
 
-        var tickChange = IsMoveTickChange(out moveDataV2.lastMouseTick);
-        var laneChange = IsMoveLaneChange(out moveDataV2.lastMouseLane);
+        // Please do not sneak the moveData variable assignments directly into the function calls. It assigns the 
+        // field of moveData before the comparison and it will always yield false as a result.
+        // This is a stupid "feature," John Michaelsoft!! Why can't it just be assigned after the function terminates?
+        var tickChange = IsMoveTickChange(out var currentTick);
+        var laneChange = IsMoveLaneChange(out var currentLane);
 
+        moveData.lastMouseTick = currentTick;
+        moveData.lastMouseLane = currentLane;
+        
         if (!tickChange && !laneChange) return false;
 
-        if (!moveDataV2.inProgress)
+        if (!moveData.inProgress)
         {
             OpenUndoAction(laneController);
 
-            moveDataV2 = new UniversalMoveDataV2(
-                moveDataV2.lastMouseTick,
-                moveDataV2.lastMouseLane,
+            moveData = new UniversalMoveDataV2(
+                moveData.lastMouseTick,
+                moveData.lastMouseLane,
                 laneController
             );
 
@@ -86,7 +96,7 @@ public class MoveHelper<T> where T : IEventData
                     // There is no data to overwrite. This is the initial action that effectively "pops"
                     // the move data out of the lane controller. It has to reinstate nothing.
                     new SelectionSnapshot<T>(new Dictionary<int, SortedDictionary<int, T>>()), 
-                    moveDataV2.GetNewMoveDataLocation(null)
+                    moveData.GetNewMoveDataLocation(null)
                     )
                 );
 
@@ -96,9 +106,11 @@ public class MoveHelper<T> where T : IEventData
         
         lastMoveAction.Undo();
 
-        var newMoveData = moveDataV2.GetNewMoveDataLocation(laneProgression);
+        var newMoveData = moveData.GetNewMoveDataLocation(laneProgression);
         
         laneController.AddTicksFromSet(newMoveData, out var overwrittenData);
+        
+        // moving data remains selected through and through! such a hearty opponent for the deselectorifier. 
         laneController.SelectTicksFromSnapshot(newMoveData);
 
         lastMoveAction = new AddDataInRangeSnapshot(parentInstrument,
@@ -120,127 +132,6 @@ public class MoveHelper<T> where T : IEventData
             Chart.instance.SceneDetails.GetCursorHighwayPosition().x
             );
 
-        return currentLane != moveData.lastLane;
-    }
-
-    private void OpenUndoAction(IMultiLaneController laneController)
-    {
-        openUndoAction = new MoveSelectionSnapshot(parentInstrument,
-            new DeleteSelectionSnapshot(parentInstrument, laneController.TakeSelectionSnapshot()));
-    }
-
-    #region Deprecated
-    
-    // 2D in this context means [lane X data] dataset (multiple lanes) - e.g. any traditional instrument (guitar)
-    // 1D in this context means just one lane, no cross-LaneSet<> movement needed - e.g TempoEvents, Sections, etc.
-    
-    /// <returns>Were there any meaningful changes to the Lanes dataset?</returns>
-    public bool Move2DSelection(Lanes<T> laneData, LinkedList<int> laneProgression, out bool actionStarted)
-    {
-        actionStarted = false;
-        if (parentInstrument != Chart.LoadedInstrument || !Chart.IsModificationAllowed()) return false;
-
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress) return false;
-
-        if (laneData.IsSelectionEmpty()) return false;
-
-        bool tickMovement = false;
-        bool laneMovement = false;
-
-        var currentMouseTick = SongTime.CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
-        var currentMouseLane = Chart.instance.SceneDetails.MatchXCoordinateToLane(Chart.instance.SceneDetails.GetCursorHighwayPosition().x);
-
-        if (currentMouseTick != moveData.lastMouseTick)
-        {
-            moveData.lastMouseTick = currentMouseTick;
-            tickMovement = true;
-        }
-        if (currentMouseLane != moveData.lastLane)
-        {
-            moveData.lastLane = currentMouseLane;
-            laneMovement = true;
-        }
-
-        if (!moveData.inProgress && (tickMovement || laneMovement))
-        {
-            openUndoAction = new MoveSelectionSnapshot(parentInstrument,
-                new DeleteSelectionSnapshot(parentInstrument, laneData.TakeSelectionSnapshot()));
-            
-            moveData = new UniversalMoveData<T>(
-                currentMouseTick,
-                currentLane: currentMouseLane,
-                laneData
-                );
-            
-            Chart.showPreviewers = false;
-            actionStarted = true;
-            return false;
-        }
-
-        if (!(tickMovement || laneMovement)) return false;
-        
-        laneData.OverwriteAllLaneData(moveData.preMoveData);
-
-        var tickDelta = currentMouseTick - moveData.firstMouseTick;
-        moveData.lastGhostStartTick = moveData.firstSelectionTick + tickDelta;
-
-        var movingDataSet = moveData.GetMoveData(currentMouseLane - moveData.firstLane, laneProgression);
-        
-        laneData.ApplyScaledSelection(movingDataSet, moveData.lastGhostStartTick);
-        return true;
-    }
-
-    public bool Move1DSelection(LaneSet<T> lane, SelectionSet<T> selection, out bool actionStarted)
-    {
-        actionStarted = false;
-        if (parentInstrument != Chart.LoadedInstrument || !Chart.IsModificationAllowed()) return false;
-        
-        var currentMouseTick = SongTime.CalculateGridSnappedTick(Input.mousePosition.y / Screen.height);
-        
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !moveData.inProgress)
-        {
-            return false;
-        }
-
-        if (currentMouseTick == moveData.lastMouseTick) 
-        {
-            return false;
-        }
-
-        if (!moveData.inProgress)
-        {
-            moveData = new UniversalMoveData<T>(
-                currentMouseTick,
-                lane,
-                selection
-            );
-            Chart.showPreviewers = false;
-            actionStarted = true;
-            return false;
-        }
-
-        lane.OverwriteAllLaneDataWith(moveData.preMoveData[0]);
-
-        var cursorMoveDifference = currentMouseTick - moveData.firstMouseTick;
-
-        var pasteDestination = moveData.firstSelectionTick + cursorMoveDifference;
-        moveData.lastGhostStartTick = pasteDestination;
-
-        var movingDataSet = moveData.OneDGetMoveData()[0];
-
-        lane.OverwriteDataWithOffset(movingDataSet, pasteDestination);
-
-        selection.ApplyScaledSelection(movingDataSet, moveData.lastGhostStartTick);
-
-        moveData.lastMouseTick = currentMouseTick;
-
-        return true;
-    }
-    
-    #endregion
-
-    public void ForceMoveStart()
-    {
-        moveData.inProgress = true;
+        return currentLane != moveData.lastMouseLane;
     }
 }

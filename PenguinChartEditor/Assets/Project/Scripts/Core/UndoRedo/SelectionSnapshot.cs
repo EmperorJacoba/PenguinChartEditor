@@ -55,6 +55,10 @@ public class SelectionSnapshot<T> : ISelectionSnapshot where T : IEventData
                     }
                     else break;
                 }
+                
+                // This method of porting data between lanes allows for lane "smooshing", where no rhythmic data is lost
+                // when attempting to move data past the track lane bounds. Lane distinction is lost temporarily until
+                // either the user moves the notes back to a distinguishable area or the move action is completed.
                 savedSelectionData[activeNode.Value].ToList().ForEach(item => adjustedDict[targetNode.Value][item.Key] = item.Value);
 
                 activeNode = activeNode.Previous;
