@@ -77,6 +77,9 @@ public class Chart : MonoBehaviour
         }
     }
     public static T GetActiveInstrument<T>() where T : IInstrument => (T)LoadedInstrument;
+    
+    // These "instruments" are distinguished because they are not really instruments. They are important non-traditional instruments
+    // that are accessed frequently and outside of LoadedInstrument enough to be distinguished.
     public static SyncTrackInstrument SyncTrackInstrument { get; private set; }
     public static StarpowerInstrument StarpowerInstrument { get; private set; }
     public static SectionInstrument SectionInstrument { get; private set; }
@@ -116,7 +119,19 @@ public class Chart : MonoBehaviour
 
     public static void LoadFile()
     {
-        var pathCandidates = StandaloneFileBrowser.OpenFilePanel($"Open .chart file to load from.", "", new[] { new ExtensionFilter(".chart files ", "chart") }, false);
+        var pathCandidates = 
+            StandaloneFileBrowser.OpenFilePanel
+                (
+                    $"Open .chart file to load from.", 
+                    "", 
+                    new[]
+                    {
+                        new ExtensionFilter(
+                            ".chart files ", 
+                            "chart")
+                    }, 
+                    false
+                );
 
         ChartPath = pathCandidates[0];
         FolderPath = Path.GetDirectoryName(ChartPath);
@@ -213,15 +228,67 @@ public class Chart : MonoBehaviour
 
         LoadFile();
         
-        LoadedInstrument = Instruments.Where(item => item.InstrumentName == InstrumentType.guitar).ToList()[0]; 
-        // LoadedInstrument = SyncTrackInstrument;
-        // LoadedInstrument = StarpowerInstrument;
+        SetLoadedInstrument(HeaderType.SyncTrack);
 
         inputMap = new InputMap();
         inputMap.Enable();
         inputMap.Charting.Copy.performed += _ => Clipboard.Copy();
         inputMap.Charting.Paste.performed += _ => Clipboard.Paste();
         inputMap.Charting.Cut.performed += _ => Clipboard.Cut();
+    }
+
+    public void SetLoadedInstrument(InstrumentType instrumentName, DifficultyType difficulty)
+    {
+        var id = (int)instrumentName + (int)difficulty;
+        SetLoadedInstrument((HeaderType)id);
+    }
+    
+    public void SetLoadedInstrument(HeaderType instrumentID)
+    {
+        switch (instrumentID)
+        {
+            case HeaderType.SyncTrack:
+            {
+                LoadedInstrument = SyncTrackInstrument;
+                break;
+            }
+            case HeaderType.Starpower:
+            {
+                LoadedInstrument = StarpowerInstrument;
+                break;
+            }
+            case HeaderType.Events:
+            {
+                LoadedInstrument = SectionInstrument;
+                break;
+            }
+            default:
+            {
+                var foundInstruments = Instruments.Where(item => item.InstrumentID == instrumentID).ToList();
+                if (foundInstruments.Count > 0)
+                {
+                    LoadedInstrument = foundInstruments[0];
+                }
+                else LoadedInstrument = CreateNewInstrument(instrumentID);
+
+                break;
+            }
+        }
+    }
+
+    private IInstrument CreateNewInstrument(HeaderType instrumentID)
+    {
+        switch (InstrumentMetadata.GetInstrumentGroup(instrumentID))
+        {
+            case InstrumentCategory.FiveFret:
+                return new FiveFretInstrument(instrumentID, new List<KeyValuePair<int, string>>());
+            case InstrumentCategory.FourLaneDrums:
+            case InstrumentCategory.EliteDrums:
+            case InstrumentCategory.GHL:
+            case InstrumentCategory.Vox:
+            default:
+                throw new ArgumentOutOfRangeException($"No support for creating instrument type {instrumentID}");
+        }
     }
 
     public delegate void InPlaceUpdatedDelegate();

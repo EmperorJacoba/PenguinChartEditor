@@ -64,6 +64,8 @@ public interface IInstrument
 
     public void ReinstateSelectionChange(ISelectionSnapshot incomingSelectionSnapshot,
         ISelectionSnapshot removingSelectionSnapshot);
+
+    ISelectionSnapshot GetEmptySelectionSnapshot();
 }
 
 public interface ISustainableInstrument : IInstrument
@@ -150,6 +152,12 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     #endregion
 
     #region Undo/Redo
+
+    // Override only in instruments that have special selection snapshot structures. i.e SyncTrackInstrument
+    public virtual ISelectionSnapshot GetEmptySelectionSnapshot()
+    {
+        return new SelectionSnapshot<T>(new Dictionary<int, SortedDictionary<int, T>>());
+    }
 
     // FIXME: This functionality can likely be simplified with a unified generic push and save action. Would require an
     // interface that allows exporting and importing data as a Dictionary regardless of lane count. Very doable!

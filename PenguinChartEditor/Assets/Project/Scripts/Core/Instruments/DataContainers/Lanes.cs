@@ -4,6 +4,10 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
+// This interface mainly exists so that SyncTrackLanes, a very special swanky little guy, can coexist with Lanes<T> 
+// without needing to separate SyncTrackInstrument from all other instruments and repeating lots of code.
+// SyncTrackInstrument cannot use the regular Lanes<T> object because it handles two very different data types
+// (BPM & TS events) in the same context (in terms of selection, deletion, etc). 
 public interface IMultiLaneController
 {
     ILaneData GetLane(int lane);
@@ -129,6 +133,7 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
     
     #region Internal Tools
 
+    ///<summary> Create an empty laneID:laneDataDict dictionary with no null lane data dicts. </summary>
     private Dictionary<int, SortedDictionary<int, T>> MakeEmptyDataSet()
     {
         Dictionary<int, SortedDictionary<int, T>> outputSet = new();

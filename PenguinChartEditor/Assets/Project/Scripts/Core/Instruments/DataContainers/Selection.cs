@@ -61,7 +61,9 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
         return receiver;
     }
 
-    public SortedDictionary<int, TValue> ExportNormalizedDataWithoutProtectedTicks()
+    public SortedDictionary<int, TValue> ExportNormalizedDataWithoutProtectedTicks() =>
+        ExportNormalizedDataWithoutProtectedTicks(GetFirstSelectedTick());
+    public SortedDictionary<int, TValue> ExportNormalizedDataWithoutProtectedTicks(int zeroTick)
     {
         var receiver = new SortedDictionary<int, TValue>();
         
@@ -71,7 +73,7 @@ public class SelectionSet<TValue> : ISelection, ISet<int> where TValue : IEventD
             
             if (parentLane.Contains(selectedTick))
             {
-                receiver.Add(selectedTick, parentLane[selectedTick]);
+                receiver.Add(selectedTick - zeroTick, parentLane[selectedTick]);
             }
             else
             {

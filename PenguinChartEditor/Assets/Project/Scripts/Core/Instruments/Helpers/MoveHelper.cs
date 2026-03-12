@@ -45,13 +45,23 @@ public class MoveHelper<T> where T : IEventData
         return openUndoAction;
     }
 
+    // This function exists so that SustainableInstruments save cut off sustain data post-move for undo/redo actions.
+    // Why is this necessary? In the context of how move actions are handled/saved, only the moving data itself is saved.
+    // This data does not include ANY data outside of that zone. Therefore, when a move action terminates, the only data
+    // that will be automatically saved/managed/handled will only be the moved data. However, with SustainableInstruments,
+    // there is a possibility (high likelihood) that a sustain is clamped due to the new location of the moved data.
+    // That clamped sustain data is NOT in the saved data by default, but is still a change as a result of the move.
+    // Hence, the sustain data preceding the move action must be explicitly saved if necessary to properly undo the action.
+    // Minor FIXME: sustain clamps are calculated twice because this function is separate from the SustainableInstrument's
+    // clamping calculations. The calculation intensity is so insignificant that it really doesn't matter. But technically
+    // still a double calculation of the same exact data (that could vary in the future if new methods are implemented.) 
     public void SaveCutoffSustainData(IMultiLaneController laneController)
     {
         var selectionSnap = lastMoveAction.actionInfo.incomingData as SelectionSnapshot<T>;
-        Debug.Assert(selectionSnap is not null);
+        Debug.Assert(selectionSnap is not null); // SyncTrackSelectionSnapshot or others do not apply here
 
         var sustainableInstrument = parentInstrument as ISustainableInstrument;
-        Debug.Assert(sustainableInstrument is not null);
+        Debug.Assert(sustainableInstrument is not null); // If you call this on a regular instrument, [insert insult here]
 
         Dictionary<int, SortedDictionary<int, T>> savedSustainData = new();
         Dictionary<int, SortedDictionary<int, T>> postMoveSustainData = new();
@@ -138,11 +148,11 @@ public class MoveHelper<T> where T : IEventData
             );
 
             lastMoveAction = new AddDataInRangeSnapshot(
-                parentInstrument, 
+                parentInstrument,
                 new AddDataInRangeDataPackage(
                     // There is no data to overwrite. This is the initial action that effectively "pops"
                     // the move data out of the lane controller. It has to reinstate nothing.
-                    new SelectionSnapshot<T>(new Dictionary<int, SortedDictionary<int, T>>()), 
+                    parentInstrument.GetEmptySelectionSnapshot(),
                     moveData.GetNewMoveDataLocation(null)
                     )
                 );

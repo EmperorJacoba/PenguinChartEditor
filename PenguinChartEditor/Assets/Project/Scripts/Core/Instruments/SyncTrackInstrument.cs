@@ -48,8 +48,6 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
         Difficulty = DifficultyType.easy;
 
         Lanes = new SyncTrackLanes();
-        bpmMover = new MoveHelper<BPMData>(this);
-        tsMover = new MoveHelper<TSData>(this);
 
         AddChartFormattedEventsToInstrument(fileData);
         if (TempoEvents.Count == 0)
@@ -69,12 +67,15 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
         timeSignature = 1
     }
 
+    public override ISelectionSnapshot GetEmptySelectionSnapshot()
+    {
+        return new SyncTrackSelectionSnapshot(new SortedDictionary<int, BPMData>(),
+            new SortedDictionary<int, TSData>());
+    }
+
     #endregion
 
     #region Movement
-
-    private readonly MoveHelper<BPMData> bpmMover;
-    private readonly MoveHelper<TSData> tsMover;
 
     protected override bool IsMoveActionValid()
     {
