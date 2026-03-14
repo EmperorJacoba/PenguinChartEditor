@@ -14,7 +14,7 @@ public class Section : Event<SectionData>
     
     private void HandleManualEndEdit(string newSectionName)
     {
-        Chart.SectionInstrument.OverwriteData(Tick, new SectionData(newSectionName));
+        Chart.SectionInstrument.CreateEvent(Tick, Lane, new SectionData(newSectionName));
 
         Chart.showPreviewers = true;
         DeactivateManualInput();

@@ -349,7 +349,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     /// </remarks>
     /// <param name="tick"></param>
     /// <param name="lane"></param>
-    protected abstract void InternalAddDataChecks(int tick, int lane);
+    protected virtual void InternalAddDataChecks(int tick, int lane) {}
     public void CreateEvent(int tick, int lane, IEventData data)
     {
         if (LaneController.CreateEvent(tick, lane, data, out var actionInfo))

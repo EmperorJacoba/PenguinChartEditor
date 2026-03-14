@@ -57,19 +57,6 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
         return sectionName;
     }
     
-    #region Add/Delete
-
-    public void OverwriteData(int tick, SectionData data)
-    {
-        SaveUndoData();
-
-        GetLaneData()[tick] = data;
-    }
-    
-    protected override void InternalAddDataChecks(int tick, int lane) {} // no checks needed
-    
-    #endregion
-
     #region Constructor
 
     public SectionInstrument(List<KeyValuePair<int, string>> events)
