@@ -75,7 +75,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 
     private void HandleManualEndEdit(string newVal)
     {
-        Chart.SyncTrackInstrument.OverwriteData(Tick, ProcessUnsafeLabelString(newVal));
+        Chart.SyncTrackInstrument.CreateEvent(Tick, Lane, ProcessUnsafeLabelString(newVal));
         
         ConcludeManualEdit();
         Chart.SyncTrackInPlaceRefresh();

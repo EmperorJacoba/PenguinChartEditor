@@ -77,10 +77,7 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
 
     #region Movement
 
-    protected override bool IsMoveActionValid()
-    {
-        return !Input.GetKey(KeyCode.LeftControl);
-    }
+    protected override bool IsMoveActionValid() => !Input.GetKey(KeyCode.LeftControl);
 
     protected override void InternalMoveSelectionChecks()
     {
@@ -92,34 +89,7 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
 
     #region Add/Delete
 
-    public void OverwriteData<T>(int tick, T newData)
-    {
-        SaveUndoData();
-
-        switch (newData)
-        {
-            case BPMData bpmData:
-                TempoEvents[tick] = bpmData;
-                Chart.SyncTrackInstrument.RecalculateTempoEventDictionary(tick);
-                break;
-            case TSData tsData:
-                TimeSignatureEvents[tick] = tsData;
-                break;
-            default:
-                throw new ArgumentException($"Incorrect T passed into SyncTrackInstrument.OverwriteData. Expected BPMData or TSData, got {typeof(T)}");
-        }
-    }
-
-    protected override void InternalAddDataChecks(int tick, int lane)
-    {
-        // this will run if a TS event is placed on the same tick as an existing BPM event
-        // it does the job though, close enough...shouldn't be that big of a performance issue
-        if (TempoEvents.Contains(tick))
-        {
-            RecalculateTempoEventDictionary();
-            Chart.SyncTrackInPlaceRefresh();
-        }
-    }
+    protected override void InternalAddDataChecks(int tick, int lane) {}
 
     // FIXME: Pass something in here so that RTED (expensive call) only runs when tempo events are modified
     protected override void InternalDeleteChecks()

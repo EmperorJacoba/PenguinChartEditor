@@ -409,17 +409,3 @@ public class BPMDragChangeSnapshot : IUndoSnapshot
         throw new System.NotImplementedException();
     }
 }
-
-public class InputFieldEditSnapshot : IUndoSnapshot
-{
-    public IInstrument parentInstrument { get; }
-    public void Undo()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Redo()
-    {
-        throw new System.NotImplementedException();
-    }
-}

@@ -352,7 +352,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     protected abstract void InternalAddDataChecks(int tick, int lane);
     public void CreateEvent(int tick, int lane, IEventData data)
     {
-        if (GetLaneData(lane).CreateEvent(tick, data, out var actionInfo))
+        if (LaneController.CreateEvent(tick, lane, data, out var actionInfo))
         {
             var undoAction = new AddSingleUndoSnapshot(this, actionInfo);
             UndoStack.instance.PushAction(undoAction);
@@ -370,18 +370,14 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public void UndoAdd(AddSingleDataPackage actionInfo)
     {
         if (actionInfo.removedDataExists)
-        {
-            GetLaneData(actionInfo.lane).CreateEvent(actionInfo.tick, actionInfo.removedData, out _);
-        }
+            LaneController.CreateEvent(actionInfo.tick, actionInfo.lane, actionInfo.removedData, out _);
         else
-        {
-            GetLaneData(actionInfo.lane).Remove(actionInfo.tick);
-        }
+            LaneController.DeleteTickInLane(actionInfo.tick, actionInfo.lane);
     }
 
     public void RedoAdd(AddSingleDataPackage actionInfo)
     {
-        GetLaneData(actionInfo.lane).CreateEvent(actionInfo.tick, actionInfo.addedData, out _);
+        LaneController.CreateEvent(actionInfo.tick, actionInfo.lane, actionInfo.addedData, out _);
     }
     
     #endregion
@@ -394,7 +390,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     
     public void DeleteTickInLane(int tick, int lane)
     {
-        if (Chart.LoadedInstrument != this || !LaneController.GetLane(lane).Contains(tick)) return;
+        if (Chart.LoadedInstrument != this || !LaneController.IsTickInLane(tick, lane)) return;
         
         if (lane == IInstrument.SOLO_DATA_LANE_ID)
         {

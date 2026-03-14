@@ -53,6 +53,9 @@ public interface IMultiLaneController
 
     public void AddTicksFromSet(ISelectionSnapshot incomingData, out ISelectionSnapshot overwrittenData);
     void SelectTicksFromSnapshot(ISelectionSnapshot newMoveData);
+
+    bool CreateEvent(int tick, int lane, IEventData data, out AddSingleDataPackage actionInfo);
+    bool IsTickInLane(int tick, int lane);
 }
 
 public class Lanes<T> : IMultiLaneController where T : IEventData
@@ -714,6 +717,16 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
             selections[laneID].SelectTicksFromSet(laneData);
         }
     }
+
+    public bool CreateEvent(int tick, int lane, IEventData data, out AddSingleDataPackage actionInfo)
+    {
+        return lanes[lane].CreateEvent(tick, data, out actionInfo);
+    }
+
+    public bool IsTickInLane(int tick, int lane)
+    {
+        return lanes[lane].Contains(tick);
+    }
 }
 
 /// <remarks>Access TempoEvents with Lane = 0. Access TimeSignatureEvents with Lane = 1.</remarks>
@@ -748,6 +761,7 @@ public class SyncTrackLanes : IMultiLaneController
     public ISelection GetLaneSelection(int lane) => lane == 0 ? bpmSelection : tsSelection;
 
     public bool TryGetTick(int lane, int tick, out IEventData data) => GetLane(lane).TryGetValue(tick, out data);
+    public bool IsTickInLane(int tick, int lane) => GetLane(lane).Contains(tick);
 
     public List<int> GetUniqueTickSet()
     {
@@ -901,6 +915,8 @@ public class SyncTrackLanes : IMultiLaneController
         
         TempoEvents.AddTicksFromSet(typedIncData.bpmSelection);
         TimeSignatureEvents.AddTicksFromSet(typedIncData.tsSelection);
+        
+        Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
     }
 
     public void DeleteFromSelectionSnapshot(ISelectionSnapshot selectionSnapshot)
@@ -994,6 +1010,18 @@ public class SyncTrackLanes : IMultiLaneController
         
         bpmSelection.SelectTicksFromSet(selectionSnapshotTyped.bpmSelection);
         tsSelection.SelectTicksFromSet(selectionSnapshotTyped.tsSelection);
+    }
+
+    public bool CreateEvent(int tick, int lane, IEventData data, out AddSingleDataPackage actionInfo)
+    {
+        var createdNewEvent = GetLane(lane).CreateEvent(tick, data, out actionInfo);
+        if (createdNewEvent && lane == (int)SyncTrackInstrument.LaneOrientation.bpm)
+        {
+            Chart.SyncTrackInstrument.RecalculateTempoEventDictionary();
+            Chart.SyncTrackInPlaceRefresh();
+        }
+
+        return createdNewEvent;
     }
 }
 

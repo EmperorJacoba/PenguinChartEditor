@@ -411,3 +411,17 @@ public struct SoloEventData : IEventData, IEquatable<SoloEventData>
         };
     }
 }
+
+public struct TickLocationData
+{
+    public int tick;
+    public int lane;
+    public IEventData data;
+
+    public TickLocationData(int tick, int lane, IEventData data)
+    {
+        this.tick = tick;
+        this.lane = lane;
+        this.data = data;
+    }
+}
