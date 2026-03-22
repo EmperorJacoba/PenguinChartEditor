@@ -115,7 +115,8 @@ public class MoveHelper<T> where T : IEventData
         if (
             parentInstrument != Chart.LoadedInstrument || 
             !Chart.IsModificationAllowed() || 
-            laneController.IsSelectionEmpty()
+            laneController.IsSelectionEmpty() ||
+            Input.GetKey(KeyCode.LeftControl) // For sync track drag events - if a bpm drag is happening, no moving! (Keys won't be in the dictionary)
             ) 
             return false;
         

@@ -66,6 +66,8 @@ public interface IInstrument
         ISelectionSnapshot removingSelectionSnapshot);
 
     ISelectionSnapshot GetEmptySelectionSnapshot();
+
+    public ISelectionSnapshot SnapTicks(List<int> ticks);
 }
 
 public interface ISustainableInstrument : IInstrument
@@ -506,10 +508,6 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     /// <remarks>Run any mid-move checks like hopo checking here.</remarks>
     protected virtual void InternalMoveSelectionChecks() {}
-    
-    /// <remarks>SyncTrack uses this to avoid moving on left control input to allow for bpm adjustments.
-    /// Should not need to be overridden anywhere else.</remarks> 
-    protected virtual bool IsMoveActionValid() => true;
 
     protected virtual LinkedList<int> GetLaneProgression() => null;
 
@@ -517,12 +515,14 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     {
         if (Chart.LoadedInstrument != this || !Chart.IsModificationAllowed()) return;
 
-        if (mover.MoveSelection(LaneController, GetLaneProgression()) && IsMoveActionValid())
+        if (mover.MoveSelection(LaneController, GetLaneProgression()))
         {
             InternalMoveSelectionChecks();
             Chart.InPlaceRefresh();
         }
     }
+
+    public ISelectionSnapshot SnapTicks(List<int> ticks) => LaneController.SnapTicks(ticks);
 
     protected virtual void InternalCompleteMoveChecks() {}
     private void CompleteMove()

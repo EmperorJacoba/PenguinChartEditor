@@ -76,9 +76,7 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
     #endregion
 
     #region Movement
-
-    protected override bool IsMoveActionValid() => !Input.GetKey(KeyCode.LeftControl);
-
+    
     protected override void InternalMoveSelectionChecks()
     {
         RecalculateTempoEventDictionary();

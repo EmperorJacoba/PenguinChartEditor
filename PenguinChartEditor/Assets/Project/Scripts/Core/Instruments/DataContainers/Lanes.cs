@@ -50,6 +50,7 @@ public interface IMultiLaneController
     ISelectionSnapshot PopTicksInRange(int startTick, int endTick);
     ISelectionSnapshot PeekTicksInRange(int startTick, int endTick);
     ISelectionSnapshot TakeNormalizedSelectionSnapshot();
+    ISelectionSnapshot SnapTicks(List<int> ticks);
 
     public void AddTicksFromSet(ISelectionSnapshot incomingData, out ISelectionSnapshot overwrittenData);
     void SelectTicksFromSnapshot(ISelectionSnapshot newMoveData);
@@ -256,6 +257,17 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
     #region Selections
 
     public ISelectionSnapshot TakeSelectionSnapshot() => new SelectionSnapshot<T>(this);
+
+    public ISelectionSnapshot SnapTicks(List<int> ticks)
+    {
+        var capturedData = new Dictionary<int, SortedDictionary<int, T>>();
+        foreach (var lane in lanes)
+        {
+            capturedData[lane.Key] = lane.Value.SelectTicksFromSet(ticks);
+        }
+
+        return new SelectionSnapshot<T>(capturedData);
+    }
 
     public void ReinstateSelectionSnapshot(ISelectionSnapshot selectionSnapshot)
     {
@@ -992,6 +1004,12 @@ public class SyncTrackLanes : IMultiLaneController
     {
         return new SyncTrackSelectionSnapshot(bpmSelection.ExportNormalizedDataWithoutProtectedTicks(),
             tsSelection.ExportNormalizedDataWithoutProtectedTicks());
+    }
+
+    public ISelectionSnapshot SnapTicks(List<int> ticks)
+    {
+        return new SyncTrackSelectionSnapshot(TempoEvents.SelectTicksFromSet(ticks),
+            TimeSignatureEvents.SelectTicksFromSet(ticks));
     }
 
     public void AddTicksFromSet(ISelectionSnapshot incomingData, out ISelectionSnapshot overwrittenData)

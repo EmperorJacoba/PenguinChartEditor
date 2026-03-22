@@ -453,6 +453,20 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         return tickTimeKeys[index];
     }
 
+    public SortedDictionary<int, TValue> SelectTicksFromSet(List<int> ticks)
+    {
+        var outputDict = new SortedDictionary<int, TValue>();
+        foreach (var tick in ticks)
+        {
+            if (TryGetValue(tick, out TValue data))
+            {
+                outputDict.Add(tick, data);
+            }
+        }
+
+        return outputDict;
+    }
+
     // Uses array and not list for easy range segmenting, accounts for sustains
     public List<int> GetRelevantTicksInRange(int startTick, int endTick)
     {

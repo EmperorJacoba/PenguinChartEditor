@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
+public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable, IBeginDragHandler, IEndDragHandler
 {
     #region Constants
 
@@ -58,12 +59,40 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable
 
     #region Change BPM
 
+    private ISelectionSnapshot preDragData;
+
+    private ISelectionSnapshot SaveRelevantDragTicks()
+    {
+        return ParentInstrument.SnapTicks(
+            new List<int>(2)
+                { Tick, Chart.SyncTrackInstrument.TempoEvents.GetPreviousTickEventInLane(Tick) }
+            );
+    }
+    
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (Tick == 0 || !Input.GetKey(KeyCode.LeftControl)) return;
+
+        preDragData = SaveRelevantDragTicks();
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (preDragData is null) return;
+
+        var undoAction = new AddDataInRangeSnapshot(Chart.SyncTrackInstrument,
+            new AddDataInRangeDataPackage(preDragData, SaveRelevantDragTicks()));
+        UndoStack.instance.PushAction(undoAction);
+
+        preDragData = null;
+    }
+
     // This runs alongside MoveSelection() on each label locally if restrictions apply
     // ChangeBPMPositionFromDrag() works a lot simpler with this approach versus overriding the function
     public void OnDrag(PointerEventData data)
     {
-        if (Tick == 0 || !Input.GetKey(KeyCode.LeftControl)) return;
-
+        if (preDragData is null) return;
+        
         ChangeBPMPositionFromDrag(
             mouseDelta: data.delta.y,
             anchorNextEvent: Input.GetKey(KeyCode.LeftAlt)

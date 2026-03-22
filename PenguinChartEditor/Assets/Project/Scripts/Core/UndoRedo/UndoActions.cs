@@ -25,12 +25,14 @@ public class AddSingleUndoSnapshot : IUndoSnapshot
         this.parentInstrument = parentInstrument;
         this.actionInfo = actionInfo;
     }
+
+    public void SetAddedData(IEventData addedData) => actionInfo.addedData = addedData;
 }
 
 public struct AddSingleDataPackage
 {
-    public readonly IEventData addedData;
-    public readonly IEventData removedData;
+    public IEventData addedData;
+    public IEventData removedData;
     public readonly bool removedDataExists;
     public readonly int tick;
     public readonly int lane;
