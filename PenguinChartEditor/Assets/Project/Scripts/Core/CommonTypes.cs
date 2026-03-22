@@ -401,6 +401,17 @@ public static class InstrumentMetadata
             $"Check Scripts/Core/CommonTypes.cs for more information.")
         };
     }
+    
+    public static FiveFretNoteData.FlagType MatchNoteModeToFlagType(FiveFretNotePreviewer.NoteOption mode)
+    {
+        return mode switch
+        {
+            FiveFretNotePreviewer.NoteOption.tap => FiveFretNoteData.FlagType.tap,
+            FiveFretNotePreviewer.NoteOption.strum => FiveFretNoteData.FlagType.strum,
+            FiveFretNotePreviewer.NoteOption.hopo => FiveFretNoteData.FlagType.hopo,
+            _ => throw new System.Exception("Invalid mode <=> flag match")
+        };
+    }
 }
 
 public enum SceneType

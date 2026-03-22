@@ -1499,6 +1499,17 @@ Transform:
   - {fileID: 764433764}
   m_Father: {fileID: 516075230}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &202258579 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 756232349841998574, guid: 712d4afe59b96904bbf5590689a7d955, type: 3}
+  m_PrefabInstance: {fileID: 173262310}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae33f8b033bf432bad82d45f99da5683, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &215298020
 GameObject:
   m_ObjectHideFlags: 0
@@ -4320,10 +4331,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da68d6a4283211245bd59286f8ec24f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modifierDropdown: {fileID: 1485619529}
+  flagPlacementController: {fileID: 1954336888}
   esc: {fileID: 1601505626}
-  sustainCustomInputPlacement: {fileID: 0}
-  sustainCustomInputSelection: {fileID: 0}
+  sustainCustomInputPlacement: {fileID: 1951927880}
+  sustainCustomInputSelection: {fileID: 202258579}
 --- !u!1 &732549077
 GameObject:
   m_ObjectHideFlags: 0
@@ -11345,6 +11356,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 461968542542308762, guid: 472b163dbe7a88e49bf1e199b83a4a66, type: 3}
   m_PrefabInstance: {fileID: 1947641910}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1951927880 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3282758053472750814, guid: a46ae17bce01752439fbfe23b6db4350, type: 3}
+  m_PrefabInstance: {fileID: 2767307674315537773}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae33f8b033bf432bad82d45f99da5683, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1954336885
 GameObject:
   m_ObjectHideFlags: 0
@@ -11355,6 +11377,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1954336886}
   - component: {fileID: 1954336887}
+  - component: {fileID: 1954336888}
   m_Layer: 5
   m_Name: Note Flag Controller
   m_TagString: Untagged
@@ -11409,6 +11432,19 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1954336888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1954336885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8900512aff799eb4abfa6e6c732efc22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dropdown: {fileID: 1485619529}
 --- !u!1001 &1964005642
 PrefabInstance:
   m_ObjectHideFlags: 0
