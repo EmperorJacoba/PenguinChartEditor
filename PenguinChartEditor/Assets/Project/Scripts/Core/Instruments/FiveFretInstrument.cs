@@ -125,12 +125,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
     #endregion
     
     #region Undo/Redo
-
-    protected override void InternalSaveUndoData(UndoSnapshot<FiveFretNoteData> undoAction)
-    {
-        undoAction.SaveData(Lanes);
-    }
-
+    
     protected override void InternalApplyUndoAction(UndoSnapshot<FiveFretNoteData> undoAction)
     {
         // no checks needed since pushed data theoretically exists from a correct state

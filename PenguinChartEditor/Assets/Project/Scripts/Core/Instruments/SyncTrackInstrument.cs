@@ -100,14 +100,7 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
 
     #region Undo/Redo
 
-    protected override void InternalSaveUndoData(UndoSnapshot<BPMData> undoAction) => throw new NotImplementedException();
     protected override void InternalApplyUndoAction(UndoSnapshot<BPMData> undoAction) => throw new NotImplementedException();
-
-
-    protected override IUndoSnapshot CreateUndoSnapshot()
-    {
-        return new SyncTrackUndoSnapshot(TempoEvents, TimeSignatureEvents);
-    }
     
 
     public override void PushUndoData(IUndoSnapshot undoSnapshot)

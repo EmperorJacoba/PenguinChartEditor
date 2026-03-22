@@ -337,14 +337,12 @@ public struct AddDataInRangeDataPackage
 
 public class MoveSelectionSnapshot : IUndoSnapshot
 {
-    // Take a snapshot pre-move of only the moving data. 
-    // Upon move completion, take a snapshot of the data that existed from lastGhostStartPaste and end
-    
-    // Undo: Replace selection snapshots - Wipe data in range of start paste and end paste, add back saved data from that range
-    
     public IInstrument parentInstrument { get; }
+    
     private DeleteSelectionSnapshot deleteAction;
     private AddDataInRangeSnapshot addAction;
+    
+    // Save sustain cutoffs so that they too can be undone (otherwise they are not saved)
     public AddDataInRangeSnapshot sustainAction;
     
     public void Undo()
@@ -370,44 +368,4 @@ public class MoveSelectionSnapshot : IUndoSnapshot
     public void CloseAction(AddDataInRangeSnapshot addAction) => this.addAction = addAction;
 }
 
-public class DualMoveSelectionSnapshot : IUndoSnapshot
-{
-    public IInstrument parentInstrument => Chart.SyncTrackInstrument;
-    private MoveSelectionSnapshot action1;
-    private MoveSelectionSnapshot action2;
-    
-    public void Undo()
-    {
-        action1?.Undo();
-        action2?.Undo();
-    }
-
-    public void Redo()
-    {
-        action1?.Redo();
-        action2?.Redo();
-    }
-
-    public DualMoveSelectionSnapshot(MoveSelectionSnapshot action1, MoveSelectionSnapshot action2)
-    {
-        this.action1 = action1;
-        this.action2 = action2;
-    }
-}
-
 #endregion
-
-public class BPMDragChangeSnapshot : IUndoSnapshot
-{
-    // Save BPM event pre-drag. Undo restores old data, redo restores dragged data.
-    public IInstrument parentInstrument { get; }
-    public void Undo()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Redo()
-    {
-        throw new System.NotImplementedException();
-    }
-}

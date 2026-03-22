@@ -62,7 +62,8 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     public void CopySelectionTo(InstrumentType targetInstrument, HashSet<DifficultyType> targetDifficulties)
     {
-        SaveUndoData();
+        var undoAction = new SelectionChangeSnapshot(this, LaneController);
+
         var selectionData = Lanes.GetUnifiedSelectionWithData();
         
         foreach (var trackDiff in targetDifficulties)
@@ -72,11 +73,15 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
                 selectionData
                 );
         }
+
+        undoAction.CloseAction();
+        UndoStack.instance.PushAction(undoAction);
     }
 
     public void MoveSelectionTo(InstrumentType targetInstrument, HashSet<DifficultyType> targetDifficulties)
     {
-        SaveUndoData();
+        var undoAction = new SelectionChangeSnapshot(this, LaneController);
+
         var selectionData = Lanes.CutUnifiedSelectionWithData();
         
         foreach (var trackDiff in targetDifficulties)
@@ -86,6 +91,9 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
                 selectionData
                 );
         }
+        
+        undoAction.CloseAction();
+        UndoStack.instance.PushAction(undoAction);
     }
 
     #region Internal Overrides
@@ -100,7 +108,7 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
     
     public void MakeSelectionUnison()
     {
-        SaveUndoData();
+        var undoAction = new SelectionChangeSnapshot(this, LaneController);
         
         var selections = Lanes.GetTotalSelectionByLane();
         var minMaxTicks = Lanes.GetSelectionBounds();
@@ -121,11 +129,14 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         }
         
         ValidateSustainsInRange(minMaxTicks);
+        
+        undoAction.CloseAction();
+        UndoStack.instance.PushAction(undoAction);
     }
 
     public void IsolateSelection()
     {
-        SaveUndoData();
+        var undoAction = new SelectionChangeSnapshot(this, LaneController);
         
         var selections = Lanes.GetTotalSelectionByLane();
         var minMaxTicks = Lanes.GetSelectionBounds();
@@ -141,17 +152,15 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         }
         
         ValidateSustainsInRange(minMaxTicks);
+        
+        undoAction.CloseAction();
+        UndoStack.instance.PushAction(undoAction);
     }
 
     #endregion
 
     #region Undo/Redo
-
-    protected override void InternalSaveUndoData(UndoSnapshot<StarpowerEventData> undoAction)
-    {
-        undoAction.SaveData(Lanes);
-    }
-
+    
     protected override void InternalApplyUndoAction(UndoSnapshot<StarpowerEventData> undoAction)
     {
         Lanes.OverwriteAllLaneData(undoAction.GetStoredMultiLaneData());

@@ -77,12 +77,7 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
     {
         GetLaneData().OverwriteAllLaneDataWith(undoAction.GetStoredLaneData());
     }
-
-    protected override void InternalSaveUndoData(UndoSnapshot<SectionData> undoAction)
-    {
-        undoAction.SaveData(GetLaneData());
-    }
-
+    
     #endregion
 
     #region Import

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable, IBeginDragHandler, IEndDragHandler
+public class BPMLabel : Label<BPMData>, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     #region Constants
 
@@ -25,8 +25,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IPoolable, IBeginDragHandl
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
 
     [SerializeField] private Anchor anchorIcon;
-
-
+    
     #endregion
 
     protected override void InitializeLabel()

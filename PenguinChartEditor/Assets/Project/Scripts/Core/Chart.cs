@@ -228,7 +228,7 @@ public class Chart : MonoBehaviour
 
         LoadFile();
         
-        SetLoadedInstrument(HeaderType.SyncTrack);
+        SetLoadedInstrument(HeaderType.ExpertSingle);
 
         inputMap = new InputMap();
         inputMap.Enable();

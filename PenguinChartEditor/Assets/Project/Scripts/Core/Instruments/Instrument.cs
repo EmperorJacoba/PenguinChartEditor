@@ -155,32 +155,13 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     #region Undo/Redo
 
-    // Override only in instruments that have special selection snapshot structures. i.e SyncTrackInstrument
-    public virtual ISelectionSnapshot GetEmptySelectionSnapshot()
-    {
-        return new SelectionSnapshot<T>(new Dictionary<int, SortedDictionary<int, T>>());
-    }
-
-    // FIXME: This functionality can likely be simplified with a unified generic push and save action. Would require an
-    // interface that allows exporting and importing data as a Dictionary regardless of lane count. Very doable!
+    // Override only in instruments that have special selection snapshot structures. i.e. SyncTrackInstrument
+    public virtual ISelectionSnapshot GetEmptySelectionSnapshot() => 
+        new SelectionSnapshot<T>(new Dictionary<int, SortedDictionary<int, T>>());
     
-    protected abstract void InternalSaveUndoData(UndoSnapshot<T> undoAction);
-
     public void SaveUndoData()
     {
         // ApplyUndoDataToStack(CreateUndoSnapshot());
-    }
-    
-    /// <remarks>
-    /// Override ONLY IN SYNCTRACK for the multi-type approach. In all other cases, apply the data to the undoAction
-    /// through InternalSaveUndoData().
-    /// </remarks>
-    protected virtual IUndoSnapshot CreateUndoSnapshot()
-    {
-        // var undoAction = new UndoSnapshot<T>(this);
-        // InternalSaveUndoData(undoAction);
-        // return undoAction;
-        return null;
     }
 
     protected abstract void InternalApplyUndoAction(UndoSnapshot<T> undoAction);
@@ -428,14 +409,16 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public void DeleteAllEventsAtTick(int tick)
     {
         if (Chart.LoadedInstrument != this) return;
-        
-        SaveUndoData();
+
+        var undoAction = new DeleteSelectionSnapshot(this, LaneController.SnapTicks(new List<int>(1) { tick }));
         
         SoloData?.DeleteTick(tick);
         LaneController.DeleteAllEventsAtTick(tick);
         
         InternalDeleteChecks();
         ClearAllSelections();
+
+        UndoStack.instance.PushAction(undoAction);
     }
 
     #region DeleteSelection
