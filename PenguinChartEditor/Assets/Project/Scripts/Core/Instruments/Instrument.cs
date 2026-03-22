@@ -49,10 +49,7 @@ public interface IInstrument
     public ILaneData GetBarLaneData();
     public ISelection GetLaneSelection(int lane);
     bool IsNoteSelectionEmpty();
-
-    void PushUndoData(IUndoSnapshot undoSnapshot);
-    void SaveUndoData();
-
+    
     public void UndoAdd(AddSingleDataPackage actionInfo);
     public void RedoAdd(AddSingleDataPackage actionInfo);
 
@@ -159,24 +156,6 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public virtual ISelectionSnapshot GetEmptySelectionSnapshot() => 
         new SelectionSnapshot<T>(new Dictionary<int, SortedDictionary<int, T>>());
     
-    public void SaveUndoData()
-    {
-        // ApplyUndoDataToStack(CreateUndoSnapshot());
-    }
-
-    protected abstract void InternalApplyUndoAction(UndoSnapshot<T> undoAction);
-
-    /// <remarks>
-    /// Override ONLY IN SYNCTRACK for the multi-type approach. In all other cases, run checks and other needed actions
-    /// through InternalApplyUndoAction().
-    /// </remarks>
-    public virtual void PushUndoData(IUndoSnapshot undoSnapshot)
-    {
-        var undoAction = undoSnapshot as UndoSnapshot<T>;
-        InternalApplyUndoAction(undoAction);
-        Chart.InPlaceRefresh();
-    }
-    
     #endregion
 
     #region Pasting
@@ -210,7 +189,6 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     }
     
     protected abstract void AddChartFormattedEventsToInstrument(List<KeyValuePair<int, string>> lines);
-    
 
     #endregion
 

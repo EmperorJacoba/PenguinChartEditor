@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 
+/// <summary>
+/// A stack that automatically deletes the oldest entries when the number of entries exceeds specified number of maximum entries.
+/// </summary>
 public class FiniteStack<T>
 {
     private LinkedList<T> list;

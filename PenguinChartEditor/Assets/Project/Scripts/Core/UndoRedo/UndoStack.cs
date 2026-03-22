@@ -39,7 +39,6 @@ public class UndoStack : MonoBehaviour
         Chart.InPlaceRefresh();
     }
     
-
     private void Redo()
     {
         if (redoStack.Count == 0) return;
@@ -49,85 +48,5 @@ public class UndoStack : MonoBehaviour
         undoStack.Push(redoAction);
         
         Chart.InPlaceRefresh();
-    }
-}
-
-public interface IUndoSnapshot
-{
-    IInstrument parentInstrument { get; }
-    void Undo();
-    void Redo();
-}
-
-public class UndoSnapshot<T> : IUndoSnapshot where T : IEventData
-{
-    private Dictionary<int, SortedDictionary<int, T>> storedData;
-    public IInstrument parentInstrument { get; }
-    public void Undo()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Redo()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SaveData(LaneSet<T> originationLane)
-    {
-        storedData[0] = originationLane.ExportData();
-    }
-
-    public void SaveData(Lanes<T> originationLanes)
-    {
-        storedData = originationLanes.ExportData();
-    }
-
-    public SortedDictionary<int, T> GetStoredLaneData()
-    {
-        return storedData[0];
-    }
-
-    public Dictionary<int, SortedDictionary<int, T>> GetStoredMultiLaneData()
-    {
-        return storedData;
-    }
-    
-    public UndoSnapshot(IInstrument originationInstrument)
-    {
-        this.parentInstrument = originationInstrument;
-    }
-
-    public void RestoreSnapshot()
-    {
-        parentInstrument.PushUndoData(this);
-    }
-}
-
-public class SyncTrackUndoSnapshot : IUndoSnapshot
-{
-    public SortedDictionary<int, BPMData> bpmSave { get; }
-    public SortedDictionary<int, TSData> tsSave { get; }
-
-    public IInstrument parentInstrument => Chart.SyncTrackInstrument;
-    public void Undo()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Redo()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void RestoreSnapshot()
-    {
-        parentInstrument.PushUndoData(this);
-    }
-
-    public SyncTrackUndoSnapshot(LaneSet<BPMData> tempo, LaneSet<TSData> ts)
-    {
-        bpmSave = tempo.ExportData();
-        tsSave = ts.ExportData();
     }
 }

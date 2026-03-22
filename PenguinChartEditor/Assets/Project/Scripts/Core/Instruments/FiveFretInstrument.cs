@@ -124,17 +124,6 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
 
     #endregion
     
-    #region Undo/Redo
-    
-    protected override void InternalApplyUndoAction(UndoSnapshot<FiveFretNoteData> undoAction)
-    {
-        // no checks needed since pushed data theoretically exists from a correct state
-        // if the state is not correct, then that's a different issue
-        Lanes.OverwriteAllLaneData(undoAction.GetStoredMultiLaneData());
-    }
-
-    #endregion
-
     #region Add/Delete
     
     protected override void InternalAddDataChecks(int tick, int lane)

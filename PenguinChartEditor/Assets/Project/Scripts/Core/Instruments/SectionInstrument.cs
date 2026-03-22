@@ -70,15 +70,6 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
     }
     
     #endregion
-    
-    #region Undo/Redo
-
-    protected override void InternalApplyUndoAction(UndoSnapshot<SectionData> undoAction)
-    {
-        GetLaneData().OverwriteAllLaneDataWith(undoAction.GetStoredLaneData());
-    }
-    
-    #endregion
 
     #region Import
 

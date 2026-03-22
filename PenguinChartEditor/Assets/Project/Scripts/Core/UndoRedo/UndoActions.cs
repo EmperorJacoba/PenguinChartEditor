@@ -1,5 +1,16 @@
 ﻿using System.Collections.Generic;
 
+#region Interface
+
+public interface IUndoSnapshot
+{
+    IInstrument parentInstrument { get; }
+    void Undo();
+    void Redo();
+}
+
+#endregion
+
 #region AddSingle
 
 // Corresponds to CreateEvent()

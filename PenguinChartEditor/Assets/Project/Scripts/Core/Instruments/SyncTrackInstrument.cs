@@ -98,21 +98,6 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
 
     #endregion
 
-    #region Undo/Redo
-
-    protected override void InternalApplyUndoAction(UndoSnapshot<BPMData> undoAction) => throw new NotImplementedException();
-    
-
-    public override void PushUndoData(IUndoSnapshot undoSnapshot)
-    {
-        var snapshot = undoSnapshot as SyncTrackUndoSnapshot;
-
-        TempoEvents.OverwriteAllLaneDataWith(snapshot.bpmSave);
-        TimeSignatureEvents.OverwriteAllLaneDataWith(snapshot.tsSave);
-    }
-
-    #endregion
-
     #region Tempo
 
     public int GetNextAnchor(int currentTick)

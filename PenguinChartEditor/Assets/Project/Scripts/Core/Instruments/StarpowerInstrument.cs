@@ -159,15 +159,6 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     #endregion
 
-    #region Undo/Redo
-    
-    protected override void InternalApplyUndoAction(UndoSnapshot<StarpowerEventData> undoAction)
-    {
-        Lanes.OverwriteAllLaneData(undoAction.GetStoredMultiLaneData());
-    }
-
-    #endregion
-
     #region Add/Delete
     
     protected override void InternalAddDataChecks(int tick, int lane)
