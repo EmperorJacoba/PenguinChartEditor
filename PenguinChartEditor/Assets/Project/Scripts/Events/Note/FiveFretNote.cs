@@ -160,12 +160,8 @@ public class FiveFretNote : Event<FiveFretNoteData>, IPoolable
 
     private bool CalculateHeadVisibility()
     {
-        int headDespawnTick = AudioManager.AudioPlaying ? SongTime.SongPositionTicks : Waveform.startTick;
-        if (Tick <= headDespawnTick)
-        {
-            return false;
-        }
-        return true;
+        var headDespawnTick = AudioManager.AudioPlaying ? SongTime.SongPositionTicks : Waveform.startTick;
+        return Tick >= headDespawnTick;
     }
     
     #endregion
