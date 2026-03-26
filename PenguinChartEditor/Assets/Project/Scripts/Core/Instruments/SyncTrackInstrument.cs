@@ -592,7 +592,7 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
     
     #region Export
 
-    public override List<string> ExportAllEvents()
+    public override List<string> ExportDotChartData()
     {
         var syncTrackStrings = ExportTempoEvents();
         syncTrackStrings.AddRange(ExportTimeSignatureEvents());

@@ -278,6 +278,7 @@ public static class InstrumentMetadata
         return GetAttributeOnInstrumentID(instrumentID).Name;
     }
 
+    public static HeaderType GetHeader(IInstrument instrument) => GetHeader(instrument.InstrumentName, instrument.Difficulty);
     public static HeaderType GetHeader(InstrumentType instrument, DifficultyType difficulty)
     {
         return (HeaderType)((int)instrument + (int)difficulty);

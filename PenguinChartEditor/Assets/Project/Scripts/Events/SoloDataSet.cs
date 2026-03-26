@@ -110,4 +110,21 @@ public class SoloDataSet
         SelectedStartEvents.Remove(tick);
         SelectedEndEvents.Remove(tick);
     }
+
+    public List<string> ExportSoloEventsUnsorted()
+    {
+        var events = new List<string>();
+        foreach (var @event in SoloEvents)
+        {
+            events.Add(
+                $"{@event.Value.StartTick} = E solo"
+                );
+            
+            events.Add(
+                $"{@event.Value.EndTick} = E soloend"
+                );
+        }
+
+        return events;
+    }
 }

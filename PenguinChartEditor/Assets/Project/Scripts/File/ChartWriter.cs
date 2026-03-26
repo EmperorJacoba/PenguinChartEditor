@@ -93,6 +93,7 @@ public static class ChartWriter
         {
             iniLines.Add($"{difficulty.Key} = {difficulty.Value}");
         }
+        
         return iniLines;
     }
 
@@ -114,6 +115,7 @@ public static class ChartWriter
         songGroup.Add($"\tResolution = {Chart.Resolution}");
 
         // Skip Player2 and Difficulty (add later if GH3 support is requested)
+        
         var startTime = Chart.Metadata.SongInfo[Metadata.MetadataType.preview_start_time];
         songGroup.Add($"\tPreviewStart = {startTime}");
         songGroup.Add($"\tPreviewEnd = {int.Parse(startTime) + UserSettings.DefaultPreviewLength}");
@@ -137,7 +139,7 @@ public static class ChartWriter
             }
 
             var streamString = cleanedEnumString + "Stream";
-
+            
             var lastDirectoryPath = stem.Value.LastIndexOf("/");
             var trackName = stem.Value[(lastDirectoryPath+1)..];
 
@@ -151,7 +153,7 @@ public static class ChartWriter
     private static List<string> WriteSyncTrack()
     {
         List<string> syncTrackEvents = WriteHeader(HeaderType.SyncTrack);
-        var syncTrackStrings = Chart.SyncTrackInstrument.ExportAllEvents();
+        var syncTrackStrings = Chart.SyncTrackInstrument.ExportDotChartData();
 
         syncTrackEvents.AddRange(syncTrackStrings);
 
@@ -171,9 +173,9 @@ public static class ChartWriter
 
     private static List<string> WriteInstrument(IInstrument instrument)
     {
-        List<string> instrumentEvents = WriteHeader(GetMatchingHeader(instrument));
+        List<string> instrumentEvents = WriteHeader(InstrumentMetadata.GetHeader(instrument));
 
-        instrumentEvents.AddRange(instrument.ExportAllEvents());
+        instrumentEvents.AddRange(instrument.ExportDotChartData());
         instrumentEvents.Add(CLOSING_GROUP_CHAR);
         return instrumentEvents;
     }
@@ -186,11 +188,5 @@ public static class ChartWriter
             "{"
         };
         return lines;
-    }
-
-    private static HeaderType GetMatchingHeader(IInstrument instrument)
-    {
-        int enumValue = (int)instrument.InstrumentName + (int)instrument.Difficulty;
-        return (HeaderType)enumValue;
     }
 }

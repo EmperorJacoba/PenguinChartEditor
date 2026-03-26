@@ -635,7 +635,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
     // currently only supports N events, need support for E solo/soloend
     // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)
     // throw away sustains that are too small (ms < user settings constant) (add setting to do extra validation, or do this when validators fail)
-    public override List<string> ExportAllEvents()
+    public override List<string> ExportDotChartData()
     {
         List<string> notes = new();
         for (int i = 0; i < Lanes.Count; i++)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -8,7 +9,7 @@ using UnityEngine;
 // without needing to separate SyncTrackInstrument from all other instruments and repeating lots of code.
 // SyncTrackInstrument cannot use the regular Lanes<T> object because it handles two very different data types
 // (BPM & TS events) in the same context (in terms of selection, deletion, etc). 
-public interface IMultiLaneController
+public interface IMultiLaneController : IEnumerable<LanePairing>
 {
     ILaneData GetLane(int lane);
     ISelection GetLaneSelection(int lane);
@@ -57,6 +58,18 @@ public interface IMultiLaneController
 
     bool CreateEvent(int tick, int lane, IEventData data, out AddSingleDataPackage actionInfo);
     bool IsTickInLane(int tick, int lane);
+}
+
+public struct LanePairing
+{
+    public int laneID;
+    public ILaneData LaneData;
+
+    public LanePairing(int laneID, ILaneData laneData)
+    {
+        this.laneID = laneID;
+        LaneData = laneData;
+    }
 }
 
 public class Lanes<T> : IMultiLaneController where T : IEventData
@@ -739,6 +752,9 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
     {
         return lanes[lane].Contains(tick);
     }
+
+    public IEnumerator<LanePairing> GetEnumerator() => lanes.Select(lane => new LanePairing(lane.Key, lane.Value)).GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
 /// <remarks>Access TempoEvents with Lane = 0. Access TimeSignatureEvents with Lane = 1.</remarks>
@@ -1040,6 +1056,13 @@ public class SyncTrackLanes : IMultiLaneController
         }
 
         return createdNewEvent;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public IEnumerator<LanePairing> GetEnumerator()
+    {
+        yield return new LanePairing((int)SyncTrackInstrument.LaneOrientation.bpm, TempoEvents);
+        yield return new LanePairing((int)SyncTrackInstrument.LaneOrientation.timeSignature, TimeSignatureEvents);
     }
 }
 

@@ -135,7 +135,7 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
         return notes.ToString();
     }
     
-    public override List<string> ExportAllEvents()
+    public override List<string> ExportDotChartData()
     {
         List<string> sectionEvents = new();
 

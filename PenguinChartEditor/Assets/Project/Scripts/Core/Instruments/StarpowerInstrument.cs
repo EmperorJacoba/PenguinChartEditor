@@ -350,11 +350,6 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         return stringifiedOutput.ToString();
     }
 
-    public override List<string> ExportAllEvents()
-    {
-        throw new NotImplementedException();
-    }
-
     #endregion
 
     #region Not Implemented

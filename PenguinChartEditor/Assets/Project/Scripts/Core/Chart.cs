@@ -320,6 +320,8 @@ public class Chart : MonoBehaviour
         
         InPlaceRefreshNeeded?.Invoke(); // shortcut for all lanes to update
     }
+    
+    #region Scene edit permissions
 
     public enum SelectionMode
     {
@@ -360,4 +362,6 @@ public class Chart : MonoBehaviour
             _ => throw new ArgumentException("Invalid assigned selection mode.")
         };
     }
+    
+    #endregion
 }

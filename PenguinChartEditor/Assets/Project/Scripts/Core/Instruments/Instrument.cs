@@ -12,7 +12,7 @@ public interface IInstrument
     InstrumentType InstrumentName { get; set; }
     DifficultyType Difficulty { get; set; }
     HeaderType InstrumentID { get; }
-    List<string> ExportAllEvents();
+    List<string> ExportDotChartData();
 
     void ClearAllSelections();
     bool NoteSelectionContains(int tick, int lane);
@@ -503,7 +503,32 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     #region Export
 
-    public abstract List<string> ExportAllEvents();
+    public List<string> ExportDotChartData()
+    {
+        List<string> notes = ConvertEventsListToDotChart();
+
+        if (SoloData is not null)
+        {
+            notes.AddRange(SoloData.ExportSoloEventsUnsorted());
+        }
+        
+        var orderedStrings = notes.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
+        return orderedStrings;
+    }
+
+    protected virtual List<string> ConvertEventsListToDotChart()
+    {
+        List<string> notes = new();
+        foreach (var lanePairing in LaneController)
+        {
+            notes.AddRange(
+                lanePairing.LaneData.
+                    Select(note => $"\t{note.tick} = {note.data.ToChartFormat(lanePairing.laneID)[0]}")
+            );
+        }
+
+        return notes;
+    }
 
     #endregion
 }

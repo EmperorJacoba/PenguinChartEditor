@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public interface ILaneData
+public interface ILaneData : IEnumerable<TickPairing>
 {
     bool Contains(int tick);
     int GetNextRelevantTick();
@@ -23,6 +23,18 @@ public interface ILaneData
     bool Remove(int tick);
 
     HashSet<int> protectedTicks { get; }
+}
+
+public struct TickPairing
+{
+    public int tick;
+    public IEventData data;
+
+    public TickPairing(int tick, IEventData data)
+    {
+        this.tick = tick;
+        this.data = data;
+    }
 }
 
 // remember to set up TS/BPM
@@ -568,4 +580,9 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     public bool IsReadOnly => false;
 
     #endregion
+
+    IEnumerator<TickPairing> IEnumerable<TickPairing>.GetEnumerator()
+    {
+        return laneData.Select(note => new TickPairing(note.Key, note.Value)).GetEnumerator();
+    }
 }
