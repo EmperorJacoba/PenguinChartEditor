@@ -31,7 +31,7 @@ public class SoloDataSet
         var eventsToCorrect = SelectedEndEvents.PopSelectedTicksFromLane();
         foreach (var @event in eventsToCorrect)
         {
-            var nextSoloEvent = Chart.LoadedInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick > @event.Value.EndTick);
+            var nextSoloEvent = Chart.LoadedInstrument.SoloData.SoloEvents.Where<KeyValuePair<int, SoloEventData>>(x => x.Value.StartTick > @event.Value.EndTick);
 
             var endTick = SongTime.SongLengthTicks - @event.Value.StartTick;
             if (nextSoloEvent.Count() > 0) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
@@ -57,9 +57,9 @@ public class SoloDataSet
         }
     }
 
-    public List<KeyValuePair<int, SoloEventData>> GetAnySoloMarkerAtTick(int eventTick) => SoloEvents.Where(x => x.Value.StartTick == eventTick || x.Value.EndTick == eventTick).ToList();
-    public List<KeyValuePair<int, SoloEventData>> GetStartSoloAtTick(int eventTick) => SoloEvents.Where(x => x.Value.StartTick == eventTick).ToList();
-    public List<KeyValuePair<int, SoloEventData>> GetEndSoloAtTick(int eventTick) => SoloEvents.Where(x => x.Value.EndTick == eventTick).ToList();
+    public List<KeyValuePair<int, SoloEventData>> GetAnySoloMarkerAtTick(int eventTick) => SoloEvents.Where<KeyValuePair<int, SoloEventData>>(x => x.Value.StartTick == eventTick || x.Value.EndTick == eventTick).ToList();
+    public List<KeyValuePair<int, SoloEventData>> GetStartSoloAtTick(int eventTick) => SoloEvents.Where<KeyValuePair<int, SoloEventData>>(x => x.Value.StartTick == eventTick).ToList();
+    public List<KeyValuePair<int, SoloEventData>> GetEndSoloAtTick(int eventTick) => SoloEvents.Where<KeyValuePair<int, SoloEventData>>(x => x.Value.EndTick == eventTick).ToList();
 
     public void ClearSelection()
     {
@@ -85,8 +85,8 @@ public class SoloDataSet
 
     public void SelectTicksInRange(int startTick, int endTick)
     {
-        var startCandidates = SoloEvents.Where(x => x.Value.StartTick >= startTick && x.Value.StartTick <= endTick).ToList();
-        var endCandidates = SoloEvents.Where(x => x.Value.EndTick >= startTick && x.Value.EndTick <= endTick).ToList();
+        var startCandidates = SoloEvents.Where<KeyValuePair<int, SoloEventData>>(x => x.Value.StartTick >= startTick && x.Value.StartTick <= endTick).ToList();
+        var endCandidates = SoloEvents.Where<KeyValuePair<int, SoloEventData>>(x => x.Value.EndTick >= startTick && x.Value.EndTick <= endTick).ToList();
 
         foreach (var @event in startCandidates)
         {

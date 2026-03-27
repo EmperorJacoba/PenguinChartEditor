@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -47,7 +48,7 @@ public class SoloPreviewer : Previewer
     public override void Show()
     {
         var isPreviewerInOpenSoloEvent = 
-            ParentInstrument.SoloData.SoloEvents.Any(x => x.Value.StartTick <= previewTick && x.Value.EndTick >= previewTick);
+            ParentInstrument.SoloData.SoloEvents.Any<KeyValuePair<int, SoloEventData>>(x => x.Value.StartTick <= previewTick && x.Value.EndTick >= previewTick);
         
         previewSoloPlate.Visible = !isPreviewerInOpenSoloEvent;
         previewEndPlate.Visible = isPreviewerInOpenSoloEvent;
@@ -76,12 +77,12 @@ public class SoloPreviewer : Previewer
         // so that solo data itself handles all this crap. Then this will no longer need to be overriden.
         // Technically works so that's why I'm not fixing it now. 
         
-        var activeSoloEvents = ParentInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick <= previewTick && x.Value.EndTick >= previewTick);
+        var activeSoloEvents = ParentInstrument.SoloData.SoloEvents.Where<KeyValuePair<int, SoloEventData>>(x => x.Value.StartTick <= previewTick && x.Value.EndTick >= previewTick);
 
         if (!activeSoloEvents.Any())
         {
             var endTick = SongTime.SongLengthTicks - previewTick;
-            var nextSoloEvent = ParentInstrument.SoloData.SoloEvents.Where(x => x.Value.StartTick > previewTick);
+            var nextSoloEvent = ParentInstrument.SoloData.SoloEvents.Where<KeyValuePair<int, SoloEventData>>(x => x.Value.StartTick > previewTick);
 
             if (nextSoloEvent.Any()) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
 

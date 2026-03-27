@@ -373,17 +373,23 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
     {
         return
             // Automatically a strum if this is the first tick in a lane (must be first check)
-            (prevTick != LaneSet<FiveFretNoteData>.NO_TICK_EVENT) && 
+            (prevTick != LaneSet<FiveFretNoteData>.NO_TICK_EVENT) &&
             // Distance between previous tick must be below the hopo cutoff (second most common reason for no hopo - not intensive op)
-            (tick - prevTick < Chart.HopoCutoff) && 
-            (
-                // If this tick is a chord, disqualified
-                Lanes.IsTickChord(tick, out var lastFoundLane) || 
-                // If this tick is not a chord, check the last tick again.
-                // If the last tick is not a chord and its only tick is in the same lane, disqualified
-                // (two single notes in the same lane in a row means the second is a strum)
-                (!Lanes.IsTickChord(prevTick) && lastFoundLane.Contains(prevTick))
-            );
+            (tick - prevTick < Chart.HopoCutoff) &&
+            TickIsChordValid(tick, prevTick);
+    }
+
+    private bool TickIsChordValid(int tick, int prevTick)
+    {
+        // If this tick is a chord, disqualified
+        var tickIsChord = Lanes.IsTickChord(tick, out var lastFoundLane);
+        if (lastFoundLane is null || tickIsChord) return false;
+        
+        // If this tick is not a chord, check the last tick again.
+        // If the last tick is not a chord and its only tick is in the same lane, disqualified
+        // (two single notes in the same lane in a row means the second is a strum)
+        var sequentialNoteCheck = !Lanes.IsTickChord(prevTick) && lastFoundLane.Contains(prevTick);
+        return !sequentialNoteCheck;
     }
     
     #endregion

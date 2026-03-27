@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -79,7 +80,7 @@ public class SoloPlate : Event<SoloEventData>
     {
         if (Input.GetMouseButton(1) && eventData.button == PointerEventData.InputButton.Left)
         {
-            var targetEvent = LaneData.Where(x => x.Value.StartTick == Tick).ToList();
+            var targetEvent = LaneData.Where<KeyValuePair<int, SoloEventData>>(x => x.Value.StartTick == Tick).ToList();
             if (targetEvent.Count == 0) return;
 
             LaneData.Remove(targetEvent[0]);

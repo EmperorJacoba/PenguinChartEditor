@@ -658,7 +658,7 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
     {
         foreach (var lane in lanes)
         {
-            var removableData = Enumerable.ToHashSet(lane.Value.Where
+            var removableData = Enumerable.ToHashSet(lane.Value.Where<KeyValuePair<int, T>>
             (
                 kvp =>
                     kvp.Key >= startTick &&

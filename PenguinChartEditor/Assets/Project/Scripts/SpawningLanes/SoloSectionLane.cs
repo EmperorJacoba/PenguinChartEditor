@@ -27,7 +27,7 @@ public class SoloSectionLane : SpawningLane<SoloSection>
     protected override List<int> GetEventsToDisplay()
     {
         return parentGameInstrument.representedInstrument.
-            SoloData.SoloEvents.Where
+            SoloData.SoloEvents.Where<KeyValuePair<int, SoloEventData>>
             (@soloEvent => Waveform.endTick > soloEvent.Value.StartTick && Waveform.startTick < soloEvent.Value.EndTick).
             Select(x => x.Key).
             ToList();

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -51,11 +52,11 @@ public class SoloEnd : Event<SoloEventData>
     {
         if (Input.GetMouseButton(1) && eventData.button == PointerEventData.InputButton.Left)
         {
-            var targetEvent = LaneData.Where(x => x.Value.EndTick == representedTick).ToList();
+            var targetEvent = LaneData.Where<KeyValuePair<int, SoloEventData>>(x => x.Value.EndTick == representedTick).ToList();
             if (targetEvent.Count == 0) return;
 
             var endTick = SongTime.SongLengthTicks - targetEvent[0].Value.StartTick;
-            var nextSoloEvent = LaneData.Where(x => x.Value.StartTick > representedTick);
+            var nextSoloEvent = LaneData.Where<KeyValuePair<int, SoloEventData>>(x => x.Value.StartTick > representedTick);
 
             if (nextSoloEvent.Count() > 0) endTick = nextSoloEvent.Min(x => x.Value.StartTick) - (Chart.Resolution / (DivisionChanger.CurrentDivision / 4));
 
