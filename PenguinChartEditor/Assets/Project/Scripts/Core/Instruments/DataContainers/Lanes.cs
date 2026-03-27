@@ -77,6 +77,7 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
     #region Constants
 
     public const int NO_TICK_EVENT = -1;
+    public const int INVALID_LANE = int.MinValue;
     
     #endregion
     
@@ -173,6 +174,25 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
             if (lane.Contains(tick)) noteCount++;
             if (noteCount >= 2) return true;
         }
+        return false;
+    }
+
+    public bool IsTickChord(int tick, out ILaneData lastFoundLane)
+    {
+        int noteCount = 0;
+        lastFoundLane = null;
+        
+        foreach (var lane in lanes)
+        {
+            if (lane.Value.Contains(tick))
+            {
+                lastFoundLane = lane.Value;
+                noteCount++;
+            }
+
+            if (noteCount >= 2) return true;
+        }
+
         return false;
     }
 

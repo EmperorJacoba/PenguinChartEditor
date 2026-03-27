@@ -505,7 +505,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     public List<string> ExportDotChartData()
     {
-        List<string> notes = ConvertEventsListToDotChart();
+        List<string> notes = ConvertEventsToChartStrings();
 
         if (SoloData is not null)
         {
@@ -516,7 +516,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         return orderedStrings;
     }
 
-    protected virtual List<string> ConvertEventsListToDotChart()
+    protected virtual List<string> ConvertEventsToChartStrings()
     {
         List<string> notes = new();
         foreach (var lanePairing in LaneController)

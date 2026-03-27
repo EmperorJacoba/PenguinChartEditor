@@ -104,7 +104,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
             // change to generic validateblic
             Lanes.GetLane(lane).UpdatesNeededInRange += (startTick, endTick) =>
             {
-                if (startTick == endTick) CheckForHopos((LaneOrientation)lane, startTick);
+                if (startTick == endTick) CheckForHopos(startTick);
                 else CheckForHoposInRange(startTick, endTick);
             };
             Lanes.UpdatesNeededInRange += CheckForHoposInRange;
@@ -129,7 +129,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
     protected override void InternalAddDataChecks(int tick, int lane)
     {
         UpdateTickDataToMatch(tick, Lanes.GetLane(lane)[tick]);
-        CheckForHopos((LaneOrientation)lane, tick);
+        CheckForHopos(tick);
         ClampSustainsBefore(tick, lane);
     }
 
@@ -266,50 +266,17 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
 
     #region Flag Changes
 
-    // Undo does not apply - used only by internal funcs
-    private void ChangeTickFlag(int targetTick, int previousTick, FiveFretNoteData.FlagType flag)
+    private void UpdateTickFlag(int targetTick, FiveFretNoteData.FlagType flag)
     {
-        if (flag == FiveFretNoteData.FlagType.tap)
-        {
-            SetAllEventsAtTickTo(targetTick, flag);
-            return;
-        }
-
-        bool isLastTickChord = Lanes.IsTickChord(previousTick);
-        bool isCurrentTickChord = Lanes.IsTickChord(targetTick);
-
         for (int i = 0; i < Lanes.Count; i++)
         {
-            var lane = Lanes.GetLane(i);
-            if (!lane.Contains(targetTick)) continue;
-
-            if (((!isLastTickChord && lane.Contains(previousTick)) || isCurrentTickChord))
-            {
-                flag = FiveFretNoteData.FlagType.strum;
-                break;
-            }
+            var currentLane = Lanes.GetLane(i);
+            if (!currentLane.Contains(targetTick)) continue;
+            
+            currentLane[targetTick] = currentLane[targetTick].ExportWithNewFlag(flag);
         }
-        SetAllEventsAtTickTo(targetTick, flag);
-    }
-    
-    // Undo does not apply - used only by internal funcs
-    private void ChangeTickFlag(int targetTick, int previousTick, LaneOrientation targetLane, FiveFretNoteData.FlagType flag)
-    {
-        if (!Lanes.GetLane((int)targetLane).Contains(targetTick))
-        {
-            if (!IsTickDefault(targetTick)) 
-            {
-                ChangeTickFlag(targetTick, previousTick, flag);
-            }
-            return;
-        }
-        var targetData = Lanes.GetLane((int)targetLane)[targetTick];
-
-        if (!targetData.Default) SetAllEventsAtTickTo(targetTick, targetData.Flag);
-        else ChangeTickFlag(targetTick, previousTick, flag);
     }
 
-    // Undo does not apply. Undo saved in pre-add check.
     private void UpdateTickDataToMatch(int tick, FiveFretNoteData data)
     {
         var @default = data.Default;
@@ -319,20 +286,9 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
         {
             var activeLane = Lanes.GetLane(i);
             if (!activeLane.Contains(tick)) continue;
+            
             var sustain = UserSettings.ExtSustains ? activeLane[tick].Sustain : data.Sustain;
             activeLane[tick] = new FiveFretNoteData(sustain, flag, @default);
-        }
-    }
-
-    private void SetAllEventsAtTickTo(int targetTick, FiveFretNoteData.FlagType flag)
-    {
-        for (int i = 0; i < Lanes.Count; i++)
-        {
-            var currentLane = Lanes.GetLane(i);
-            if (currentLane.Contains(targetTick))
-            {
-                currentLane[targetTick] = currentLane[targetTick].ExportWithNewFlag(flag);
-            }
         }
     }
 
@@ -340,32 +296,12 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
 
     #region HOPOs
 
-    // Undo does not apply. This happens as a result of another action.
-    private void CheckForHopos(LaneOrientation lane, int changedTick)
+    private void CheckForHopos(int changedTick)
     {
-        bool nextTickHopo = false;
-        bool currentTickHopo = false;
-        bool changedTickExists = Lanes.AnyLaneContainsTick(changedTick);
-
         var ticks = Lanes.GetTickEventBounds(changedTick); // biggest bottleneck here btw
 
-        if (ticks.next != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
-            ticks.next - changedTick < Chart.HopoCutoff) nextTickHopo = true;
-
-        if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
-            changedTick - ticks.prev < Chart.HopoCutoff) currentTickHopo = true;
-
-        if (IsTickNaturallyChangable(changedTick))
-        {
-            var flag = currentTickHopo ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-            ChangeTickFlag(changedTick, ticks.prev, lane, flag);
-        }
-
-        if (IsTickNaturallyChangable(ticks.next))
-        {
-            var nextFlag = nextTickHopo && changedTickExists ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-            ChangeTickFlag(ticks.next, changedTick, nextFlag);
-        }
+        if (IsTickNaturallyChangable(changedTick)) UpdateTickFlag(changedTick, GetTickFlag(changedTick, ticks.prev));
+        if (IsTickNaturallyChangable(ticks.next)) UpdateTickFlag(ticks.next, GetTickFlag(ticks.next, changedTick));
     }
 
     private void CheckForHoposInRange(MinMaxTicks range) => CheckForHoposInRange(range.min, range.max);
@@ -395,15 +331,14 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
             var currentTick = uniqueTicks[i];
 
             if (!IsTickNaturallyChangable(currentTick)) continue;
+            
+            var flag = IsTickHopo(currentTick, uniqueTicks) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
 
-            var prevTick = i != 0 ? uniqueTicks[i - 1] : -Chart.HopoCutoff;
-
-            var flag = (currentTick - prevTick < Chart.HopoCutoff) && !Lanes.IsTickChord(currentTick) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
-
-            ChangeTickFlag(currentTick, prevTick, flag);
+            UpdateTickFlag(currentTick, flag);
         }
     }
 
+    // Cannot use IsTickHopo(). IsTickHopo() returns if a tick is CURRENTLY a hopo, not if it WILL be a hopo after a placement.
     public bool PreviewTickHopo(LaneOrientation lane, int tick)
     {
         var ticks = Lanes.GetTickEventBounds(tick);
@@ -414,27 +349,58 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
         var isTickChordAfterChange = Lanes.GetTickCountAtTick(tick) > 0 &&
                                         !(Lanes.GetTickCountAtTick(tick) == 1 && Lanes.GetLane((int)lane).Contains(tick));
 
-        if (ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
-            tick - ticks.prev < Chart.HopoCutoff &&
-            (!isTickChordAfterChange && !Lanes.GetLane((int)lane).Contains(ticks.prev))
-            ) return true;
-
-        return false;
+        return ticks.prev != Lanes<FiveFretNoteData>.NO_TICK_EVENT &&
+               tick - ticks.prev < Chart.HopoCutoff &&
+               (!isTickChordAfterChange && !Lanes.GetLane((int)lane).Contains(ticks.prev));
     }
+    
+    private FiveFretNoteData.FlagType GetTickFlag(int tick, int prevTick) =>
+        IsTickHopo(tick, prevTick) ? FiveFretNoteData.FlagType.hopo : FiveFretNoteData.FlagType.strum;
 
+    /// <remarks>If you've already accessed the UniqueTickSet, don't use this. Will calculate twice.</remarks>
+    private bool IsTickHopo(int tick) => IsTickHopo(tick, GetUniqueTickSet());
+    private bool IsTickHopo(int tick, List<int> ticks)
+    {
+        var currentTickIndex = ticks.BinarySearch(tick);
+        if (currentTickIndex < 0 || currentTickIndex >= ticks.Count) return false;
+        
+        var prevTick = currentTickIndex == 0 ? LaneSet<FiveFretNoteData>.NO_TICK_EVENT : ticks[currentTickIndex - 1];
+        
+        return IsTickHopo(tick, prevTick);
+    }
+    
+    private bool IsTickHopo(int tick, int prevTick)
+    {
+        return
+            // Automatically a strum if this is the first tick in a lane (must be first check)
+            (prevTick != LaneSet<FiveFretNoteData>.NO_TICK_EVENT) && 
+            // Distance between previous tick must be below the hopo cutoff (second most common reason for no hopo - not intensive op)
+            (tick - prevTick < Chart.HopoCutoff) && 
+            (
+                // If this tick is a chord, disqualified
+                Lanes.IsTickChord(tick, out var lastFoundLane) || 
+                // If this tick is not a chord, check the last tick again.
+                // If the last tick is not a chord and its only tick is in the same lane, disqualified
+                // (two single notes in the same lane in a row means the second is a strum)
+                (!Lanes.IsTickChord(prevTick) && lastFoundLane.Contains(prevTick))
+            );
+    }
+    
     #endregion
 
     #region Taps
 
-    private bool IsTickDefault(int tick)
+    public bool IsTickCurrentlyFlag(int tick, FiveFretNoteData.FlagType flag)
     {
-        for (int i = 0; i < Lanes.Count; i++)
+        foreach (var lane in Lanes)
         {
-            var lane = Lanes.GetLane(i);
-            if (!lane.Contains(tick)) continue;
-            if (!lane[tick].Default) return false;
+            if (!lane.LaneData.TryGetValue(tick, out var data)) continue;
+            
+            var typed = (FiveFretNoteData)data;
+            return typed.Flag == flag;
         }
-        return true;
+
+        throw new ArgumentException("IsTickCurrentlyFlag: Cannot determine current flag status. Tick is not in any lane.");
     }
 
     private bool IsTickNaturallyChangable(int tick)
@@ -631,24 +597,26 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
     #endregion
 
     #region Export
-
-    // currently only supports N events, need support for E solo/soloend
-    // also needs logic for when and where to place forced/tap identifiers (data in struct is not enough - flag is LITERAL value, forced is the toggle between default and not behavior)
-    // throw away sustains that are too small (ms < user settings constant) (add setting to do extra validation, or do this when validators fail)
-    public override List<string> ExportDotChartData()
+    
+    protected override List<string> ConvertEventsToChartStrings()
     {
-        List<string> notes = new();
-        for (int i = 0; i < Lanes.Count; i++)
+        var initialEvents = base.ConvertEventsToChartStrings();
+        var uniqueTicks = GetUniqueTickSet();
+        
+        foreach (var tick in GetUniqueTickSet())
         {
-            foreach (var note in Lanes.GetLane(i))
+            if (IsTickCurrentlyFlag(tick, FiveFretNoteData.FlagType.tap))
             {
-                string value = $"\t{note.Key} = {note.Value.ToChartFormat(i)}";
-                notes.Add(value);
+                initialEvents.Add($"\t{tick} = {TAP_ID}");
+                continue;
+            }
+            if (IsTickHopo(tick, uniqueTicks) != IsTickCurrentlyFlag(tick, FiveFretNoteData.FlagType.hopo))
+            {
+                initialEvents.Add($"\t{tick} = {FORCED_SUBSTRING}");
             }
         }
 
-        var orderedStrings = notes.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
-        return orderedStrings;
+        return initialEvents;
     }
 
     // no solos currently

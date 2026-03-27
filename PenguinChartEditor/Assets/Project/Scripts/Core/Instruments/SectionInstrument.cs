@@ -134,19 +134,6 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
 
         return notes.ToString();
     }
-    
-    public override List<string> ExportDotChartData()
-    {
-        List<string> sectionEvents = new();
-
-        foreach (var section in GetLaneData())
-        {
-            var valueSection = $"\t{section.Key} = {section.Value.ToChartFormat(0)}";
-            sectionEvents.Add(valueSection);
-        }
-
-        return sectionEvents;
-    }
 
     #endregion
 

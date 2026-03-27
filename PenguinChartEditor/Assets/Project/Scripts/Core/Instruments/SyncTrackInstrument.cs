@@ -102,15 +102,15 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
 
     public int GetNextAnchor(int currentTick)
     {
-        var nextAnchors = TempoEvents.Where(item => item.Key > currentTick && item.Value.Anchor).ToList();
-        if (nextAnchors.Count > 0) return nextAnchors[0].Key;
-        else return -1;
+        var nextAnchors = TempoEvents.Where<KeyValuePair<int, BPMData>>
+            (item => item.Key > currentTick && item.Value.Anchor).ToList();
+        return nextAnchors.Count > 0 ? nextAnchors[0].Key : -1;
     }
     public int GetLastAnchor(int currentTick)
     {
-        var lastAnchors = TempoEvents.Where(item => item.Key < currentTick && item.Value.Anchor).ToList();
-        if (lastAnchors.Count > 0) return lastAnchors[^1].Key;
-        else return -1;
+        var lastAnchors = TempoEvents.Where<KeyValuePair<int, BPMData>>
+            (item => item.Key < currentTick && item.Value.Anchor).ToList();
+        return lastAnchors.Count > 0 ? lastAnchors[^1].Key : -1;
     }
 
     // This anchoring logic may present some accuracy errors in the dictionary
@@ -592,41 +592,15 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
     
     #region Export
 
-    public override List<string> ExportDotChartData()
+    protected override List<string> ConvertEventsToChartStrings()
     {
-        var syncTrackStrings = ExportTempoEvents();
-        syncTrackStrings.AddRange(ExportTimeSignatureEvents());
-        var orderedEvents = syncTrackStrings.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
-        return orderedEvents;
-    }
-
-    public List<string> ExportTempoEvents()
-    {
-        List<string> eventContainer = new(TempoEvents.Count);
-        foreach (var @event in TempoEvents)
-        {
-            eventContainer.Add
-                (
-                    $"\t{@event.Key} = {@event.Value.ToChartFormat(0)}"
-                );
-
-            if (@event.Value.Anchor)
-            {
-                eventContainer.Add($"{@event.Key} = {ANCHOR_IDENTIFIER} {@event.Value.Timestamp * MICROSECOND_CONVERSION}");
-            }
-        }
-        return eventContainer;
-    }
-
-    public List<string> ExportTimeSignatureEvents()
-    {
-        List<string> eventContainer = new(TimeSignatureEvents.Count);
-        foreach (var @event in TimeSignatureEvents)
-        {
-            string output = $"\t{@event.Key} = {@event.Value.ToChartFormat(0)}";
-            eventContainer.Add(output);
-        }
-        return eventContainer;
+        var initialEvents = base.ConvertEventsToChartStrings();
+        initialEvents.AddRange(
+            TempoEvents.ExportData().
+                Where(tickPairs => tickPairs.Value.Anchor).
+                Select(tickPair => $"{tickPair.Key} = {ANCHOR_IDENTIFIER} {tickPair.Value.Timestamp * MICROSECOND_CONVERSION}")
+            );
+        return initialEvents;
     }
 
     #endregion

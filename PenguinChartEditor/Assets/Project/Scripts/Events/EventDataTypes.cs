@@ -118,7 +118,7 @@ public struct FiveFretNoteData : IEventData, ISustainable, IEquatable<FiveFretNo
     public string[] ToChartFormat(int lane)
     {
         int laneIdentifier = FiveFretInstrument.MatchLaneOrientationToChartID((FiveFretInstrument.LaneOrientation)lane);
-        return new string[1] { $"N {laneIdentifier} {Sustain}" };
+        return new[] { $"N {laneIdentifier} {Sustain}" };
     }
 
     public FiveFretNoteData ExportWithNewFlag(FlagType newFlag)
