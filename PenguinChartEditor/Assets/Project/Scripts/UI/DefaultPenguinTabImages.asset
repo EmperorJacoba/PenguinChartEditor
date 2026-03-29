@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 087ecf596c0a4e659e23fd347f9c259d, type: 3}
+  m_Name: DefaultPenguinTabImages
+  m_EditorClassIdentifier: 
+  tabActiveImage: {fileID: 21300000, guid: 0954ffaa69d24b44888cbec765084e05, type: 3}
+  tabInactiveImage: {fileID: 21300000, guid: d6f733423e7a41f4eb41d81309f3f020, type: 3}
