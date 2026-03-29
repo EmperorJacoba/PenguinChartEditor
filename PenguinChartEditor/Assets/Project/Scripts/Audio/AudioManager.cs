@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using Un4seen.Bass;
 using System.Collections.Generic;
+using System.IO;
 
 // This file is based around the licensed product plugin BASS and its .NET wrapper, BASS.NET.
 // You must obtain your own license of BASS and BASS.NET if you would like to repackage the code in this file by the terms each program specifies.
@@ -38,19 +39,16 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public static bool AudioPlaying
     {
-        get
-        {
-            return _playing;
-        }
+        get => _playing;
         set
         {
             if (value == _playing) return;
             _playing = value;
-            //BeatlinePreviewer.editMode = !_playing;
+            
             PlaybackStateChanged?.Invoke(_playing);
         }
     }
-    private static bool _playing = false;
+    private static bool _playing;
 
     public delegate void PlayingDelegate(bool state);
 
@@ -63,12 +61,25 @@ public class AudioManager : MonoBehaviour
     /// The stem with the longest stream length in StemStreams. All other stem streams are linked to this stem for playback purposes.
     /// <para>This stream is guaranteed to exist in StemStreams at all times EXCEPT when there is no audio loaded.</para> 
     /// </summary>
-    private static StemType StreamLink { get; set; }
+    private static StemType StreamLink
+    {
+        get
+        {
+            if (_sL != 0) return _sL;
+            
+            _sL = GetLongestStream();
+            LinkStreams();
+
+            return _sL;
+        }
+    }
+
+    private static StemType _sL = 0;
 
     /// <summary>
     /// The length of the stream attached to the longest stem.
     /// </summary>
-    public static float SongLength { get; set; } = 0;
+    public static float SongLength { get; set; }
 
     #endregion
 
@@ -85,9 +96,6 @@ public class AudioManager : MonoBehaviour
     public static void InitializeAudio()
     {
         UpdateStemStreams();
-
-        StreamLink = GetLongestStream();
-        LinkStreams();
     }
 
     private void OnApplicationQuit()
@@ -114,10 +122,6 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// Simplify an audio file into x samples taken every ArrayResolution milliseconds from the audio file.
     /// </summary>
-    /// <param name="songPath">File explorer path to the audio file.</param>
-    /// <param name="bytesPerSample">Number of bytes in the original track that each sample represents. Can vary based on encoding.</param>
-    /// <returns>Compressed float array of an audio file's sample data.</returns>
-    /// <exception cref="ArgumentException">Invalid song path</exception>
     public static float[] GetAudioSamples(StemType stem, out long bytesPerSample)
     {
         var songPath = Chart.Metadata.StemPaths[stem];
@@ -179,14 +183,7 @@ public class AudioManager : MonoBehaviour
         StemVolumes.Clear();
         foreach (var stem in Chart.Metadata.StemPaths)
         {
-            try
-            {
-                UpdateAudioStream(stem.Key, stem.Value);
-            }
-            catch
-            {
-                continue;
-            }
+            UpdateAudioStream(stem.Key, stem.Value);
         }
     }
 
@@ -195,27 +192,38 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     /// <param name="stemType">The stem that the BASS stream belongs to.</param>
     /// <param name="songPath">The file path to create a stream from.</param>
-    /// <exception cref="ArgumentException">Thrown when created stem returns an error (0) from BASS</exception>
-    private static void UpdateAudioStream(StemType stemType, string songPath)
+    public static bool UpdateAudioStream(StemType stemType, string songPath)
     {
-        // Make this asynchronous for later? idk
-        // Create master stream in data set to avoid creating a stream over and over during frequent start/stopping
-        if (StemStreams.ContainsKey(stemType))
+        RemoveStream(stemType);
+
+        if (!StemVolumes.ContainsKey(stemType)) StemVolumes[stemType] = new StemVolumeData(MAX_VOLUME, false);
+
+        var stream = Bass.BASS_StreamCreateFile(
+            songPath,
+            0,
+            0,
+            BASSFlag.BASS_DEFAULT | BASSFlag.BASS_STREAM_PRESCAN
+        );
+        if (stream == 0) // bass spits up its food and says go get me a new plate (chef obliges)
         {
-            Bass.BASS_StreamFree(StemStreams[stemType]); // I think I have to do this to prevent memory leaks? Just doing this to be cautious
-            StemStreams.Remove(stemType); // Flush current value just in case
+            return false;
         }
 
-        if (!StemVolumes.ContainsKey(stemType))
-        {
-            StemVolumes.Add(stemType, new StemVolumeData(MAX_VOLUME, false));
-        }
+        StemStreams[stemType] = stream;
+        Chart.Metadata.StemPaths[stemType] = songPath;
+        return true;
+    }
 
-        StemStreams.Add(stemType, Bass.BASS_StreamCreateFile(songPath, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_STREAM_PRESCAN));
-
-        if (StemStreams[stemType] == 0) // this is here instead of above to avoid creating 2 streams and only being able to release one of them (which would cause a memory leak) 
+    public static void RemoveStream(StemType stem)
+    {
+        if (!StemStreams.TryGetValue(stem, out var stream)) return;
+        
+        StemStreams.Remove(stem);
+        Bass.BASS_StreamFree(stream);
+            
+        if (StreamLink == stem)
         {
-            throw new ArgumentException($"Bad song stem passed into stream update. Try reloading directory or choosing new file. Debug: (Stem: {stemType})");
+            _sL = 0;
         }
     }
 
@@ -238,19 +246,19 @@ public class AudioManager : MonoBehaviour
     /// <returns>Stem with longest playback length</returns>
     private static StemType GetLongestStream()
     {
-        // Basic max value finder algorithm: get length of each stem, overwrite current longest stem if new longest is found
         long streamLength = 0;
-        StemType longestStream = 0; // if this function returns 0 then it shows nothing has been loaded
+        StemType longestStream = 0;
+        
         foreach (var stream in StemStreams)
         {
             var currentStreamLength = Bass.BASS_ChannelGetLength(stream.Value);
-            if (currentStreamLength > streamLength)
-            {
-                streamLength = currentStreamLength;
-                longestStream = stream.Key;
-            }
+            if (currentStreamLength <= streamLength) continue;
+            
+            streamLength = currentStreamLength;
+            longestStream = stream.Key;
         }
         SongLength = (float)Bass.BASS_ChannelBytes2Seconds(StemStreams[longestStream], streamLength);
+        
         return longestStream;
     }
 
@@ -374,7 +382,7 @@ public class AudioManager : MonoBehaviour
             }
             catch
             {
-                continue; // this is when audio file lengths differ - figure out what to do here
+                // ignored
             }
         }
     }
