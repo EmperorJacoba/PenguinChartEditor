@@ -3,7 +3,7 @@
 Penguin Chart Editor is a work-in-progress chart editing software for Guitar Hero/Rock Band-style rhythm games, that will support five-fret and six-fret guitar-based instruments, 
 four-lane and eight-lane (Elite) drums, and most importantly, **Vocals/Harmonies gamemodes**. Pro Keys is a reach goal, pro guitar/bass & 5L drums are not planned but are considered.
 
-Unlike other chart editors, Penguin separates the stages of chart editing into distinctive "tabs," each structured to best achieve a certain task.  
+Unlike other chart editors, Penguin separates the stages of chart editing into distinctive "tabs," each structured and streamlined to best achieve certain charting tasks. Each tab is designed in a simple, accessible, and user-friendly way.
 This method of chart editing is inspired by Steinberg's Dorico, a program used for creating sheet music.
 
 ## An important note about Penguin
@@ -25,7 +25,7 @@ Files will be saved as .penguin, a file format that mirrors the data structure o
 
 In following versions (roughly in this order - no promises), more features will be added:
 
-- Undo/Redo
+- ~~Undo/Redo~~ (already implemented)
 - Customizable keybinds/settings - including Lefty Flip
 - .mid support: importing and exporting
 - ***Vocal charting***
