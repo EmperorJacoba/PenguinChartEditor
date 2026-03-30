@@ -7,14 +7,16 @@ using UnityEngine.UI;
 public class StemSourceSelector : MonoBehaviour
 {
     public StemType audioStemType;
-    private string FormattedStem => audioStemType.ToString().Replace("_", " ");
+    public string FormattedStem => audioStemType.ToString().Replace("_", " ");
     [SerializeField] private TMP_Text stemLabel;
     [SerializeField] private Button selectButton;
     [SerializeField] private TMP_InputField stemDisplayField;
     [SerializeField] private Button removeButton;
 
-    private void Awake()
+    public void Initialize(StemType representedStem)
     {
+        audioStemType = representedStem;
+        
         stemLabel.text = MiscTools.Capitalize(audioStemType.ToString().Replace("_", " ")) + ":";
         selectButton.onClick.AddListener(SetAudioStem);
         removeButton.onClick.AddListener(RemoveAudioStem);
@@ -48,6 +50,6 @@ public class StemSourceSelector : MonoBehaviour
     private void RemoveAudioStem()
     {
         AudioManager.RemoveStream(audioStemType);
-        Destroy(this);
+        Destroy(gameObject);
     }
 }

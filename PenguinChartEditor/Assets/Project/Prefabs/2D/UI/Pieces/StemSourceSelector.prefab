@@ -1030,7 +1030,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enter text...
+  m_text: File path will appear here
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 40eaa19a086839c45b405b0b8f221b89, type: 2}
   m_sharedMaterial: {fileID: 2575902805105786099, guid: 40eaa19a086839c45b405b0b8f221b89, type: 2}

@@ -181,7 +181,7 @@ public class AudioManager : MonoBehaviour
     {
         StemStreams.Clear();
         StemVolumes.Clear();
-        foreach (var stem in Chart.Metadata.StemPaths)
+        foreach (var stem in new Dictionary<StemType, string>(Chart.Metadata.StemPaths))
         {
             UpdateAudioStream(stem.Key, stem.Value);
         }
@@ -256,6 +256,12 @@ public class AudioManager : MonoBehaviour
             
             streamLength = currentStreamLength;
             longestStream = stream.Key;
+        }
+
+        if (longestStream == 0)
+        {
+            SongLength = 0;
+            return 0;
         }
         SongLength = (float)Bass.BASS_ChannelBytes2Seconds(StemStreams[longestStream], streamLength);
         
