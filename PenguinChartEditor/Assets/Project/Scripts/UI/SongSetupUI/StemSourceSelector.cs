@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class StemSourceSelector : MonoBehaviour
 {
     public StemType audioStemType;
-    public string FormattedStem => audioStemType.ToString().Replace("_", " ");
+    private string FormattedStem => audioStemType.ToString().Replace("_", " ");
     [SerializeField] private TMP_Text stemLabel;
     [SerializeField] private Button selectButton;
     [SerializeField] private TMP_InputField stemDisplayField;
