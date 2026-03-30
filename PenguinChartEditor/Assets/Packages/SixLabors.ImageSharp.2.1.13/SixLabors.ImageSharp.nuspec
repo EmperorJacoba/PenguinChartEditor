@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>SixLabors.ImageSharp</id>
-    <version>2.1.4</version>
+    <version>2.1.13</version>
     <authors>Six Labors and contributors</authors>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="expression">Apache-2.0</license>
@@ -12,7 +12,7 @@
     <description>A new, fully featured, fully managed, cross-platform, 2D graphics API for .NET</description>
     <copyright>Copyright © Six Labors</copyright>
     <tags>Image Resize Crop Gif Jpg Jpeg Bitmap Pbm Png Tga Tiff WebP NetCore</tags>
-    <repository type="git" url="https://github.com/SixLabors/ImageSharp" commit="71d5316941cdbaea8bf3029e008fd500112af377" />
+    <repository type="git" url="https://github.com/SixLabors/ImageSharp" commit="2c3967b22543545c902fb1fecf57d44025bda84d" />
     <dependencies>
       <group targetFramework=".NETFramework4.7.2">
         <dependency id="System.Buffers" version="4.5.1" exclude="Build,Analyzers" />

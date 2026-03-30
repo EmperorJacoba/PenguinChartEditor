@@ -10418,6 +10418,11 @@
             Gets or sets the decoding mode for multi-frame images
             </summary>
         </member>
+        <member name="P:SixLabors.ImageSharp.Formats.Gif.GifDecoder.MaxFrames">
+            <summary>
+            Gets or sets the maximum number of gif frames.
+            </summary>
+        </member>
         <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoder.Decode``1(SixLabors.ImageSharp.Configuration,System.IO.Stream,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
@@ -10434,17 +10439,22 @@
         </member>
         <member name="F:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.buffer">
             <summary>
-            The temp buffer used to reduce allocations.
-            </summary>
-        </member>
-        <member name="F:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.stream">
-            <summary>
-            The currently loaded stream.
+            The temp buffer.
             </summary>
         </member>
         <member name="F:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.globalColorTable">
             <summary>
             The global color table.
+            </summary>
+        </member>
+        <member name="F:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.currentLocalColorTable">
+            <summary>
+            The current local color table.
+            </summary>
+        </member>
+        <member name="F:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.currentLocalColorTableSize">
+            <summary>
+            Gets the size in bytes of the current local color table.
             </summary>
         </member>
         <member name="F:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.restoreArea">
@@ -10467,6 +10477,26 @@
             The image descriptor.
             </summary>
         </member>
+        <member name="F:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.configuration">
+            <summary>
+            The global configuration.
+            </summary>
+        </member>
+        <member name="F:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.memoryAllocator">
+            <summary>
+            Used for allocating memory during processing operations.
+            </summary>
+        </member>
+        <member name="F:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.maxFrames">
+            <summary>
+            The maximum number of frames to decode. Inclusive.
+            </summary>
+        </member>
+        <member name="F:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.skipMetadata">
+            <summary>
+            Whether to skip metadata during decode.
+            </summary>
+        </member>
         <member name="F:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.metadata">
             <summary>
             The abstract metadata.
@@ -10487,16 +10517,6 @@
         <member name="P:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.Configuration">
             <inheritdoc />
         </member>
-        <member name="P:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.IgnoreMetadata">
-            <summary>
-            Gets or sets a value indicating whether the metadata should be ignored when the image is being decoded.
-            </summary>
-        </member>
-        <member name="P:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.DecodingMode">
-            <summary>
-            Gets the decoding mode for multi-frame images.
-            </summary>
-        </member>
         <member name="P:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.Dimensions">
             <summary>
             Gets the dimensions of the image.
@@ -10508,62 +10528,71 @@
         <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.Identify(SixLabors.ImageSharp.IO.BufferedReadStream,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadGraphicalControlExtension">
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadGraphicalControlExtension(SixLabors.ImageSharp.IO.BufferedReadStream)">
             <summary>
             Reads the graphic control extension.
             </summary>
+            <param name="stream">The <see cref="T:SixLabors.ImageSharp.IO.BufferedReadStream"/> containing image data.</param>
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadImageDescriptor">
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadImageDescriptor(SixLabors.ImageSharp.IO.BufferedReadStream)">
             <summary>
             Reads the image descriptor.
             </summary>
+            <param name="stream">The <see cref="T:SixLabors.ImageSharp.IO.BufferedReadStream"/> containing image data.</param>
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadLogicalScreenDescriptor">
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadLogicalScreenDescriptor(SixLabors.ImageSharp.IO.BufferedReadStream)">
             <summary>
             Reads the logical screen descriptor.
             </summary>
+            <param name="stream">The <see cref="T:SixLabors.ImageSharp.IO.BufferedReadStream"/> containing image data.</param>
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadApplicationExtension">
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadApplicationExtension(SixLabors.ImageSharp.IO.BufferedReadStream)">
             <summary>
             Reads the application extension block parsing any animation or XMP information
             if present.
             </summary>
+            <param name="stream">The <see cref="T:SixLabors.ImageSharp.IO.BufferedReadStream"/> containing image data.</param>
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.SkipBlock(System.Int32)">
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.SkipBlock(SixLabors.ImageSharp.IO.BufferedReadStream,System.Int32)">
             <summary>
             Skips over a block or reads its terminator.
-            <param name="blockSize">The length of the block to skip.</param>
             </summary>
+            <param name="stream">The <see cref="T:SixLabors.ImageSharp.IO.BufferedReadStream"/> containing image data.</param>
+            <param name="blockSize">The length of the block to skip.</param>
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadComments">
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadComments(SixLabors.ImageSharp.IO.BufferedReadStream)">
             <summary>
             Reads the gif comments.
             </summary>
+            <param name="stream">The <see cref="T:SixLabors.ImageSharp.IO.BufferedReadStream"/> containing image data.</param>
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadFrame``1(SixLabors.ImageSharp.Image{``0}@,SixLabors.ImageSharp.ImageFrame{``0}@)">
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadFrame``1(SixLabors.ImageSharp.IO.BufferedReadStream,SixLabors.ImageSharp.Image{``0}@,SixLabors.ImageSharp.ImageFrame{``0}@)">
             <summary>
             Reads an individual gif frame.
             </summary>
             <typeparam name="TPixel">The pixel format.</typeparam>
+            <param name="stream">The <see cref="T:SixLabors.ImageSharp.IO.BufferedReadStream"/> containing image data.</param>
             <param name="image">The image to decode the information to.</param>
             <param name="previousFrame">The previous frame.</param>
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadFrameIndices(SixLabors.ImageSharp.Memory.Buffer2D{System.Byte})">
-            <summary>
-            Reads the frame indices marking the color to use for each pixel.
-            </summary>
-            <param name="indices">The 2D pixel buffer to write to.</param>
-        </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadFrameColors``1(SixLabors.ImageSharp.Image{``0}@,SixLabors.ImageSharp.ImageFrame{``0}@,SixLabors.ImageSharp.Memory.Buffer2D{System.Byte},System.ReadOnlySpan{SixLabors.ImageSharp.PixelFormats.Rgb24},SixLabors.ImageSharp.Formats.Gif.GifImageDescriptor@)">
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadFrameColors``1(SixLabors.ImageSharp.IO.BufferedReadStream,SixLabors.ImageSharp.Image{``0}@,SixLabors.ImageSharp.ImageFrame{``0}@,System.ReadOnlySpan{SixLabors.ImageSharp.PixelFormats.Rgb24},SixLabors.ImageSharp.Formats.Gif.GifImageDescriptor@)">
             <summary>
             Reads the frames colors, mapping indices to colors.
             </summary>
             <typeparam name="TPixel">The pixel format.</typeparam>
+            <param name="stream">The <see cref="T:SixLabors.ImageSharp.IO.BufferedReadStream"/> containing image data.</param>
             <param name="image">The image to decode the information to.</param>
             <param name="previousFrame">The previous frame.</param>
-            <param name="indices">The indexed pixels.</param>
             <param name="colorTable">The color table containing the available colors.</param>
             <param name="descriptor">The <see cref="T:SixLabors.ImageSharp.Formats.Gif.GifImageDescriptor"/></param>
+        </member>
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.ReadFrameMetadata(SixLabors.ImageSharp.IO.BufferedReadStream,System.Collections.Generic.List{SixLabors.ImageSharp.Metadata.ImageFrameMetadata},SixLabors.ImageSharp.Metadata.ImageFrameMetadata@)">
+            <summary>
+            Reads the frames metadata.
+            </summary>
+            <param name="stream">The <see cref="T:SixLabors.ImageSharp.IO.BufferedReadStream"/> containing image data.</param>
+            <param name="frameMetadata">The collection of frame metadata.</param>
+            <param name="previousFrame">The previous frame metadata.</param>
         </member>
         <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.RestoreToBackground``1(SixLabors.ImageSharp.ImageFrame{``0})">
             <summary>
@@ -10574,7 +10603,7 @@
         </member>
         <member name="M:SixLabors.ImageSharp.Formats.Gif.GifDecoderCore.SetFrameMetadata(SixLabors.ImageSharp.Metadata.ImageFrameMetadata)">
             <summary>
-            Sets the frames metadata.
+            Sets the metadata for the image frame.
             </summary>
             <param name="meta">The metadata.</param>
         </member>
@@ -10944,6 +10973,11 @@
             Gets the decoding mode for multi-frame images.
             </summary>
         </member>
+        <member name="P:SixLabors.ImageSharp.Formats.Gif.IGifDecoderOptions.MaxFrames">
+            <summary>
+            Gets or sets the maximum number of gif frames.
+            </summary>
+        </member>
         <member name="T:SixLabors.ImageSharp.Formats.Gif.IGifEncoderOptions">
             <summary>
             The configuration options used for encoding gifs.
@@ -10974,6 +11008,11 @@
             The max decoder pixel stack size.
             </summary>
         </member>
+        <member name="F:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.MaximumLzwBits">
+            <summary>
+            The maximum bits for a lzw code.
+            </summary>
+        </member>
         <member name="F:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.NullCode">
             <summary>
             The null code.
@@ -10984,42 +11023,63 @@
             The stream to decode.
             </summary>
         </member>
-        <member name="F:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.prefix">
+        <member name="F:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.prefixOwner">
             <summary>
             The prefix buffer.
             </summary>
         </member>
-        <member name="F:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.suffix">
+        <member name="F:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.suffixOwner">
             <summary>
             The suffix buffer.
             </summary>
         </member>
-        <member name="F:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.pixelStack">
+        <member name="F:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.bufferOwner">
+            <summary>
+            The scratch buffer for reading data blocks.
+            </summary>
+        </member>
+        <member name="F:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.pixelStackOwner">
             <summary>
             The pixel stack buffer.
             </summary>
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.#ctor(SixLabors.ImageSharp.Memory.MemoryAllocator,SixLabors.ImageSharp.IO.BufferedReadStream)">
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.#ctor(SixLabors.ImageSharp.Memory.MemoryAllocator,SixLabors.ImageSharp.IO.BufferedReadStream,System.Int32)">
             <summary>
             Initializes a new instance of the <see cref="T:SixLabors.ImageSharp.Formats.Gif.LzwDecoder"/> class
             and sets the stream, where the compressed data should be read from.
             </summary>
             <param name="memoryAllocator">The <see cref="T:SixLabors.ImageSharp.Memory.MemoryAllocator"/> to use for buffer allocations.</param>
             <param name="stream">The stream to read from.</param>
+            <param name="minCodeSize">The minimum code size.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is null.</exception>
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.DecodePixels(System.Int32,SixLabors.ImageSharp.Memory.Buffer2D{System.Byte})">
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.IsValidMinCodeSize(System.Int32)">
             <summary>
-            Decodes and decompresses all pixel indices from the stream.
+            Gets a value indicating whether the minimum code size is valid.
             </summary>
-            <param name="minCodeSize">Minimum code size of the data.</param>
-            <param name="pixels">The pixel array to decode to.</param>
+            <param name="minCodeSize">The minimum code size.</param>
+            <returns>
+            <see langword="true"/> if the minimum code size is valid; otherwise, <see langword="false"/>.
+            </returns>
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.ReadBlock(System.Span{System.Byte})">
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.DecodePixelRow(System.Span{System.Byte})">
+            <summary>
+            Decodes and decompresses all pixel indices for a single row from the stream, assigning the pixel values to the buffer.
+            </summary>
+            <param name="indices">The pixel indices array to decode to.</param>
+        </member>
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.SkipIndices(System.Int32)">
+            <summary>
+            Decodes and decompresses all pixel indices from the stream allowing skipping of the data.
+            </summary>
+            <param name="length">The resulting index table length.</param>
+        </member>
+        <member name="M:SixLabors.ImageSharp.Formats.Gif.LzwDecoder.ReadBlock(SixLabors.ImageSharp.IO.BufferedReadStream,System.Span{System.Byte})">
             <summary>
             Reads the next data block from the stream. A data block begins with a byte,
             which defines the size of the block, followed by the block itself.
             </summary>
+            <param name="stream">The stream to read from.</param>
             <param name="buffer">The buffer to store the block in.</param>
             <returns>
             The <see cref="T:System.Int32"/>.
@@ -14977,14 +15037,22 @@
         </member>
         <member name="M:SixLabors.ImageSharp.Formats.Pbm.BufferedReadStreamExtensions.SkipWhitespaceAndComments(SixLabors.ImageSharp.IO.BufferedReadStream)">
             <summary>
-            Skip over any whitespace or any comments.
+            Skip over any whitespace or any comments and signal if EOF has been reached.
             </summary>
+            <param name="stream">The buffered read stream.</param>
+            <returns><see langword="false"/> if EOF has been reached while reading the stream; see langword="true"/> otherwise.</returns>
         </member>
-        <member name="M:SixLabors.ImageSharp.Formats.Pbm.BufferedReadStreamExtensions.ReadDecimal(SixLabors.ImageSharp.IO.BufferedReadStream)">
+        <member name="M:SixLabors.ImageSharp.Formats.Pbm.BufferedReadStreamExtensions.ReadDecimal(SixLabors.ImageSharp.IO.BufferedReadStream,System.Int32@)">
             <summary>
-            Read a decimal text value.
+            Read a decimal text value and signal if EOF has been reached.
             </summary>
-            <returns>The integer value of the decimal.</returns>
+            <param name="stream">The buffered read stream.</param>
+            <param name="value">The read value.</param>
+            <returns><see langword="false"/> if EOF has been reached while reading the stream; <see langword="true"/> otherwise.</returns>
+            <remarks>
+            A 'false' return value doesn't mean that the parsing has been failed, since it's possible to reach EOF while reading the last decimal in the file.
+            It's up to the call site to handle such a situation.
+            </remarks>
         </member>
         <member name="T:SixLabors.ImageSharp.Formats.Pbm.IPbmEncoderOptions">
             <summary>
@@ -15157,6 +15225,7 @@
             Processes the ppm header.
             </summary>
             <param name="stream">The input stream.</param>
+            <exception cref="T:SixLabors.ImageSharp.InvalidImageContentException">An EOF marker has been read before the image has been decoded.</exception>
         </member>
         <member name="T:SixLabors.ImageSharp.Formats.Pbm.PbmEncoder">
             <summary>
@@ -16249,6 +16318,11 @@
         <member name="F:SixLabors.ImageSharp.Formats.Png.PngDecoderCore.nextChunk">
             <summary>
             The next chunk of data to return.
+            </summary>
+        </member>
+        <member name="F:SixLabors.ImageSharp.Formats.Png.PngDecoderCore.hasImageData">
+            <summary>
+            A value indicating whether the image data has been read.
             </summary>
         </member>
         <member name="M:SixLabors.ImageSharp.Formats.Png.PngDecoderCore.#ctor(SixLabors.ImageSharp.Configuration,SixLabors.ImageSharp.Formats.Png.IPngDecoderOptions)">
@@ -29523,6 +29597,11 @@
             <param name="configuration">The configuration which allows altering default behaviour or extending the library.</param>
             <param name="stream">The input stream.</param>
         </member>
+        <member name="P:SixLabors.ImageSharp.IO.BufferedReadStream.EofHitCount">
+            <summary>
+            Gets the number indicating the EOF hits occured while reading from this instance.
+            </summary>
+        </member>
         <member name="P:SixLabors.ImageSharp.IO.BufferedReadStream.BufferSize">
             <summary>
             Gets the size, in bytes, of the underlying buffer.
@@ -29875,6 +29954,7 @@
             <summary>
             Allocates a <see cref="T:SixLabors.ImageSharp.Memory.MemoryGroup`1"/>.
             </summary>
+            <typeparam name="T">The type of element to allocate.</typeparam>
             <param name="totalLength">The total length of the buffer.</param>
             <param name="bufferAlignment">The expected alignment (eg. to make sure image rows fit into single buffers).</param>
             <param name="options">The <see cref="T:SixLabors.ImageSharp.Memory.AllocationOptions"/>.</param>
@@ -29890,6 +29970,12 @@
             <summary>
             Gets or sets a value defining the maximum size of the <see cref="T:SixLabors.ImageSharp.Memory.MemoryAllocator"/>'s internal memory pool
             in Megabytes. <see langword="null"/> means platform default.
+            </summary>
+        </member>
+        <member name="P:SixLabors.ImageSharp.Memory.MemoryAllocatorOptions.AllocationLimitMegabytes">
+            <summary>
+            Gets or sets a value defining the maximum (discontiguous) buffer size that can be allocated by the allocator in Megabytes.
+            <see langword="null"/> means platform default: 1GB on 32-bit processes, 4GB on 64-bit processes.
             </summary>
         </member>
         <member name="T:SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator">
@@ -29909,7 +29995,7 @@
         <member name="M:SixLabors.ImageSharp.Memory.UniformUnmanagedMemoryPoolMemoryAllocator.Allocate``1(System.Int32,SixLabors.ImageSharp.Memory.AllocationOptions)">
             <inheritdoc />
         </member>
-        <member name="M:SixLabors.ImageSharp.Memory.UniformUnmanagedMemoryPoolMemoryAllocator.AllocateGroup``1(System.Int64,System.Int32,SixLabors.ImageSharp.Memory.AllocationOptions)">
+        <member name="M:SixLabors.ImageSharp.Memory.UniformUnmanagedMemoryPoolMemoryAllocator.AllocateGroupCore``1(System.Int64,System.Int64,System.Int32,SixLabors.ImageSharp.Memory.AllocationOptions)">
             <inheritdoc />
         </member>
         <member name="T:SixLabors.ImageSharp.Memory.UnmanagedMemoryAllocator">
