@@ -5,15 +5,8 @@ using System.Collections.Generic;
 
 public class Metadata
 {
-    /// <summary>
-    /// Stores the directory of the album cover selected by the user.
-    /// </summary>
-    public string ImagePath { get; set; } // set with SetAlbumCover()
-
-    /// <summary>
-    /// Stores the directory of the background set by the user.
-    /// </summary>
-    public string Background { get; set;}
+    public string CoverPath { get; set; } = "";
+    public string BackgroundPath { get; set; } = "";
 
     /// <summary>
     /// Stores valid song metadata fields.

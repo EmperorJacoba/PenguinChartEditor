@@ -855,7 +855,7 @@ GameObject:
   - component: {fileID: 132020208}
   - component: {fileID: 132020207}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: (click to select file)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3814,6 +3814,7 @@ GameObject:
   - component: {fileID: 793924311}
   - component: {fileID: 793924313}
   - component: {fileID: 793924312}
+  - component: {fileID: 793924314}
   m_Layer: 5
   m_Name: album
   m_TagString: Untagged
@@ -3880,6 +3881,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 793924310}
   m_CullTransparentMesh: 1
+--- !u!114 &793924314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 793924310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79b79ef0f86b4eb6be6fdf6799e71f1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  imageToProcess: 0
+  disableObjectsOnImageLoad:
+  - {fileID: 2110035918}
+  - {fileID: 132020205}
 --- !u!1 &802508057
 GameObject:
   m_ObjectHideFlags: 0
@@ -5603,9 +5620,9 @@ RectTransform:
   - {fileID: 1795880853}
   m_Father: {fileID: 789912696}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 272.7002, y: -97}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -687.2998, y: -97}
   m_SizeDelta: {x: 1200, y: 744}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1172059765
@@ -5983,7 +6000,7 @@ GameObject:
   - component: {fileID: 1214664907}
   - component: {fileID: 1214664906}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: (click to select image or video file)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6028,7 +6045,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: (click to select image or video file)
+  m_text: (click to select image)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 40eaa19a086839c45b405b0b8f221b89, type: 2}
   m_sharedMaterial: {fileID: 2575902805105786099, guid: 40eaa19a086839c45b405b0b8f221b89, type: 2}
@@ -7052,7 +7069,7 @@ GameObject:
   - component: {fileID: 1496415921}
   - component: {fileID: 1496415920}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: No background art selected
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7453,6 +7470,7 @@ GameObject:
   - component: {fileID: 1552506133}
   - component: {fileID: 1552506135}
   - component: {fileID: 1552506134}
+  - component: {fileID: 1552506136}
   m_Layer: 5
   m_Name: background (select)
   m_TagString: Untagged
@@ -7519,6 +7537,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1552506132}
   m_CullTransparentMesh: 1
+--- !u!114 &1552506136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1552506132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79b79ef0f86b4eb6be6fdf6799e71f1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  imageToProcess: 1
+  disableObjectsOnImageLoad:
+  - {fileID: 1496415918}
+  - {fileID: 1214664904}
 --- !u!1 &1559963719
 GameObject:
   m_ObjectHideFlags: 0
@@ -10701,7 +10735,7 @@ GameObject:
   - component: {fileID: 2110035921}
   - component: {fileID: 2110035920}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: No album art selected
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

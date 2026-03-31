@@ -45,7 +45,6 @@ public class MetadataHelper : MonoBehaviour
         }
     }
 
-    // Set up extension filters for selecting files
     private readonly ExtensionFilter[] imageExtensions = new[]
     {
         new ExtensionFilter("Image Files ", "png", "jpg", "jpeg"),
@@ -55,42 +54,6 @@ public class MetadataHelper : MonoBehaviour
     {
         new ExtensionFilter("Audio Files ", "opus", "ogg", "mp3", "wav", "flac"),
     };
-
-    /// <summary>
-    /// Used on album button select click to set the image of the button based on user selection.
-    /// </summary>
-    public void UserSetAlbumCover()
-    {
-        var selectedImagePath = StandaloneFileBrowser.OpenFilePanel("Open album cover", "", imageExtensions, false); // User open image file dialog
-
-        if (selectedImagePath.Length != 0) // Avoid throwing error when user cancels selection
-        {
-            Chart.Metadata.ImagePath = selectedImagePath[0]; // Store path for exporting chart package later
-
-            Texture2D albumCoverTexture = new(1, 1); // Set up texture, l&w args are irrelevant
-            byte[] coverInBytes = File.ReadAllBytes(Chart.Metadata.ImagePath); // Convert user selection to bytes to create new Texture
-
-            if (!albumCoverTexture.LoadImage(coverInBytes)) // Load image into albumCoverTexture, if it no work then throw error
-            {
-                throw new ArgumentException("Image failed to load");
-            }
-
-            if (albumCoverTexture.height != 512 || albumCoverTexture.width != 512) // Future: Automatically resize image for user
-            {
-                throw new ArgumentException("Image must be 512x512 pixels! Use a program like Photoshop or GIMP to resize the image.");
-            }
-
-            Sprite albumCoverSprite = Sprite.Create(
-                albumCoverTexture,
-                new Rect(0, 0, 512, 512),
-                new Vector2(0.5f, 0.5f)
-            ); // Create sprite from user image
-            imageSelector.GetComponent<Image>().sprite = albumCoverSprite; // Set image component of button to created sprite
-
-            GameObject tempSelectionText = imageSelector.gameObject.transform.GetChild(0).gameObject;
-            tempSelectionText.GetComponent<TextMeshProUGUI>().text = ""; // Get text child of button and set the text to empty upon image selection
-        }
-    }
 
     /// <summary>
     /// Set the audio stem of one of the eligible audio stems in Metadata.StemType.
