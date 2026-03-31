@@ -353,6 +353,12 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public static void ForcePlayFromPosition(float position)
+    {
+        SetStreamPositions(position);
+        Bass.BASS_ChannelPlay(StemStreams[StreamLink], false);
+    }
+
     public static void PauseAudio()
     {
         if (AudioPlaying)
@@ -361,6 +367,12 @@ public class AudioManager : MonoBehaviour
             AudioPlaying = false;
             SongTime.EnableChartingInputMap();
         }
+    }
+    
+    public static void ForceStop()
+    {
+        Bass.BASS_ChannelPause(StemStreams[StreamLink]);
+        SetStreamPositions();
     }
 
     public static void StopAudio()
@@ -396,19 +408,20 @@ public class AudioManager : MonoBehaviour
         bool success = Bass.BASS_ChannelPlay(clapStreamHandle, false);
     }
 
+    private static void SetStreamPositions() => SetStreamPositions(SongTime.SongPositionSeconds);
     /// <summary>
     /// Set the stream position to the waveform's current position for every stream in StemStreams. 
     /// </summary>
-    private static void SetStreamPositions()
+    private static void SetStreamPositions(double position)
     {
-        foreach (var streampair in StemStreams)
+        foreach (var streamPair in StemStreams)
         {
             try
             {
                 Bass.BASS_ChannelSetPosition
                 (
-                    StemStreams[streampair.Key],
-                    SongTime.SongPositionSeconds
+                    StemStreams[streamPair.Key],
+                    position
                 );
             }
             catch
