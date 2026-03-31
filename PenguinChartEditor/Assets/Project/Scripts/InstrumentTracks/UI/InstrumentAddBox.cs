@@ -22,25 +22,7 @@ public class InstrumentAddBox : MonoBehaviour
         
         closeButton.onClick.AddListener(Deactivate);
 
-        HashSet<InstrumentType> foundInstruments = new();
-        List<ActiveInstrument> instrumentData = new();
-
-        foreach (var instrument in Chart.Instruments)
-        {
-            var name = instrument.InstrumentName;
-            if (foundInstruments.Contains(name))
-            {
-                var instrumentDataObj = instrumentData.Where(x => x.name == name).First();
-                instrumentDataObj.activeDifficulties.Add(instrument.Difficulty);
-            }
-            else
-            {
-                foundInstruments.Add(name);
-                instrumentData.Add(new ActiveInstrument(name, instrument.Difficulty));
-            }
-        }
-
-        instrumentData = instrumentData.OrderBy(x => (int)x.name).ToList();
+        var instrumentData = Chart.GetInstrumentDifficultyInformation();
 
         foreach (var foundInstrument in instrumentData)
         {

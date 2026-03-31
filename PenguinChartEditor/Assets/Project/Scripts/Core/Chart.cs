@@ -44,6 +44,30 @@ public class Chart : MonoBehaviour
         return outputSet;
     }
 
+    public static List<ActiveInstrument> GetInstrumentDifficultyInformation()
+    {
+        HashSet<InstrumentType> foundInstruments = new();
+        List<ActiveInstrument> instrumentData = new();
+
+        foreach (var instrument in Instruments)
+        {
+            var name = instrument.InstrumentName;
+            if (foundInstruments.Contains(name))
+            {
+                var instrumentDataObj = instrumentData.First(x => x.name == name);
+                instrumentDataObj.activeDifficulties.Add(instrument.Difficulty);
+            }
+            else
+            {
+                foundInstruments.Add(name);
+                instrumentData.Add(new ActiveInstrument(name, instrument.Difficulty));
+            }
+        }
+
+        instrumentData = instrumentData.OrderBy(x => (int)x.name).ToList();
+        return instrumentData;
+    }
+
     public static HashSet<DifficultyType> GetActiveDifficulties(InstrumentType instrumentType)
     {
         return Instruments.Where(x => x.InstrumentName == instrumentType).Select(x => x.Difficulty)

@@ -22,7 +22,7 @@ public class InstrumentTrackAdder : MonoBehaviour
         }
     }
 
-    public void SpawnInstrument(DifficultyType difficulty)
+    private void SpawnInstrument(DifficultyType difficulty)
     {
         HeaderType instrumentID = InstrumentMetadata.GetHeader(targetInstrument, difficulty);
         if (parentBox.addDirectionIsRight)
