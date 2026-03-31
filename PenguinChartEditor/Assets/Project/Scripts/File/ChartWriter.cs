@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// add album & bg processing
 public static class ChartWriter
 {
     private const int CHART_FIELDS_ENUM_START_POINT = 0;
@@ -94,6 +95,9 @@ public static class ChartWriter
         {
             iniLines.Add($"{difficulty.Key} = {difficulty.Value}");
         }
+        
+        iniLines.Add($"song_length = {Mathf.CeilToInt(Chart.Metadata.SongLength * 1000)}");
+        iniLines.Add($"preview_start_time = {Mathf.CeilToInt(Chart.Metadata.PreviewStartTime * 1000)}");
         
         return iniLines;
     }

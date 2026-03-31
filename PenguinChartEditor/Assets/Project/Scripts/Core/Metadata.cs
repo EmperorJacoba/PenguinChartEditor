@@ -1,7 +1,4 @@
-using System;
-using System.IO;
 using System.Collections.Generic;
-
 
 public class Metadata
 {
@@ -19,7 +16,6 @@ public class Metadata
         genre,
         year,
         charter,
-        song_length,
         icon,
         loading_phrase,
         album_track,
@@ -42,6 +38,8 @@ public class Metadata
             PreviewStartTimeUpdated?.Invoke();
         }
     }
+
+    public float SongLength => (SongTime.SongLength * 1000);
 
     private float _pst = 0;
 

@@ -230,13 +230,14 @@ public class SongTime : MonoBehaviour
             seconds + 
             milliseconds / MILLISECONDS_TO_SECONDS_CONVERSION;
     }
-    
+
     /// <summary>
     /// Take a number of seconds (in S.ms form - ex. 61.1 seconds) and convert it to MM:SS.mmm format (where 61.1 returns 01:01.100)
     /// </summary>
     /// <param name="position">The unformatted second count.</param>
+    /// <param name="includeMS">Include milliseconds portion? Truncates if false.</param>
     /// <returns>The formatted MM:SS:mmm timestamp of the second position</returns>
-    public static string ConvertSecondsToTimestamp(double position)
+    public static string ConvertSecondsToTimestamp(double position, bool includeMS = true)
     {
         var minutes = Math.Floor(position / 60);
         var secondsWithMS = position - minutes * 60;
@@ -261,7 +262,8 @@ public class SongTime : MonoBehaviour
             millisecondsString = millisecondsString.PadRight(3, '0');
         }
 
-        return minutesString + ":" + secondsString + "." + millisecondsString;
+        var msPortion = includeMS ? "." + millisecondsString : "";
+        return minutesString + ":" + secondsString + msPortion;
     }
 
     #endregion
