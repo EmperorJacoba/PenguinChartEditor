@@ -117,6 +117,10 @@ public class Chart : MonoBehaviour
         }   
     }
 
+    public delegate void ChartFileLoadedDel();
+
+    public static event ChartFileLoadedDel ChartFileLoaded;
+
     public static void LoadFile()
     {
         var pathCandidates = 
@@ -152,6 +156,8 @@ public class Chart : MonoBehaviour
         }
         AudioManager.InitializeAudio();
         Waveform.InitializeWaveformData();
+        
+        ChartFileLoaded?.Invoke();
     }
 
     #endregion

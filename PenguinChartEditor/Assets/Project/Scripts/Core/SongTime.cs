@@ -4,6 +4,9 @@ using UnityEngine;
 public class SongTime : MonoBehaviour
 {
     private const int MIDDLE_MOUSE_BUTTON_ID = 2;
+    private const float MINUTES_TO_SECONDS_CONVERSION = 60;
+    private const float MILLISECONDS_TO_SECONDS_CONVERSION = 1000;
+    
     private static InputMap inputMap;
 
     // Needed for delta calculations when scrolling using MMB
@@ -53,6 +56,8 @@ public class SongTime : MonoBehaviour
     /// The length of the song in tick time.
     /// </summary>
     public static int SongLengthTicks => Chart.SyncTrackInstrument.ConvertSecondsToTickTime(AudioManager.SongLength);
+
+    public static float SongLength => AudioManager.SongLength;
 
     public delegate void TimeChangedDelegate();
     public delegate void PositiveTimeChangeDelegate();
@@ -184,6 +189,79 @@ public class SongTime : MonoBehaviour
             // Regress to last grid snap
             return (int)Math.Ceiling(cursorTickTime - remainder);
         }
+    }
+
+    public static void UpdateSongTimestampFromFormattedTimestamp(string timestamp) =>
+        SongPositionSeconds = ConvertFormattedTimestampToSeconds(timestamp);
+    public static float ConvertFormattedTimestampToSeconds(string timestamp)
+    {
+        int minutes = 0;
+        int seconds = 0;
+        int milliseconds = 0;
+
+        bool noSplit;
+
+        // Isolate minute value, if it exists
+        try
+        {
+            var minSplit = timestamp.Split(':');
+            minutes = int.Parse(minSplit[0]);
+            timestamp = minSplit[1];
+        }
+        catch { noSplit = true; minutes = 0; } // minutes is set to zero to prevent doubling values when minutes is set to the first array val
+
+        // Isolate second and millisecond value, if it exists
+        try
+        {
+            var secSplit = timestamp.Split('.');
+            seconds = int.Parse(secSplit[0]);
+            milliseconds = int.Parse(secSplit[1]);
+
+            noSplit = false;
+        }
+        catch { noSplit = true; }
+
+        // If no other time type/divider is present, interpret the raw number as seconds
+        if (noSplit) seconds = int.Parse(timestamp);
+
+        // Convert and add together isolated values
+        return 
+            minutes * MINUTES_TO_SECONDS_CONVERSION + 
+            seconds + 
+            milliseconds / MILLISECONDS_TO_SECONDS_CONVERSION;
+    }
+    
+    /// <summary>
+    /// Take a number of seconds (in S.ms form - ex. 61.1 seconds) and convert it to MM:SS.mmm format (where 61.1 returns 01:01.100)
+    /// </summary>
+    /// <param name="position">The unformatted second count.</param>
+    /// <returns>The formatted MM:SS:mmm timestamp of the second position</returns>
+    public static string ConvertSecondsToTimestamp(double position)
+    {
+        var minutes = Math.Floor(position / 60);
+        var secondsWithMS = position - minutes * 60;
+        var seconds = (int)Math.Floor(secondsWithMS);
+        var milliseconds = Math.Round(secondsWithMS - seconds, 3) * 1000;
+
+        string minutesString = minutes.ToString();
+        if (minutes < 10)
+        {
+            minutesString = minutesString.PadLeft(minutesString.Length + 1, '0');
+        }
+
+        string secondsString = seconds.ToString();
+        if (seconds < 10)
+        {
+            secondsString = secondsString.PadLeft(2, '0');
+        }
+
+        string millisecondsString = milliseconds.ToString();
+        if (millisecondsString.Length < 3)
+        {
+            millisecondsString = millisecondsString.PadRight(3, '0');
+        }
+
+        return minutesString + ":" + secondsString + "." + millisecondsString;
     }
 
     #endregion

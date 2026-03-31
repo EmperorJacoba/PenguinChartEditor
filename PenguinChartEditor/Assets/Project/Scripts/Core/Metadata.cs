@@ -20,13 +20,30 @@ public class Metadata
         year,
         charter,
         song_length,
-        preview_start_time,
         icon,
         loading_phrase,
         album_track,
         playlist_track,
         video_start_time,
     }
+
+    public delegate void PreviewStartTimeUpdatedDel();
+    public PreviewStartTimeUpdatedDel PreviewStartTimeUpdated;
+
+    public float PreviewStartTime
+    {
+        get => _pst;
+        set
+        {
+            if (value < 0) value = 0;
+            else if (value > AudioManager.SongLength) value = AudioManager.SongLength;
+            
+            _pst = value;
+            PreviewStartTimeUpdated?.Invoke();
+        }
+    }
+
+    private float _pst = 0;
 
     public Dictionary<MetadataType, string> SongInfo = new();
 

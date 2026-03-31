@@ -12,6 +12,6 @@ public class TotalTimeDisplay : MonoBehaviour
 
     private void UpdateSongLengthText()
     {
-        SongLengthLabel.text = Chart.SyncTrackInstrument.ConvertSecondsToTimestamp(AudioManager.SongLength);
+        SongLengthLabel.text = SongTime.ConvertSecondsToTimestamp(AudioManager.SongLength);
     }
 }

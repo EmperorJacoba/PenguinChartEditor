@@ -66,12 +66,15 @@ public class AudioManager : MonoBehaviour
         get
         {
             if (_sL != 0) return _sL;
-            
-            _sL = GetLongestStream();
-            LinkStreams();
-
+            UpdateStreamLink();
             return _sL;
         }
+    }
+
+    private static void UpdateStreamLink()
+    {
+        _sL = GetLongestStream();
+        LinkStreams();
     }
 
     private static StemType _sL = 0;
@@ -79,7 +82,29 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// The length of the stream attached to the longest stem.
     /// </summary>
-    public static float SongLength { get; set; }
+    public static float SongLength
+    {
+        get
+        {
+            if (_sl == 0)
+            {
+                UpdateStreamLink();
+            }
+
+            return _sl;
+        }
+        set
+        {
+            if (value < 0)
+            {
+                Debug.LogError("Tried to set the song length negative. Song length has been set to zero.");
+            }
+
+            _sl = value;
+        }
+    }
+
+    private static float _sl = 0;
 
     #endregion
 

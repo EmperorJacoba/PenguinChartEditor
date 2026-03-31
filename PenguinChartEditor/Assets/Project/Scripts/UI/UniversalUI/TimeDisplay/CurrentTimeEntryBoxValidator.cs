@@ -4,11 +4,12 @@ using System.Linq;
 
 public class CurrentTimeEntryBoxValidator : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField entryBox;
+    private TMP_InputField entryBox;
 
     // Code adapted from https://docs.unity3d.com/2018.3/Documentation/ScriptReference/UI.InputField-onValidateInput.html 
     private void Start()
     {
+        entryBox = GetComponent<TMP_InputField>();
         entryBox.onValidateInput += delegate(string input, int charIndex, char addedChar) { return Validate(addedChar); };    
     }
 

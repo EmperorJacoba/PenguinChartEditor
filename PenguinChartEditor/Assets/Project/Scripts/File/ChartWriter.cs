@@ -1,6 +1,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public static class ChartWriter
 {
@@ -115,10 +116,10 @@ public static class ChartWriter
         songGroup.Add($"\tResolution = {Chart.Resolution}");
 
         // Skip Player2 and Difficulty (add later if GH3 support is requested)
-        
-        var startTime = Chart.Metadata.SongInfo[Metadata.MetadataType.preview_start_time];
+
+        int startTime = (int)Mathf.Round(Chart.Metadata.PreviewStartTime * 1000);
         songGroup.Add($"\tPreviewStart = {startTime}");
-        songGroup.Add($"\tPreviewEnd = {int.Parse(startTime) + UserSettings.DefaultPreviewLength}");
+        songGroup.Add($"\tPreviewEnd = {startTime + UserSettings.DefaultPreviewLength}");
         
         foreach (var stem in Chart.Metadata.StemPaths)
         {
