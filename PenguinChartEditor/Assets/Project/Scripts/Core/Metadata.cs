@@ -34,16 +34,26 @@ public class Metadata
         set
         {
             if (value < 0) value = 0;
-            else if (value > AudioManager.SongLength) value = AudioManager.SongLength;
+
+            if (Chart.ChartLoading)
+            {
+                _pst = value;
+                return;
+            }
+            
+            if (value > AudioManager.SongLength) value = AudioManager.SongLength;
             
             _pst = value;
             PreviewStartTimeUpdated?.Invoke();
         }
     }
+    
+    
+    private float _pst = 0;
+    
 
     public float SongLength => (SongTime.SongLength * 1000);
 
-    private float _pst = 0;
 
     public Dictionary<MetadataType, string> SongInfo = new();
 

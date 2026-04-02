@@ -16,6 +16,7 @@ public class PercentagePreviewTimeUpdater : MonoBehaviour
         attachedSlider.onValueChanged.AddListener(UpdatePreview);
 
         Chart.Metadata.PreviewStartTimeUpdated += UpdatePercentage;
+        UpdatePercentage();
     }
 
     private void OnDisable()

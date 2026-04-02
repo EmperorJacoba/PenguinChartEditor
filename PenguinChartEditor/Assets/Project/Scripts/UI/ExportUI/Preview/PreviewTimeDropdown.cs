@@ -37,6 +37,7 @@ public class PreviewTimeDropdown : MonoBehaviour
         attachedDropdown.onValueChanged.AddListener(UpdatePreviewTimeFromDropdown);
 
         Chart.Metadata.PreviewStartTimeUpdated += UpdateSectionFromPreviewChange;
+        UpdateSectionFromPreviewChange();
     }
 
     private void OnDisable()

@@ -260,13 +260,7 @@ public static class ChartParser
     #endregion
 
     #region Metadata
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="songEventGroup">ChartEventGroup object with [Song] header.</param>
-    /// <returns>Constructed Metadata, resolution</returns>
-    /// <exception cref="ArgumentException"></exception>
+    
     private static Metadata ParseSongMetadata(SongDataGroup songEventGroup)
     {
         Metadata metadata = new();
@@ -287,7 +281,17 @@ public static class ChartParser
                         metadata.Difficulties.Add((Metadata.InstrumentDifficultyIdentifier)formattedInstrumentDiff, instrumentDifficulty);
                     }
                 }
-                // log warning about unrecognized key
+                else if (kvp.Key.ToLower().Contains("preview_start_time"))
+                {
+                    if (int.TryParse(kvp.Value, out var startTimeMs))
+                    {
+                        metadata.PreviewStartTime = startTimeMs / 1000.0f;
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"Could not parse .ini key \"{kvp.Key}\"");
+                }
             }
         }
         else // read what we can from embedded .chart data

@@ -1,5 +1,4 @@
-﻿using System;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 public class PreviewTimeDisplay : MonoBehaviour
@@ -18,6 +17,7 @@ public class PreviewTimeDisplay : MonoBehaviour
         
         Chart.Metadata.PreviewStartTimeUpdated += UpdatePreviewDisplay;
         attachedInputField.onEndEdit.AddListener(SetPreviewStartTime);
+        UpdatePreviewDisplay();
     }
 
     private void OnDisable()

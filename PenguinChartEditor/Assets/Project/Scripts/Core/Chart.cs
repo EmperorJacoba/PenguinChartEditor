@@ -145,6 +145,8 @@ public class Chart : MonoBehaviour
 
     public static event ChartFileLoadedDel ChartFileLoaded;
 
+    public static bool ChartLoading { get; private set; }
+    
     public static void LoadFile()
     {
         var pathCandidates = 
@@ -164,6 +166,8 @@ public class Chart : MonoBehaviour
         ChartPath = pathCandidates[0];
         FolderPath = Path.GetDirectoryName(ChartPath);
 
+        ChartLoading = true;
+
         ChartParser.ParseChart(ChartPath);
 
         // also need to parse chart stems
@@ -180,7 +184,8 @@ public class Chart : MonoBehaviour
         }
         AudioManager.InitializeAudio();
         Waveform.InitializeWaveformData();
-        
+
+        ChartLoading = false;
         ChartFileLoaded?.Invoke();
     }
 
