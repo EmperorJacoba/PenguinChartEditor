@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SFB;
 using System.IO;
 using System.Linq;
+using TMPro.SpriteAssetUtilities;
 
 public class Chart : MonoBehaviour
 {
@@ -114,7 +115,6 @@ public class Chart : MonoBehaviour
 
     public void SaveFile()
     {
-        ChartWriter.WriteChart();
     }
 
     public static void ApplyFileInformation(
@@ -190,6 +190,57 @@ public class Chart : MonoBehaviour
     }
 
     #endregion
+
+    // Currently written for .chart exclusively, rework for other formats later
+    public static void ExportFile(string targetDirectory)
+    {
+        // need to export chart, image, background, ini, audio
+        // export everything to temp directory and then either copy the directory's contents to target,
+        // or compress as zip and put to target
+
+        var exportSettingsManager = ExportSettingsManager.instance;
+        
+        if (exportSettingsManager is null)
+        {
+            Debug.LogError($"No export settings to read from. Aborting export operation.");
+            return;
+        }
+        
+        var artist = Metadata.SongInfo[Metadata.MetadataType.artist];
+        var name = Metadata.SongInfo[Metadata.MetadataType.name];
+        var charter = Metadata.SongInfo[Metadata.MetadataType.charter];
+
+        var targetDirName = $"{Application.persistentDataPath}/{artist} - {name} ({charter})";
+
+        Directory.CreateDirectory(targetDirName);
+        
+        IniWriter.WriteIni(targetDirName, Metadata);
+
+        var allInstruments = new List<IInstrument>()
+        {
+            SyncTrackInstrument,
+            SectionInstrument
+        };
+        allInstruments.AddRange(Instruments);
+        
+        ChartWriter.WriteChart(
+            targetDirectory: targetDirName,
+            resolution: Resolution,
+            metadata: Metadata,
+            instruments: allInstruments,
+            audioFormat: exportSettingsManager.GetExportAudioFormat()
+            );
+
+        if (File.Exists(Metadata.BackgroundPath))
+        {
+            File.Copy(Metadata.BackgroundPath, $"{targetDirName}/background.jpg");
+        }
+
+        if (File.Exists(Metadata.CoverPath))
+        {
+            File.Copy(Metadata.CoverPath, $"{targetDirName}/album.jpg");
+        }
+    }
 
     #region Chart Properties
 

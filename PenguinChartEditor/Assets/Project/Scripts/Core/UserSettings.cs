@@ -52,5 +52,5 @@ public static class UserSettings
 
     public static int MaximumSavedUndoActions { get; set; } = 1024;
 
-    public static string MetadataImagePaths = $"{Application.persistentDataPath}/SavedImages";
+    public static string MetadataImagePaths = $"{Chart.FolderPath}";
 }

@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class AudioTrackToggleManager : MonoBehaviour
 {
-    private static AudioTrackToggleManager instance;
     [SerializeField] private GameObject audioTrackTogglePrefab;
     [SerializeField] private Transform scrollViewTransform;
     private List<AudioTrackToggle> activeTrackToggles = new List<AudioTrackToggle>();
 
     private void Start()
     {
-        instance = this;
         foreach (var stem in Chart.Metadata.StemPaths)
         {
             var trackToggle = Instantiate(audioTrackTogglePrefab, scrollViewTransform).GetComponent<AudioTrackToggle>();
@@ -21,6 +19,6 @@ public class AudioTrackToggleManager : MonoBehaviour
         }
     }
 
-    public static Dictionary<StemType, bool> GetTrackInclusionStatuses() =>
-        instance.activeTrackToggles.ToDictionary(x => x.audioStemType, x => x.toggle.isOn);
+    public Dictionary<StemType, bool> GetTrackInclusionStatuses() =>
+        activeTrackToggles.ToDictionary(x => x.audioStemType, x => x.toggle.isOn);
 }

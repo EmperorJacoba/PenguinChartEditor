@@ -8,7 +8,7 @@ public class InstrumentInclusionRow : MonoBehaviour
     [SerializeField] private InstrumentSpriteIcons iconReference;
     [SerializeField] private Image instrumentIcon;
     [SerializeField] private List<Button> difficultyButtons;
-    private InstrumentType representedInstrument;
+    public InstrumentType representedInstrument;
 
     [SerializeField] private Slider diffSlider;
     [SerializeField] private TMP_InputField diffManualInput;

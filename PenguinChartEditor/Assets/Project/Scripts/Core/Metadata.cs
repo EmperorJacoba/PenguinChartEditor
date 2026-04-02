@@ -51,10 +51,8 @@ public class Metadata
     
     private float _pst = 0;
     
-
     public float SongLength => (SongTime.SongLength * 1000);
-
-
+    
     public Dictionary<MetadataType, string> SongInfo = new();
 
     // All of these values store difficulties in a value from 0-6, although values higher than 6 are allowed for some niche CH uses.

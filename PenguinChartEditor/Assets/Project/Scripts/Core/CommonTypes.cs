@@ -278,6 +278,8 @@ public static class InstrumentMetadata
         return GetAttributeOnInstrumentID(instrumentID).Name;
     }
 
+    public static bool InstrumentHasStarpower(HeaderType instrumentID) => instrumentID >= HeaderType.EasySingle;
+
     public static HeaderType GetHeader(IInstrument instrument) => GetHeader(instrument.InstrumentName, instrument.Difficulty);
     public static HeaderType GetHeader(InstrumentType instrument, DifficultyType difficulty)
     {
@@ -421,4 +423,21 @@ public enum SceneType
     tempoMap,
     fiveFretChart,
     starpower,
+}
+
+public enum ChartFormats
+{
+    chart,
+    mid,
+    sng,
+    RB2CON,
+    RB3CON
+}
+
+public enum AudioFormats
+{
+    opus,
+    ogg,
+    mp3,
+    wav
 }

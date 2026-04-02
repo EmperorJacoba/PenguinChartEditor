@@ -57,7 +57,8 @@ public class SongImageProcessor : MonoBehaviour, IPointerDownHandler
         {
             Directory.CreateDirectory(UserSettings.MetadataImagePaths);
         }
-        var savedImagePath = $"{UserSettings.MetadataImagePaths}/{System.Guid.NewGuid().ToString()}.jpg";
+        // var savedImagePath = $"{UserSettings.MetadataImagePaths}/{System.Guid.NewGuid().ToString()}.jpg";
+        var savedImagePath = $"{UserSettings.MetadataImagePaths}/{imageToProcess}-formatted.jpg";
         
         image.SaveAsJpeg(savedImagePath);
         if (imageToProcess == ImageType.album)
