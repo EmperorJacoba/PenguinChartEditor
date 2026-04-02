@@ -1,0 +1,1618 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ManagedBass.Enc</name>
+    </assembly>
+    <members>
+        <member name="T:ManagedBass.Enc.EncodeClientProcedure">
+            <summary>
+            User defined callback function to receive notification of client connections and disconnections, and optionally refuse connections.
+            </summary>
+            <param name="Handle">The encoder/server that the client is connecting to or disconnecting from.</param>
+            <param name="Connect">The client is connecting? true = connecting, false = disconnecting.</param>
+            <param name="Client">The client's IP address and port number... "IP:port".</param>
+            <param name="Headers">
+            The request headers... <see langword="null" /> = the client is disconnecting or HTTP headers have been disabled via the <see cref="F:ManagedBass.Enc.EncodeServer.NoHTTP"/> flag.
+            The headers are in the same form as would be given by <see cref="M:ManagedBass.Bass.ChannelGetTags(System.Int32,ManagedBass.TagType)" />, which is a series of null-terminated strings, the final string ending with a double null.
+            The request headers can optionally be replaced with response headers to send back to the client, each ending with a carriage return and line feed ("\r\n").
+            The response headers should not exceed 1KB in length.
+            </param>
+            <param name="User">The user instance data given when <see cref="M:ManagedBass.Enc.BassEnc.ServerInit(System.Int32,System.String,System.Int32,System.Int32,ManagedBass.Enc.EncodeServer,ManagedBass.Enc.EncodeClientProcedure,System.IntPtr)" /> was called.</param>
+            <returns>If the client is connecting, <see langword="false" /> means the connection is denied, otherwise it is accepted. The return value is ignored if the client is disconnecting.</returns>
+            <remarks>
+            <para>
+            This function can be used to keep track of how many clients are connected, and who is connected.
+            The request headers can be used to authenticate clients, and response headers can be used to pass information back to the clients.
+            By default, connecting clients will be sent an "HTTP/1.0 200 OK" status line if accepted, and an "HTTP/1.0 403 Forbidden" status line if denied.
+            That can be overridden in the first response header.
+            </para>
+            <para>Disconnection notifications will be received for clients that have disconnected themselves or that have been kicked by <see cref="M:ManagedBass.Enc.BassEnc.ServerKick(System.Int32,System.String)" />, but there will no notification of any clients that are disconnected by the encoder being freed.</para>
+            <para>Each server has its own thread that handles new connections and sends data to its clients. The notification callbacks also come from that thread, so the callback function should avoid introducing long delays as that could result in clients missing some data and delay other clients connecting.</para>
+            <para>
+            Use <see cref="M:ManagedBass.Extensions.ExtractMultiStringAnsi(System.IntPtr)"/> to get the <paramref name="Headers"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:ManagedBass.Enc.EncodeNotifyProcedure">
+            <summary>
+            User defined callback function to receive notifications on an encoder's status.
+            </summary>
+            <param name="Handle">The encoder that the notification is from (returned by <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" />).</param>
+            <param name="Status">The encoder's status.</param>
+            <param name="User">The user instance data given when <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" /> was called.</param>
+            <remarks>
+            <para>
+            When setting a notification callback on a channel, it only applies to the encoders that are currently set on the channel.
+            Subsequent encoders will not automatically have the notification callback set on them, this function will have to be called again to set them up.
+            </para>
+            <para>
+            An encoder can only have one notification callback set.
+            Subsequent calls of this function can be used to change the callback function, or disable notifications.
+            </para>
+            <para>If the encoder is already dead when setting up a notification callback, the callback will be triggered immediately.</para>
+            <para>It is safe to call <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32)" /> to free an encoder from within a notification callback.</para>
+            </remarks>
+        </member>
+        <member name="T:ManagedBass.Enc.EncodeProcedure">
+            <summary>
+            User defined callback function to process (receive) encoded sample data.
+            </summary>
+            <param name="Handle">The encoder that the data is from (as returned by <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" />).</param>
+            <param name="Channel">The channel that the data is from.</param>
+            <param name="Buffer">The pointer to the buffer containing the encoded data.</param>
+            <param name="Length">The number of bytes in the buffer.</param>
+            <param name="User">The user instance data given when <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" /> was called.</param>
+            <remarks>To have the encoded data received by this callback function, the encoder needs to be told to output to STDOUT (instead of a file).</remarks>
+        </member>
+        <member name="T:ManagedBass.Enc.EncodeProcedureEx">
+            <summary>
+            User defined callback function to process (receive) encoded sample data (iOS and Mac).
+            </summary>
+            <param name="Handle">The encoder that the data is from (as returned by <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" />).</param>
+            <param name="Channel">The channel that the data is from.</param>
+            <param name="Buffer">The pointer to the buffer containing the encoded data.</param>
+            <param name="Length">The number of bytes in the buffer.</param>
+            <param name="Offset">File Offset of the data.</param>
+            <param name="User">The user instance data given when <see cref="M:ManagedBass.Enc.BassEnc.EncodeStartCA(System.Int32,System.Int32,System.Int32,ManagedBass.Enc.EncodeFlags,System.Int32,ManagedBass.Enc.EncodeProcedureEx,System.IntPtr)" /> was called.</param>
+            <remarks>To have the encoded data received by this callback function, the encoder needs to be told to output to STDOUT (instead of a file).</remarks>
+        </member>
+        <member name="T:ManagedBass.Enc.EncoderProcedure">
+            <summary>
+            User defined callback function to encode sample data. 
+            </summary>
+            <param name="Handle">The encoder handle.</param>
+            <param name="Channel">The channel that the encoder is set on.</param>
+            <param name="Buffer">Buffer containing the sample data on input, and containing the encoded data on output.</param>
+            <param name="Length">The number of bytes in the buffer... -1 = the encoder is being freed (no data in the buffer).</param>
+            <param name="MaxOut">The maximum amount of encoded data that can be placed in the buffer.</param>
+            <param name="User">The user instance data given when <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncoderProcedure,System.IntPtr)" /> was called.</param>
+            <returns>The number of bytes of encoded data placed in buffer... -1 = stop encoding.</returns>
+            <remarks>
+            If the encoder output exceeds the outmax value, then only the first outmax bytes should be delivered and the remainder retained.
+            The function will be called again immediately to get the remainder.
+            </remarks>
+        </member>
+        <member name="T:ManagedBass.Enc.ACMFormatFlags">
+            <summary>
+            ACM Format flags to be used with <see cref="M:ManagedBass.Enc.BassEnc.GetACMFormat(System.Int32,System.IntPtr,System.Int32,System.String,ManagedBass.Enc.ACMFormatFlags,ManagedBass.WaveFormatTag)" />.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.ACMFormatFlags.Unicode">
+            <summary>
+            Unicode (16-bit characters) option.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.ACMFormatFlags.NoACM">
+            <summary>
+            No ACM.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.ACMFormatFlags.Default">
+            <summary>
+            Use the format as default selection.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.ACMFormatFlags.SameSampleRate">
+            <summary>
+            Only list formats with same sample rate as the source channel.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.ACMFormatFlags.SameChannels">
+            <summary>
+            Only list formats with same number of channels (eg. mono/stereo).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.ACMFormatFlags.Suggest">
+            <summary>
+            Suggest a format (HIWORD=format tag - use one of the WAVEFormatTag flags).
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Enc.EncodeCount">
+            <summary>
+            Used with <see cref="M:ManagedBass.Enc.BassEnc.EncodeGetCount(System.Int32,ManagedBass.Enc.EncodeCount)" /> to define the type of count you want to get.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeCount.In">
+            <summary>
+            Get the bytes sent to the encoder.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeCount.Out">
+            <summary>
+            Get the bytes received from the encoder.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeCount.Cast">
+            <summary>
+            Get the bytes sent to the cast server.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeCount.Queue">
+            <summary>
+            Data currently in the queue, waiting to be sent to the encoder (if async encoding is enabled).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeCount.QueueLimit">
+            <summary>
+            The queue's size limit (if async encoding is enabled).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeCount.QueueFail">
+            <summary>
+            Data not queued due to the queue being full or out of memory (if async encoding is enabled).
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Enc.EncodeFlags">
+            <summary>
+            BassEnc Start flags for use with <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" />.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.Unicode">
+            <summary>
+            Cmdline is Unicode (16-bit characters).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.Default">
+            <summary>
+            Default option, incl. wave header, little-endian and no FP conversion.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.NoHeader">
+            <summary>
+            Do NOT send a WAV header to the encoder.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.ConvertFloatTo8BitInt">
+            <summary>
+            Convert floating-point sample data to 8-bit integer.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.ConvertFloatTo16BitInt">
+            <summary>
+            Convert floating-point sample data to 16-bit integer.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.ConvertFloatTo24Bit">
+            <summary>
+            Convert floating-point sample data to 24-bit integer.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.ConvertFloatTo32Bit">
+            <summary>
+            Convert floating-point sample data to 32-bit integer.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.ConvertFloatAuto">
+            <summary>
+            Convert floating-point sample data back to channel's format.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.BigEndian">
+            <summary>
+            Big-Endian sample data.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.Pause">
+            <summary>
+            Start the encoder paused.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.PCM">
+            <summary>
+            Write PCM sample data (no encoder).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.RF64">
+            <summary>
+            Write RF64 WAV header (no encoder).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.Mono">
+            <summary>
+            Convert to mono (if not already).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.Queue">
+            <summary>
+            Queue data to feed encoder asynchronously.
+            The queue Buffer will grow as needed to fit the data, but its size can be limited by the Queue config option (0 = no limit);
+            The default is 10000ms.
+            If the queue reaches the size limit and data is lost, the <see cref="F:ManagedBass.Enc.EncodeNotifyStatus.QueueFull"/> notification will be triggered.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.WaveFormatExtensible">
+            <summary>
+            Send the sample format information to the encoder in WAVEFORMATEXTENSIBLE form instead of WAVEFORMATEX form.
+            This flag is ignored if the <see cref="F:ManagedBass.Enc.EncodeFlags.NoHeader"/> flag is used.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.UnlimitedCastDataRate">
+            <summary>
+            Don't limit the data rate (to real-time speed) when sending to a Shoutcast or Icecast server.
+            With this option you might disable the rate limiting during casting (as it'll be limited by the playback rate anyway if the source channel is being played).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.Limit">
+            <summary>
+            Limit data rate to real-time.
+            Limit the data rate to real-time speed, by introducing a delay when the rate is too high.
+            With BASS 2.4.6 or above, this flag is ignored when the encoder is fed in a playback Buffer update cycle (including <see cref="M:ManagedBass.Bass.Update(System.Int32)"/> and <see cref="M:ManagedBass.Bass.ChannelUpdate(System.Int32,System.Int32)"/> calls),
+            to avoid possibly causing playback Buffer underruns.
+            Except for in those instances, this flag is applied automatically when the encoder is feeding a Shoutcast or Icecast server.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.AIFF">
+            <summary>
+            Send an AIFF header to the encoder instead of a WAVE header.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.Dither">
+            <summary>
+            Apply dither when converting floating-point sample data to integer.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeFlags.AutoFree">
+            <summary>
+            Free the encoder when the channel is freed.
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Enc.EncodeMetaDataType">
+            <summary>
+            To be used with <see cref="M:ManagedBass.Enc.BassEnc.CastSendMeta(System.Int32,ManagedBass.Enc.EncodeMetaDataType,System.Byte[])" /> to define the type of metadata to send.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.XmlContent">
+            <summary>
+            SHOUTcast v2 Cacheable Metadata (Content Info Metadata).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.XmlUrl">
+            <summary>
+            SHOUTcast v2 Cacheable Metadata (Url Metadata).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.XmlAol">
+            <summary>
+            SHOUTcast v2 Cacheable Metadata (Aol Radio format).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.XmlShoutcast">
+            <summary>
+            SHOUTcast v2 Cacheable Metadata (SHOUTcast 2.0 format).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.BinStationLogoJpg">
+            <summary>
+            SHOUTcast v2 Cacheable Binary Metadata (Station logo image/jpeg).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.BinStationLogoPng">
+            <summary>
+            SHOUTcast v2 Cacheable Binary Metadata (Station logo image/png).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.BinStationLogoBmp">
+            <summary>
+            SHOUTcast v2 Cacheable Binary Metadata (Station logo image/bmp).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.BinStationLogoGif">
+            <summary>
+            SHOUTcast v2 Cacheable Binary Metadata (Station logo image/gif).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.BinAlbumArtJpg">
+            <summary>
+            SHOUTcast v2 Cacheable Binary Metadata (Album art image/jpeg).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.BinAlbumArtPng">
+            <summary>
+            SHOUTcast v2 Cacheable Binary Metadata (Album art image/png).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.BinAlbumArtBmp">
+            <summary>
+            SHOUTcast v2 Cacheable Binary Metadata (Album art image/bmp).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.BinAlbumArtGif">
+            <summary>
+            SHOUTcast v2 Cacheable Binary Metadata (Album art image/gif).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeMetaDataType.XmlTimeRemaining">
+            <summary>
+            SHOUTcast v2 Pass-through Metadata (Time Remaining).
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Enc.EncodeNotifyStatus">
+            <summary>
+            To be used with <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" /> to receive notifications on an encoder's status.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeNotifyStatus.EncoderDied">
+            <summary>
+            Encoder died
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeNotifyStatus.CastServerConnectionDied">
+            <summary>
+            Cast server connection died
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeNotifyStatus.CastTimeout">
+            <summary>
+            Cast timeout
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeNotifyStatus.QueueFull">
+            <summary>
+            Queue is out of space
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeNotifyStatus.Free">
+            <summary>
+            Encoder has been freed
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Enc.EncodeServer">
+            <summary>
+            To be used with <see cref="M:ManagedBass.Enc.BassEnc.ServerInit(System.Int32,System.String,System.Int32,System.Int32,ManagedBass.Enc.EncodeServer,ManagedBass.Enc.EncodeClientProcedure,System.IntPtr)" /> to define optional server flags.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeServer.Default">
+            <summary>
+            Default (no options).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeServer.NoHTTP">
+            <summary>
+            No HTTP headers.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeServer.Meta">
+            <summary>
+            Shoutcast metadata
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Enc.EncodeStats">
+            <summary>
+            Stats type to be used with <see cref="M:ManagedBass.Enc.BassEnc.CastGetStats(System.Int32,ManagedBass.Enc.EncodeStats,System.String)" /> to define the type of stats you want to get.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeStats.Shoutcast">
+            <summary>
+            Shoutcast stats.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeStats.Icecast">
+            <summary>
+            Icecast mount-point stats.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.EncodeStats.IcecastServer">
+            <summary>
+            Icecast server stats.
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Enc.BassEnc">
+            <summary>
+            BassEnc is a BASS addon that allows BASS channels to be encoded using any command-line encoder with STDIN support (LAME, OGGENC, etc), or OS codec (ACM, CoreAudio, etc).
+            Also includes Shoutcast and Icecast sourcing features, and PCM or WAV file writing.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Enc.BassEnc.Version">
+            <summary>
+            Gets the Version of BassEnc that is loaded.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Enc.BassEnc.DSPPriority">
+            <summary>
+            Encoder DSP priority (default -1000) which determines where in the DSP chain the encoding is performed. 
+            </summary>
+            <remarks>
+            All DSP with a higher priority will be present in the encoding.
+            Changes only affect subsequent encodings, not those that have already been started.
+            </remarks>
+        </member>
+        <member name="P:ManagedBass.Enc.BassEnc.Queue">
+            <summary>
+            The maximum queue Length of the async encoder (default 10000, 0 = Unlimited) in milliseconds.
+            </summary>
+            <remarks>
+            When queued encoding is enabled, the queue's Buffer will grow as needed to hold the queued data, up to a limit specified by this config option.
+            Changes only apply to new encoders, not any already existing encoders.
+            </remarks>
+        </member>
+        <member name="P:ManagedBass.Enc.BassEnc.CastTimeout">
+            <summary>
+            The time to wait (in milliseconds) to send data to a cast server (default 5000ms)
+            </summary>
+            <remarks>
+            When an attempt to send data is timed-out, the data is discarded. 
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)"/> can be used to receive a notification of when this happens.
+            Changes take immediate effect.
+            </remarks>
+        </member>
+        <member name="P:ManagedBass.Enc.BassEnc.CastProxy">
+            <summary>
+            Proxy server settings when connecting to Icecast and Shoutcast (in the form of "[User:Password@]server:port"... <see langword="null"/> (default) = don't use a proxy but a direct connection).
+            </summary>
+            <remarks>
+            If only the "server:port" part is specified, then that proxy server is used without any authorization credentials.
+            This setting affects how the following functions connect to servers: <see cref="M:ManagedBass.Enc.BassEnc.CastInit(System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Int32,System.Boolean)"/>, <see cref="M:ManagedBass.Enc.BassEnc.CastGetStats(System.Int32,ManagedBass.Enc.EncodeStats,System.String)"/>, <see cref="M:ManagedBass.Enc.BassEnc.CastSetTitle(System.Int32,System.String,System.String)"/>.
+            When a proxy server is used, it needs to support the HTTP 'CONNECT' method.
+            The default setting is <see langword="null"/> (do not use a proxy).
+            Changes take effect from the next internet stream creation call.
+            </remarks>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.ServerInit(System.Int32,System.String,System.Int32,System.Int32,ManagedBass.Enc.EncodeServer,ManagedBass.Enc.EncodeClientProcedure,System.IntPtr)">
+            <summary>
+            Initializes a server to send an encoder's output to connecting clients.
+            </summary>
+            <param name="Handle">The encoder handle.</param>
+            <param name="Port">
+            The IP address and port number to accept client connections on... "xxx.xxx.xxx.xxx:port", <see langword="null" /> = an available port on all local addresses.
+            The IP address should be local and the port number should be lower than 65536.
+            If the address is "0.0.0.0" or omitted, then the server will accept connections on all local addresses.
+            If the port is "0" or omitted, then an available port will be assigned.
+            </param>
+            <param name="Buffer">The server's buffer length in bytes.</param>
+            <param name="Burst">The amount of buffered data to send to new clients. This will be capped at the size of the buffer.</param>
+            <param name="Flags"><see cref="T:ManagedBass.Enc.EncodeServer"/> flags.</param>
+            <param name="Procedure">Callback function to receive notification of clients connecting and disconnecting... <see langword="null" /> = no callback.</param>
+            <param name="User">User instance data to pass to the callback function.</param>
+            <returns>If successful, the new server's port number is returned, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            <para>
+            This function allows remote (or local) clients to receive the encoder's output by setting up a TCP server for them to connect to, using <see cref="M:ManagedBass.Bass.CreateStream(System.String,System.Int32,ManagedBass.BassFlags,ManagedBass.DownloadProcedure,System.IntPtr)" /> for example. 
+            Connections can be refused by the <see cref="T:ManagedBass.Enc.EncodeClientProcedure" /> callback function, and already connected clients can be kicked with the <see cref="M:ManagedBass.Enc.BassEnc.ServerKick(System.Int32,System.String)" /> function.
+            </para>
+            <para>
+            The server buffers the data that it receives from the encoder, and the data is then sent from the buffer to the connected clients.
+            The buffer should be at least big enough to account for the time that it takes for the clients to receive the data.
+            If a client falls too far behind (beyond the buffer length), it will miss some data.
+            When a client connects, buffered data can be "burst" to the client, allowing it to prebuffer and begin playback more quickly.
+            </para>
+            <para>
+            An encoder needs to be started, but with no data yet sent to it, before using this function to setup the server.
+            If <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" /> is used, the encoder should be setup to write its output to STDOUT.
+            Due to the length restrictions of WAVE headers/files, the encoder should also be started with the <see cref="F:ManagedBass.Enc.EncodeFlags.NoHeader"/> flag, and the sample format details sent via the command-line.
+            </para>
+            <para>
+            Normally, BASSenc will produce the encoded data (with the help of an encoder) that is sent to a clients, but it is also possible to send already encoded data (without first decoding and re-encoding it) via the PCM encoding option.
+            The encoder can be set on any BASS channel, as rather than feeding on sample data from the channel, <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> would be used to feed in the already encoded data.
+            BASSenc does not know what the data's bitrate is in that case, so it is up to the user to process the data at the correct rate (real-time speed).
+            </para>
+            <para><b>Platform-specific</b></para>
+            <para>This function is not available on Windows CE.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Already">There is already a server set on the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Parameter"><paramref name="Port" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Busy">The port is in use.</exception>
+            <exception cref="F:ManagedBass.Errors.Memory">There is insufficient memory.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.ServerKick(System.Int32,System.String)">
+            <summary>
+            Kicks clients from a server.
+            </summary>
+            <param name="Handle">The encoder Handle.</param>
+            <param name="Client">The client(s) to kick... "" (empty string) = all clients. Unless a port number is included, this string is compared with the start of the connected clients' IP address.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            <para>
+            The clients may not be kicked immediately, but shortly after the call.
+            If the server has been setup with an <see cref="T:ManagedBass.Enc.EncodeClientProcedure" /> callback function, that will receive notification of the disconnections.
+            </para>
+            <para><b>Platform-specific</b></para>
+            <para>This function is not available on Windows CE.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">No matching clients were found.</exception>
+        </member>
+        <member name="F:ManagedBass.Enc.BassEnc.MimeMp3">
+            <summary>
+            Mime type for Mp3.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.BassEnc.MimeOgg">
+            <summary>
+            Mime type for Ogg.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Enc.BassEnc.MimeAac">
+            <summary>
+            Mime type for Aac.
+            </summary>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.CastGetStats(System.Int32,ManagedBass.Enc.EncodeStats,System.String)">
+            <summary>
+            Retrieves stats from the Shoutcast or Icecast server.
+            </summary>
+            <param name="Handle">The encoder Handle.</param>
+            <param name="Type">The type of stats to retrieve.</param>
+            <param name="Password">Password when retrieving Icecast server stats... <see langword="null" /> = use the password provided in the <see cref="M:ManagedBass.Enc.BassEnc.CastInit(System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Int32,System.Boolean)" /> call. A username can also be included in the form of "username:password". </param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>The stats are returned in XML format.</remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Type"><paramref name="Type" /> is invalid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">There isn't a cast of the requested type set on the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Timeout">The server did not respond to the request within the timeout period, as set with the <see cref="P:ManagedBass.Bass.NetTimeOut"/> config option.</exception>
+            <exception cref="F:ManagedBass.Errors.Memory">There is insufficient memory.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.CastInit(System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Int32,System.Boolean)">
+            <summary>
+            Initializes sending an encoder's output to a Shoutcast or Icecast server.
+            </summary>
+            <param name="Handle">The encoder handle.</param>
+            <param name="Server">The server to send to, in the form of "address:port" (Shoutcast v1) resp. "address:port,sid" (Shoutcast v2) or "address:port/mount" (Icecast).</param>
+            <param name="Password">The server password. A username can be included in the form of "username:password" when connecting to an Icecast or Shoutcast 2 server.</param>
+            <param name="Content">
+            The MIME type of the encoder output.
+            <para><see cref="F:ManagedBass.Enc.BassEnc.MimeMp3"/>, <see cref="F:ManagedBass.Enc.BassEnc.MimeOgg"/> or <see cref="F:ManagedBass.Enc.BassEnc.MimeAac"/>.</para>
+            </param>
+            <param name="Name">The stream name... <see langword="null" /> = no name.</param>
+            <param name="Url">The URL, for example, of the radio station's webpage... <see langword="null" /> = no URL.</param>
+            <param name="Genre">The genre... <see langword="null" /> = no genre.</param>
+            <param name="Description">Description... <see langword="null" /> = no description. This applies to Icecast only.</param>
+            <param name="Headers">Other headers to send to the server... <see langword="null" /> = none. Each header should end with a carriage return and line feed ("\r\n").</param>
+            <param name="Bitrate">The bitrate (in kbps) of the encoder output... 0 = undefined bitrate. In cases where the bitrate is a "quality" (rather than CBR) setting, the headers parameter can be used to communicate that instead, eg. "ice-bitrate: Quality 0\r\n".</param>
+            <param name="Public">Public? If <see langword="true" />, the stream is added to the public directory of streams, at shoutcast.com or dir.xiph.org (or as defined in the server config).</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            <para>
+            This function sets up a Shoutcast/Icecast source client, sending the encoder's output to a server, which listeners can then connect to and receive the data from. 
+            The Shoutcast and Icecast server software is available from http://www.shoutcast.com/broadcast-tools and http://www.icecast.org/download.php, respectively.
+            </para>
+            <para>
+            An encoder needs to be started (but with no data sent to it yet) before using this function to setup the sending of the encoder's output to a Shoutcast or Icecast server.
+            If <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" /> is used, the encoder should be setup to write its output to STDOUT.
+            Due to the length restrictions of WAVE headers/files, the encoder should also be started with the <see cref="F:ManagedBass.Enc.EncodeFlags.NoHeader"/> flag, and the sample format details sent via the command-line.
+            </para>
+            <para>
+            Unless the <see cref="F:ManagedBass.Enc.EncodeFlags.UnlimitedCastDataRate"/> flag is set on the encoder, BASSenc automatically limits the rate that data is processed to real-time speed to avoid overflowing the server's buffer, which means that it is safe to simply try to process data as quickly as possible, eg. when the source is a decoding channel.
+            Encoders set on recording channels are automatically exempt from the rate limiting, as they are inherently real-time.
+            With BASS 2.4.6 or above, also exempt are encoders that are fed in a playback buffer update cycle (including <see cref="M:ManagedBass.Bass.Update(System.Int32)" /> and <see cref="M:ManagedBass.Bass.ChannelUpdate(System.Int32,System.Int32)" /> calls), eg. when the source is a playing channel;
+            that is to avoid delaying the update thread, which could result in playback buffer underruns.
+            </para>
+            <para>
+            Normally, BASSenc will produce the encoded data (with the help of an encoder) that is sent to a Shoutcast/Icecast server, but it is also possible to send already encoded data to a server (without first decoding and re-encoding it) via the PCM encoding option.
+            The encoder can be set on any BASS channel, as rather than feeding on sample data from the channel, <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> would be used to feed in the already encoded data.
+            BASSenc does not know what the data's bitrate is in that case, so it is up to the user to process the data at the correct rate (real-time speed).
+            </para>
+            <para><see cref="M:ManagedBass.Enc.BassEnc.ServerInit(System.Int32,System.String,System.Int32,System.Int32,ManagedBass.Enc.EncodeServer,ManagedBass.Enc.EncodeClientProcedure,System.IntPtr)" /> can be used to setup a server that listeners can connect to directly, without a Shoutcast/Icecast server intermediary.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Already">There is already a cast set on the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Parameter"><paramref name="Server" /> doesn't include a port number.</exception>
+            <exception cref="F:ManagedBass.Errors.FileOpen">Couldn't connect to the server.</exception>
+            <exception cref="F:ManagedBass.Errors.CastDenied"><paramref name="Password" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.CastSendMeta(System.Int32,ManagedBass.Enc.EncodeMetaDataType,System.Byte[])">
+            <summary>
+            Sends metadata to a Shoutcast 2 server.
+            </summary>
+            <param name="Handle">The encoder Handle.</param>
+            <param name="Type">The type of metadata.</param>
+            <param name="Buffer">The XML metadata as an UTF-8 encoded byte array.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">There isn't a cast set on the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.CastSendMeta(System.Int32,ManagedBass.Enc.EncodeMetaDataType,System.String)">
+            <summary>
+            Sends metadata to a Shoutcast 2 server.
+            </summary>
+            <param name="Handle">The encoder Handle.</param>
+            <param name="Type">The type of metadata.</param>
+            <param name="Metadata">The XML metadata to send.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">There isn't a cast set on the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.CastSetTitle(System.Int32,System.String,System.String)">
+            <summary>
+            Sets the title (ANSI) of a cast stream.
+            </summary>
+            <param name="Handle">The encoder Handle.</param>
+            <param name="Title">The title to set.</param>
+            <param name="Url">URL to go with the title... <see langword="null" /> = no URL. This applies to Shoutcast only (not Shoutcast 2).</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            The ISO-8859-1 (Latin-1) character set should be used with Shoutcast servers, and UTF-8 with Icecast and Shoutcast 2 servers.
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">There isn't a cast set on the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Timeout">The server did not respond to the request within the timeout period, as set with the <see cref="P:ManagedBass.Bass.NetTimeOut"/> config option.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.CastSetTitle(System.Int32,System.Byte[],System.Byte[])">
+            <summary>
+            Sets the title of a cast stream.
+            </summary>
+            <param name="Handle">The encoder Handle.</param>
+            <param name="Title">encoded byte[] containing the title to set.</param>
+            <param name="Url">encoded byte[] containing the URL to go with the title... <see langword="null" /> = no URL. This applies to Shoutcast only (not Shoutcast 2).</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            The ISO-8859-1 (Latin-1) character set should be used with Shoutcast servers, and UTF-8 with Icecast and Shoutcast 2 servers.
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">There isn't a cast set on the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Timeout">The server did not respond to the request within the timeout period, as set with the <see cref="P:ManagedBass.Bass.NetTimeOut"/> config option.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeAddChunk(System.Int32,System.String,System.IntPtr,System.Int32)">
+            <summary>
+            Sends a RIFF chunk to an encoder.
+            </summary>
+            <param name="Handle">The encoder Handle... a HENCODE.</param>
+            <param name="ID">The 4 character chunk id (e.g. 'bext').</param>
+            <param name="Buffer">The buffer containing the chunk data (without the id).</param>
+            <param name="Length">The number of bytes in the buffer.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            BassEnc writes the minimum chunks required of a WAV file: "fmt" and "data", and "ds64" and "fact" when appropriate.
+            This function can be used to add other chunks. 
+            For example, a BWF "bext" chunk or "INFO" tags.
+            <para>
+            Chunks can only be added prior to sample data being sent to the encoder.
+            The <see cref="F:ManagedBass.Enc.EncodeFlags.Pause"/> flag can be used when starting the encoder to ensure that no sample data is sent before additional chunks have been set.
+            </para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">No RIFF headers/chunks are being sent to the encoder (due to the <see cref="F:ManagedBass.Enc.EncodeFlags.NoHeader"/> flag being in effect), or sample data encoding has started.</exception>
+            <exception cref="F:ManagedBass.Errors.Ended">The encoder has died.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeAddChunk(System.Int32,System.String,System.Byte[],System.Int32)">
+            <summary>
+            Sends a RIFF chunk to an encoder.
+            </summary>
+            <param name="Handle">The encoder Handle... a HENCODE.</param>
+            <param name="ID">The 4 character chunk id (e.g. 'bext').</param>
+            <param name="Buffer">The buffer containing the chunk data (without the id).</param>
+            <param name="Length">The number of bytes in the buffer.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            BassEnc writes the minimum chunks required of a WAV file: "fmt" and "data", and "ds64" and "fact" when appropriate.
+            This function can be used to add other chunks. 
+            For example, a BWF "bext" chunk or "INFO" tags.
+            <para>
+            Chunks can only be added prior to sample data being sent to the encoder.
+            The <see cref="F:ManagedBass.Enc.EncodeFlags.Pause"/> flag can be used when starting the encoder to ensure that no sample data is sent before additional chunks have been set.
+            </para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">No RIFF headers/chunks are being sent to the encoder (due to the <see cref="F:ManagedBass.Enc.EncodeFlags.NoHeader"/> flag being in effect), or sample data encoding has started.</exception>
+            <exception cref="F:ManagedBass.Errors.Ended">The encoder has died.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeGetChannel(System.Int32)">
+            <summary>
+            Retrieves the channel that an encoder is set on.
+            </summary>
+            <param name="Handle">The encoder to get the channel from.</param>
+            <returns>If successful, the encoder's channel Handle is returned, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeGetCount(System.Int32,ManagedBass.Enc.EncodeCount)">
+            <summary>
+            Retrieves the amount of data queued, sent to or received from an encoder, or sent to a cast server.
+            </summary>
+            <param name="Handle">The encoder Handle.</param>
+            <param name="Count">The count to retrieve (see <see cref="T:ManagedBass.Enc.EncodeCount"/>).</param>
+            <returns>If successful, the requested count (in bytes) is returned, else -1 is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            <para>
+            The queue counts are based on the channel's sample format (floating-point if the <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> option is enabled),
+            while the <see cref="F:ManagedBass.Enc.EncodeCount.In"/> count is based on the sample format used by the encoder,
+            which could be different if one of the Floating-point conversion flags is active or the encoder is using an ACM codec (which take 16-bit data).
+            </para>
+            <para>
+            When the encoder output is being sent to a cast server, the <see cref="F:ManagedBass.Enc.EncodeCount.Cast"/> count will match the <see cref="F:ManagedBass.Enc.EncodeCount.Out"/> count,
+            unless there have been problems (eg. network timeout) that have caused data to be dropped.
+            </para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">The encoder does not have a queue.</exception>
+            <exception cref="F:ManagedBass.Errors.Parameter"><paramref name="Count" /> is not valid.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeIsActive(System.Int32)">
+            <summary>
+            Checks if an encoder is running on a channel.
+            </summary>
+            <param name="Handle">The encoder or channel Handle... a HENCODE, HSTREAM, HMUSIC, or HRECORD.</param>
+            <returns>The return value is one of <see cref="T:ManagedBass.PlaybackState"/> values.</returns>
+            <remarks>
+            <para>When checking if there's an encoder running on a channel, and there are multiple encoders on the channel, <see cref="F:ManagedBass.PlaybackState.Playing"/> will be returned if any of them are active.</para>
+            <para>If an encoder stops running prematurely, <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32)" /> should still be called to release resources that were allocated for the encoding.</para>
+            </remarks>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeSetChannel(System.Int32,System.Int32)">
+            <summary>
+            Moves an encoder (or all encoders on a channel) to another channel.
+            </summary>
+            <param name="Handle">The encoder or channel Handle... a HENCODE, HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Channel">The channel to move the encoder(s) to... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            The new channel must have the same sample format (rate, channels, resolution) as the old channel, as that is what the encoder is expecting. 
+            A channel's sample format is available via <see cref="M:ManagedBass.Bass.ChannelGetInfo(System.Int32,ManagedBass.ChannelInfo@)" />.
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> or <paramref name="Channel" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.SampleFormat">The new channel's sample format is not the same as the old channel's.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)">
+            <summary>
+            Sets a callback function on an encoder (or all encoders on a channel) to receive notifications about its status.
+            </summary>
+            <param name="Handle">The encoder or channel Handle... a HENCODE, HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Procedure">Callback function to receive the notifications... <see langword="null" /> = no callback.</param>
+            <param name="User">User instance data to Password to the callback function.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            <para>
+            When setting a notification callback on a channel, it only applies to the encoders that are currently set on the channel.
+            Subsequent encoders will not automatically have the notification callback set on them, this function will have to be called again to set them up.
+            </para>
+            <para>
+            An encoder can only have one notification callback set.
+            Subsequent calls of this function can be used to change the callback function, or disable notifications (<paramref name="Procedure"/> = <see langword="null" />).
+            </para>
+            <para>
+            The status of an encoder and its cast connection (if it has one) is checked when data is sent to the encoder or server, and by <see cref="M:ManagedBass.Enc.BassEnc.EncodeIsActive(System.Int32)" />.
+            That means an encoder's death will not be detected automatically, and so no notification given, while no data is being encoded.
+            </para>
+            <para>If the encoder is already dead when setting up a notification callback, the callback will be triggered immediately.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeSetPaused(System.Int32,System.Boolean)">
+            <summary>
+            Pauses or resumes encoding on a channel.
+            </summary>
+            <param name="Handle">The encoder or channel Handle... a HENCODE, HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Paused">Paused?</param>
+            <returns>If no encoder has been started on the channel, <see langword="false" /> is returned, otherwise <see langword="true" /> is returned.</returns>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            <para>
+            When an encoder is paused, no sample data will be sent to the encoder "automatically".
+            Data can still be sent to the encoder "manually" though, via the <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> function.
+            </para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.s</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)">
+            <summary>
+            Starts encoding on a channel.
+            </summary>
+            <param name="Handle">The channel Handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="CommandLine">The encoder command-line, including the executable filename and any options. Or the output filename if the <see cref="F:ManagedBass.Enc.EncodeFlags.PCM"/> flag is specified.</param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.BassFlags"/>.</param>
+            <param name="Procedure">Optional callback function to receive the encoded data... <see langword="null" /> = no callback. To have the encoded data received by a callback function, the encoder needs to be told to output to STDOUT (instead of a file).</param>
+            <param name="User">User instance data to Password to the callback function.</param>
+            <returns>The encoder process Handle is returned if the encoder is successfully started, else 0 is returned (use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code).</returns>
+            <remarks>
+            <para>
+            The encoder must be told (via the command-line) to expect input from STDIN, rather than a file.
+            The command-line should also tell the encoder what filename to write it's output to, unless you're using a callback function, in which case it should be told to write it's output to STDOUT.
+            </para>
+            <para>
+            No user interaction with the encoder is possible, so anything that would cause the encoder to require the user to press any keys should be avoided.
+            For example, if the encoder asks whether to overwrite files, the encoder should be instructed to always overwrite (via the command-line), or you should delete the existing file before starting the encoder.
+            </para>
+            <para>
+            Standard RIFF files are limited to a little over 4GB in size.
+            When writing a WAV file, BASSenc will automatically stop at that point, so that the file is valid.
+            That does not apply when sending data to an encoder though, as the encoder may (possibly via a command-line option) ignore the size restriction, but if it does not, it could mean that the encoder stops after a few hours (depending on the sample format).
+            If longer encodings are needed, the <see cref="F:ManagedBass.Enc.EncodeFlags.NoHeader"/> flag can be used to omit the WAVE header, and the encoder informed of the sample format via the command-line instead.
+            The 4GB size limit can also be overcome with the <see cref="F:ManagedBass.Enc.EncodeFlags.RF64"/> flag, but most encoders are unlikely to support RF64.
+            </para>
+            <para>
+            When writing an RF64 WAV file, a standard RIFF header will still be written initially, which will only be replaced by an RF64 header at the end if the file size has exceeded the standard limit.
+            When an encoder is used, it is not possible to go back and change the header at the end, so the RF64 header is sent at the beginning in that case.
+            </para>
+            <para>
+            Internally, the sending of sample data to the encoder is implemented via a DSP callback on the channel.
+            That means when you play the channel (or call <see cref="M:ManagedBass.Bass.ChannelGetData(System.Int32,System.IntPtr,System.Int32)" /> if it's a decoding channel), the sample data will be sent to the encoder at the same time. 
+            It also means that if you use the <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> option, then the sample data will be 32-bit floating-point, and you'll need to use one of the Floating-point flags if the encoder does not support floating-point sample data. 
+            The <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> setting should not be changed while encoding is in progress.
+            </para>
+            <para>The encoder DSP has a priority setting of -1000, so if you want to set DSP/FX on the channel and have them present in the encoding, set their priority above that.</para>
+            <para>
+            Besides the automatic DSP system, data can also be manually fed to the encoder via the <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> function.
+            Both methods can be used together, but in general, the "automatic" system ought be paused when using the "manual" system, by use of the <see cref="F:ManagedBass.Enc.EncodeFlags.Pause"/> flag or the <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetPaused(System.Int32,System.Boolean)" /> function.
+            </para>
+            <para>
+            When queued encoding is enabled via the <see cref="F:ManagedBass.Enc.EncodeFlags.Queue"/> flag, the DSP system or <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> call will just buffer the data, and the data will then be fed to the encoder by another thread.
+            The buffer will grow as needed to hold the queued data, up to a limit specified by the <see cref="P:ManagedBass.Enc.BassEnc.Queue"/> config option.
+            If the limit is exceeded (or there is no free memory), data will be lost; <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" /> can be used to be notified of that occurrence.
+            The amount of data that is currently queued, as well as the queue limit and how much data has been lost, is available from <see cref="M:ManagedBass.Enc.BassEnc.EncodeGetCount(System.Int32,ManagedBass.Enc.EncodeCount)" />.
+            </para>
+            <para>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeIsActive(System.Int32)" /> can be used to check that the encoder is still running.
+            When done encoding, use <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32)" /> to close the encoder.
+            </para>
+            <para>The returned process Handle can be used to do things like change the encoder's priority and get it's exit code.</para>
+            <para>
+            Multiple encoders can be set on a channel.
+            For simplicity, the encoder functions will accept either an encoder Handle or a channel Handle.
+            When using a channel Handle, the function is applied to all encoders that are set on that channel.
+            </para>
+            <para><b>Platform-specific</b></para>
+            <para>External encoders are not supported on iOS or Windows CE, so only plain PCM file writing with the <see cref="F:ManagedBass.Enc.EncodeFlags.PCM"/> flag is possible on those platforms.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.FileOpen">Couldn't start the encoder. Check that the executable exists.</exception>
+            <exception cref="F:ManagedBass.Errors.Create">The PCM file couldn't be created.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeStartCA(System.Int32,System.Int32,System.Int32,ManagedBass.Enc.EncodeFlags,System.Int32,ManagedBass.Enc.EncodeProcedureEx,System.IntPtr)">
+            <summary>
+            Sets up an encoder on a channel, using a CoreAudio codec and sending the output to a user defined function (iOS and Mac).
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="ftype">File format identifier.</param>
+            <param name="atype">Audio data format identifier</param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>.</param>
+            <param name="Bitrate">The bitrate in bits per second... 0 = the codec's default bitrate.</param>
+            <param name="Procedure">Callback function to receive the encoded data.</param>
+            <param name="User">User instance data to pass to the callback function.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError"/> to get the error code.</returns>
+            <remarks>
+            This function allows CoreAudio codecs to be used for encoding.
+            The available file and audio data identifiers, as well as other information, can be retreived via the Audio File Services and Audio Format Services APIs, eg. the kAudioFileGlobalInfo_WritableTypes and kAudioFormatProperty_EncodeFormatIDs properties.
+            <para>
+            Internally, the sending of sample data to the encoder is implemented via a DSP callback on the channel.
+            That means when you play the channel (or call <see cref="M:ManagedBass.Bass.ChannelGetData(System.Int32,System.IntPtr,System.Int32)" /> if it's a decoding channel), the sample data will be sent to the encoder at the same time. 
+            It also means that if you use the <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> option, then the sample data will be 32-bit floating-point, and you'll need to use one of the Floating-point flags if the encoder does not support floating-point sample data. 
+            The <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> setting should not be changed while encoding is in progress.
+            </para>
+            <para>The encoder DSP has a priority setting of -1000, so if you want to set DSP/FX on the channel and have them present in the encoding, set their priority above that.</para>
+            <para>
+            Besides the automatic DSP system, data can also be manually fed to the encoder via the <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> function.
+            Both methods can be used together, but in general, the "automatic" system ought be paused when using the "manual" system, by use of the <see cref="F:ManagedBass.Enc.EncodeFlags.Pause"/> flag or the <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetPaused(System.Int32,System.Boolean)" /> function.
+            </para>
+            <para>
+            When queued encoding is enabled via the <see cref="F:ManagedBass.Enc.EncodeFlags.Queue"/> flag, the DSP system or <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> call will just buffer the data, and the data will then be fed to the encoder by another thread.
+            The buffer will grow as needed to hold the queued data, up to a limit specified by the <see cref="P:ManagedBass.Enc.BassEnc.Queue"/> config option.
+            If the limit is exceeded (or there is no free memory), data will be lost; <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" /> can be used to be notified of that occurrence.
+            The amount of data that is currently queued, as well as the queue limit and how much data has been lost, is available from <see cref="M:ManagedBass.Enc.BassEnc.EncodeGetCount(System.Int32,ManagedBass.Enc.EncodeCount)" />.
+            </para>
+            <para>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeIsActive(System.Int32)" /> can be used to check that the encoder is still running.
+            When done encoding, use <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32)" /> to close the encoder.
+            </para>
+            <para>The returned process Handle can be used to do things like change the encoder's priority and get it's exit code.</para>
+            <para>
+            Multiple encoders can be set on a channel.
+            For simplicity, the encoder functions will accept either an encoder Handle or a channel Handle.
+            When using a channel Handle, the function is applied to all encoders that are set on that channel.
+            </para>
+            <para><b>Platform-specific</b></para>
+            <para>This function is only available on OSX and iOS.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle"/> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.FileFormat"><paramref name="ftype"/> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Codec"><paramref name="atype"/> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable"><paramref name="Bitrate"/> is not supported by the codec.</exception>
+            <exception cref="F:ManagedBass.Errors.SampleFormat">The channel's sample format is not supported by the codec.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeStartCA(System.Int32,System.Int32,System.Int32,ManagedBass.Enc.EncodeFlags,System.Int32,System.String)">
+            <summary>
+            Sets up an encoder on a channel, using a CoreAudio codec and sending the output to a user defined function (iOS and Mac).
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="ftype">File format identifier.</param>
+            <param name="atype">Audio data format identifier</param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>.</param>
+            <param name="Bitrate">The bitrate in bits per second... 0 = the codec's default bitrate.</param>
+            <param name="Filename">The output filename.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError"/> to get the error code.</returns>
+            <remarks>
+            This function allows CoreAudio codecs to be used for encoding.
+            The available file and audio data identifiers, as well as other information, can be retrieved via the Audio File Services and Audio Format Services APIs, eg. the kAudioFileGlobalInfo_WritableTypes and kAudioFormatProperty_EncodeFormatIDs properties.
+            <para>
+            Internally, the sending of sample data to the encoder is implemented via a DSP callback on the channel.
+            That means when you play the channel (or call <see cref="M:ManagedBass.Bass.ChannelGetData(System.Int32,System.IntPtr,System.Int32)" /> if it's a decoding channel), the sample data will be sent to the encoder at the same time. 
+            It also means that if you use the <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> option, then the sample data will be 32-bit floating-point, and you'll need to use one of the Floating-point flags if the encoder does not support floating-point sample data. 
+            The <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> setting should not be changed while encoding is in progress.
+            </para>
+            <para>The encoder DSP has a priority setting of -1000, so if you want to set DSP/FX on the channel and have them present in the encoding, set their priority above that.</para>
+            <para>
+            Besides the automatic DSP system, data can also be manually fed to the encoder via the <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> function.
+            Both methods can be used together, but in general, the "automatic" system ought be paused when using the "manual" system, by use of the <see cref="F:ManagedBass.Enc.EncodeFlags.Pause"/> flag or the <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetPaused(System.Int32,System.Boolean)" /> function.
+            </para>
+            <para>
+            When queued encoding is enabled via the <see cref="F:ManagedBass.Enc.EncodeFlags.Queue"/> flag, the DSP system or <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> call will just buffer the data, and the data will then be fed to the encoder by another thread.
+            The buffer will grow as needed to hold the queued data, up to a limit specified by the <see cref="P:ManagedBass.Enc.BassEnc.Queue"/> config option.
+            If the limit is exceeded (or there is no free memory), data will be lost; <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" /> can be used to be notified of that occurrence.
+            The amount of data that is currently queued, as well as the queue limit and how much data has been lost, is available from <see cref="M:ManagedBass.Enc.BassEnc.EncodeGetCount(System.Int32,ManagedBass.Enc.EncodeCount)" />.
+            </para>
+            <para>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeIsActive(System.Int32)" /> can be used to check that the encoder is still running.
+            When done encoding, use <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32)" /> to close the encoder.
+            </para>
+            <para>The returned process Handle can be used to do things like change the encoder's priority and get it's exit code.</para>
+            <para>
+            Multiple encoders can be set on a channel.
+            For simplicity, the encoder functions will accept either an encoder Handle or a channel Handle.
+            When using a channel Handle, the function is applied to all encoders that are set on that channel.
+            </para>
+            <para><b>Platform-specific</b></para>
+            <para>This function is only available on OSX and iOS.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle"/> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.FileFormat"><paramref name="ftype"/> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Codec"><paramref name="atype"/> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable"><paramref name="Bitrate"/> is not supported by the codec.</exception>
+            <exception cref="F:ManagedBass.Errors.SampleFormat">The channel's sample format is not supported by the codec.</exception>
+            <exception cref="F:ManagedBass.Errors.Create">The file could not be created.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr,System.Int32)">
+            <summary>
+            Starts encoding on a channel.
+            </summary>
+            <param name="Handle">The channel Handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="CommandLine">The encoder command-line, including the executable filename and any options. Or the output filename if the <see cref="F:ManagedBass.Enc.EncodeFlags.PCM"/> flag is specified.</param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.BassFlags"/>.</param>
+            <param name="Procedure">Optional callback function to receive the encoded data... <see langword="null" /> = no callback. To have the encoded data received by a callback function, the encoder needs to be told to output to STDOUT (instead of a file).</param>
+            <param name="User">User instance data to Password to the callback function.</param>
+            <param name="Limit">The maximum number of bytes that will be encoded (0 = no limit).</param>
+            <returns>The encoder process Handle is returned if the encoder is successfully started, else 0 is returned (use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code).</returns>
+            <remarks>
+            <para>
+            This function works exactly like <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" />, but with a <paramref name="Limit" /> parameter added, which is the maximum number of bytes that will be encoded (0=no limit).
+            Once the limit is hit, the encoder will die.
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" /> can be used to be notified of that occurrence.
+            One thing to note is that the limit is applied after any conversion due to the floating-point flags.
+            </para>
+            <para>This can be useful in situations where the encoder needs to know in advance how much data it will be receiving. For example, when using a callback function with a file format that stores the length in the header, as the header cannot then be updated at the end of encoding. The length is communicated to the encoder via the WAVE header, so it requires that the BASS_ENCODE_NOHEAD flag is not used.</para>
+            <para>
+            The encoder must be told (via the command-line) to expect input from STDIN, rather than a file.
+            The command-line should also tell the encoder what filename to write it's output to, unless you're using a callback function, in which case it should be told to write it's output to STDOUT.
+            </para>
+            <para>
+            No user interaction with the encoder is possible, so anything that would cause the encoder to require the user to press any keys should be avoided.
+            For example, if the encoder asks whether to overwrite files, the encoder should be instructed to always overwrite (via the command-line), or you should delete the existing file before starting the encoder.
+            </para>
+            <para>
+            Standard RIFF files are limited to a little over 4GB in size.
+            When writing a WAV file, BASSenc will automatically stop at that point, so that the file is valid.
+            That does not apply when sending data to an encoder though, as the encoder may (possibly via a command-line option) ignore the size restriction, but if it does not, it could mean that the encoder stops after a few hours (depending on the sample format).
+            If longer encodings are needed, the <see cref="F:ManagedBass.Enc.EncodeFlags.NoHeader"/> flag can be used to omit the WAVE header, and the encoder informed of the sample format via the command-line instead.
+            The 4GB size limit can also be overcome with the <see cref="F:ManagedBass.Enc.EncodeFlags.RF64"/> flag, but most encoders are unlikely to support RF64.
+            </para>
+            <para>
+            When writing an RF64 WAV file, a standard RIFF header will still be written initially, which will only be replaced by an RF64 header at the end if the file size has exceeded the standard limit.
+            When an encoder is used, it is not possible to go back and change the header at the end, so the RF64 header is sent at the beginning in that case.
+            </para>
+            <para>
+            Internally, the sending of sample data to the encoder is implemented via a DSP callback on the channel.
+            That means when you play the channel (or call <see cref="M:ManagedBass.Bass.ChannelGetData(System.Int32,System.IntPtr,System.Int32)" /> if it's a decoding channel), the sample data will be sent to the encoder at the same time. 
+            It also means that if you use the <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> option, then the sample data will be 32-bit floating-point, and you'll need to use one of the Floating-point flags if the encoder does not support floating-point sample data. 
+            The <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> setting should not be changed while encoding is in progress.
+            </para>
+            <para>The encoder DSP has a priority setting of -1000, so if you want to set DSP/FX on the channel and have them present in the encoding, set their priority above that.</para>
+            <para>
+            Besides the automatic DSP system, data can also be manually fed to the encoder via the <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> function.
+            Both methods can be used together, but in general, the "automatic" system ought be paused when using the "manual" system, by use of the <see cref="F:ManagedBass.Enc.EncodeFlags.Pause"/> flag or the <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetPaused(System.Int32,System.Boolean)" /> function.
+            </para>
+            <para>
+            When queued encoding is enabled via the <see cref="F:ManagedBass.Enc.EncodeFlags.Queue"/> flag, the DSP system or <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> call will just buffer the data, and the data will then be fed to the encoder by another thread.
+            The buffer will grow as needed to hold the queued data, up to a limit specified by the <see cref="P:ManagedBass.Enc.BassEnc.Queue"/> config option.
+            If the limit is exceeded (or there is no free memory), data will be lost; <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" /> can be used to be notified of that occurrence.
+            The amount of data that is currently queued, as well as the queue limit and how much data has been lost, is available from <see cref="M:ManagedBass.Enc.BassEnc.EncodeGetCount(System.Int32,ManagedBass.Enc.EncodeCount)" />.
+            </para>
+            <para>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeIsActive(System.Int32)" /> can be used to check that the encoder is still running.
+            When done encoding, use <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32)" /> to close the encoder.
+            </para>
+            <para>The returned process Handle can be used to do things like change the encoder's priority and get it's exit code.</para>
+            <para>
+            Multiple encoders can be set on a channel.
+            For simplicity, the encoder functions will accept either an encoder Handle or a channel Handle.
+            When using a channel Handle, the function is applied to all encoders that are set on that channel.
+            </para>
+            <para><b>Platform-specific</b></para>
+            <para>External encoders are not supported on iOS or Windows CE, so only plain PCM file writing with the <see cref="F:ManagedBass.Enc.EncodeFlags.PCM"/> flag is possible on those platforms.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.FileOpen">Couldn't start the encoder. Check that the executable exists.</exception>
+            <exception cref="F:ManagedBass.Errors.Create">The PCM file couldn't be created.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncoderProcedure,System.IntPtr)">
+            <summary>
+            Sets up a user-provided encoder on a channel.
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Filename">Output filename... <see langword="null" /> = no output file.</param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>.</param>
+            <param name="Procedure">Callback function to receive the sample data and return the encoded data.</param>
+            <param name="User">User instance data to Password to the callback function.</param>
+            <returns>The encoder process handle is returned if the encoder is successfully started, else 0 is returned (use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code).</returns>
+            <remarks>
+            <para>
+            This function allows user-provided encoders to be used, which is most useful for platforms where external encoders are unavailable 
+            for use with <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" />.
+            For example, the LAME library could be used with this function instead of the standalone LAME executable with <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" />.
+            </para>
+            <para>
+            Internally, the sending of sample data to the encoder is implemented via a DSP callback on the channel.
+            That means when the channel is played (or <see cref="M:ManagedBass.Bass.ChannelGetData(System.Int32,System.IntPtr,System.Int32)" /> is called if it is a decoding channel), the sample data will be sent to the encoder at the same time.
+            It also means that if the <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> option is enabled, the sample data will be 32-bit floating-point, and one of the floating-point flags will be required if the encoder does not support floating-point sample data.
+            The <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> setting should not be changed while encoding is in progress.
+            </para>
+            <para>
+            By default, the encoder DSP has a priority setting of -1000, which determines where in the DSP chain the encoding is performed.
+            That can be changed via the <see cref="P:ManagedBass.Enc.BassEnc.DSPPriority"/> config option.
+            </para>
+            <para>
+            Besides the automatic DSP system, data can also be manually fed to the encoder via the <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> function. 
+            Both methods can be used together, but in general, the 'automatic' system ought to be paused when using the 'manual' system, via the <see cref="F:ManagedBass.Enc.EncodeFlags.Pause"/> flag or the <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetPaused(System.Int32,System.Boolean)" /> function.
+            Data fed to the encoder manually does not go through the source channel's DSP chain, so any DSP/FX set on the channel will not be applied to the data.
+            </para>
+            <para>
+            When queued encoding is enabled via the <see cref="F:ManagedBass.Enc.EncodeFlags.Queue"/> flag, the DSP system or <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> call will just buffer the data, and the data will then be fed to the encoder by another thread.
+            The buffer will grow as needed to hold the queued data, up to a limit specified by the <see cref="P:ManagedBass.Enc.BassEnc.Queue"/> config option.
+            If the limit is exceeded (or there is no free memory), data will be lost;
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" /> can be used to be notified of that occurrence. 
+            The amount of data that is currently queued, as well as the queue limit and how much data has been lost, is available from <see cref="M:ManagedBass.Enc.BassEnc.EncodeGetCount(System.Int32,ManagedBass.Enc.EncodeCount)" />.
+            </para>
+            <para>When done encoding, use <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32)" /> or <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32,System.Boolean)" /> to close the encoder.</para>
+            <para>
+            Multiple encoders can be set on a channel.
+            For convenience, most of the encoder functions will accept either an encoder handle or a channel handle. 
+            When a channel handle is used, the function is applied to all encoders that are set on that channel.
+            </para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Create">The file could not be created.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32)">
+            <summary>
+            Stops encoding on a channel.
+            </summary>
+            <param name="Handle">The encoder or channel Handle... a HENCODE, HSTREAM, HMUSIC, or HRECORD.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            This function will free an encoder immediately, without waiting for any data that may be remaining in the queue.
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32,System.Boolean)" /> can be used to have an encoder process the queue before it is freed.
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32,System.Boolean)">
+            <summary>
+            Stops async encoding on a channel.
+            </summary>
+            <param name="Handle">The encoder or channel Handle... a HENCODE, HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Queue">Process the queue first? If so, the encoder will not be freed until after any data remaining in the queue has been processed, and it will not accept any new data in the meantime.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            When an encoder is told to wait for its queue to be processed, this function will return immediately and the encoder will be freed in the background after the queued data has been processed.
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" /> can be used to request notification of when the encoder has been freed.
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32)" /> (or this function with queue = <see langword="false" />) can be used to cancel to queue processing and free the encoder immediately.
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)">
+            <summary>
+            Sends sample data to the encoder.
+            </summary>
+            <param name="Handle">The encoder or channel Handle... a HENCODE, HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Buffer">A pointer to the buffer containing the sample data.</param>
+            <param name="Length">The number of BYTES in the buffer.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            There's usually no need to use this function, as the channel's sample data will automatically be fed to the encoder.
+            But in some situations, it could be useful to be able to manually feed the encoder instead.
+            <para>The sample data is expected to be the same format as the channel's, or floating-point if the <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> option is enabled.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Ended">The encoder has died.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.Byte[],System.Int32)">
+            <summary>
+            Sends sample data to the encoder.
+            </summary>
+            <param name="Handle">The encoder or channel Handle... a HENCODE, HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Buffer">byte[] containing the sample data.</param>
+            <param name="Length">The number of BYTES in the buffer.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            There's usually no need to use this function, as the channel's sample data will automatically be fed to the encoder.
+            But in some situations, it could be useful to be able to manually feed the encoder instead.
+            <para>The sample data is expected to be the same format as the channel's, or floating-point if the <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> option is enabled.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Ended">The encoder has died.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.Int16[],System.Int32)">
+            <summary>
+            Sends sample data to the encoder.
+            </summary>
+            <param name="Handle">The encoder or channel Handle... a HENCODE, HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Buffer">short[] containing the sample data.</param>
+            <param name="Length">The number of BYTES in the buffer.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            There's usually no need to use this function, as the channel's sample data will automatically be fed to the encoder.
+            But in some situations, it could be useful to be able to manually feed the encoder instead.
+            <para>The sample data is expected to be the same format as the channel's, or floating-point if the <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> option is enabled.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Ended">The encoder has died.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.Int32[],System.Int32)">
+            <summary>
+            Sends sample data to the encoder.
+            </summary>
+            <param name="Handle">The encoder or channel Handle... a HENCODE, HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Buffer">int[] containing the sample data.</param>
+            <param name="Length">The number of BYTES in the buffer.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            There's usually no need to use this function, as the channel's sample data will automatically be fed to the encoder.
+            But in some situations, it could be useful to be able to manually feed the encoder instead.
+            <para>The sample data is expected to be the same format as the channel's, or floating-point if the <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> option is enabled.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Ended">The encoder has died.</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.Single[],System.Int32)">
+            <summary>
+            Sends sample data to the encoder.
+            </summary>
+            <param name="Handle">The encoder or channel Handle... a HENCODE, HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Buffer">float[] containing the sample data.</param>
+            <param name="Length">The number of BYTES in the buffer.</param>
+            <returns>If successful, <see langword="true" /> is returned, else <see langword="false" /> is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            There's usually no need to use this function, as the channel's sample data will automatically be fed to the encoder.
+            But in some situations, it could be useful to be able to manually feed the encoder instead.
+            <para>The sample data is expected to be the same format as the channel's, or floating-point if the <see cref="P:ManagedBass.Bass.FloatingPointDSP"/> option is enabled.</para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.Ended">The encoder has died.</exception>
+        </member>
+        <member name="P:ManagedBass.Enc.BassEnc.ACMLoad">
+            <summary>
+            ACM codec name to give priority for the formats it supports (e.g. 'l3codecp.acm').
+            </summary>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.GetACMFormat(System.Int32,System.IntPtr,System.Int32,System.String,ManagedBass.Enc.ACMFormatFlags,ManagedBass.WaveFormatTag)">
+            <summary>
+            Presents the user with a list of available ACM (Audio Compression Manager) codec output formats to choose from.
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Format">Pointer to the format buffer.</param>
+            <param name="FormatLength">Size of the format buffer. If this is 0, then a suggested format buffer length is returned (which is the maximum length of all installed codecs), without displaying the codec selector.</param>
+            <param name="Title">Window title for the selector... <see langword="null" /> = "Choose the output format".</param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.ACMFormatFlags"/>.</param>
+            <param name="Encoding">Can be used to restrict the choice to a particular format tag. This is required with <see cref="F:ManagedBass.Enc.ACMFormatFlags.Suggest"/>, and is optional otherwise.</param>
+            <returns>
+            If successful, the user-selected codec format details are put in the provided buffer and the length of the format details is returned, else 0 is returned. 
+            Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.
+            If <paramref name="FormatLength"/> is 0, then the suggested format buffer size is returned.
+            </returns>
+            <remarks>
+            This function presents the user with a list of available ACM codecs to choose from, given the sample format of the channel.
+            The details of the chosen codec's output are returned in the Format buffer, which can then be used with <see cref="M:ManagedBass.Enc.BassEnc.EncodeStartACM(System.Int32,System.IntPtr,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" /> or <see cref="M:ManagedBass.Enc.BassEnc.EncodeStartACM(System.Int32,System.IntPtr,ManagedBass.Enc.EncodeFlags,System.String)" /> to begin encoding.
+            <para>
+            The <paramref name="Format" /> buffer contents are actually a WAVEFORMATEX or ACMFORMAT structure.
+            If writing the encoder output to a WAVE file, the Format buffer contents would be the format chunk ("fmt") of the file.
+            </para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">There are no codecs available that will accept the channel's format.</exception>
+            <exception cref="F:ManagedBass.Errors.AcmCancel">The user pressed the "cancel" button.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeStartACM(System.Int32,System.IntPtr,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)">
+            <summary>
+            Sets up an encoder on a channel, using an ACM codec and sending the output to a user defined function.
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Format">ACM codec output format (as returned by <see cref="M:ManagedBass.Enc.BassEnc.GetACMFormat(System.Int32,System.IntPtr,System.Int32,System.String,ManagedBass.Enc.ACMFormatFlags,ManagedBass.WaveFormatTag)" />).</param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>.</param>
+            <param name="Procedure">Callback function to receive the encoded data.</param>
+            <param name="User">User instance data to pass to the callback function.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            The ACM encoder allows installed ACM (Audio Compression Manager) codecs to be used for encoding.
+            The codec used is determined by the contents of the Format parameter. 
+            The <see cref="M:ManagedBass.Enc.BassEnc.GetACMFormat(System.Int32,System.IntPtr,System.Int32,System.String,ManagedBass.Enc.ACMFormatFlags,ManagedBass.WaveFormatTag)" /> function can be used to initialize that.
+            <para>
+            Internally, the sending of sample data to the encoder is implemented via a DSP callback on the channel.
+            That means when you play the channel (or call <see cref="M:ManagedBass.Bass.ChannelGetData(System.Int32,System.IntPtr,System.Int32)" /> if it's a decoding channel), the sample data will be sent to the encoder at the same time. 
+            The encoding is performed in the DSP callback.
+            There isn't a separate process doing the encoding, as when using an external encoder via <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" />.
+            </para>
+            <para>
+            By default, the encoder DSP has a priority setting of -1000, which determines where in the DSP chain the encoding is performed.
+            That can be changed using the <see cref="P:ManagedBass.Enc.BassEnc.DSPPriority"/> config option.
+            </para>
+            <para>
+            Besides the automatic DSP system, data can also be manually fed to the encoder via the <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> function.
+            Both methods can be used together, but in general, the "automatic" system ought be paused when using the "manual" system, by use of the <see cref="F:ManagedBass.Enc.EncodeFlags.Pause"/> flag or the <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetPaused(System.Int32,System.Boolean)" /> function.
+            </para>
+            <para>
+            When queued encoding is enabled via the <see cref="F:ManagedBass.Enc.EncodeFlags.Queue"/> flag, the DSP system or <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> call will just buffer the data, and the data will then be fed to the encoder by another thread.
+            The buffer will grow as needed to hold the queued data, up to a limit specified by the <see cref="F:ManagedBass.Enc.EncodeFlags.Queue"/> config option.
+            If the limit is exceeded (or there is no free memory), data will be lost;
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" /> can be used to be notified of that occurrence.
+            The amount of data that is currently queued, as well as the queue limit and how much data has been lost, is available from <see cref="M:ManagedBass.Enc.BassEnc.EncodeGetCount(System.Int32,ManagedBass.Enc.EncodeCount)" />.
+            </para>
+            <para>When done encoding, use <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32)" /> to close the encoder.</para>
+            <para>
+            Multiple encoders can be set on a channel.
+            For simplicity, the encoder functions will accept either an encoder handle or a channel handle.
+            When using a channel handle, the function is applied to all encoders that are set on that channel.
+            </para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">The codec specified in <paramref name="Format" /> couldn't be initialized.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc.EncodeStartACM(System.Int32,System.IntPtr,ManagedBass.Enc.EncodeFlags,System.String)">
+            <summary>
+            Sets up an encoder on a channel, using an ACM codec and writing the output to a file.
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Format">ACM codec output format (as returned by <see cref="M:ManagedBass.Enc.BassEnc.GetACMFormat(System.Int32,System.IntPtr,System.Int32,System.String,ManagedBass.Enc.ACMFormatFlags,ManagedBass.WaveFormatTag)" />).</param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>.</param>
+            <param name="FileName">The filename to write.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError" /> to get the error code.</returns>
+            <remarks>
+            The ACM encoder allows installed ACM (Audio Compression Manager) codecs to be used for encoding.
+            The codec used is determined by the contents of the Format parameter. 
+            The <see cref="M:ManagedBass.Enc.BassEnc.GetACMFormat(System.Int32,System.IntPtr,System.Int32,System.String,ManagedBass.Enc.ACMFormatFlags,ManagedBass.WaveFormatTag)" /> function can be used to initialize that.
+            <para>
+            Internally, the sending of sample data to the encoder is implemented via a DSP callback on the channel.
+            That means when you play the channel (or call <see cref="M:ManagedBass.Bass.ChannelGetData(System.Int32,System.IntPtr,System.Int32)" /> if it's a decoding channel), the sample data will be sent to the encoder at the same time. 
+            The encoding is performed in the DSP callback.
+            There isn't a separate process doing the encoding, as when using an external encoder via <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)" />.
+            </para>
+            <para>
+            By default, the encoder DSP has a priority setting of -1000, which determines where in the DSP chain the encoding is performed.
+            That can be changed using the <see cref="P:ManagedBass.Enc.BassEnc.DSPPriority"/> config option.
+            </para>
+            <para>
+            Besides the automatic DSP system, data can also be manually fed to the encoder via the <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> function.
+            Both methods can be used together, but in general, the "automatic" system ought be paused when using the "manual" system, by use of the <see cref="F:ManagedBass.Enc.EncodeFlags.Pause"/> flag or the <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetPaused(System.Int32,System.Boolean)" /> function.
+            </para>
+            <para>
+            When queued encoding is enabled via the <see cref="F:ManagedBass.Enc.EncodeFlags.Queue"/> flag, the DSP system or <see cref="M:ManagedBass.Enc.BassEnc.EncodeWrite(System.Int32,System.IntPtr,System.Int32)" /> call will just buffer the data, and the data will then be fed to the encoder by another thread.
+            The buffer will grow as needed to hold the queued data, up to a limit specified by the <see cref="F:ManagedBass.Enc.EncodeFlags.Queue"/> config option.
+            If the limit is exceeded (or there is no free memory), data will be lost;
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeSetNotify(System.Int32,ManagedBass.Enc.EncodeNotifyProcedure,System.IntPtr)" /> can be used to be notified of that occurrence.
+            The amount of data that is currently queued, as well as the queue limit and how much data has been lost, is available from <see cref="M:ManagedBass.Enc.BassEnc.EncodeGetCount(System.Int32,ManagedBass.Enc.EncodeCount)" />.
+            </para>
+            <para>When done encoding, use <see cref="M:ManagedBass.Enc.BassEnc.EncodeStop(System.Int32)" /> to close the encoder.</para>
+            <para>
+            Multiple encoders can be set on a channel.
+            For simplicity, the encoder functions will accept either an encoder handle or a channel handle.
+            When using a channel handle, the function is applied to all encoders that are set on that channel.
+            </para>
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle" /> is not valid.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">The codec specified in <paramref name="Format" /> couldn't be initialized.</exception>
+            <exception cref="F:ManagedBass.Errors.Create">The file couldn't be created.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem!</exception>
+        </member>
+        <member name="T:ManagedBass.Enc.BassEnc_Acc">
+            <summary>
+            BassEnc_Acc is an extension to the BassEnc add-on that allows BASS channels to be Acc encoded, with support for AACENC options.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Enc.BassEnc_Acc.Version">
+            <summary>
+            Gets the Version of BassEnc_Aac that is loaded.
+            </summary>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Acc.Start(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)">
+            <summary>
+            Start Aac Encoding to <see cref="T:ManagedBass.Enc.EncodeProcedure"/>.
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Options">
+            Encoder options... null = use defaults.
+            The following AACENC style options are supported: --object-type --bitrate, --vbr.
+            Anything else that is included will be ignored.
+            </param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>.</param>
+            <param name="Procedure">Optional callback function to receive the encoded data... null = no callback.</param>
+            <param name="User">User instance data to pass to the callback function.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError"/> to get the error code</returns>
+            <remarks>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncoderProcedure,System.IntPtr)"/> is used internally to apply the encoder to the source channel, so the remarks in its documentation also apply to this function. 
+            
+            <b>Platform-specific</b>
+            On Windows and Linux, an SSE supporting CPU is required for sample rates other than 48000/24000/16000/12000/8000 Hz.
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle"/> is not valid</exception>
+            <exception cref="F:ManagedBass.Errors.SampleFormat">The channel's sample format is not supported by the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem! </exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Acc.Start(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,System.String)">
+            <summary>
+            Start AAC Encoding to File.
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Options">
+            Encoder options... null = use defaults.
+            The following AACENC style options are supported: --object-type --bitrate, --vbr.
+            Anything else that is included will be ignored.
+            </param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>.</param>
+            <param name="FileName">Output filename... null = no output file.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError"/> to get the error code</returns>
+            <remarks>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncoderProcedure,System.IntPtr)"/> is used internally to apply the encoder to the source channel, so the remarks in its documentation also apply to this function. 
+            
+            <b>Platform-specific</b>
+            On Windows and Linux, an SSE supporting CPU is required for sample rates other than 48000/24000/16000/12000/8000 Hz.
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle"/> is not valid</exception>
+            <exception cref="F:ManagedBass.Errors.SampleFormat">The channel's sample format is not supported by the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Create">The file could not be created.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem! </exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Acc.GetArgValueInt(System.String,System.String)">
+            <summary>
+            Extracts the next int value that follows specified argument string in the command. 
+            </summary>
+            <param name="Cmd">The command-line to parse.</param>
+            <param name="Arg">The argument string to get the value for.</param>
+            <returns>The int value that follows the argument string, or null if not found or invalid.</returns>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Acc.CharsToInt(System.String)">
+            <summary>
+            Converts 4 chars into an Int32 value.
+            </summary>
+            <param name="chars">The 4 chars to convert.</param>
+            <returns>An Int32 value.</returns>
+        </member>
+        <member name="T:ManagedBass.Enc.BassEnc_Flac">
+            <summary>
+            BassEnc_Flac is an extension to the BassFlac add-on that allows BASS channels to be Flac encoded.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Enc.BassEnc_Flac.Version">
+            <summary>
+            Gets the Version of BassEnc_Flac that is loaded.
+            </summary>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Flac.Start(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedureEx,System.IntPtr)">
+            <summary>
+            Start FLAC Encoding to <see cref="T:ManagedBass.Enc.EncodeProcedure"/>.
+            </summary>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Flac.Start(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,System.String)">
+            <summary>
+            Start FLAC Encoding to File.
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Enc.BassEnc_Mp3">
+            <summary>
+            BassEnc_MP3 is an extension to the BassMP3 add-on that allows BASS channels to be MP3 encoded.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Enc.BassEnc_Mp3.Version">
+            <summary>
+            Gets the Version of BassEnc_MP3 that is loaded.
+            </summary>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Mp3.Start(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedureEx,System.IntPtr)">
+            <summary>
+            Start Mp3 Encoding to <see cref="T:ManagedBass.Enc.EncodeProcedureEx"/>.
+            For best documentation on functionality see http://www.un4seen.com/doc/
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Options">
+            Encoder options... NULL = use defaults. 
+            The following LAME style options are supported: -b, -B, -v, -V, -q, -m, --abr, -Y, --resample, -p, -t, --tt, --ta, --tl, --ty, --tc, --tn, --tg, --tv, --id3v1-only, --id3v2-only, --add-id3v2, --pad-id3v2, --pad-id3v2-size, --noreplaygain. 
+            Anything else that is included will be ignored. 
+            See the LAME documentation for details on the aforementioned options and defaults.
+            https://svn.code.sf.net/p/lame/svn/trunk/lame/USAGE
+            </param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>
+            EncodeFlags.Queue	Queue data to feed the encoder asynchronously. This prevents the data source (DSP system or BASS_Encode_Write call) getting blocked by the encoder, but if data is queud more quickly than the encoder can process it, that could result in lost data.
+            EncodeFlags.Limit Limit the encoding rate to real-time speed, by introducing a delay when the rate is too high.With BASS 2.4.6 or above, this flag is ignored when the encoder is fed in a playback buffer update cycle (including BASS_Update and BASS_ChannelUpdate calls), to avoid possibly causing playback buffer underruns.Except for in those instances, this flag is applied automatically when the encoder is feeding a Shoutcast or Icecast server.
+            EncodeFlags.UnlimitedCastDataRate    Don't limit the encoding rate to real-time speed when feeding a Shoutcast or Icecast server. This flag overrides the BASS_ENCODE_LIMIT flag.
+            EncodeFlags.Pause Start the encoder in a paused state.
+            EncodeFlags.Autofree Automatically free the encoder when the source channel is freed.If queuing is enabled, any remaining queued data will be sent to the encoder before it is freed.
+            EncodeFlags.Unicode options is in UTF-16 form.Otherwise it should be UTF-8 or ISO-8859-1 (or a mix of the two).</param>
+            <param name="ProcedureEx">Optional callback function to receive the encoded data... null = no callback.</param>
+            <param name="User">User instance data to pass to the callback function.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError"/> to get the error code</returns>
+            <remarks>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncoderProcedure,System.IntPtr)"/> is used internally to apply the encoder to the source channel, so the remarks in its documentation also apply to this function. 
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle"/> is not valid</exception>
+            <exception cref="F:ManagedBass.Errors.SampleFormat">The channel's sample format is not supported by the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">This function is not available on platforms/architectures without an FPU.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem! </exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Mp3.Start(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,System.String)">
+            <summary>
+            Start Mp3 Encoding to File. For best documentation on functionality see http://www.un4seen.com/doc/
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Options">
+            Encoder options... NULL = use defaults. 
+            The following LAME style options are supported: -b, -B, -v, -V, -q, -m, --abr, -Y, --resample, -p, -t, --tt, --ta, --tl, --ty, --tc, --tn, --tg, --tv, --id3v1-only, --id3v2-only, --add-id3v2, --pad-id3v2, --pad-id3v2-size, --noreplaygain. 
+            Anything else that is included will be ignored. 
+            See the LAME documentation for details on the aforementioned options and defaults.
+            https://svn.code.sf.net/p/lame/svn/trunk/lame/USAGE
+            </param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>
+            EncodeFlags.Queue	Queue data to feed the encoder asynchronously. This prevents the data source (DSP system or BASS_Encode_Write call) getting blocked by the encoder, but if data is queud more quickly than the encoder can process it, that could result in lost data.
+            EncodeFlags.Limit Limit the encoding rate to real-time speed, by introducing a delay when the rate is too high.With BASS 2.4.6 or above, this flag is ignored when the encoder is fed in a playback buffer update cycle (including BASS_Update and BASS_ChannelUpdate calls), to avoid possibly causing playback buffer underruns.Except for in those instances, this flag is applied automatically when the encoder is feeding a Shoutcast or Icecast server.
+            EncodeFlags.UnlimitedCastDataRate    Don't limit the encoding rate to real-time speed when feeding a Shoutcast or Icecast server. This flag overrides the BASS_ENCODE_LIMIT flag.
+            EncodeFlags.Pause Start the encoder in a paused state.
+            EncodeFlags.Autofree Automatically free the encoder when the source channel is freed.If queuing is enabled, any remaining queued data will be sent to the encoder before it is freed.
+            EncodeFlags.Unicode options is in UTF-16 form.Otherwise it should be UTF-8 or ISO-8859-1 (or a mix of the two).</param>
+            <param name="FileName">Output filename... null = no output file.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError"/> to get the error code</returns>
+            <remarks>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncoderProcedure,System.IntPtr)"/> is used internally to apply the encoder to the source channel, so the remarks in its documentation also apply to this function. 
+            
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle"/> is not valid</exception>
+            <exception cref="F:ManagedBass.Errors.SampleFormat">The channel's sample format is not supported by the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Create">The file could not be created.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">This function is not available on platforms/architectures without an FPU.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem! </exception>
+        </member>
+        <member name="T:ManagedBass.Enc.BassEnc_Ogg">
+            <summary>
+            BassEnc_Ogg is an extension to the BassEnc add-on that allows BASS channels to be Ogg Vorbis encoded, with support for OGGENC options.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Enc.BassEnc_Ogg.Version">
+            <summary>
+            Gets the Version of BassEnc_Ogg that is loaded.
+            </summary>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Ogg.Start(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)">
+            <summary>
+            Start Ogg Encoding to <see cref="T:ManagedBass.Enc.EncodeProcedure"/>.
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Options">
+            Encoder options... null = use defaults.
+            The following OGGENC style options are supported: -b / --bitrate, -m / --min-bitrate, -M / --max-bitrate, -q / --quality, -s / --serial, -t / --title, -a / --artist, -G / --genre, -d / --date, -l / --album, -N / --tracknum, -c / --comment.
+            Anything else that is included will be ignored. 
+            </param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>.</param>
+            <param name="Procedure">Optional callback function to receive the encoded data... null = no callback.</param>
+            <param name="User">User instance data to pass to the callback function.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError"/> to get the error code</returns>
+            <remarks>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncoderProcedure,System.IntPtr)"/> is used internally to apply the encoder to the source channel, so the remarks in its documentation also apply to this function. 
+            
+            <b>Platform-specific</b>
+            Ogg Vorbis encoding involves extensive floating-point operations, so it is not supported on platforms/architectures that do not have an FPU, eg. older ARM platforms/architectures.
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle"/> is not valid</exception>
+            <exception cref="F:ManagedBass.Errors.SampleFormat">The channel's sample format is not supported by the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">This function is not available on platforms/architectures without an FPU.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem! </exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Ogg.Start(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,System.String)">
+            <summary>
+            Start Ogg Encoding to File.
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Options">
+            Encoder options... null = use defaults.
+            The following OGGENC style options are supported: -b / --bitrate, -m / --min-bitrate, -M / --max-bitrate, -q / --quality, -s / --serial, -t / --title, -a / --artist, -G / --genre, -d / --date, -l / --album, -N / --tracknum, -c / --comment.
+            Anything else that is included will be ignored. 
+            </param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>.</param>
+            <param name="FileName">Output filename... null = no output file.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError"/> to get the error code</returns>
+            <remarks>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncoderProcedure,System.IntPtr)"/> is used internally to apply the encoder to the source channel, so the remarks in its documentation also apply to this function. 
+            
+            <b>Platform-specific</b>
+            Ogg Vorbis encoding involves extensive floating-point operations, so it is not supported on platforms/architectures that do not have an FPU, eg. older ARM platforms/architectures.
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle"/> is not valid</exception>
+            <exception cref="F:ManagedBass.Errors.SampleFormat">The channel's sample format is not supported by the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Create">The file could not be created.</exception>
+            <exception cref="F:ManagedBass.Errors.NotAvailable">This function is not available on platforms/architectures without an FPU.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem! </exception>
+        </member>
+        <member name="T:ManagedBass.Enc.BassEnc_Opus">
+            <summary>
+            BassEnc_Opus is an extension to the BassEnc add-on that allows BASS channels to be Opus encoded, with support for OPUSENC options.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Enc.BassEnc_Opus.Version">
+            <summary>
+            Gets the Version of BassEnc_Opus that is loaded.
+            </summary>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Opus.Start(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncodeProcedure,System.IntPtr)">
+            <summary>
+            Start Opus Encoding to <see cref="T:ManagedBass.Enc.EncodeProcedure"/>.
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Options">
+            Encoder options... null = use defaults.
+            The following OPUSENC style options are supported: --bitrate, --vbr, --cvbr, --hard-cbr, --comp / --complexity, --framesize, --expect-loss, --max-delay, --serial, --comment, --artist, --title, --album, --date, --genre, --padding.
+            Anything else that is included will be ignored.
+            </param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>.</param>
+            <param name="Procedure">Optional callback function to receive the encoded data... null = no callback.</param>
+            <param name="User">User instance data to pass to the callback function.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError"/> to get the error code</returns>
+            <remarks>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncoderProcedure,System.IntPtr)"/> is used internally to apply the encoder to the source channel, so the remarks in its documentation also apply to this function. 
+            
+            <b>Platform-specific</b>
+            On Windows and Linux, an SSE supporting CPU is required for sample rates other than 48000/24000/16000/12000/8000 Hz.
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle"/> is not valid</exception>
+            <exception cref="F:ManagedBass.Errors.SampleFormat">The channel's sample format is not supported by the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem! </exception>
+        </member>
+        <member name="M:ManagedBass.Enc.BassEnc_Opus.Start(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,System.String)">
+            <summary>
+            Start Opus Encoding to File.
+            </summary>
+            <param name="Handle">The channel handle... a HSTREAM, HMUSIC, or HRECORD.</param>
+            <param name="Options">
+            Encoder options... null = use defaults.
+            The following OPUSENC style options are supported: --bitrate, --vbr, --cvbr, --hard-cbr, --comp / --complexity, --framesize, --expect-loss, --max-delay, --serial, --comment, --artist, --title, --album, --date, --genre, --padding.
+            Anything else that is included will be ignored.
+            </param>
+            <param name="Flags">A combination of <see cref="T:ManagedBass.Enc.EncodeFlags"/>.</param>
+            <param name="FileName">Output filename... null = no output file.</param>
+            <returns>The encoder handle is returned if the encoder is successfully started, else 0 is returned. Use <see cref="P:ManagedBass.Bass.LastError"/> to get the error code</returns>
+            <remarks>
+            <see cref="M:ManagedBass.Enc.BassEnc.EncodeStart(System.Int32,System.String,ManagedBass.Enc.EncodeFlags,ManagedBass.Enc.EncoderProcedure,System.IntPtr)"/> is used internally to apply the encoder to the source channel, so the remarks in its documentation also apply to this function. 
+            
+            <b>Platform-specific</b>
+            On Windows and Linux, an SSE supporting CPU is required for sample rates other than 48000/24000/16000/12000/8000 Hz.
+            </remarks>
+            <exception cref="F:ManagedBass.Errors.Handle"><paramref name="Handle"/> is not valid</exception>
+            <exception cref="F:ManagedBass.Errors.SampleFormat">The channel's sample format is not supported by the encoder.</exception>
+            <exception cref="F:ManagedBass.Errors.Create">The file could not be created.</exception>
+            <exception cref="F:ManagedBass.Errors.Unknown">Some other mystery problem! </exception>
+        </member>
+    </members>
+</doc>
