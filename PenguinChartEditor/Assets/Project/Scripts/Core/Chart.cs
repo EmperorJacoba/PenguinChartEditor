@@ -228,6 +228,7 @@ public class Chart : MonoBehaviour
             resolution: Resolution,
             metadata: Metadata,
             instruments: allInstruments,
+            includedTracks: exportSettingsManager.GetInstrumentTrackInclusionStatuses(),
             audioFormat: exportSettingsManager.GetExportAudioFormat()
             );
 

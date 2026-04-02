@@ -9,8 +9,8 @@ public class ExportSettingsManager : MonoBehaviour
 {
     public static ExportSettingsManager instance;
 
-    [FormerlySerializedAs("formatToggleGroup")] [SerializeField] ToggleGroup chartFormatToggleGroup;
-    [SerializeField] ToggleGroup audioFormatToggleGroup;
+    [FormerlySerializedAs("formatToggleGroup")] [SerializeField] private ToggleGroup chartFormatToggleGroup;
+    [SerializeField] private ToggleGroup audioFormatToggleGroup;
     [SerializeField] private Toggle zipPackageToggle;
     [SerializeField] private TMP_InputField kbpsInput;
     [SerializeField] private AudioTrackToggleManager audioTrackInclusionManager;
@@ -40,9 +40,25 @@ public class ExportSettingsManager : MonoBehaviour
         return GetExportAudioFormat() == AudioFormats.opus ? 80 : 320;
     }
 
-    public Dictionary<StemType, bool> GetAudioInclusionStatuses() =>
-        audioTrackInclusionManager.GetTrackInclusionStatuses();
+    public HashSet<StemType> GetAudioInclusionStatuses()
+    {
+        return audioTrackInclusionManager.GetTrackInclusionStatuses().
+            Where(x => x.Value).
+            Select(x => x.Key).
+            ToHashSet();
+    }
 
-    public Dictionary<InstrumentType, Dictionary<DifficultyType, bool>> GetInstrumentTrackInclusionStatuses =>
-        instrumentInclusionManager.GetActiveInstrumentTracks();
+    public HashSet<HeaderType> GetInstrumentTrackInclusionStatuses()
+    {
+        var includedIDs = new HashSet<HeaderType>();
+        foreach (var (instrumentType, includedDifficulties) in instrumentInclusionManager.GetActiveInstrumentTracks())
+        {
+            foreach (var diff in includedDifficulties.Where(diff => diff.Value))
+            {
+                includedIDs.Add(InstrumentMetadata.GetHeader(instrumentType, diff.Key));
+            }
+        }
+
+        return includedIDs;
+    }
 }

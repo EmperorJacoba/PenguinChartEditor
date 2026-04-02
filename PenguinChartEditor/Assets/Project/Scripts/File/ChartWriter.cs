@@ -15,6 +15,7 @@ public static class ChartWriter
         int resolution,
         Metadata metadata,
         List<IInstrument> instruments, 
+        HashSet<HeaderType> includedTracks,
         AudioFormats audioFormat
         )
     {
@@ -34,6 +35,8 @@ public static class ChartWriter
         
         foreach (var instrument in instruments.Where(instrument => instrument != null))
         {
+            if (!includedTracks.Contains(instrument.InstrumentID)) continue;
+            
             dotChartLines.AddRange(WriteInstrument(instrument));
         }
         

@@ -1,8 +1,11 @@
 using System;
 using UnityEngine;
 using Un4seen.Bass;
+using Un4seen.Bass.AddOn.Enc;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using Un4seen.Bass.AddOn.EncOpus;
 
 // This file is based around the licensed product plugin BASS and its .NET wrapper, BASS.NET.
 // You must obtain your own license of BASS and BASS.NET if you would like to repackage the code in this file by the terms each program specifies.
@@ -438,6 +441,28 @@ public class AudioManager : MonoBehaviour
     public static double GetCurrentAudioPosition()
     {
         return Bass.BASS_ChannelBytes2Seconds(StemStreams[StreamLink], Bass.BASS_ChannelGetPosition(StemStreams[StreamLink]));
+    }
+
+    public static void WriteAudioFiles(
+        Metadata metadata, 
+        string targetDirectory, 
+        AudioFormats format, 
+        HashSet<StemType> includedStems
+        )
+    {
+        foreach (var stemPair in metadata.StemPaths.Where(x => includedStems.Contains(x.Key)))
+        {
+            switch (format)
+            {
+                case AudioFormats.opus:
+                {
+                    var handle = StemStreams[stemPair.Key];
+                   // BassEnc_Opus.BASS_Encode_OPUS_StartFile(handle, )
+                        
+                    break;
+                }
+            }
+        }
     }
 
     #endregion
