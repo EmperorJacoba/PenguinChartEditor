@@ -225,7 +225,7 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
         if (timestamp <= 0)
             return 0;
 
-        if (timestamp > AudioManager.SongLength)
+        if (timestamp > AudioManager.SongLength && !Mathf.Approximately((float)AudioManager.SongLength, timestamp))
             return SongTime.SongLengthTicks;
 
         var tempoTickTimeEvents = TempoEvents.Keys.ToList();

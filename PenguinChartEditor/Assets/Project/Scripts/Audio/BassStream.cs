@@ -82,7 +82,7 @@ public class BassStream
             throw new ArgumentException($"BASS error when creating sfx stream. {Bass.LastError}");
         }
 
-        Volume = 1f;
+       // Volume = 1f;
         Muted = false;
     }
     
@@ -123,7 +123,8 @@ public class BassStream
 
     public void LinkTo(BassStream targetStream)
     {
-        if (Bass.ChannelSetLink(streamHandle, targetStream.streamHandle))
+        if (streamHandle == targetStream.streamHandle) return;
+        if (!Bass.ChannelSetLink(targetStream.streamHandle, streamHandle))
         {
             Debug.LogError($"Bass error linking stream {stem} to {targetStream.stem}. {Bass.LastError}");
         }

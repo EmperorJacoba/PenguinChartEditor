@@ -34,10 +34,10 @@ public class AudioManager : MonoBehaviour
             _streams = value;
         }
     }
-    private static Dictionary<StemType, BassStream> _streams;
+    private static Dictionary<StemType, BassStream> _streams = new();
     
     // Cached b/c stream link is not changed much. Just make sure to update this when stream link changes.
-    public static double SongLength { get; set; }
+    public static double SongLength { get; private set; }
 
     public delegate void PlayingDelegate(bool state);
     public static event PlayingDelegate PlaybackStateChanged;
@@ -45,12 +45,9 @@ public class AudioManager : MonoBehaviour
     public static bool AudioPlaying
     {
         get => _playing;
-        set
+        private set
         {
             if (value == _playing) return;
-            
-            if (value) PlayAudio();
-            else PauseAudio();
             
             _playing = value;
             
@@ -83,6 +80,7 @@ public class AudioManager : MonoBehaviour
     
     public static void Initialize()
     {
+        
         if (Bass.Init())
         {
             string path = $"{Application.dataPath}/Plugins/Bass/";
@@ -96,12 +94,16 @@ public class AudioManager : MonoBehaviour
 #if (UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX)
             path += "Bass_linux/x86_64";
 #endif
-            
             foreach (var file in Directory.EnumerateFiles(path))
             {
+                if (file.Contains("meta")) continue;
+                var fileName = Path.GetFileName(file);
+                if (fileName == "bass.dll" || fileName.Contains("bassenc") || fileName.Contains("bassmix")) continue;
+                
                 if (Bass.PluginLoad(file) == 0)
                 {
-                    Debug.LogWarning($"Plugin Load error. Bass Error: {Bass.LastError}");
+                    if (Bass.LastError == Errors.Already) continue;
+                    Debug.LogWarning($"Plugin Load error for {file}. Bass Error: {Bass.LastError}");
                 }
             }
         }
@@ -120,7 +122,11 @@ public class AudioManager : MonoBehaviour
     {
         inputMap = new InputMap();
         inputMap.Enable();
-        inputMap.ExternalCharting.PlayPause.performed += _ => AudioPlaying = !AudioPlaying;
+        inputMap.ExternalCharting.PlayPause.performed += _ =>
+        {
+            if (AudioPlaying) PauseAudio();
+            else PlayAudio();
+        };
     }
 
     private void OnApplicationQuit()
@@ -225,6 +231,8 @@ public class AudioManager : MonoBehaviour
             Debug.LogError($"Could not load stem {stemType} from {songPath}. Aborting load operation.");
             return false;
         }
+        
+        RecalculateStreamLink();
 
         Streams[stemType] = stream;
         Chart.Metadata.StemPaths[stemType] = songPath;
