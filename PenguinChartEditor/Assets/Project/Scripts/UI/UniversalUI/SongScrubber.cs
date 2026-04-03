@@ -31,7 +31,7 @@ public class SongScrubber : MonoBehaviour
     {
         disableNextUpdate = true;
 
-        scrubber.value = (float)SongTime.SongPositionSeconds / AudioManager.SongLength;
+        scrubber.value = (float)(SongTime.SongPositionSeconds / AudioManager.SongLength);
         
         // onValueChanged is still invocated when this function is called and will
         // cause a dual refresh on the same frame from UpdateSongTimeFromScrubber.

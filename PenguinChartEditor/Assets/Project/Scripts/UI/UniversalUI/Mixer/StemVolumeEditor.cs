@@ -94,12 +94,12 @@ public class StemVolumeEditor : MonoBehaviour
 
     public void OnMuteButtonPress()
     {
-        if (AudioManager.soloedStems.Count > 0)
+        if (AudioManager.IsAnyStemSoloed())
         {
             return;
         }
         
-        if (AudioManager.StemVolumes[StemType].Muted)
+        if (AudioManager.IsStemMuted(StemType))
         {
             AudioManager.UnmuteStem(StemType);
             UpdateButtonState(muteButton, ButtonStates.normal);
@@ -134,39 +134,17 @@ public class StemVolumeEditor : MonoBehaviour
 
     public void OnSoloButtonPress()
     {
-        if (AudioManager.soloedStems.Contains(StemType))
+        if (AudioManager.IsStemSoloed(StemType))
         {
-            AudioManager.soloedStems.Remove(StemType);
-            if (AudioManager.soloedStems.Count > 0)
-            {
-                AudioManager.MuteStem(StemType);
-            }
-            else
-            {
-                // weird workaround is needed for this for loop with the list
-                // b/c C# doesn't like it when you edit a <K, <struct>> dictionary
-                // while you're enumerating through it
-                foreach (var stem in AudioManager.StemVolumes.Keys.ToList())
-                {
-                    AudioManager.UnmuteStem(stem);
-                }
-            }
-
+            AudioManager.UnsoloStem(StemType);
             UpdateButtonState(soloButton, ButtonStates.normal);
         }
         else
         {
-            if (AudioManager.soloedStems.Count == 0)
+            if (AudioManager.SoloStem(StemType))
             {
-                foreach (var stem in AudioManager.StemVolumes.Keys.ToList())
-                {
-                    AudioManager.MuteStem(stem);
-                }
-                SoloedStemOccurred?.Invoke(); // undo any active mutes
+                SoloedStemOccurred?.Invoke(); // undo any shown mutes
             }
-
-            AudioManager.UnmuteStem(StemType);
-            AudioManager.soloedStems.Add(StemType);
 
             UpdateButtonState(soloButton, ButtonStates.soloed);
             UpdateButtonState(muteButton, ButtonStates.normal);

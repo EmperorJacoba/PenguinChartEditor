@@ -49,7 +49,7 @@ public class StemSourceSelector : MonoBehaviour
 
     private void RemoveAudioStem()
     {
-        AudioManager.RemoveStream(audioStemType);
+        AudioManager.SafeDeleteStream(audioStemType);
         Destroy(gameObject);
     }
 }

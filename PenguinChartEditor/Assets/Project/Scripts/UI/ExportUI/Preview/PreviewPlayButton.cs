@@ -19,7 +19,7 @@ public class PreviewPlayButton : MonoBehaviour
     {
         if (activeCoroutine is null)
         {
-            AudioManager.ForcePlayFromPosition(Chart.Metadata.PreviewStartTime);
+            AudioManager.PlayClip(Chart.Metadata.PreviewStartTime);
             activeCoroutine = StartCoroutine(StartPreviewTimer());
             attachedButton.image.sprite = iconRef.pauseIcon;
         }
@@ -31,7 +31,7 @@ public class PreviewPlayButton : MonoBehaviour
 
     private void WrapButtonAction()
     {
-        AudioManager.ForceStop();
+        AudioManager.ForceStopClip();
         activeCoroutine = null;
         attachedButton.image.sprite = iconRef.playIcon;
     }

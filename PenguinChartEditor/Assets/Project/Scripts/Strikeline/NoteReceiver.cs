@@ -41,7 +41,7 @@ public class NoteReceiver : MonoBehaviour
 
     private IEnumerator StopSustainAfterLength(int tick, int sustainLength)
     {
-        var lengthSeconds = Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(SongTime.SongPositionTicks, tick + sustainLength) * AudioManager.currentAudioSpeed;
+        var lengthSeconds = Chart.SyncTrackInstrument.ConvertTickDurationToSeconds(SongTime.SongPositionTicks, tick + sustainLength) * AudioManager.AudioSpeed;
         yield return new WaitForSeconds((float)lengthSeconds);
         if (AudioManager.AudioPlaying) PlayFall();
     }

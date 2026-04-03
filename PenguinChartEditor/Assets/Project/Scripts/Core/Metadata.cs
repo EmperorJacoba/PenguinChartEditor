@@ -41,7 +41,7 @@ public class Metadata
                 return;
             }
             
-            if (value > AudioManager.SongLength) value = AudioManager.SongLength;
+            if (value > AudioManager.SongLength) value = (float)AudioManager.SongLength;
             
             _pst = value;
             PreviewStartTimeUpdated?.Invoke();
