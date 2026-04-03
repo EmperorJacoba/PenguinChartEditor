@@ -55,9 +55,9 @@ public class SongTime : MonoBehaviour
     /// <summary>
     /// The length of the song in tick time.
     /// </summary>
-    public static int SongLengthTicks => Chart.SyncTrackInstrument.ConvertSecondsToTickTime(AudioManager.SongLength);
+    public static int SongLengthTicks => Chart.SyncTrackInstrument.ConvertSecondsToTickTime(SongLength);
 
-    public static float SongLength => AudioManager.SongLength;
+    public static float SongLength => (float)AudioManager.SongLength;
 
     public delegate void TimeChangedDelegate();
     public delegate void PositiveTimeChangeDelegate();
@@ -99,7 +99,7 @@ public class SongTime : MonoBehaviour
         // Add calibration here later on
         if (AudioManager.AudioPlaying)
         {
-            SongPositionSeconds = AudioManager.GetCurrentAudioPosition();
+            SongPositionSeconds = AudioManager.AudioPosition;
             TimeChanged?.Invoke();
             PositiveTimeChange?.Invoke();
         }
@@ -146,9 +146,9 @@ public class SongTime : MonoBehaviour
         {
             newTimeCandidate = 0;
         }
-        else if (newTimeCandidate >= AudioManager.SongLength)
+        else if (newTimeCandidate >= SongLength)
         {
-            newTimeCandidate = AudioManager.SongLength;
+            newTimeCandidate = SongLength;
         }
 
         SongPositionSeconds = newTimeCandidate;

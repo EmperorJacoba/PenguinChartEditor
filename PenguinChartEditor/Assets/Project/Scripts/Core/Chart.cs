@@ -182,7 +182,8 @@ public class Chart : MonoBehaviour
                 Metadata.StemPaths.Add(key, targetFilePath);
             }
         }
-        AudioManager.InitializeAudio();
+
+        AudioManager.RefreshAudioStreams();
         Waveform.InitializeWaveformData();
 
         ChartLoading = false;
@@ -311,8 +312,8 @@ public class Chart : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(instance);
 
-        AudioManager.InitializeBassPlugin();
-
+        AudioManager.Initialize();
+        
         LoadFile();
         
         SetLoadedInstrument(HeaderType.ExpertSingle);

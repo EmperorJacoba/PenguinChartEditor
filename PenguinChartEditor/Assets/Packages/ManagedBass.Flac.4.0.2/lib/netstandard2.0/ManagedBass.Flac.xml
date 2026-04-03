@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ManagedBass.Flac</name>
+    </assembly>
+    <members>
+        <member name="T:ManagedBass.Flac.BassFlac">
+            <summary>
+            BassFlac is a BASS addon enabling the playback of FLAC (inc. Ogg FLAC) encoded files, including internet and user file streams.
+            </summary> 
+            <remarks>
+            Supports .flac
+            </remarks>
+        </member>
+        <member name="M:ManagedBass.Flac.BassFlac.CreateStream(System.String,System.Int64,System.Int64,ManagedBass.BassFlags)">
+            <summary>Create a stream from file.</summary>
+        </member>
+        <member name="M:ManagedBass.Flac.BassFlac.CreateStream(System.IntPtr,System.Int64,System.Int64,ManagedBass.BassFlags)">
+            <summary>Create a stream from Memory (IntPtr).</summary>
+        </member>
+        <member name="M:ManagedBass.Flac.BassFlac.CreateStream(System.Byte[],System.Int64,System.Int64,ManagedBass.BassFlags)">
+            <summary>Create a stream from Memory (byte[]).</summary>
+        </member>
+        <member name="M:ManagedBass.Flac.BassFlac.CreateStream(ManagedBass.StreamSystem,ManagedBass.BassFlags,ManagedBass.FileProcedures,System.IntPtr)">
+            <summary>Create a stream using User File Procedures.</summary>
+        </member>
+        <member name="M:ManagedBass.Flac.BassFlac.CreateStream(System.String,System.Int32,ManagedBass.BassFlags,ManagedBass.DownloadProcedure,System.IntPtr)">
+            <summary>Create a stream from Url.</summary>
+        </member>
+        <member name="T:ManagedBass.Flac.CueSheetTrackType">
+            <summary>
+            Cue Sheet Track type to be used with <see cref="F:ManagedBass.Flac.FlacCueTrack.TrackFlags"/>
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.CueSheetTrackType.Audio">
+            <summary>
+            Audio
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.CueSheetTrackType.Data">
+            <summary>
+            Data
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.CueSheetTrackType.Pre">
+            <summary>
+            Pre
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Flac.FlacCueTag">
+            <summary>
+            Flac Cuesheet tag structure.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Flac.FlacCueTag.Catalog">
+            <summary>
+            The media catalog number.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacCueTag.LeadInSampleCount">
+            <summary>
+            The number of lead-in samples.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacCueTag.IsCD">
+            <summary>
+            The cuesheet corresponds to a CD?
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacCueTag.TrackCount">
+            <summary>
+            The number of tracks.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Flac.FlacCueTag.Tracks">
+            <summary>
+            The array of tracks or <see langword="null" />.
+            </summary>
+        </member>
+        <member name="M:ManagedBass.Flac.FlacCueTag.Read(System.Int32)">
+            <summary>
+            Reads the tag from a Channel.
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Flac.FlacCueTrack">
+            <summary>
+            Flac Cuesheet tag track structure.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacCueTrack.Offset">
+            <summary>
+            Track offset in samples.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacCueTrack.Number">
+            <summary>
+            The track number.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Flac.FlacCueTrack.ISRC">
+            <summary>
+            The International Standard Recording Code.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacCueTrack.TrackFlags">
+            <summary>
+            The Track type.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacCueTrack.IndexesCount">
+            <summary>
+            The number of indices.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Flac.FlacCueTrack.Indexes">
+            <summary>
+            The array of indices or <see langword="null" />.
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Flac.FlacCueTrackIndex">
+            <summary>
+            Flac Cuesheet tag Track Index structure.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacCueTrackIndex.Offser">
+            <summary>
+            Index offset in samples relative to the track offset.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacCueTrackIndex.Number">
+            <summary>
+            The index number.
+            </summary>
+        </member>
+        <member name="T:ManagedBass.Flac.FlacPictureTag">
+            <summary>
+            Flac Picture tag structure.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Flac.FlacPictureTag.Mime">
+            <summary>
+            The MIME type. This may be "--&gt;" to signify that data contains a URL of the picture rather than the picture data itself.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Flac.FlacPictureTag.Description">
+            <summary>
+            A description of the picture.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacPictureTag.Width">
+            <summary>
+            The width in pixels.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacPictureTag.Height">
+            <summary>
+            The height in pixels.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacPictureTag.Depth">
+            <summary>
+            The colour depth in bits-per-pixel.
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacPictureTag.Colors">
+            <summary>
+            The number of colours used for indexed-colour pictures (eg. GIF).
+            </summary>
+        </member>
+        <member name="F:ManagedBass.Flac.FlacPictureTag.Length">
+            <summary>
+            The size of <see cref="P:ManagedBass.Flac.FlacPictureTag.Data" /> in bytes.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Flac.FlacPictureTag.Data">
+            <summary>
+            The picture data.
+            </summary>
+        </member>
+        <member name="P:ManagedBass.Flac.FlacPictureTag.URL">
+            <summary>
+            Returns the image URL, if the <see cref="P:ManagedBass.Flac.FlacPictureTag.Mime" /> type is "--&gt;" - else <see langword="null" />.
+            </summary>
+        </member>
+        <member name="M:ManagedBass.Flac.FlacPictureTag.Read(System.Int32,System.Int32)">
+            <summary>
+            Read the tag at an <param name="Index"/> from a <param name="Channel"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

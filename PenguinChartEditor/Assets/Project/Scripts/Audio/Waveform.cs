@@ -168,9 +168,9 @@ public class Waveform : MonoBehaviour
     /// <param name="stem">The BASS stream to get audio samples of.</param>
     private static KeyValuePair<StemType, StemWaveformData> UpdateWaveformData(StemType stem) // pass in file path here later
     {
-        float[] stemWaveformData = AudioManager.GetAudioSamples(stem, out long bytesPerSample);
+        float[] stemWaveformData = AudioManager.GetAllAudioSamples(stem);
 
-        return new KeyValuePair<StemType, StemWaveformData>(stem, new StemWaveformData(stemWaveformData, bytesPerSample));
+        return new KeyValuePair<StemType, StemWaveformData>(stem, new StemWaveformData(stemWaveformData));
     }
 
     #endregion
@@ -382,12 +382,10 @@ public class Waveform : MonoBehaviour
 public class StemWaveformData
 {
     public float[] volumeData;
-    public long bytesPerSample; // yk i'm not actually sure if I need this anymore but this is here juuuuuust in case
 
-    public StemWaveformData(float[] volumeData, long bytesPerSample)
+    public StemWaveformData(float[] volumeData)
     {
         this.volumeData = volumeData;
-        this.bytesPerSample = bytesPerSample;
     }
 }
 

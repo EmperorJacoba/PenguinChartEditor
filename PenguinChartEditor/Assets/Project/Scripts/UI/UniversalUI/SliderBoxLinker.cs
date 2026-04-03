@@ -128,7 +128,7 @@ public class SliderBoxLinker : MonoBehaviour
                 Waveform.Amplitude = newValue;
                 break;
             case WaveformProperties.playSpeed:
-                AudioManager.ChangeAudioSpeed(newValue);
+                AudioManager.AudioSpeed = newValue;
                 break;
             case WaveformProperties.highwayLength:
                 Highway3D.highwayLength = newValue;
