@@ -14,7 +14,7 @@ public class IniWriter
         };
         iniLines.AddRange(metadata.SongInfo.Select(metadatum => $"{metadatum.Key} = {metadatum.Value}"));
         iniLines.AddRange(metadata.Difficulties.Select(difficulty => $"{difficulty.Key} = {difficulty.Value}"));
-        iniLines.Add($"song_length = {Mathf.CeilToInt(metadata.SongLength * 1000)}");
+        iniLines.Add($"song_length = {Mathf.CeilToInt(SongTime.SongLength * 1000)}");
         iniLines.Add($"preview_start_time = {Mathf.CeilToInt(metadata.PreviewStartTime * 1000)}");
         
         return iniLines;
@@ -27,7 +27,6 @@ public class IniWriter
         {
             File.Delete(formattedFilePath);
         }
-        File.Create(formattedFilePath);
         File.WriteAllLines(formattedFilePath, GenerateIniText(metadata));
     }
 }

@@ -920,6 +920,7 @@ GameObject:
   - component: {fileID: 99616958}
   - component: {fileID: 99616957}
   - component: {fileID: 99616956}
+  - component: {fileID: 99616959}
   m_Layer: 5
   m_Name: export button
   m_TagString: Untagged
@@ -1029,6 +1030,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 99616954}
   m_CullTransparentMesh: 1
+--- !u!114 &99616959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 99616954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f00876d1fbb443eabc77311330a25a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvas: {fileID: 789912692}
+  overwriteDialog: {fileID: 1835147864841747714, guid: eab525480704ffe418cc7d900345307e, type: 3}
 --- !u!1 &112324535
 GameObject:
   m_ObjectHideFlags: 0
@@ -6190,6 +6205,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 928962319}
   m_CullTransparentMesh: 1
+--- !u!1 &929895142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 929895144}
+  - component: {fileID: 929895143}
+  m_Layer: 0
+  m_Name: TabLoader\
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &929895143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 929895142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd9f52560a57498293d6b9e291bc86aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groups:
+  - {fileID: 1956772747}
+  - {fileID: 320586890}
+  - {fileID: 767345195}
+--- !u!4 &929895144
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 929895142}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &955902972
 GameObject:
   m_ObjectHideFlags: 0
@@ -12701,3 +12764,4 @@ SceneRoots:
   - {fileID: 1570677690}
   - {fileID: 816193973}
   - {fileID: 1744639446}
+  - {fileID: 929895144}

@@ -206,16 +206,10 @@ public class Chart : MonoBehaviour
             Debug.LogError($"No export settings to read from. Aborting export operation.");
             return;
         }
-        
-        var artist = Metadata.SongInfo[Metadata.MetadataType.artist];
-        var name = Metadata.SongInfo[Metadata.MetadataType.name];
-        var charter = Metadata.SongInfo[Metadata.MetadataType.charter];
 
-        var targetDirName = $"{Application.persistentDataPath}/{artist} - {name} ({charter})";
-
-        Directory.CreateDirectory(targetDirName);
+        Directory.CreateDirectory(targetDirectory);
         
-        IniWriter.WriteIni(targetDirName, Metadata);
+        IniWriter.WriteIni(targetDirectory, Metadata);
 
         var allInstruments = new List<IInstrument>()
         {
@@ -225,7 +219,7 @@ public class Chart : MonoBehaviour
         allInstruments.AddRange(Instruments);
         
         ChartWriter.WriteChart(
-            targetDirectory: targetDirName,
+            targetDirectory: targetDirectory,
             resolution: Resolution,
             metadata: Metadata,
             instruments: allInstruments,
@@ -235,7 +229,7 @@ public class Chart : MonoBehaviour
         
         AudioManager.WriteAudioFiles(
             Metadata, 
-            targetDirName, 
+            targetDirectory, 
             exportSettingsManager.GetExportAudioFormat(), 
             exportSettingsManager.GetAudioInclusionStatuses(), 
             exportSettingsManager.GetKBPS()
@@ -243,12 +237,12 @@ public class Chart : MonoBehaviour
 
         if (File.Exists(Metadata.BackgroundPath))
         {
-            File.Copy(Metadata.BackgroundPath, $"{targetDirName}/background.jpg");
+            File.Copy(Metadata.BackgroundPath, $"{targetDirectory}/background.jpg");
         }
 
         if (File.Exists(Metadata.CoverPath))
         {
-            File.Copy(Metadata.CoverPath, $"{targetDirName}/album.jpg");
+            File.Copy(Metadata.CoverPath, $"{targetDirectory}/album.jpg");
         }
     }
 

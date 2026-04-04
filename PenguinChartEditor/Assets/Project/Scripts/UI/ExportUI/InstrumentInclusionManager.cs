@@ -21,6 +21,9 @@ public class InstrumentInclusionManager : MonoBehaviour
         }
     }
 
-    public Dictionary<InstrumentType, Dictionary<DifficultyType, bool>> GetActiveInstrumentTracks() =>
-        activeInstrumentControlRows.ToDictionary(x => x.representedInstrument, x => x.GetActiveDifficulties());
+    public Dictionary<InstrumentType, Dictionary<DifficultyType, bool>> GetActiveInstrumentTracks()
+    {
+        // null happens when user has not accessed instrument tab (assume all active)
+        return activeInstrumentControlRows?.ToDictionary(x => x.representedInstrument, x => x.GetActiveDifficulties());
+    }
 }

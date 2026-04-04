@@ -31,6 +31,6 @@ public class PercentagePreviewTimeUpdater : MonoBehaviour
 
     private void UpdatePercentage()
     {
-        attachedSlider.value = Chart.Metadata.PreviewStartTime / SongTime.SongLength;
+        attachedSlider.SetValueWithoutNotify(Chart.Metadata.PreviewStartTime / SongTime.SongLength);
     }
 }

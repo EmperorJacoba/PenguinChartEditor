@@ -25,7 +25,6 @@ public static class ChartWriter
         {
             File.Delete(filePath);
         }
-        File.Create(filePath);
         
         List<string> dotChartLines = new();
         

@@ -21,8 +21,16 @@ public class ExportSettingsManager : MonoBehaviour
         instance = this;
     }
 
-    public AudioFormats GetExportAudioFormat() =>
-        audioFormatToggleGroup.ActiveToggles().FirstOrDefault()!.GetComponent<AudioFormatToggle>().format;
+    public AudioFormats GetExportAudioFormat()
+    {
+        print(audioFormatToggleGroup.AnyTogglesOn());
+        var t = audioFormatToggleGroup.ActiveToggles();
+        var f = t.FirstOrDefault();
+        print(f is null);
+        var o = f.GetComponent<AudioFormatToggle>();
+        return o.format;
+    }
+        //audioFormatToggleGroup.ActiveToggles().FirstOrDefault()!.GetComponent<AudioFormatToggle>().format;
 
     public ChartFormats GetExportChartFormat() =>
         chartFormatToggleGroup.ActiveToggles().FirstOrDefault()!.GetComponent<ExportFormatToggle>().format;

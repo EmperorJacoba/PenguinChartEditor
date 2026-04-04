@@ -278,6 +278,7 @@ public static class ChartParser
                 {
                     if (int.TryParse(kvp.Value, out int instrumentDifficulty))
                     {
+                        if (instrumentDifficulty < 0) continue;
                         metadata.Difficulties.Add((Metadata.InstrumentDifficultyIdentifier)formattedInstrumentDiff, instrumentDifficulty);
                     }
                 }

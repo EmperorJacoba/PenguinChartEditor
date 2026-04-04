@@ -48,10 +48,7 @@ public class Metadata
         }
     }
     
-    
     private float _pst = 0;
-    
-    public float SongLength => (SongTime.SongLength * 1000);
     
     public Dictionary<MetadataType, string> SongInfo = new();
 
