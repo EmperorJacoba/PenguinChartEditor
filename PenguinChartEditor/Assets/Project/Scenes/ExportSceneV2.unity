@@ -3758,6 +3758,7 @@ GameObject:
   - component: {fileID: 631647229}
   - component: {fileID: 631647230}
   - component: {fileID: 631647231}
+  - component: {fileID: 631647232}
   m_Layer: 5
   m_Name: radio buttons
   m_TagString: Untagged
@@ -3828,6 +3829,19 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &631647232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 631647228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c68a06f634dc4ef89029c629fb0cc45e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeToggle: {fileID: 0}
 --- !u!1 &632187925
 GameObject:
   m_ObjectHideFlags: 0
@@ -6798,6 +6812,7 @@ GameObject:
   - component: {fileID: 1032483355}
   - component: {fileID: 1032483356}
   - component: {fileID: 1032483357}
+  - component: {fileID: 1032483358}
   m_Layer: 5
   m_Name: radio buttons
   m_TagString: Untagged
@@ -6867,6 +6882,19 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1032483358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1032483354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c68a06f634dc4ef89029c629fb0cc45e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeToggle: {fileID: 0}
 --- !u!1 &1049005985
 GameObject:
   m_ObjectHideFlags: 0
@@ -10500,8 +10528,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb16cd9d9669444aa8cfef1bdebbfe5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chartFormatToggleGroup: {fileID: 631647230}
-  audioFormatToggleGroup: {fileID: 1032483356}
+  chartFormatToggleGroup: {fileID: 631647232}
+  audioFormatToggleGroup: {fileID: 1032483358}
   zipPackageToggle: {fileID: 1784695269}
   kbpsInput: {fileID: 1583790029}
   audioTrackInclusionManager: {fileID: 1462485568}

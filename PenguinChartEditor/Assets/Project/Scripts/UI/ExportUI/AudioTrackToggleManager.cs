@@ -14,7 +14,6 @@ public class AudioTrackToggleManager : MonoBehaviour
         {
             var trackToggle = Instantiate(audioTrackTogglePrefab, scrollViewTransform).GetComponent<AudioTrackToggle>();
             trackToggle.Initialize(stem.Key);
-            print(stem.Key);
             activeTrackToggles.Add(trackToggle);
         }
     }

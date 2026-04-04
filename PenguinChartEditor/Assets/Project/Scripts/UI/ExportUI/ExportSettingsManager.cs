@@ -9,8 +9,8 @@ public class ExportSettingsManager : MonoBehaviour
 {
     public static ExportSettingsManager instance;
 
-    [FormerlySerializedAs("formatToggleGroup")] [SerializeField] private ToggleGroup chartFormatToggleGroup;
-    [SerializeField] private ToggleGroup audioFormatToggleGroup;
+    [SerializeField] private DisabledApatheticToggleGroup chartFormatToggleGroup;
+    [SerializeField] private DisabledApatheticToggleGroup audioFormatToggleGroup;
     [SerializeField] private Toggle zipPackageToggle;
     [SerializeField] private TMP_InputField kbpsInput;
     [SerializeField] private AudioTrackToggleManager audioTrackInclusionManager;
@@ -21,19 +21,11 @@ public class ExportSettingsManager : MonoBehaviour
         instance = this;
     }
 
-    public AudioFormats GetExportAudioFormat()
-    {
-        print(audioFormatToggleGroup.AnyTogglesOn());
-        var t = audioFormatToggleGroup.ActiveToggles();
-        var f = t.FirstOrDefault();
-        print(f is null);
-        var o = f.GetComponent<AudioFormatToggle>();
-        return o.format;
-    }
-        //audioFormatToggleGroup.ActiveToggles().FirstOrDefault()!.GetComponent<AudioFormatToggle>().format;
+    public AudioFormats GetExportAudioFormat() =>
+        audioFormatToggleGroup.activeToggle.GetComponent<AudioFormatToggle>().format;
 
     public ChartFormats GetExportChartFormat() =>
-        chartFormatToggleGroup.ActiveToggles().FirstOrDefault()!.GetComponent<ExportFormatToggle>().format;
+        chartFormatToggleGroup.activeToggle.GetComponent<ExportFormatToggle>().format;
 
     public bool ExportAsZipEnabled() => zipPackageToggle.isOn;
 
