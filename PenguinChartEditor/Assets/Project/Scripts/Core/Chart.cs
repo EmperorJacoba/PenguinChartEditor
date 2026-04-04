@@ -232,6 +232,14 @@ public class Chart : MonoBehaviour
             includedTracks: exportSettingsManager.GetInstrumentTrackInclusionStatuses(),
             audioFormat: exportSettingsManager.GetExportAudioFormat()
             );
+        
+        AudioManager.WriteAudioFiles(
+            Metadata, 
+            targetDirName, 
+            exportSettingsManager.GetExportAudioFormat(), 
+            exportSettingsManager.GetAudioInclusionStatuses(), 
+            exportSettingsManager.GetKBPS()
+            );
 
         if (File.Exists(Metadata.BackgroundPath))
         {

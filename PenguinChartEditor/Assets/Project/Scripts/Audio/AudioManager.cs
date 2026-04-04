@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ManagedBass;
+using ManagedBass.Enc;
 using UnityEngine;
 
 // This file is based around the licensed product plugin BASS, interacting through the ManagedBass plugin.
@@ -217,6 +220,31 @@ public class AudioManager : MonoBehaviour
         {
             UpdateAudioStream(stem, path);
         }
+        
+        print(Bass.LastError);
+    }
+
+    IEnumerator test()
+    {
+        yield return new WaitForSeconds(5);
+        BassEnc.EncodeStop(handle);
+    }
+
+    private static int handle = -1;
+    private bool started;
+    
+    private void Update()
+    {
+        if (handle != -1)
+        {
+            if (!started)
+            {
+                StartCoroutine(test());
+                
+                started = true;
+            }
+            print(BassEnc.EncodeIsActive(handle));
+        }
     }
 
     public static bool UpdateAudioStream(StemType stemType, string songPath)
@@ -392,9 +420,86 @@ public class AudioManager : MonoBehaviour
         Metadata metadata, 
         string targetDirectory, 
         AudioFormats format, 
-        HashSet<StemType> includedStems
+        HashSet<StemType> includedStems,
+        int bitrate
     )
     {
+        Parallel.ForEach(
+            metadata.StemPaths.Where(x => includedStems.Contains(x.Key)),
+            x => EncodeStream(x.Key, targetDirectory, format, bitrate
+            ));
+    }
 
+    private static void EncodeStream(StemType stem, string targetDirectory, AudioFormats format, int bitrate)
+    {
+        var targetFileName = Path.Combine(targetDirectory, $"{stem}.{format}");
+        var handle = Bass.CreateStream(Chart.Metadata.StemPaths[stem], Flags: BassFlags.Decode);
+        int encoderHandle = -1;
+
+        switch (format)
+        {
+            case AudioFormats.opus:
+            {
+                encoderHandle = BassEnc_Opus.Start(
+                    handle, 
+                    $"--bitrate {bitrate}",
+                    EncodeFlags.AutoFree, 
+                    targetFileName
+                    );
+                break;
+            }
+            case AudioFormats.ogg:
+            {
+                encoderHandle = BassEnc_Ogg.Start(
+                    handle, 
+                    $"-b {bitrate}", 
+                    EncodeFlags.AutoFree, 
+                    targetFileName
+                    );
+                break;
+            }
+            case AudioFormats.mp3:
+            {
+                encoderHandle = BassEnc_Mp3.Start(
+                    handle, 
+                    $"-b {bitrate}", 
+                    EncodeFlags.AutoFree, 
+                    targetFileName
+                    );
+                break;
+            }
+            case AudioFormats.wav:
+            {
+                encoderHandle = BassEnc.EncodeStart(
+                    handle, 
+                    targetFileName, 
+                    EncodeFlags.AutoFree | EncodeFlags.PCM, 
+                    null
+                    );
+                break;
+            }
+        }
+
+        if (encoderHandle <= 0)
+        {
+            Debug.LogError($"Bass error. Failed to create encoder stream. Aborting encoding of {stem}. {Bass.LastError}");
+            return;
+        }
+        
+        var songLengthBytes = Bass.ChannelGetLength(handle);
+        var bytesUnread = songLengthBytes;
+        var buffer = 32768L;
+        int[] buf = new int[buffer];
+
+        while (bytesUnread > 0)
+        {
+            var bytesThisPass = Math.Min(buffer, bytesUnread);
+            Bass.ChannelGetData(handle, buf, (int)bytesThisPass);
+            bytesUnread -= bytesThisPass;
+            Bass.ChannelSetPosition(handle, songLengthBytes - bytesUnread);
+        }
+
+        BassEnc.EncodeStop(encoderHandle);
+        Bass.StreamFree(handle);
     }
 }
