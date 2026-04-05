@@ -6,7 +6,7 @@ public class PreviewPlayButton : MonoBehaviour
 {
     [SerializeField] private PlayPauseIconReference iconRef;
     private Button attachedButton;
-    private float previewClipLength = 15.0f;
+    private float previewClipLength = 30.0f;
 
     private void Awake()
     {

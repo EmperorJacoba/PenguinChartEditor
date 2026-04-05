@@ -220,8 +220,6 @@ public class AudioManager : MonoBehaviour
         {
             UpdateAudioStream(stem, path);
         }
-        
-        print(Bass.LastError);
     }
 
     IEnumerator test()
@@ -259,11 +257,12 @@ public class AudioManager : MonoBehaviour
             Debug.LogError($"Could not load stem {stemType} from {songPath}. Aborting load operation.");
             return false;
         }
-        
-        RecalculateStreamLink();
 
         Streams[stemType] = stream;
         Chart.Metadata.StemPaths[stemType] = songPath;
+        
+        RecalculateStreamLink();
+        
         return true;
     }
 
@@ -426,12 +425,17 @@ public class AudioManager : MonoBehaviour
     {
         Parallel.ForEach(
             metadata.StemPaths.Where(x => includedStems.Contains(x.Key)),
-            x => EncodeStream(x.Key, targetDirectory, format, bitrate
-            ));
+            x => EncodeStream(x.Key, targetDirectory, format, bitrate)
+            );
     }
 
     private static void EncodeStream(StemType stem, string targetDirectory, AudioFormats format, int bitrate)
     {
+        // Basic way that BASS encoding works is by creating an encoder attached to a stream, and then "playing"
+        // that stream to "record" the data in a new file. With a decoded stream, the encoder records data when generally
+        // advancing through the track and getting the data. Most code here is pretty much
+        // directly lifted from BASSenc examples. 
+        
         var targetFileName = Path.Combine(targetDirectory, $"{stem}.{format}");
         var handle = Bass.CreateStream(Chart.Metadata.StemPaths[stem], Flags: BassFlags.Decode);
         int encoderHandle = -1;
@@ -470,6 +474,8 @@ public class AudioManager : MonoBehaviour
             }
             case AudioFormats.wav:
             {
+                // As far as I can tell, bitrates don't really exist in wav, since it's uncompressed.
+                // The bitrate can be whatever it wants to be. Also I hate wav files. Please don't use them.
                 encoderHandle = BassEnc.EncodeStart(
                     handle, 
                     targetFileName, 

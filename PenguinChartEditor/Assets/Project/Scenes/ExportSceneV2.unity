@@ -6230,7 +6230,7 @@ GameObject:
   - component: {fileID: 929895144}
   - component: {fileID: 929895143}
   m_Layer: 0
-  m_Name: TabLoader\
+  m_Name: TabLoader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
