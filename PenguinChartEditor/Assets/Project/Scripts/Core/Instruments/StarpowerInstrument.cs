@@ -350,6 +350,20 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         return stringifiedOutput.ToString();
     }
 
+    public List<string> ExportInstrumentStarpowerData(HeaderType instrumentID)
+    {
+        var outputList = new List<string>();
+
+        if ((int)instrumentID <= 10) return outputList;
+
+        foreach (var @event in Lanes.GetLane((int)instrumentID))
+        {
+            outputList.Add($"\t{@event.Key} = {@event.Value.ToChartFormat(0)[0]}");
+        }
+
+        return outputList;
+    }
+
     #endregion
 
     #region Not Implemented

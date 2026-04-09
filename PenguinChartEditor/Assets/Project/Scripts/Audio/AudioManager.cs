@@ -438,6 +438,13 @@ public class AudioManager : MonoBehaviour
         
         var targetFileName = Path.Combine(targetDirectory, $"{stem}.{format}");
         var handle = Bass.CreateStream(Chart.Metadata.StemPaths[stem], Flags: BassFlags.Decode);
+
+        if (handle == 0)
+        {
+            Debug.LogError($"Bass error. Failed to create decode stream. Aborting encoding of {stem}. {Bass.LastError}");
+            return;
+        }
+        
         int encoderHandle = -1;
 
         switch (format)

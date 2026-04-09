@@ -207,6 +207,7 @@ public class Chart : MonoBehaviour
             return;
         }
 
+        
         Directory.CreateDirectory(targetDirectory);
         
         IniWriter.WriteIni(targetDirectory, Metadata);

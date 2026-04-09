@@ -32,7 +32,8 @@ public class ExportButton : MonoBehaviour
         var name = Chart.Metadata.SongInfo[Metadata.MetadataType.name];
         var charter = Chart.Metadata.SongInfo[Metadata.MetadataType.charter];
 
-        lastDirName = $"{paths[0]}/{artist} - {name} ({charter})";
+        var fileName = MiscTools.CleanFileName($"{artist} - {name} ({charter}");
+        lastDirName = @"\\?\" + $"{paths[0]}/{fileName})";
 
         if (Directory.Exists(lastDirName))
         {

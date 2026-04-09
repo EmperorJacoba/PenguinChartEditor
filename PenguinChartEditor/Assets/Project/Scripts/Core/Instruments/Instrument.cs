@@ -512,6 +512,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
             notes.AddRange(SoloData.ExportSoloEventsUnsorted());
         }
         
+        notes.AddRange(Chart.StarpowerInstrument.ExportInstrumentStarpowerData(InstrumentID));
+        
         var orderedStrings = notes.OrderBy(i => int.Parse(i.Split(" = ")[0])).ToList();
         return orderedStrings;
     }

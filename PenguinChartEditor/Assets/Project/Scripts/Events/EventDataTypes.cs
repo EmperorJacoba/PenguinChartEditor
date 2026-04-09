@@ -248,15 +248,9 @@ public struct StarpowerEventData : IEventData, IEquatable<StarpowerEventData>, I
 
     public string[] ToChartFormat(int lane)
     {
-        string @event = "";
-        if (IsFill)
-        {
-            @event = $"S 64 {Sustain}";
-        }
-        else
-        {
-            @event = $"S 2 {Sustain}";
-        }
+        var @event = IsFill ? 
+            $"S 64 {Sustain}" : 
+            $"S 2 {Sustain}";
         return new string[1] { @event };
     }
 

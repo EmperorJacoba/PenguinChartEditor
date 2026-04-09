@@ -13,4 +13,18 @@ public static class MiscTools
     {
         return char.ToLower(name[0]) + name.Substring(1);
     }
+
+    public static string CleanFileName(string name)
+    {
+        return name.
+            Replace("/", "").
+            Replace("\\", "").
+            Replace("\"", "").
+            Replace("<", "").
+            Replace(">", "").
+            Replace(":", "").
+            Replace("|", "").
+            Replace("?", "").
+            Replace("*", "");
+    }
 }
