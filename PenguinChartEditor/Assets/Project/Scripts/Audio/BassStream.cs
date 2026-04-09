@@ -52,15 +52,18 @@ public class BassStream
     {
         get
         {
-            return (float)Bass.ChannelGetAttribute(streamHandle, ChannelAttribute.Frequency);
+            // Don't want to call BASS when there is literally no reason to
+            return _spe;
         }
         set
         {
             if (value < 0) value = 0;
             Bass.ChannelSetAttribute(streamHandle, ChannelAttribute.Frequency,
                 Bass.ChannelGetInfo(streamHandle).Frequency * value);
+            _spe = value;
         }
     }
+    private float _spe;
 
     public double AudioPosition
     {
