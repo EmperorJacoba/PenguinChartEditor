@@ -495,7 +495,9 @@ public class AudioManager : MonoBehaviour
 
         if (encoderHandle <= 0)
         {
-            Debug.LogError($"Bass error. Failed to create encoder stream. Aborting encoding of {stem}. {Bass.LastError}");
+            Debug.LogError(
+                $"Bass error. Failed to create encoder stream. ({encoderHandle}) " +
+                $"Aborting encoding of {stem} to {targetFileName}. {Bass.LastError}");
             return;
         }
         

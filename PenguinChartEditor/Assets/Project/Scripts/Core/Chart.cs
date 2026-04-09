@@ -206,9 +206,12 @@ public class Chart : MonoBehaviour
             Debug.LogError($"No export settings to read from. Aborting export operation.");
             return;
         }
-
         
-        Directory.CreateDirectory(targetDirectory);
+        Directory.CreateDirectory(
+            // weird preceding thing is to fix errors resulting from long file paths? apparently?
+            // it works so i am not touching it
+            Path.Combine(@"\\?\", targetDirectory) 
+            );
         
         IniWriter.WriteIni(targetDirectory, Metadata);
 
