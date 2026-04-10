@@ -61,11 +61,10 @@ public class AudioManager : MonoBehaviour
 
     public static double AudioPosition
     {
-        get => StreamLink.AudioPosition;
+        get => StreamLink.AudioPosition - UserSettings.Calibration;
         set
         {
             SetStreamPositions(value);
-            SongTime.SongPositionSeconds = value;
         }
     }
 
@@ -222,29 +221,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    IEnumerator test()
-    {
-        yield return new WaitForSeconds(5);
-        BassEnc.EncodeStop(handle);
-    }
-
-    private static int handle = -1;
-    private bool started;
-    
-    private void Update()
-    {
-        if (handle != -1)
-        {
-            if (!started)
-            {
-                StartCoroutine(test());
-                
-                started = true;
-            }
-            print(BassEnc.EncodeIsActive(handle));
-        }
-    }
-
     public static bool UpdateAudioStream(StemType stemType, string songPath)
     {
         BassStream stream;
@@ -336,6 +312,7 @@ public class AudioManager : MonoBehaviour
     public static void StopAudio()
     {
         PauseAudio();
+        SongTime.SongPositionSeconds = 0;
         AudioPosition = 0;
     }
 
@@ -400,7 +377,7 @@ public class AudioManager : MonoBehaviour
 
     public static void SetStemVolume(StemType stem, float volume) => Streams[stem].Volume = volume;
 
-    private static void SetStreamPositions() => SetStreamPositions(SongTime.SongPositionSeconds);
+    private static void SetStreamPositions() => SetStreamPositions(SongTime.SongPositionSeconds + UserSettings.Calibration);
     private static void SetStreamPositions(double position)
     {
         foreach (var stream in Streams.Values)

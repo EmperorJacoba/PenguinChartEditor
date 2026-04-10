@@ -4,11 +4,16 @@ public static class UserSettings
 {
     public const float MINIMUM_SUSTAIN_LENGTH_SECONDS = 0.2f;
 
-    /// <summary>
-    /// The offset at which audio should be played in relation to video in milliseconds.
-    /// <para>Example: Calibration = 50 means that audio will be offset 50 milliseconds late in-editor.</para>
-    /// </summary>
-    public static int Calibration { get; set; }
+    // Calibration is a lie. It is a lie told by the AudioManager to SongTime about where the song actually is.
+    // In AudioManager, the internal positions of each of the audio streams are offset by {Calibration} seconds, and when
+    // SongTime polls the audio position, AudioManager offsets it back the opposite direction. Effectively, the internal
+    // audio position of the audio is shifted away the shown/true/expected position. However, on certain machines with high audio lag
+    // (due to ancient tech or driver lag or whatever), there is a delay when playing the audio (audio plays significantly later than what is expected.
+    // Obviously bad for rhythm games. This calibration "lie" allows the audio position to be offset by that delay so that
+    // in effect there is no delay. The delay is usually so small it doesn't matter much, especially when tempo mapping
+    // is de facto required anyway and done to the waveform, and charting is done to the tempo map. Older/slower machines
+    // have a delay issue, which is what this fixes.
+    public static int Calibration { get; set; } = 0;
 
     /// <summary>
     /// Is the user using lefty flip mode?
