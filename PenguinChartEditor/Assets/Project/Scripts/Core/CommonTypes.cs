@@ -271,7 +271,12 @@ public class InstrumentInformationAttribute : Attribute
 
 public static class InstrumentMetadata
 {
-    private static InstrumentInformationAttribute GetAttributeOnInstrumentID(HeaderType instrumentID) => (InstrumentInformationAttribute)instrumentID.GetType().GetCustomAttributes(typeof(InstrumentInformationAttribute), true).First();
+    private static InstrumentInformationAttribute GetAttributeOnInstrumentID(HeaderType instrumentID)
+    {
+        MonoBehaviour.print(instrumentID);
+        var x = (InstrumentInformationAttribute)instrumentID.GetType().GetField(instrumentID.ToString()).GetCustomAttributes(typeof(InstrumentInformationAttribute), true).First();
+        return x;
+    }
 
     public static string GetInstrumentName(HeaderType instrumentID)
     {

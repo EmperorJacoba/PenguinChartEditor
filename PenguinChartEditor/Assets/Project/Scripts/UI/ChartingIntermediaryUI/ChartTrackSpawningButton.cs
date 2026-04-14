@@ -63,7 +63,13 @@ public class ChartTrackSpawningButton : MonoBehaviour
         if (Chart.IsInstrumentCreated(targetDiff))
         {
             var dialog = Instantiate(confirmationDialogPrefab, Canvas.transform).GetComponent<ConfirmationDialog>();
-            dialog.Initialize($"This will overwrite {InstrumentMetadata.GetInstrumentName(targetDiff)}. This action cannot be undone. Overwrite?", ExecuteCopyAction);
+            print(dialog.gameObject);
+            dialog.Initialize(
+                $"This will overwrite {InstrumentMetadata.GetInstrumentName(targetDiff)}.\nThis action cannot be undone. Overwrite?", 
+                ExecuteCopyAction,
+                width: 815,
+                height: 250
+                );
             return;
         }
         

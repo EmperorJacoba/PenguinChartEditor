@@ -16,10 +16,13 @@ public class ConfirmationDialog : MonoBehaviour
         noButton.onClick.AddListener(No);
     }
 
-    public void Initialize(string title, Action positiveResultFunc)
+    public void Initialize(string title, Action positiveResultFunc, float width = 415, float height = 215)
     {
         descriptionText.text = title;
         runOnYesAction = positiveResultFunc;
+        var rt = GetComponent<RectTransform>();
+        rt.sizeDelta = new Vector2(width, height);
+        rt.position = new Vector3(Screen.width / 2.0f, Screen.height / 2.0f);
     }
 
     private void Yes()
