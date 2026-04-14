@@ -12,5 +12,6 @@ public class SelfDeactivatingGameObject : MonoBehaviour
         // This will happen after all the Start() functions are called, because it's *Late*Update(). Once it's disabled,
         // it's not running again. 
         gameObject.SetActive(false);
+        Destroy(this);
     }
 }

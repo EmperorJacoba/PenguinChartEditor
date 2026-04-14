@@ -9,11 +9,13 @@ public class TabSceneSpawningManager : MonoBehaviour
     [SerializeField] private RectTransform widestRibbonElement;
     public static TabSceneSpawningManager instance;
 
+    public static bool IsTabbingActive() => instance is not null && instance.tabbingRibbonActive;
+    
     public static Vector2 RealUISize
     {
         get
         {
-            return instance is not null && instance.tabbingRibbonActive
+            return IsTabbingActive()
                 ? new Vector2(Screen.width, Screen.height - instance.widestRibbonElement.rect.height)
                 : new Vector2(Screen.width, Screen.height);
         }
@@ -22,7 +24,7 @@ public class TabSceneSpawningManager : MonoBehaviour
     {
         get
         {
-            return instance is not null && instance.tabbingRibbonActive
+            return IsTabbingActive()
                 ? new Vector2(Screen.width / 2.0f, (Screen.height - instance.widestRibbonElement.rect.height) / 2.0f)
                 : new Vector2(Screen.width / 2.0f, Screen.height / 2.0f);
         }
@@ -45,8 +47,13 @@ public class TabSceneSpawningManager : MonoBehaviour
         instance = this;
     }
 
+    private void OnDisable()
+    {
+        instance = null;
+    }
+
     private void Start()
     {
-        SceneManager.LoadScene("FiveFretChartingScene", LoadSceneMode.Additive);
+        SceneManager.LoadScene("ExportSceneV2", LoadSceneMode.Additive);
     }
 }
