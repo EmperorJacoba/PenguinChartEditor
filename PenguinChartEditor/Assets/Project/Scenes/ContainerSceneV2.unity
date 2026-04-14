@@ -235,7 +235,7 @@ GameObject:
   - component: {fileID: 31466461}
   - component: {fileID: 31466462}
   m_Layer: 0
-  m_Name: t
+  m_Name: TabSceneSpawningManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -268,6 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 648e28bfd31742c4a7f331de564b1afd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  widestRibbonElement: {fileID: 1149403964}
 --- !u!1 &104718705
 GameObject:
   m_ObjectHideFlags: 0
