@@ -27,7 +27,7 @@ public interface IInstrument
     public void SetSelectionToNewLane(int destinationLane);
 
     List<int> GetUniqueTickSet();
-    
+
     /// <remarks>
     /// Call from the main thread, because this uses an InputActionMap. Do not call in a constructor!
     /// </remarks>
@@ -41,15 +41,16 @@ public interface IInstrument
     void DeleteAllEventsAtTick(int tick);
 
     public ILaneData GetLaneData(int lane);
-    
+
     /// <remarks>
     /// A "bar lane" refers to a lane that a note receiver prefab must respond to in a non-exclusively
     /// fretted view, even if its lane data is not the bar lane data. See: open notes, kick notes.
     /// </remarks>
     public ILaneData GetBarLaneData();
+
     public ISelection GetLaneSelection(int lane);
     bool IsNoteSelectionEmpty();
-    
+
     public void UndoAdd(AddSingleDataPackage actionInfo);
     public void RedoAdd(AddSingleDataPackage actionInfo);
 
@@ -65,6 +66,8 @@ public interface IInstrument
     ISelectionSnapshot GetEmptySelectionSnapshot();
 
     public ISelectionSnapshot SnapTicks(List<int> ticks);
+
+    public IInstrument DuplicateToNewInstrument(HeaderType newInstrumentID);
 }
 
 public interface ISustainableInstrument : IInstrument
@@ -531,6 +534,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
         return notes;
     }
+
+    public abstract IInstrument DuplicateToNewInstrument(HeaderType newInstrumentID);
 
     #endregion
 }

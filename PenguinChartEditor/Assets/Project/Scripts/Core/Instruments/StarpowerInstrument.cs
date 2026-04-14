@@ -364,6 +364,11 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         return outputList;
     }
 
+    public override IInstrument DuplicateToNewInstrument(HeaderType newInstrumentID)
+    {
+        throw new ArgumentException("StarpowerInstruments cannot be duplicated in the same chart file.");
+    }
+
     #endregion
 
     #region Not Implemented

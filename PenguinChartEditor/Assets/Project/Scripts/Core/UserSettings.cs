@@ -13,6 +13,7 @@ public static class UserSettings
     // in effect there is no delay. The delay is usually so small it doesn't matter much, especially when tempo mapping
     // is de facto required anyway and done to the waveform, and charting is done to the tempo map. Older/slower machines
     // have a delay issue, which is what this fixes.
+    // A negative offset will "push" the audio further into the chart, and a positive value will "pull" it back.
     public static int Calibration { get; set; } = 0;
 
     /// <summary>

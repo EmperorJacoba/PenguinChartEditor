@@ -135,6 +135,17 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         }
     }
     
+    public Lanes(Lanes<T> duplicationLanes)
+    {
+        lanes = duplicationLanes.lanes.ToDictionary(x => x.Key, x => new LaneSet<T>(x.Value));
+        selections = new Dictionary<int, SelectionSet<T>>(lanes.Count);
+
+        for (int i = 0; i < lanes.Count; i++)
+        {
+            selections[i] = new SelectionSet<T>(lanes[i]);
+        }
+    }
+    
     #endregion
 
     #region UpdateNeededEvent

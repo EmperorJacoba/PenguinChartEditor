@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Metadata
@@ -126,4 +127,23 @@ public class Metadata
     }
 
     public Dictionary<StemType, string> StemPaths = new();
+
+    public Dictionary<HeaderType, bool> InstrumentCompletionStatuses
+    {
+        get
+        {
+            // This will likely not be initialized most of the time (no support in .mid, .chart, etc.), so this is just
+            // a foolproof way of initializing the buttons if loading a file (although Penguin is meant to be used as a tool
+            // from 0% - 100%)
+            _ics ??= Chart.Instruments.Select(x => x.InstrumentID).ToDictionary(x => x, x => false);
+            return _ics;
+        }
+        set
+        {
+            _ics = value;
+        }
+    }
+
+    private Dictionary<HeaderType, bool> _ics;
+
 }

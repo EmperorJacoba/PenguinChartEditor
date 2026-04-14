@@ -111,6 +111,27 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
         }
     }
 
+    private FiveFretInstrument(HeaderType instrumentID, FiveFretInstrument originationInstrument)
+    {
+        Lanes = new Lanes<FiveFretNoteData>(originationInstrument.Lanes);
+        sustainer = new SustainHelper<FiveFretNoteData>(this, Lanes, true);
+        
+        InstrumentName = InstrumentMetadata.GetInstrumentType(instrumentID);
+        Difficulty = InstrumentMetadata.GetDifficulty(instrumentID);
+        
+        foreach (var lane in Lanes.LaneKeys)
+        {
+            // add Lanes update needed
+            // change to generic validateblic
+            Lanes.GetLane(lane).UpdatesNeededInRange += (startTick, endTick) =>
+            {
+                if (startTick == endTick) CheckForHopos(startTick);
+                else CheckForHoposInRange(startTick, endTick);
+            };
+            Lanes.UpdatesNeededInRange += CheckForHoposInRange;
+        }
+    }
+
     #endregion
 
     #region Moving
@@ -675,6 +696,9 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
         }
         return combinedIDs.ToString();
     }
+
+    public override IInstrument DuplicateToNewInstrument(HeaderType newInstrumentID) =>
+        new FiveFretInstrument(newInstrumentID, this);
 
     #endregion
 }

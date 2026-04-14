@@ -569,6 +569,11 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
             );
         return initialEvents;
     }
+    
+    public override IInstrument DuplicateToNewInstrument(HeaderType newInstrumentID)
+    {
+        throw new ArgumentException("SyncTrack cannot be duplicated in the same chart file.");
+    }
 
     #endregion
 

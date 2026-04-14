@@ -100,6 +100,13 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         
         laneData = new SortedDictionary<int, TValue>();
     }
+
+    public LaneSet(LaneSet<TValue> laneSet)
+    {
+        laneID = laneSet.laneID;
+        laneData = new SortedDictionary<int, TValue>(laneSet.laneData);
+        protectedTicks = laneSet.protectedTicks;
+    }
     
     #endregion
     

@@ -34,6 +34,25 @@ public class Chart : MonoBehaviour
     public static Metadata Metadata { get; set; } = new();
     public static List<IInstrument> Instruments { get; set; }
 
+    public static bool IsInstrumentCreated(HeaderType instrumentID)
+    {
+        return Instruments.Any(x => x.InstrumentID == instrumentID);
+    }
+
+    public static bool IsInstrumentCreated(HeaderType instrumentID, out IInstrument instrument)
+    {
+        instrument = null;
+        var result = Instruments.Where(x => x.InstrumentID == instrumentID);
+
+        if (result.Any())
+        {
+            instrument = result.First();
+            return true;
+        }
+
+        return false;
+    }
+    
     public static HashSet<InstrumentType> GetLoadedInstrumentTypes()
     {
         HashSet<InstrumentType> outputSet = new();
@@ -43,6 +62,15 @@ public class Chart : MonoBehaviour
         }
 
         return outputSet;
+    }
+
+    public static void DuplicateInstrumentToNewDifficulty(HeaderType originalID, HeaderType newID)
+    {
+        if (!IsInstrumentCreated(originalID, out var instrument))
+        {
+            return;
+        }
+        Instruments.Add(instrument.DuplicateToNewInstrument(newID));
     }
 
     public static List<ActiveInstrument> GetInstrumentDifficultyInformation()

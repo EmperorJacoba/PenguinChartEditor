@@ -135,6 +135,11 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
         return notes.ToString();
     }
 
+    public override IInstrument DuplicateToNewInstrument(HeaderType newInstrumentID)
+    {
+        throw new ArgumentException("SectionInstruments cannot be duplicated in the same chart file.");
+    }
+
     #endregion
 
     #region Not Implemented
