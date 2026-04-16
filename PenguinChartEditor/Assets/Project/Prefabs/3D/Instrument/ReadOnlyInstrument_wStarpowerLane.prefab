@@ -1,5 +1,65 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &78876288677354636
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6834203263665218470}
+  - component: {fileID: 9007429278001727204}
+  - component: {fileID: 1672195749026586111}
+  m_Layer: 0
+  m_Name: BeatlineLane
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6834203263665218470
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 78876288677354636}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5008417329833482552}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9007429278001727204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 78876288677354636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671c3b2c7e38ffc42bfaab02b1c05292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 5507039253395518596, guid: d574ad09b27b29f499ec66b6b2881065, type: 3}
+--- !u!114 &1672195749026586111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 78876288677354636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5843f8d9dffde5d42add1ea1f33790c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 1
+  pooler: {fileID: 9007429278001727204}
 --- !u!1 &168011706592405032
 GameObject:
   m_ObjectHideFlags: 0
@@ -1019,8 +1079,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 0
-  properties:
-    is3D: 1
   pooler: {fileID: 6511137942350828471}
 --- !u!114 &6511137942350828471
 MonoBehaviour:
@@ -1081,8 +1139,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 1004458174722606742}
   laneIdentifier: 4
 --- !u!114 &1004458174722606742
@@ -1230,8 +1286,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 2225483398938606822}
   laneIdentifier: 3
 --- !u!114 &2225483398938606822
@@ -1293,8 +1347,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 0
   pooler: {fileID: 6335548929471685979}
 --- !u!114 &6335548929471685979
 MonoBehaviour:
@@ -1549,7 +1601,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3913519989696620992}
+  - {fileID: 6834203263665218470}
   - {fileID: 6543008429029529526}
   - {fileID: 7914556074028010387}
   - {fileID: 2551475055660485793}
@@ -1619,8 +1671,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 3463396355469971507}
   laneIdentifier: 1
 --- !u!114 &3463396355469971507
@@ -1791,8 +1841,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 3299577692951911113}
   laneIdentifier: 0
 --- !u!114 &3299577692951911113
@@ -2009,8 +2057,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 5707649625340425808}
   laneIdentifier: 5
 --- !u!114 &5707649625340425808
@@ -2437,8 +2483,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 8824388356312349839}
   laneIdentifier: 2
 --- !u!114 &8824388356312349839
@@ -2454,68 +2498,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 532864701870792285, guid: eb800c8f0f7695b49be51aa60057afbe, type: 3}
---- !u!1 &8174819437759358648
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3913519989696620992}
-  - component: {fileID: 4612735699392215859}
-  - component: {fileID: 7791259031083701118}
-  m_Layer: 0
-  m_Name: BeatlineLane
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3913519989696620992
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8174819437759358648}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5008417329833482552}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4612735699392215859
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8174819437759358648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8feb50f7f5234c48b55ea839941beab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
-  pooler: {fileID: 7791259031083701118}
---- !u!114 &7791259031083701118
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8174819437759358648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 862c844b63e0cca43bd44eb15ee2d893, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 5507039253395518596, guid: d574ad09b27b29f499ec66b6b2881065, type: 3}
 --- !u!1 &8708003327013455832
 GameObject:
   m_ObjectHideFlags: 0

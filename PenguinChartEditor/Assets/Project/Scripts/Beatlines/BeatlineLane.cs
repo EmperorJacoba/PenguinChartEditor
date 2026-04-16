@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseBeatlineLane<T> : SpawningLane<T> where T : IPoolable
+public class BeatlineLane: SpawningLane<Beatline>
 {
+    [SerializeField] private BeatlinePooler pooler;
+    protected override IPooler<Beatline> Pooler => pooler;
+    
     public override bool isReadOnly => true;
     protected override IPreviewer Previewer => null;
 

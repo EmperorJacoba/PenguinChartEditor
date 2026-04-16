@@ -8650,7 +8650,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1708384033}
-  - component: {fileID: 1708384032}
+  - component: {fileID: 1708384035}
   - component: {fileID: 1708384034}
   m_Layer: 0
   m_Name: BeatlineLane
@@ -8659,22 +8659,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1708384032
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1708384031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8feb50f7f5234c48b55ea839941beab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <isReadOnly>k__BackingField: 0
-  properties:
-    is3D: 1
-  pooler: {fileID: 1708384034}
 --- !u!4 &1708384033
 Transform:
   m_ObjectHideFlags: 0
@@ -8699,7 +8683,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1708384031}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 862c844b63e0cca43bd44eb15ee2d893, type: 3}
+  m_Script: {fileID: 11500000, guid: 5843f8d9dffde5d42add1ea1f33790c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 0
+  pooler: {fileID: 1708384035}
+--- !u!114 &1708384035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1708384031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671c3b2c7e38ffc42bfaab02b1c05292, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 5507039253395518596, guid: d574ad09b27b29f499ec66b6b2881065, type: 3}

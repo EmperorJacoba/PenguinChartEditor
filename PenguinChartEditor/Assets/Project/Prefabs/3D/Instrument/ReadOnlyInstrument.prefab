@@ -29,7 +29,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5204807894966662319}
   - {fileID: 554742016176849337}
   - {fileID: 1896926496152558986}
   - {fileID: 7314992844542778580}
@@ -84,8 +83,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 0
   pooler: {fileID: 3837823596937627338}
 --- !u!1 &855601470660562654
 GameObject:
@@ -132,8 +129,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 1092559825325965329}
   laneIdentifier: 1
 --- !u!1 &1066346553815909462
@@ -181,8 +176,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 4406688010125427937}
   laneIdentifier: 5
 --- !u!1 &1596344320345838285
@@ -230,8 +223,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 7031595476123949993}
   laneIdentifier: 4
 --- !u!1 &1866960506115670770
@@ -782,8 +773,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 4964615736382594076}
   laneIdentifier: 3
 --- !u!1 &3779896595014806017
@@ -831,8 +820,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 9178749799798140201}
   laneIdentifier: 0
 --- !u!1 &4318105074306919440
@@ -1034,8 +1021,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
   lanePooler: {fileID: 3329830293252828308}
   laneIdentifier: 2
 --- !u!1 &5122440171560321329
@@ -1301,6 +1286,66 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5495902117074765545, guid: fea48cc55dcc1844cbbdef288b510cb2, type: 3}
+--- !u!1 &6184638845732895681
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5938493063529215740}
+  - component: {fileID: 2875041485019919985}
+  - component: {fileID: 7022761340123543231}
+  m_Layer: 0
+  m_Name: BeatlineLane
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5938493063529215740
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6184638845732895681}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 107472649314247905}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2875041485019919985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6184638845732895681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671c3b2c7e38ffc42bfaab02b1c05292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 5507039253395518596, guid: d574ad09b27b29f499ec66b6b2881065, type: 3}
+--- !u!114 &7022761340123543231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6184638845732895681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5843f8d9dffde5d42add1ea1f33790c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <isReadOnly>k__BackingField: 1
+  pooler: {fileID: 2875041485019919985}
 --- !u!1 &6676088349005046442
 GameObject:
   m_ObjectHideFlags: 0
@@ -1472,99 +1517,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 532864701870792285, guid: eb800c8f0f7695b49be51aa60057afbe, type: 3}
---- !u!1 &8185030243796280924
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1407084414231987716}
-  - component: {fileID: 2205162136335332942}
-  m_Layer: 0
-  m_Name: BeatlineLane
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1407084414231987716
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8185030243796280924}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 107472649314247905}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2205162136335332942
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8185030243796280924}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8feb50f7f5234c48b55ea839941beab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <isReadOnly>k__BackingField: 1
-  properties:
-    is3D: 1
-  pooler: {fileID: 5396474933276794453}
---- !u!1 &8484533834777865955
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5204807894966662319}
-  - component: {fileID: 5396474933276794453}
-  m_Layer: 0
-  m_Name: BeatlinePooler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5204807894966662319
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8484533834777865955}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6921542361260518086}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5396474933276794453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8484533834777865955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 862c844b63e0cca43bd44eb15ee2d893, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 5507039253395518596, guid: d574ad09b27b29f499ec66b6b2881065, type: 3}
 --- !u!1 &8622280639518081454
 GameObject:
   m_ObjectHideFlags: 0
@@ -1734,7 +1686,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1407084414231987716}
+  - {fileID: 5938493063529215740}
   - {fileID: 7330866248549627964}
   - {fileID: 6863641331395456346}
   - {fileID: 4054137154488838874}

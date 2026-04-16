@@ -289,20 +289,20 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
 
     #region Time Signature
     
-    public BaseBeatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos, bool ignoreValidity = true)
+    public Beatline.BeatlineType CalculateBeatlineType(int beatlineTickTimePos, bool ignoreValidity = true)
     {
         // includes 0 at all times
-        if (ignoreValidity && TimeSignatureEvents.Contains(beatlineTickTimePos)) return BaseBeatline.BeatlineType.barline;
+        if (ignoreValidity && TimeSignatureEvents.Contains(beatlineTickTimePos)) return Beatline.BeatlineType.barline;
 
         int lastTSTickTimePos = TimeSignatureEvents.GetPreviousTickEventInLane(beatlineTickTimePos);
         if (lastTSTickTimePos < 0) lastTSTickTimePos = 0;
 
         var tsDiff = beatlineTickTimePos - lastTSTickTimePos; // need absolute distance between the current tick and the origin of the TS event
 
-        if (tsDiff % GetBarlineStep(lastTSTickTimePos) == 0) return BaseBeatline.BeatlineType.barline;
-        else if (tsDiff % GetDivisionStep(lastTSTickTimePos) == 0) return BaseBeatline.BeatlineType.divisionLine;
-        else if (tsDiff % GetHalfDivisionStep(lastTSTickTimePos) == 0) return BaseBeatline.BeatlineType.halfDivisionLine;
-        return BaseBeatline.BeatlineType.none;
+        if (tsDiff % GetBarlineStep(lastTSTickTimePos) == 0) return Beatline.BeatlineType.barline;
+        else if (tsDiff % GetDivisionStep(lastTSTickTimePos) == 0) return Beatline.BeatlineType.divisionLine;
+        else if (tsDiff % GetHalfDivisionStep(lastTSTickTimePos) == 0) return Beatline.BeatlineType.halfDivisionLine;
+        return Beatline.BeatlineType.none;
     }
 
     private float GetBarlineStep(int tsPos) => Chart.Resolution * (float)TimeSignatureEvents[tsPos].Numerator / (float)(TimeSignatureEvents[tsPos].Denominator / 4.0f);
@@ -403,7 +403,7 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
     public bool IsTimeSignatureEventValid(int tick)
     {
         // FIXME: Every time event is placed run this check for all future events and put alert on scrubber
-        return CalculateBeatlineType(tick, ignoreValidity: false) == BaseBeatline.BeatlineType.barline;
+        return CalculateBeatlineType(tick, ignoreValidity: false) == Beatline.BeatlineType.barline;
     }
 
     public int ConvertBarsToTicks(int startTick, float bars)

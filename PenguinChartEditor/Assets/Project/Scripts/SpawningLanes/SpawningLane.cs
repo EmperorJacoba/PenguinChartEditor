@@ -17,7 +17,6 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
     #region Overridden/Serialized Properties
 
     [field: SerializeField] public virtual bool isReadOnly { get; set; } = false;
-    [SerializeField] protected LaneProperties properties;
     protected abstract bool cullAtStrikelineOnPlay { get; }
     public abstract int laneID { get; }
 
@@ -236,19 +235,3 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
 
     #endregion
 }
-
-#region LaneProperties
-
-// I was originally going to do more with this, but oh well. It stays because it's a pain to change.
-[System.Serializable]
-public struct LaneProperties
-{
-    public bool is3D;
-
-    public LaneProperties(bool is3D = true)
-    {
-        this.is3D = is3D;
-    }
-}
-
-#endregion
