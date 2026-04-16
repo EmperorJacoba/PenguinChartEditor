@@ -350,7 +350,7 @@ public class Chart : MonoBehaviour
         
         LoadFile();
         
-        SetLoadedInstrument(HeaderType.ExpertSingle);
+        SetLoadedInstrument(HeaderType.SyncTrack);
 
         inputMap = new InputMap();
         inputMap.Enable();
