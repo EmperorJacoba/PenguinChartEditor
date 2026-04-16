@@ -2,6 +2,7 @@ using UnityEngine;
 
 public abstract class BaseBeatline : MonoBehaviour, IPoolable
 {
+    private const float ORTHOGRAPHIC_VIEW_CONVERSION_FACTOR = 3.0f;
     public int Tick { get; set; } = -1;
 
     public bool Visible
@@ -75,6 +76,13 @@ public abstract class BaseBeatline : MonoBehaviour, IPoolable
     protected void UpdateThickness(BeatlineType type)
     {
         var thickness = thicknesses[(int)type];
+
+        if (Chart.LoadedInstrument == Chart.SyncTrackInstrument)
+        {
+            // Tempo Map is top-down orthographic 3D to portray 2D, so beatlines look weird using normal thicknesses. 
+            // Keep same ratios but adjust the thicknesses
+            thickness /= ORTHOGRAPHIC_VIEW_CONVERSION_FACTOR;
+        }
 
         if (type == BeatlineType.none) line.enabled = false;
         else line.enabled = true;
