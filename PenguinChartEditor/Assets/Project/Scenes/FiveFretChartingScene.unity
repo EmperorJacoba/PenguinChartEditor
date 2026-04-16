@@ -4211,6 +4211,7 @@ GameObject:
   - component: {fileID: 732549081}
   - component: {fileID: 732549082}
   - component: {fileID: 732549083}
+  - component: {fileID: 732549084}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4369,6 +4370,18 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   sharedProfile: {fileID: 11400000, guid: 68ab95ee7d55c5c4f885a79101bc48a8, type: 2}
+--- !u!114 &732549084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 732549077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2e337afd4924940b1ebbd0addf6fe7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &745792023
 GameObject:
   m_ObjectHideFlags: 0
@@ -7427,7 +7440,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f0524729a514f0d9bd19228463be40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetCoordinates: {x: -960, y: -100}
 --- !u!1 &1447012247
 GameObject:
   m_ObjectHideFlags: 0
@@ -11385,7 +11397,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f0524729a514f0d9bd19228463be40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetCoordinates: {x: -960, y: 1310}
 --- !u!1 &1969598575
 GameObject:
   m_ObjectHideFlags: 0
@@ -11532,6 +11543,7 @@ GameObject:
   - component: {fileID: 2015534944}
   - component: {fileID: 2015534943}
   - component: {fileID: 2015534942}
+  - component: {fileID: 2015534945}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -11600,6 +11612,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2015534945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2015534941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2e337afd4924940b1ebbd0addf6fe7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2069553716
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -54,6 +54,6 @@ public class TabSceneSpawningManager : MonoBehaviour
 
     private void Start()
     {
-        SceneManager.LoadScene("ExportSceneV2", LoadSceneMode.Additive);
+        SceneManager.LoadScene("SongSetupSceneV2", LoadSceneMode.Additive);
     }
 }
