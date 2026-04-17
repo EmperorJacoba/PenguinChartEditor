@@ -41,17 +41,17 @@ public class SoloSection : MonoBehaviour, IPoolable
     
     private void UpdateOverlayProperties(int startTick, int endTick)
     {
-        float startPosition = startTick > Waveform.startTick ? (float)(Waveform.GetWaveformRatio(startTick) * Highway3D.highwayLength) : 0;
+        float startPosition = startTick > Waveform.startTick ? (float)(Waveform.GetWaveformRatio(startTick) * Highway.highwayLength) : 0;
         overlay.transform.position = new Vector3(parentLane.parentGameInstrument.HighwayGlobalTransformProperties.x, HEIGHT_VISIBILITY_OFFSET, startPosition);
 
         var trackProportion = Waveform.GetWaveformRatio(endTick);
-        var trackEndPosition = trackProportion * Highway3D.highwayLength;
+        var trackEndPosition = trackProportion * Highway.highwayLength;
 
         var localScaleZ = (float)(trackEndPosition - startPosition);
 
         // stop it from appearing past the end of the highway
-        if (localScaleZ + overlay.transform.position.z > Highway3D.highwayLength)
-            localScaleZ = Highway3D.highwayLength - overlay.transform.position.z;
+        if (localScaleZ + overlay.transform.position.z > Highway.highwayLength)
+            localScaleZ = Highway.highwayLength - overlay.transform.position.z;
 
         if (localScaleZ < 0) localScaleZ = 0; // box collider negative size issues??
 

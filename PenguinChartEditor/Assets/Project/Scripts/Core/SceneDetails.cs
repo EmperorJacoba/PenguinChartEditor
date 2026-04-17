@@ -22,7 +22,7 @@ public class SceneDetails : MonoBehaviour
         {
             if (!is2D)
             {
-                return Highway3D.highwayLength;
+                return Highway.highwayLength;
             }
             var screenRef = (RectTransform)highway;
             return screenRef.rect.height;
@@ -106,6 +106,6 @@ public class SceneDetails : MonoBehaviour
         cameraHighwayRaycaster.Raycast(modifiedPointerData, results);
 
         if (results.Count == 0) return 0;
-        return results[0].worldPosition.z / Highway3D.highwayLength;
+        return results[0].worldPosition.z / Highway.highwayLength;
     }
 }

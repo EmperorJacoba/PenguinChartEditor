@@ -35,13 +35,13 @@ public class CameraHighwayScaler : MonoBehaviour
     
     private void OnEnable()
     {
-        Highway3D.highwayLength = (22.5f / 9.0f) * cameraSize;
+        Highway.highwayLength = (22.5f / 9.0f) * cameraSize;
         instance = this;
     }
 
     private void OnDestroy()
     {
-        Highway3D.highwayLength = UserSettings.userSetHighwayLength;
+        Highway.highwayLength = UserSettings.userSetHighwayLength;
         instance = null;
     }
 }

@@ -147,7 +147,7 @@ public class Waveform : MonoBehaviour
 
     #region Properties
 
-    private static int GetSampleCapacity() => (int)Mathf.Round(Highway3D.highwayLength / (ShrinkFactor));
+    private static int GetSampleCapacity() => (int)Mathf.Round(Highway.highwayLength / (ShrinkFactor));
     private static int GetStrikelineSamplePosition() => (int)Math.Ceiling(GetSampleCapacity() * Strikeline.GetAnyStrikelineProportion());
 
     public static int startTick;

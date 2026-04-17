@@ -12,12 +12,12 @@ public class Strikeline : MonoBehaviour
     // This is to keep highwayLength (a property based on the Z scale of the highway)
     public static float GetAnyStrikelineProportion()
     {
-        return StrikelinePosition / Highway3D.highwayLength;
+        return StrikelinePosition / Highway.highwayLength;
     }
 
     public float GetStrikelineProportion()
     {
-        return transform.localPosition.z / Highway3D.highwayLength;
+        return transform.localPosition.z / Highway.highwayLength;
     }
 
     public delegate void StrikelinePositionDelegate();

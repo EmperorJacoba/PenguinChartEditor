@@ -3,7 +3,7 @@ using System.Linq;
 
 public class GameInstrument : MonoBehaviour
 {
-    [SerializeField] private Highway3D highway;
+    [SerializeField] private Highway highway;
     
     // inject via strikeline script itself
     public Strikeline strikeline;

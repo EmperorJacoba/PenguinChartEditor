@@ -1,12 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public interface IHighway
-{
-    public float Length { get; }
-}
-public class Highway3D : MonoBehaviour, IPointerDownHandler
+public class Highway : MonoBehaviour, IPointerDownHandler
 {
     public InstrumentCategory highwayDisplayType;
     public int laneWidth;
@@ -40,9 +37,14 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
     }
     private static float _hL = 75;
 
-    public void Awake()
+    public void OnEnable()
     {
         HighwayLengthChanged += UpdateLength;
+    }
+
+    public void OnDestroy()
+    {
+        HighwayLengthChanged -= UpdateLength;
     }
 
     private void UpdateLength()
