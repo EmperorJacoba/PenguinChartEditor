@@ -167,6 +167,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7083918464973172144}
   - component: {fileID: 4278837776089118202}
+  - component: {fileID: 9114965615209704695}
   m_Layer: 7
   m_Name: BPM3D
   m_TagString: Untagged
@@ -208,10 +209,31 @@ MonoBehaviour:
   <IsPreviewEvent>k__BackingField: 0
   <SelectionOverlay>k__BackingField: {fileID: 5747537853603114875}
   readOnly: 0
-  LabelRectTransform: {fileID: 0}
+  labelCanvas: {fileID: 8412883960574359927}
   LabelEntryBox: {fileID: 3805789180888304335}
   _labelText: {fileID: 8758989698889199141}
   anchorIcon: {fileID: 5073007202878073916}
+--- !u!65 &9114965615209704695
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746754909098868759}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 4.7445846, y: 1.1763762, z: 1.9458396}
+  m_Center: {x: -1.5738106, y: 0.006783642, z: -0.031011786}
 --- !u!1 &2409871449731512963
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,7 +755,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6779509538197582229}
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0342}
   m_LocalScale: {x: 0.124999955, y: 0.12499999, z: 0.1428625}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -744,8 +766,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -2, y: 1}
-  m_SizeDelta: {x: 1920, y: 1080}
+  m_AnchoredPosition: {x: -2.06, y: 1}
+  m_SizeDelta: {x: 62.611, y: 24.0313}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &8412883960574359927
 Canvas:
@@ -936,14 +958,14 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 0
+  m_ContentType: 3
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 0
+  m_KeyboardType: 2
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 0
+  m_CharacterValidation: 3
   m_RegexValue: 
   m_GlobalPointSize: 4.63
   m_CharacterLimit: 0
@@ -1035,8 +1057,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1000, y: 50}
+  m_AnchoredPosition: {x: -0.158, y: -0.1}
+  m_SizeDelta: {x: 25.775, y: 11.417}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4177630676691086964
 CanvasRenderer:

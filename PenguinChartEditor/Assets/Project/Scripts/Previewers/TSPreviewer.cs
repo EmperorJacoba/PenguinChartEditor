@@ -3,16 +3,6 @@
 [RequireComponent(typeof(TSLabel))]
 public class TSPreviewer : Previewer
 {
-    public static TSPreviewer instance { get; set; }
-    [SerializeField] private TSLabel tsLabel;
-    [SerializeField] private RectTransform boundaryReference;
-
-    protected override void Awake()
-    {
-        base.Awake();
-        instance = this;
-    }
-
     protected override IEventData GetPreviewData()
     {
         var prevTick = Chart.SyncTrackInstrument.TimeSignatureEvents.GetPreviousTickEventInLane(previewTick, inclusive: true);
@@ -23,6 +13,6 @@ public class TSPreviewer : Previewer
 
     protected override bool IsHitPositionValid(Vector3 hitPosition)
     {
-        return !(Input.mousePosition.x / Screen.width > 0.5f);
+        return hitPosition is { x: < 0, y: > 0 };
     }
 }

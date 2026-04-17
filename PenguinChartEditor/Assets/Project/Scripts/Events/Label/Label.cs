@@ -12,6 +12,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 {
     #region Components
 
+    [SerializeField] private Canvas labelCanvas;
     [SerializeField] private TMP_InputField LabelEntryBox;
     [SerializeField] private TextMeshProUGUI _labelText;
 
@@ -39,6 +40,8 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
         
         LabelEntryBox.onEndEdit.AddListener(x => HandleManualEndEdit(x));
         LabelEntryBox.onDeselect.AddListener(x => HandleEntryBoxDeselect());
+
+        labelCanvas.worldCamera = CameraHighwayScaler.instance.orthographicSceneCamera;
     }
 
     #endregion
@@ -54,6 +57,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
         if (!Visible || !LaneData.ContainsKey(Tick)) return;
         editTick = Tick;
         
+        _labelText.gameObject.SetActive(false);
         LabelEntryBox.gameObject.SetActive(true);
         LabelEntryBox.ActivateInputField();
 
@@ -94,7 +98,8 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     private void DeactivateManualInput()
     {
         LabelEntryBox.gameObject.SetActive(false);
-
+        _labelText.gameObject.SetActive(true);
+        
         Chart.showPreviewers = true;
         SongTime.EnableChartingInputMap();
     }

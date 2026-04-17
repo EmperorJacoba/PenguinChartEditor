@@ -45,7 +45,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IBeginDragHandler, IEndDra
         var existingData = Chart.SyncTrackInstrument.TempoEvents[Tick];
 
         var bpmAsFloat = float.Parse(newBPM);
-        if (bpmAsFloat == 0 || bpmAsFloat > 1000.0f)
+        if (bpmAsFloat is 0 or > 1000.0f)
         {
             return Chart.SyncTrackInstrument.TempoEvents[Tick];
         }

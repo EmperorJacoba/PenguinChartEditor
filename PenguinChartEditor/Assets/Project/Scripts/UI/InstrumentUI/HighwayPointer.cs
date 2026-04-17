@@ -37,7 +37,12 @@ public class HighwayPointer : MonoBehaviour
     // placing, based on the one trailer from 12/25/25. Why is that a feature? You're just encouraging poor charting practices...
     private void Update()
     {
-        if (AudioManager.AudioPlaying || Chart.instance.SceneDetails.IsSceneOverlayUIHit() || PenguinInputField.IsInputFieldActive())
+        if (
+            AudioManager.AudioPlaying || 
+            (Chart.LoadedInstrument == Chart.SyncTrackInstrument && Chart.IsPlacementAllowed()) ||
+            Chart.instance.SceneDetails.IsSceneOverlayUIHit() || 
+            PenguinInputField.IsInputFieldActive()
+            )
         {
             transform.position = invisiblePosition;
             return;

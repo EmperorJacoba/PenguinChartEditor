@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class CameraHighwayScaler : MonoBehaviour
 {
-    [SerializeField] private Camera orthographicSceneCamera;
+    public static CameraHighwayScaler instance;
+    [SerializeField] public Camera orthographicSceneCamera;
     public float cameraSize
     {
         get
@@ -35,10 +36,12 @@ public class CameraHighwayScaler : MonoBehaviour
     private void OnEnable()
     {
         Highway3D.highwayLength = (22.5f / 9.0f) * cameraSize;
+        instance = this;
     }
 
     private void OnDestroy()
     {
         Highway3D.highwayLength = UserSettings.userSetHighwayLength;
+        instance = null;
     }
 }
