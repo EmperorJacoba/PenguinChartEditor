@@ -12,7 +12,6 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 {
     #region Components
 
-    [SerializeField] private RectTransform LabelRectTransform;
     [SerializeField] private TMP_InputField LabelEntryBox;
     [SerializeField] private TextMeshProUGUI _labelText;
 
@@ -123,9 +122,10 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
     protected override void UpdatePosition()
     {
         transform.localPosition = 
-            new Vector2(
+            new Vector3(
                 transform.localPosition.x, 
-                GetDefaultZ() - (LabelRectTransform.rect.height / 2)
+                transform.localPosition.y,
+                GetDefaultZ()
                 );
     }
 

@@ -38,7 +38,6 @@ public class Highway3D : MonoBehaviour, IPointerDownHandler
             HighwayLengthChanged?.Invoke();
         }
     }
-
     private static float _hL = 75;
 
     public void Awake()

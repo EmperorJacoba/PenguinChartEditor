@@ -3,10 +3,13 @@ using UnityEngine;
 
 public class HighwayPointer : MonoBehaviour
 {
+    [SerializeField] private bool appear2D;
     [SerializeField] private GameObject leftPointer;
     [SerializeField] private GameObject rightPointer;
 
     private GameInstrument parentInstrument;
+
+    private float HighwayOffset => appear2D ? 0.25f : 0;
 
     private void Start()
     {
@@ -14,14 +17,14 @@ public class HighwayPointer : MonoBehaviour
 
         leftPointer.transform.localPosition = 
             new Vector3(
-                parentInstrument.HighwayLeftEndCoordinate, 
+                parentInstrument.HighwayLeftEndCoordinate - HighwayOffset, 
                 leftPointer.transform.localPosition.y, 
                 leftPointer.transform.localPosition.z
                 );
 
         rightPointer.transform.localPosition =
             new Vector3(
-                parentInstrument.HighwayRightEndCoordinate,
+                parentInstrument.HighwayRightEndCoordinate + HighwayOffset,
                 rightPointer.transform.localPosition.y, 
                 rightPointer.transform.localPosition.z
                 );

@@ -14,22 +14,16 @@ using UnityEngine;
 // also sets the spawning boundaries as a natural result of how it is generated.
 public class Waveform : MonoBehaviour
 {
+    #region Constants
     private const float THREE_D_Y_POSITION_OFFSET = 0.01f;
+    #endregion
 
-    public GameInstrument parentGameInstrument;
-
-    /// <summary>
-    /// Dictionary that contains waveform point data for each song stem.
-    /// <para>StemType is the audio stem the data belongs to</para>
-    /// <para>Data holds cached waveform float array (float[] - fairly space efficient @ 1ms per sample) and the number of bytes per sample (long)</para>
-    /// </summary>
+    /// <remarks>
+    /// Holds cached volume data associated with a specific stem. 
+    /// </remarks>
     private static Dictionary<StemType, StemWaveformData> WaveformData { get; set; } = new();
-    
-    /// <summary>
-    /// The currently displayed waveform.
-    /// </summary>
     private static StemType CurrentWaveform { get; set; }
-
+    
     #region Scene Objects
 
     // Waveform is made up of two line renderers (+ dir & - dir)
@@ -39,7 +33,9 @@ public class Waveform : MonoBehaviour
     // uses local positioning
     private LineRenderer lineRendererMain;
     private LineRenderer lineRendererMirror;
-
+    
+    public GameInstrument parentGameInstrument;
+    
     #endregion
 
     #region Display Options
@@ -58,7 +54,7 @@ public class Waveform : MonoBehaviour
         }
         set
         {
-            if (_shrinkFactor == value) return;
+            if (Mathf.Approximately(_shrinkFactor, value)) return;
             _shrinkFactor = value;
             GenerateWaveformPoints();
         }
@@ -77,7 +73,7 @@ public class Waveform : MonoBehaviour
         }
         set
         {
-            if (_amplitude == value) return;
+            if (Mathf.Approximately(_amplitude, value)) return;
             _amplitude = value;
             GenerateWaveformPoints();
         }
@@ -151,15 +147,8 @@ public class Waveform : MonoBehaviour
 
     #region Properties
 
-    private static int GetSampleCapacity()
-    {
-        return (int)Mathf.Round(Highway3D.highwayLength / (ShrinkFactor));
-    }
-
-    private static int GetStrikelineSamplePosition()
-    {
-        return (int)Math.Ceiling(GetSampleCapacity() * Strikeline3D.GetAnyStrikelineProportion());
-    }
+    private static int GetSampleCapacity() => (int)Mathf.Round(Highway3D.highwayLength / (ShrinkFactor));
+    private static int GetStrikelineSamplePosition() => (int)Math.Ceiling(GetSampleCapacity() * Strikeline3D.GetAnyStrikelineProportion());
 
     public static int startTick;
     public static int songPositionTicks;
@@ -289,7 +278,7 @@ public class Waveform : MonoBehaviour
         {
             return needsNegativeFallbackPosition ? ManualGetWaveformRatio(tick) : -1.0f;
         }
-        if (tick >= endTick) return 1;
+        if (tick >= endTick) return 1.0f;
 
         int i = 0;
         while (i + 1 < tickPositions.Length && tickPositions[i+1] <= tick)
@@ -338,6 +327,7 @@ public class Waveform : MonoBehaviour
     #endregion
 }
 
+// Used to hold other data. Beats a magic type I guess?
 public class StemWaveformData
 {
     public float[] volumeData;

@@ -59,4 +59,6 @@ public static class UserSettings
     public static int MaximumSavedUndoActions { get; set; } = 1024;
 
     public static string MetadataImagePaths => $"{Chart.FolderPath}";
+
+    public static float userSetHighwayLength = 75.0f;
 }
