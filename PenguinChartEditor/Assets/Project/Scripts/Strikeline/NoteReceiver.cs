@@ -35,7 +35,7 @@ public class NoteReceiver : MonoBehaviour
     #endregion
 
     [SerializeField] private int lane;
-    private Strikeline3D strikeline;
+    private Strikeline strikeline;
     private IInstrument ParentInstrument => strikeline.parentGameInstrument.representedInstrument;
     private bool firstLoop = true;
 
@@ -48,7 +48,7 @@ public class NoteReceiver : MonoBehaviour
 
     private void Awake()
     {
-        strikeline = GetComponentInParent<Strikeline3D>();
+        strikeline = GetComponentInParent<Strikeline>();
         animator = GetComponent<Animator>();
     }
 

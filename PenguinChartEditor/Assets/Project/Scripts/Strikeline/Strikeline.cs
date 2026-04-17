@@ -1,8 +1,10 @@
 using UnityEngine;
 
-public class Strikeline3D : MonoBehaviour, IStrikeline
+public class Strikeline : MonoBehaviour
 {
     public GameInstrument parentGameInstrument;
+
+    [SerializeField] private float strikelinePosition = _sp;
 
     // In order for this to work properly, two conditions must be met.
     // 1. Instrument's Z position is set to 0.
@@ -39,7 +41,7 @@ public class Strikeline3D : MonoBehaviour, IStrikeline
     private void Awake()
     {
         parentGameInstrument.strikeline = this;
-        UpdateStrikelinePosition();
+        StrikelinePosition = strikelinePosition;
         StrikelinePositionUpdated += UpdateStrikelinePosition;
     }
 

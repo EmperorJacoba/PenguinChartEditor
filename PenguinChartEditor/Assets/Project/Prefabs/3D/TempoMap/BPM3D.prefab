@@ -298,13 +298,14 @@ GameObject:
   - component: {fileID: 8693452806958530812}
   - component: {fileID: 4290353174329157002}
   - component: {fileID: 5073007202878073916}
+  - component: {fileID: 7051376813789904691}
   m_Layer: 7
   m_Name: Anchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2778856968196272505
 RectTransform:
   m_ObjectHideFlags: 0
@@ -376,6 +377,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lockImage: {fileID: 4290353174329157002}
   parentBPM: {fileID: 4278837776089118202}
+--- !u!65 &7051376813789904691
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2439823678865506187}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1907531, y: 1.5251427, z: 0.9999999}
+  m_Center: {x: 0.013625624, y: 0.0015499935, z: -1.5471832e-11}
 --- !u!1 &3279116601606541911
 GameObject:
   m_ObjectHideFlags: 0

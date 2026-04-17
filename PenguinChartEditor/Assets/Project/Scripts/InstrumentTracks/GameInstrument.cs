@@ -6,7 +6,7 @@ public class GameInstrument : MonoBehaviour
     [SerializeField] private Highway3D highway;
     
     // inject via strikeline script itself
-    public IStrikeline strikeline;
+    public Strikeline strikeline;
     [SerializeField] private Waveform waveform;
     [SerializeField] private LaneDetails laneDetails;
 
