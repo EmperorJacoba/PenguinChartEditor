@@ -11,7 +11,6 @@ public class TSLane : SpawningLane<TSLabel>
     public override IInstrument ParentInstrument => Chart.SyncTrackInstrument;
 
     protected override IPooler<TSLabel> Pooler => pooler;
-    protected override IPreviewer Previewer => TSPreviewer.instance;
 
     protected override List<int> GetEventsToDisplay()
     {

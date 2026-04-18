@@ -44,8 +44,9 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IBeginDragHandler, IEndDra
     {
         var existingData = Chart.SyncTrackInstrument.TempoEvents[Tick];
 
-        var bpmAsFloat = float.Parse(newBPM);
-        if (bpmAsFloat == 0 || bpmAsFloat > 1000.0f)
+        if (!float.TryParse(newBPM, out var bpmAsFloat)) return existingData;
+
+        if (bpmAsFloat is 0 or > 1000.0f)
         {
             return Chart.SyncTrackInstrument.TempoEvents[Tick];
         }
@@ -73,6 +74,8 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IBeginDragHandler, IEndDra
         if (Tick == 0 || !Input.GetKey(KeyCode.LeftControl)) return;
 
         preDragData = SaveRelevantDragTicks();
+
+        lastMousePos = Chart.instance.SceneDetails.GetCursorHighwayPosition().z;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -86,16 +89,20 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IBeginDragHandler, IEndDra
         preDragData = null;
     }
 
+    private float lastMousePos;
+
     // This runs alongside MoveSelection() on each label locally if restrictions apply
     // ChangeBPMPositionFromDrag() works a lot simpler with this approach versus overriding the function
     public void OnDrag(PointerEventData data)
     {
         if (preDragData is null) return;
         
+        var currentMousePos = Chart.instance.SceneDetails.GetCursorHighwayPosition().z;
         ChangeBPMPositionFromDrag(
-            mouseDelta: data.delta.y,
+            mouseDelta: currentMousePos - lastMousePos,
             anchorNextEvent: Input.GetKey(KeyCode.LeftAlt)
             );
+        lastMousePos = currentMousePos;
     }
 
     /// <summary>
@@ -104,7 +111,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IBeginDragHandler, IEndDra
     /// <param name="mouseDelta">The difference between the mouse on this frame versus the last frame.</param>
     private void ChangeBPMPositionFromDrag(float mouseDelta, bool anchorNextEvent)
     {
-        var percentOfScreenMoved = mouseDelta / Screen.height;
+        var percentOfScreenMoved = mouseDelta / Highway.highwayLength;
         var timeChange = percentOfScreenMoved * Waveform.timeShown;
 
         // Use exclusive function because this needs to find the tempo event before this beatline's tempo event.

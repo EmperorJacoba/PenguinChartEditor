@@ -1,8 +1,10 @@
 using UnityEngine;
 
-public class Strikeline3D : MonoBehaviour, IStrikeline
+public class Strikeline : MonoBehaviour
 {
     public GameInstrument parentGameInstrument;
+
+    [SerializeField] private float strikelinePosition = _sp;
 
     // In order for this to work properly, two conditions must be met.
     // 1. Instrument's Z position is set to 0.
@@ -10,12 +12,12 @@ public class Strikeline3D : MonoBehaviour, IStrikeline
     // This is to keep highwayLength (a property based on the Z scale of the highway)
     public static float GetAnyStrikelineProportion()
     {
-        return StrikelinePosition / Highway3D.highwayLength;
+        return StrikelinePosition / Highway.highwayLength;
     }
 
     public float GetStrikelineProportion()
     {
-        return transform.localPosition.z / Highway3D.highwayLength;
+        return transform.localPosition.z / Highway.highwayLength;
     }
 
     public delegate void StrikelinePositionDelegate();
@@ -39,7 +41,7 @@ public class Strikeline3D : MonoBehaviour, IStrikeline
     private void Awake()
     {
         parentGameInstrument.strikeline = this;
-        UpdateStrikelinePosition();
+        StrikelinePosition = strikelinePosition;
         StrikelinePositionUpdated += UpdateStrikelinePosition;
     }
 

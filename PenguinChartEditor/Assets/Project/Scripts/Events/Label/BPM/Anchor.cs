@@ -50,7 +50,12 @@ public class Anchor : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
 
     public void OnPointerClick(PointerEventData pointerEventData)
     {
-        Chart.SyncTrackInstrument.TempoEvents[parentBPM.Tick] = new BPMData(Chart.SyncTrackInstrument.TempoEvents[parentBPM.Tick].BPMChange, Chart.SyncTrackInstrument.TempoEvents[parentBPM.Tick].Timestamp, !IsAnchor);
+        Chart.SyncTrackInstrument.TempoEvents[parentBPM.Tick] = 
+            new BPMData(
+                Chart.SyncTrackInstrument.TempoEvents[parentBPM.Tick].BPMChange, 
+                Chart.SyncTrackInstrument.TempoEvents[parentBPM.Tick].Timestamp, 
+                !IsAnchor
+                );
         Chart.InPlaceRefresh();
     }
 }

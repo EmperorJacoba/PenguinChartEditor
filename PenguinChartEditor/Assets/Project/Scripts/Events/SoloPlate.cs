@@ -34,11 +34,11 @@ public class SoloPlate : Event<SoloEventData>
         }
         else if (SongTime.SongPositionTicks > representedData.EndTick)
         {
-            zPosition = (float)(Waveform.GetWaveformRatio(representedData.EndTick) * Highway3D.highwayLength);
+            zPosition = (float)(Waveform.GetWaveformRatio(representedData.EndTick) * Highway.highwayLength);
         }
         else
         {
-            zPosition = Mathf.Floor((float)Waveform.GetWaveformRatio(SongTime.SongPositionTicks) * Highway3D.highwayLength);
+            zPosition = Mathf.Floor((float)Waveform.GetWaveformRatio(SongTime.SongPositionTicks) * Highway.highwayLength);
         }
 
         transform.position = 

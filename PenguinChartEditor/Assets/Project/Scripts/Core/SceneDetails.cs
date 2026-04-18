@@ -9,24 +9,15 @@ using UnityEngine.UI;
 public class SceneDetails : MonoBehaviour
 {
     public SceneType currentScene;
-    public bool is2D = false;
 
-    // Use ScreenReference in TempoMap, use highway GameObject in Chart tab.
+    // Use highway GameObject.
     public Transform highway;
 
     public int laneWidth;
 
     public float HighwayLength
     {
-        get
-        {
-            if (!is2D)
-            {
-                return Highway3D.highwayLength;
-            }
-            var screenRef = (RectTransform)highway;
-            return screenRef.rect.height;
-        }
+        get => Highway.highwayLength;
     }
 
     public GraphicRaycaster overlayUIRaycaster;
@@ -41,7 +32,6 @@ public class SceneDetails : MonoBehaviour
     {
         // Isolated algebraically & through testing. Works for any x coordinate on the highway (secret or visible).
         return (int)Mathf.Floor((xCoordinate - highwayLeftEndCoordinate) / laneWidth);
-        throw new System.Exception("Error when matching X coordinate to a lane. Cursor is within highway bounds but not within a lane.");
     }
 
     public bool IsSceneOverlayUIHit() => IsRaycasterHit(overlayUIRaycaster);
@@ -65,12 +55,8 @@ public class SceneDetails : MonoBehaviour
         return results.Count > 0;
     }
 
-    // please fit for 3D
     public Vector3 GetCursorHighwayPosition()
     {
-        // 2D (BPM/TS) deals with this its own way.
-        if (is2D) return Vector3.zero;
-        
         PointerEventData pointerData = new(EventSystem.current)
         {
             position = Input.mousePosition
@@ -92,11 +78,6 @@ public class SceneDetails : MonoBehaviour
     /// <returns></returns>
     public float GetCursorHighwayProportion()
     {
-        if (is2D)
-        {
-            return Input.mousePosition.y / Screen.height;
-        }
-
         PointerEventData modifiedPointerData = new(EventSystem.current)
         {
             position = new Vector2(Input.mousePosition.x, Input.mousePosition.y)
@@ -106,6 +87,6 @@ public class SceneDetails : MonoBehaviour
         cameraHighwayRaycaster.Raycast(modifiedPointerData, results);
 
         if (results.Count == 0) return 0;
-        return results[0].worldPosition.z / Highway3D.highwayLength;
+        return results[0].worldPosition.z / Highway.highwayLength;
     }
 }

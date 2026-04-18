@@ -38,7 +38,7 @@ public class SoloPreviewer : Previewer
         var platePos = new Vector3(
             previewSoloPlate.transform.position.x, 
             previewSoloPlate.transform.position.y, 
-            (float)Waveform.GetWaveformRatio(previewTick) * Highway3D.highwayLength
+            (float)Waveform.GetWaveformRatio(previewTick) * Highway.highwayLength
             );
      
         previewSoloPlate.transform.position = platePos;

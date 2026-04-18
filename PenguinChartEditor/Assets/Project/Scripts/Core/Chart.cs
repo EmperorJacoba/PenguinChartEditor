@@ -10,6 +10,17 @@ public class Chart : MonoBehaviour
 {
     public static Chart instance;
 
+    [SerializeField] private HeaderType DebugLoadedInstrument = (HeaderType)(-1);
+
+    private void Start()
+    {
+        if (DebugLoadedInstrument != (HeaderType)(-1) && !TabSceneSpawningManager.IsTabbingActive())
+        {
+            SetLoadedInstrument(DebugLoadedInstrument);
+        }
+    }
+
+
     // Use this for scene-related generic calculations
     // Add code to reassign this variable upon scene change
     public SceneDetails SceneDetails

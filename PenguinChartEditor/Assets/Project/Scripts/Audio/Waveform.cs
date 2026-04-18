@@ -14,24 +14,16 @@ using UnityEngine;
 // also sets the spawning boundaries as a natural result of how it is generated.
 public class Waveform : MonoBehaviour
 {
-    [SerializeField] private bool is2D = false;
+    #region Constants
     private const float THREE_D_Y_POSITION_OFFSET = 0.01f;
-    private static Waveform instance;
+    #endregion
 
-    public GameInstrument parentGameInstrument;
-
-    /// <summary>
-    /// Dictionary that contains waveform point data for each song stem.
-    /// <para>StemType is the audio stem the data belongs to</para>
-    /// <para>Data holds cached waveform float array (float[] - fairly space efficient @ 1ms per sample) and the number of bytes per sample (long)</para>
-    /// </summary>
+    /// <remarks>
+    /// Holds cached volume data associated with a specific stem. 
+    /// </remarks>
     private static Dictionary<StemType, StemWaveformData> WaveformData { get; set; } = new();
-    
-    /// <summary>
-    /// The currently displayed waveform.
-    /// </summary>
     private static StemType CurrentWaveform { get; set; }
-
+    
     #region Scene Objects
 
     // Waveform is made up of two line renderers (+ dir & - dir)
@@ -41,29 +33,9 @@ public class Waveform : MonoBehaviour
     // uses local positioning
     private LineRenderer lineRendererMain;
     private LineRenderer lineRendererMirror;
-
-    /// <summary>
-    /// RectTransform attached to the waveform container.
-    /// </summary>
-    private RectTransform TwoDRectTransform
-    {
-        get
-        {
-            if (_rt == null)
-            {
-                _rt = GetComponent<RectTransform>();
-            }
-            return _rt;
-        }
-    }
-
-    private RectTransform _rt;
-
-    /// <summary>
-    /// Height of the RectTransform component attached to the waveform's container GameObject.
-    /// </summary>
-    private float TwoDReferenceHeight => TwoDRectTransform.rect.height;
-
+    
+    public GameInstrument parentGameInstrument;
+    
     #endregion
 
     #region Display Options
@@ -77,17 +49,17 @@ public class Waveform : MonoBehaviour
     {
         get
         {
-            return Chart.instance.SceneDetails.is2D ? _shrinkFactor : _shrinkFactor3Dadjustment;
+            // Relic from old 2D system. *5 was old 2D->3D conversion factor. 
+            return _shrinkFactor * 5;
         }
         set
         {
-            if (_shrinkFactor == value) return;
+            if (Mathf.Approximately(_shrinkFactor, value)) return;
             _shrinkFactor = value;
             GenerateWaveformPoints();
         }
     }
     private static float _shrinkFactor = 0.005f;
-    private static float _shrinkFactor3Dadjustment => _shrinkFactor * 5;
 
     /// <summary>
     /// Controls the length of the waveform lines in the editor. BASS-generated values are multiplied by this value to get the final coordinate result. 
@@ -96,17 +68,17 @@ public class Waveform : MonoBehaviour
     {
         get
         {
-            return Chart.instance.SceneDetails.is2D ? _amplitude : _amplitude3DAdjustment;
+            // Relic from old 2D system. *5 was old 2D->3D conversion factor.
+            return _amplitude * 5;
         }
         set
         {
-            if (_amplitude == value) return;
+            if (Mathf.Approximately(_amplitude, value)) return;
             _amplitude = value;
             GenerateWaveformPoints();
         }
     }
-    private static float _amplitude = 1;
-    private static float _amplitude3DAdjustment => _amplitude * 5;
+    private static float _amplitude = 1.0f;
 
     public bool Visible
     {
@@ -129,8 +101,6 @@ public class Waveform : MonoBehaviour
     {
         lineRendererMain = GetComponent<LineRenderer>();
         lineRendererMirror = gameObject.transform.GetChild(0).GetComponent<LineRenderer>();
-
-        if (is2D) instance = this;
     }
 
     private void OnEnable()
@@ -166,7 +136,7 @@ public class Waveform : MonoBehaviour
     /// Update waveform data to a new audio file.
     /// </summary>
     /// <param name="stem">The BASS stream to get audio samples of.</param>
-    private static KeyValuePair<StemType, StemWaveformData> UpdateWaveformData(StemType stem) // pass in file path here later
+    private static KeyValuePair<StemType, StemWaveformData> UpdateWaveformData(StemType stem)
     {
         float[] stemWaveformData = AudioManager.GetAllAudioSamples(stem);
 
@@ -177,19 +147,8 @@ public class Waveform : MonoBehaviour
 
     #region Properties
 
-    private static int GetSampleCapacity()
-    {
-        return Chart.instance.SceneDetails.is2D ?
-            (int)Mathf.Round(instance.TwoDReferenceHeight / ShrinkFactor) :
-            (int)Mathf.Round(Highway3D.highwayLength / (ShrinkFactor));
-    }
-
-    private static int GetStrikelineSamplePosition()
-    {
-        return Chart.instance.SceneDetails.is2D ?
-            (int)Math.Ceiling(GetSampleCapacity() * Strikeline2D.instance.GetStrikelineProportion()) :
-            (int)Math.Ceiling(GetSampleCapacity() * Strikeline3D.GetAnyStrikelineProportion());
-    }
+    private static int GetSampleCapacity() => (int)Mathf.Round(Highway.highwayLength / (ShrinkFactor));
+    private static int GetStrikelineSamplePosition() => (int)Math.Ceiling(GetSampleCapacity() * Strikeline.GetAnyStrikelineProportion());
 
     public static int startTick;
     public static int songPositionTicks;
@@ -231,16 +190,8 @@ public class Waveform : MonoBehaviour
                 xPosition = waveformData[waveformIndex] * Amplitude;
             }
 
-            // Waveform is rendered slightly differently in 2D (TempoMap) versus 3D (chart & others)
-            // Track operates on X & Y directions in 2D, X & Z directions in 3D. Thus, the branching.
-            if (Chart.instance.SceneDetails.is2D)
-            {
-                lineRendererPositions[lineRendererIndex] = new Vector3(xPosition, incrementPosition);
-            }
-            else
-            {
-                lineRendererPositions[lineRendererIndex] = new Vector3(xPosition, THREE_D_Y_POSITION_OFFSET, incrementPosition);
-            }
+            lineRendererPositions[lineRendererIndex] =
+                new Vector3(xPosition, THREE_D_Y_POSITION_OFFSET, incrementPosition);
         }
 
         CacheWaveformDetails(
@@ -266,12 +217,9 @@ public class Waveform : MonoBehaviour
 
         Visible = true;
         float xOffset = 0;
-
-        if (!is2D)
-        {
-            xOffset = parentGameInstrument.GetGlobalCenterHighwayPosition();
-            positions = Array.ConvertAll(positions, pos => new Vector3(pos.x + xOffset, pos.y, pos.z));
-        }
+        
+        xOffset = parentGameInstrument.GetGlobalCenterHighwayPosition();
+        positions = Array.ConvertAll(positions, pos => new Vector3(pos.x + xOffset, pos.y, pos.z));
 
         lineRendererMain.positionCount = lineRendererMirror.positionCount = positions.Length;
         lineRendererMain.SetPositions(positions);
@@ -330,7 +278,7 @@ public class Waveform : MonoBehaviour
         {
             return needsNegativeFallbackPosition ? ManualGetWaveformRatio(tick) : -1.0f;
         }
-        if (tick >= endTick) return 1;
+        if (tick >= endTick) return 1.0f;
 
         int i = 0;
         while (i + 1 < tickPositions.Length && tickPositions[i+1] <= tick)
@@ -379,6 +327,7 @@ public class Waveform : MonoBehaviour
     #endregion
 }
 
+// Used to hold other data. Beats a magic type I guess?
 public class StemWaveformData
 {
     public float[] volumeData;

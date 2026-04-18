@@ -44,7 +44,7 @@ public class SoloEnd : Event<SoloEventData>
         
         Visible = true;
 
-        float zPosition = (float)(ratio * Highway3D.highwayLength);
+        float zPosition = (float)(ratio * Highway.highwayLength);
         transform.position = new Vector3(transform.position.x, transform.position.y, zPosition);
     }
 
