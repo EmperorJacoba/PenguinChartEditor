@@ -27,8 +27,8 @@ EditorBuildSettings:
     path: Assets/Project/Scenes/StarpowerScene.unity
     guid: b88922d8b64e39e4c9d08c8e03cf381e
   - enabled: 1
-    path: Assets/Project/Scenes/TempoMapScene.unity
-    guid: 7c0493a127fffc24992fd58800dcb38f
+    path: Assets/Project/Scenes/TempoMapSceneV2.unity
+    guid: 81cc5782704b6a24abe55318f9a35598
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -54,6 +54,6 @@ public class TabSceneSpawningManager : MonoBehaviour
 
     private void Start()
     {
-        SceneManager.LoadScene("ChartingIntermediaryScene", LoadSceneMode.Additive);
+        SceneManager.LoadScene("StarpowerScene", LoadSceneMode.Additive);
     }
 }
