@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -27,6 +28,11 @@ public class SceneDetails : MonoBehaviour
     // Assume the center is 0.
     public float highwayLeftEndCoordinate => -(highway.localScale.x / 2);
     public float highwayRightEndCoordinate => highway.localScale.x / 2;
+
+    private void Awake()
+    {
+        Chart.instance.SceneDetails = this;
+    }
 
     public int MatchXCoordinateToLane(float xCoordinate)
     {

@@ -113,8 +113,6 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
             
             GetLaneData().Add(@event.Key, new SectionData(splitSection[1]));
         }
-        
-        Chart.InPlaceRefresh();
     }
 
     #endregion

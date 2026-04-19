@@ -111,7 +111,7 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"Could not load BASS plugin.");
+            Debug.LogError($"Could not load BASS plugin. {Bass.LastError}");
             return;
         }
 

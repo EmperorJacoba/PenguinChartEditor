@@ -10,6 +10,7 @@ public class Chart : MonoBehaviour
 {
     public static Chart instance;
 
+    [SerializeField] private bool isDebug;
     [SerializeField] private HeaderType DebugLoadedInstrument = (HeaderType)(-1);
 
     private void Start()
@@ -19,8 +20,7 @@ public class Chart : MonoBehaviour
             SetLoadedInstrument(DebugLoadedInstrument);
         }
     }
-
-
+    
     // Use this for scene-related generic calculations
     // Add code to reassign this variable upon scene change
     public SceneDetails SceneDetails
@@ -34,6 +34,10 @@ public class Chart : MonoBehaviour
                     );
             }
             return sceneDetails;
+        }
+        set
+        {
+            sceneDetails = value;
         }
     }
     [SerializeField] private SceneDetails sceneDetails;
@@ -92,14 +96,13 @@ public class Chart : MonoBehaviour
         foreach (var instrument in Instruments)
         {
             var name = instrument.InstrumentName;
-            if (foundInstruments.Contains(name))
+            if (!foundInstruments.Add(name))
             {
                 var instrumentDataObj = instrumentData.First(x => x.name == name);
                 instrumentDataObj.activeDifficulties.Add(instrument.Difficulty);
             }
             else
             {
-                foundInstruments.Add(name);
                 instrumentData.Add(new ActiveInstrument(name, instrument.Difficulty));
             }
         }
@@ -352,17 +355,23 @@ public class Chart : MonoBehaviour
         if (instance != null)
         {
             Destroy(gameObject);
+            return;
         }
-
         instance = this;
         DontDestroyOnLoad(instance);
 
         AudioManager.Initialize();
-        
-        LoadFile();
-        
-        SetLoadedInstrument(HeaderType.SyncTrack);
 
+        if (isDebug)
+        {
+            LoadFile();
+        }
+        
+        SetUpInputMap();
+    }
+
+    private void SetUpInputMap()
+    {
         inputMap = new InputMap();
         inputMap.Enable();
         inputMap.Charting.Copy.performed += _ => Clipboard.Copy();
@@ -445,7 +454,7 @@ public class Chart : MonoBehaviour
             return;
         }
 
-        if (instance.SceneDetails.currentScene == SceneType.tempoMap)
+        if (LoadedInstrument == SyncTrackInstrument)
         {
             SyncTrackInPlaceRefresh();
             return;

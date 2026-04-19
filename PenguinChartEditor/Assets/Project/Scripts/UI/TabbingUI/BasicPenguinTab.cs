@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public interface ITab
 {
+    void SwitchOn();
     void SwitchOff();
 }
 
@@ -24,6 +25,11 @@ public abstract class BasicPenguinTab<T> : MonoBehaviour, IPointerDownHandler, I
     }
 
     public void OnPointerDown(PointerEventData eventData)
+    {
+        SwitchOn();
+    }
+
+    public void SwitchOn()
     {
         if (imageComponent.sprite == imageReference.tabActiveImage) return;
         
