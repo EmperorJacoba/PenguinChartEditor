@@ -122,7 +122,7 @@ public class MoveHelper<T> where T : IEventData
         
         // Don't start a move if over UI elements. But OK if a move is already happening. Don't stop in the middle.
         if (
-            Chart.instance.SceneDetails.IsSceneOverlayUIHit() && 
+            Chart.IsSceneOverlayUIHit() && 
             !moveData.inProgress
             ) 
             return false;
@@ -186,8 +186,8 @@ public class MoveHelper<T> where T : IEventData
 
     private bool IsMoveLaneChange(out int currentLane)
     {
-        currentLane = Chart.instance.SceneDetails.MatchXCoordinateToLane(
-            Chart.instance.SceneDetails.GetCursorHighwayPosition().x
+        currentLane = parentInstrument.MatchXCoordinateToLane(
+            Chart.GetCursorHighwayPosition().x
             );
 
         return currentLane != moveData.lastMouseLane;

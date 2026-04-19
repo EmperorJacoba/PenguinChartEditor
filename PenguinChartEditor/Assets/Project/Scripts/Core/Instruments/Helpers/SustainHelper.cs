@@ -44,7 +44,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
 
     private static int GetCurrentMouseTick()
     {
-        var newHighwayPercent = Chart.instance.SceneDetails.GetCursorHighwayProportion();
+        var newHighwayPercent = Chart.GetCursorHighwayProportion();
 
         // 0 is very unlikely as an actual position (as 0 is at the very bottom of the TRACK, which should be outside the screen in most cases)
         // but is returned if cursor is outside track
@@ -60,7 +60,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         
         // Early return if attempting to start an edit while over an overlay element
         // Allows edit to start only if interacting with main content
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() && !sustainData.sustainInProgress) return;
+        if (Chart.IsSceneOverlayUIHit() && !sustainData.sustainInProgress) return;
 
         var currentMouseTick = GetCurrentMouseTick();
         if (currentMouseTick == int.MinValue) return;

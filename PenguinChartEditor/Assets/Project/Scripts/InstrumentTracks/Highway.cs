@@ -97,7 +97,6 @@ public class Highway : MonoBehaviour, IPointerDownHandler
     }
 
     public float GetGlobalCenterHighwayPosition() => transform.position.x;
-
     public int MatchXCoordinateToLane(float xCoordinate)
     {
         if (highwayDisplayType == InstrumentCategory.FiveFret)

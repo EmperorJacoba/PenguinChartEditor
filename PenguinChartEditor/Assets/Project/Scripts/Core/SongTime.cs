@@ -157,7 +157,7 @@ public class SongTime : MonoBehaviour
     }
 
     public static int CalculateCurrentMouseTick() =>
-        CalculateGridSnappedTick(Chart.instance.SceneDetails.GetCursorHighwayProportion());
+        CalculateGridSnappedTick(Chart.GetCursorHighwayProportion());
 
     public static int CalculateGridSnappedTick(float percentOfHighway)
     {

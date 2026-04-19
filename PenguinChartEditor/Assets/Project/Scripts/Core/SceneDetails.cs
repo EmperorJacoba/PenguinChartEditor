@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
@@ -12,41 +13,24 @@ public class SceneDetails : MonoBehaviour
     public SceneType currentScene;
 
     // Use highway GameObject.
-    public Transform highway;
-
-    public int laneWidth;
-
-    public float HighwayLength
-    {
-        get => Highway.highwayLength;
-    }
+    [FormerlySerializedAs("globalSecretHighway")] 
+    [FormerlySerializedAs("highway")] 
+    public Transform globalHighway;
 
     public GraphicRaycaster overlayUIRaycaster;
     public BaseRaycaster eventRaycaster;
     public PhysicsRaycaster cameraHighwayRaycaster;
 
-    // Assume the center is 0.
-    public float highwayLeftEndCoordinate => -(highway.localScale.x / 2);
-    public float highwayRightEndCoordinate => highway.localScale.x / 2;
-
     private void Awake()
     {
-        Chart.instance.SceneDetails = this;
-    }
-
-    public int MatchXCoordinateToLane(float xCoordinate)
-    {
-        // Isolated algebraically & through testing. Works for any x coordinate on the highway (secret or visible).
-        return (int)Mathf.Floor((xCoordinate - highwayLeftEndCoordinate) / laneWidth);
+        Chart.SetSceneDetails(this);
     }
 
     public bool IsSceneOverlayUIHit() => IsRaycasterHit(overlayUIRaycaster);
 
     // with 3D physics raycaster, make sure lane objects are castable by the raycaster
     public bool IsEventDataHit() => IsRaycasterHit(eventRaycaster);
-
-    public bool IsMasterHighwayHit() => GetCursorHighwayPosition().x > 0;
-
+    
     private static bool IsRaycasterHit(BaseRaycaster targetRaycaster)
     {
         PointerEventData pointerData = new(EventSystem.current)
@@ -73,7 +57,7 @@ public class SceneDetails : MonoBehaviour
 
         if (results.Count == 0) return new Vector3(int.MinValue, int.MinValue, int.MinValue);
 
-        var relevantResult = results.Find(x => x.gameObject.transform.IsChildOf(highway.transform));
+        var relevantResult = results.Find(x => x.gameObject.transform.IsChildOf(globalHighway.transform));
         return relevantResult.worldPosition;
     }
 
@@ -84,13 +68,13 @@ public class SceneDetails : MonoBehaviour
     /// <returns></returns>
     public float GetCursorHighwayProportion()
     {
-        PointerEventData modifiedPointerData = new(EventSystem.current)
+        PointerEventData pointerData = new(EventSystem.current)
         {
             position = new Vector2(Input.mousePosition.x, Input.mousePosition.y)
         };
 
         List<RaycastResult> results = new();
-        cameraHighwayRaycaster.Raycast(modifiedPointerData, results);
+        cameraHighwayRaycaster.Raycast(pointerData, results);
 
         if (results.Count == 0) return 0;
         return results[0].worldPosition.z / Highway.highwayLength;

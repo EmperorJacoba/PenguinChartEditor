@@ -1617,8 +1617,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentScene: 3
-  highway: {fileID: 1977597302}
-  laneWidth: 4
+  globalHighway: {fileID: 1977597302}
   overlayUIRaycaster: {fileID: 1465900803}
   eventRaycaster: {fileID: 1839177975}
   cameraHighwayRaycaster: {fileID: 1839177975}
@@ -9780,6 +9779,51 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &1099886216
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1099886218}
+  - component: {fileID: 1099886217}
+  m_Layer: 0
+  m_Name: LoadedInstrumentInjector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1099886217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1099886216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3e866a94444400f8a5577e65e72f1f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneInstrument: 3
+--- !u!4 &1099886218
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1099886216}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1118991015
 GameObject:
   m_ObjectHideFlags: 0
@@ -17383,7 +17427,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000946614, y: 0.000011254102}
+  m_AnchoredPosition: {x: 0.00008974792, y: 0.000011254102}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1855125073
@@ -21830,3 +21874,4 @@ SceneRoots:
   - {fileID: 569939638}
   - {fileID: 725087497}
   - {fileID: 1976830604}
+  - {fileID: 1099886218}

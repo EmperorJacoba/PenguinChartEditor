@@ -3134,6 +3134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highway: {fileID: 2069553716}
+  strikeline: {fileID: 0}
   waveform: {fileID: 1754544326}
   laneDetails: {fileID: 764433765}
   instrumentID: 13
@@ -4203,11 +4204,9 @@ GameObject:
   m_Component:
   - component: {fileID: 732549080}
   - component: {fileID: 732549079}
-  - component: {fileID: 732549078}
   - component: {fileID: 732549081}
   - component: {fileID: 732549082}
   - component: {fileID: 732549083}
-  - component: {fileID: 732549084}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4215,14 +4214,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &732549078
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 732549077}
-  m_Enabled: 1
 --- !u!20 &732549079
 Camera:
   m_ObjectHideFlags: 0
@@ -4366,18 +4357,6 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   sharedProfile: {fileID: 11400000, guid: 68ab95ee7d55c5c4f885a79101bc48a8, type: 2}
---- !u!114 &732549084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 732549077}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2e337afd4924940b1ebbd0addf6fe7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &745792023
 GameObject:
   m_ObjectHideFlags: 0
@@ -7596,7 +7575,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentScene: 2
-  is2D: 0
   highway: {fileID: 543450653712637668}
   laneWidth: 2
   overlayUIRaycaster: {fileID: 1387491380}
@@ -9942,7 +9920,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738d9bc210d45aa4b81e6a3e70d082a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  is2D: 0
   parentGameInstrument: {fileID: 516075231}
 --- !u!120 &1754544327
 LineRenderer:
@@ -10925,6 +10902,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentGameInstrument: {fileID: 516075231}
+  strikelinePosition: 7.5
 --- !u!1 &1945028650
 GameObject:
   m_ObjectHideFlags: 0

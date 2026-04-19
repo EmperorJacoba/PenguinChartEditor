@@ -7,6 +7,7 @@ public class InstrumentSpawningManager : MonoBehaviour
     [SerializeField] private GameObject GameInstrumentPackage;
     private LinkedList<GameInstrument> activeGameInstruments = new();
 
+    public bool IsAnyTrackLoaded() => activeGameInstruments.Count > 0;
     public GameInstrument leftmostTrack => activeGameInstruments.First.Value;
     public GameInstrument rightmostTrack => activeGameInstruments.Last.Value;
 

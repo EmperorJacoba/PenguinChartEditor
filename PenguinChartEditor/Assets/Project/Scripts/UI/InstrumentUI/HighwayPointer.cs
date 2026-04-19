@@ -40,7 +40,7 @@ public class HighwayPointer : MonoBehaviour
         if (
             AudioManager.AudioPlaying || 
             (Chart.LoadedInstrument == Chart.SyncTrackInstrument && Chart.IsPlacementAllowed()) ||
-            Chart.instance.SceneDetails.IsSceneOverlayUIHit() || 
+            Chart.IsSceneOverlayUIHit() || 
             PenguinInputField.IsInputFieldActive()
             )
         {

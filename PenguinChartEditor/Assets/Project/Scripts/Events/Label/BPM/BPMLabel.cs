@@ -75,7 +75,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IBeginDragHandler, IEndDra
 
         preDragData = SaveRelevantDragTicks();
 
-        lastMousePos = Chart.instance.SceneDetails.GetCursorHighwayPosition().z;
+        lastMousePos = Chart.GetCursorHighwayPosition().z;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -97,7 +97,7 @@ public class BPMLabel : Label<BPMData>, IDragHandler, IBeginDragHandler, IEndDra
     {
         if (preDragData is null) return;
         
-        var currentMousePos = Chart.instance.SceneDetails.GetCursorHighwayPosition().z;
+        var currentMousePos = Chart.GetCursorHighwayPosition().z;
         ChangeBPMPositionFromDrag(
             mouseDelta: currentMousePos - lastMousePos,
             anchorNextEvent: Input.GetKey(KeyCode.LeftAlt)

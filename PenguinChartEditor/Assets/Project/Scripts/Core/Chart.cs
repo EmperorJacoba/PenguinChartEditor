@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using SFB;
 using System.IO;
 using System.Linq;
-using TMPro.SpriteAssetUtilities;
 
 public class Chart : MonoBehaviour
 {
@@ -20,33 +19,22 @@ public class Chart : MonoBehaviour
             SetLoadedInstrument(DebugLoadedInstrument);
         }
     }
+
+    #region SceneDetails
     
     // Use this for scene-related generic calculations
-    // Add code to reassign this variable upon scene change
-    public SceneDetails SceneDetails
-    {
-        get
-        {
-            if (!sceneDetails)
-            {
-                throw new ArgumentException(
-                    "Please create and assign a SceneDetails object in this scene. A SceneDetails object is required for selections and moving."
-                    );
-            }
-            return sceneDetails;
-        }
-        set
-        {
-            sceneDetails = value;
-        }
-    }
     [SerializeField] private SceneDetails sceneDetails;
+    public static void SetSceneDetails(SceneDetails @new) => instance.sceneDetails = @new; 
+    public static bool IsSceneOverlayUIHit() => instance.sceneDetails is not null && instance.sceneDetails.IsSceneOverlayUIHit();
+    public static bool IsEventDataHit() => instance.sceneDetails is not null && instance.sceneDetails.IsEventDataHit();
+    public static float GetCursorHighwayProportion() => instance.sceneDetails?.GetCursorHighwayProportion() ?? 0.0f;
+    public static Vector3 GetCursorHighwayPosition() => instance.sceneDetails?.GetCursorHighwayPosition() ?? Vector3.zero;
 
-    public static void Log(string x) => Debug.Log(x); // debug shortcut for static classes like parsers
-
+    #endregion
+    
     #region Chart Data
 
-    public static Metadata Metadata { get; set; } = new();
+    public static Metadata Metadata { get; private set; } = new();
     public static List<IInstrument> Instruments { get; set; }
 
     public static bool IsInstrumentCreated(HeaderType instrumentID)
@@ -57,15 +45,26 @@ public class Chart : MonoBehaviour
     public static bool IsInstrumentCreated(HeaderType instrumentID, out IInstrument instrument)
     {
         instrument = null;
+
+        switch (instrumentID)
+        {
+            case HeaderType.SyncTrack:
+                instrument = SyncTrackInstrument;
+                return true;
+            case HeaderType.Starpower:
+                instrument = StarpowerInstrument;
+                return true;
+            case HeaderType.Events:
+                instrument = SectionInstrument;
+                return true;
+        }
+        
         var result = Instruments.Where(x => x.InstrumentID == instrumentID);
 
-        if (result.Any())
-        {
-            instrument = result.First();
-            return true;
-        }
-
-        return false;
+        if (!result.Any()) return false;
+        
+        instrument = result.First();
+        return true;
     }
     
     public static HashSet<InstrumentType> GetLoadedInstrumentTypes()
@@ -379,13 +378,13 @@ public class Chart : MonoBehaviour
         inputMap.Charting.Cut.performed += _ => Clipboard.Cut();
     }
 
-    public void SetLoadedInstrument(InstrumentType instrumentName, DifficultyType difficulty)
+    public static void SetLoadedInstrument(InstrumentType instrumentName, DifficultyType difficulty)
     {
         var id = (int)instrumentName + (int)difficulty;
         SetLoadedInstrument((HeaderType)id);
     }
     
-    public void SetLoadedInstrument(HeaderType instrumentID)
+    public static void SetLoadedInstrument(HeaderType instrumentID)
     {
         switch (instrumentID)
         {
@@ -418,7 +417,7 @@ public class Chart : MonoBehaviour
         }
     }
 
-    private IInstrument CreateNewInstrument(HeaderType instrumentID)
+    private static IInstrument CreateNewInstrument(HeaderType instrumentID)
     {
         switch (InstrumentMetadata.GetInstrumentGroup(instrumentID))
         {

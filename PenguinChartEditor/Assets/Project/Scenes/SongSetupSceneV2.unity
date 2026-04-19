@@ -1785,9 +1785,7 @@ GameObject:
   m_Component:
   - component: {fileID: 303195990}
   - component: {fileID: 303195989}
-  - component: {fileID: 303195988}
   - component: {fileID: 303195992}
-  - component: {fileID: 303195991}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1795,14 +1793,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &303195988
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 303195987}
-  m_Enabled: 1
 --- !u!20 &303195989
 Camera:
   m_ObjectHideFlags: 0
@@ -1869,18 +1859,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &303195991
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 303195987}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2e337afd4924940b1ebbd0addf6fe7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &303195992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2854,6 +2832,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   imageReference: {fileID: 11400000, guid: 6d1ec66b63cb34c4190316b13a366f2a, type: 2}
+  imageComponent: {fileID: 0}
   controlledComponent: {fileID: 1873188181}
 --- !u!1 &573199759
 GameObject:
@@ -4127,7 +4106,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentScene: 0
-  is2D: 0
   highway: {fileID: 0}
   laneWidth: 0
   overlayUIRaycaster: {fileID: 789912693}
@@ -5526,6 +5504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   imageReference: {fileID: 11400000, guid: 6d1ec66b63cb34c4190316b13a366f2a, type: 2}
+  imageComponent: {fileID: 0}
   controlledComponent: {fileID: 1172059763}
 --- !u!1 &1172059763
 GameObject:

@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
 public class TabSceneSpawningManager : MonoBehaviour
 {
@@ -50,9 +48,5 @@ public class TabSceneSpawningManager : MonoBehaviour
     private void OnDisable()
     {
         instance = null;
-    }
-
-    private void Start()
-    {
     }
 }

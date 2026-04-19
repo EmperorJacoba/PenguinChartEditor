@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TextCopy;
+using UnityEngine;
 
 public static class Clipboard
 {
@@ -30,7 +31,7 @@ public static class Clipboard
 
             if (!int.TryParse(parts[0].Trim(), out int tick))
             {
-                Chart.Log(@$"Problem parsing event {line}");
+                Debug.LogError(@$"Problem parsing event {line}");
                 continue;
             }
 

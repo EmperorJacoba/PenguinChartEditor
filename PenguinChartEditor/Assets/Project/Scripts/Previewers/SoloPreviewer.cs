@@ -70,7 +70,7 @@ public class SoloPreviewer : Previewer
 
     public override void CreateEvent()
     {
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || !Chart.IsPlacementAllowed()) return;
+        if (Chart.IsSceneOverlayUIHit() || !Chart.IsPlacementAllowed()) return;
         if (!IsPreviewerVisible()) return;
         
         // I have set up solo events weirdly so that they can be bundled together as one data. Please fix this

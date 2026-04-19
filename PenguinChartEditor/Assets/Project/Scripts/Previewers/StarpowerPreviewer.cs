@@ -24,7 +24,7 @@ public class StarpowerPreviewer : Previewer
         if (Chart.LoadedInstrument != Chart.StarpowerInstrument) return false;
         
         var starpowerXCoordinate = starpowerEvent.parentGameInstrument.GetGlobalStarpowerXCoordinate();
-        var halfLaneWidth = Chart.instance.SceneDetails.laneWidth / 2;
+        var halfLaneWidth = parentGameInstrument.laneWidth / 2;
         if (hitPosition.x < (starpowerXCoordinate - halfLaneWidth) || hitPosition.x > (starpowerXCoordinate + halfLaneWidth) || hitPosition.y < 0)
         {
             return false;

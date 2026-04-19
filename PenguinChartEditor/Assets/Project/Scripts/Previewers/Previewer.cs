@@ -103,7 +103,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     public virtual void CreateEvent()
     {
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || !Chart.IsPlacementAllowed()) return;
+        if (Chart.IsSceneOverlayUIHit() || !Chart.IsPlacementAllowed()) return;
         if (!IsPreviewerVisible()) return;
 
         parentInstrument.CreateEvent(previewTick, parentLane.laneID, GetPreviewData());
@@ -147,7 +147,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     private static bool IsPreviewerActive(float percentOfScreenVertical, float percentOfScreenHorizontal)
     {
         if (!Chart.showPreviewers || AudioManager.AudioPlaying ||
-            Chart.instance.SceneDetails.IsSceneOverlayUIHit() || PenguinInputField.IsInputFieldActive() ||
+            Chart.IsSceneOverlayUIHit() || PenguinInputField.IsInputFieldActive() ||
             Input.GetMouseButton(RIGHT_MOUSE_ID) || // right mouse = sustaining or trying to delete
             !Chart.IsPlacementAllowed() ||
             percentOfScreenVertical < 0 ||
@@ -192,7 +192,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     {
         activeTick = -1;
         
-        var hitPos = Chart.instance.SceneDetails.GetCursorHighwayPosition();
+        var hitPos = Chart.GetCursorHighwayPosition();
         
         if (!IsHitPositionValid(hitPos))
         {
@@ -200,7 +200,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
             return false;
         }
         
-        var highwayProp = Chart.instance.SceneDetails.GetCursorHighwayProportion();
+        var highwayProp = Chart.GetCursorHighwayProportion();
 
         activeTick = SongTime.CalculateGridSnappedTick(highwayProp);
         return true;

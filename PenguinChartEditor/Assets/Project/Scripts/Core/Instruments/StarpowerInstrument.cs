@@ -383,4 +383,16 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
     }    
 
     #endregion
+
+    public override int MatchXCoordinateToLane(float xCoordinate)
+    {
+        Debug.Assert(InstrumentSpawningManager.instance is not null);
+
+        if (InstrumentSpawningManager.instance.IsAnyTrackLoaded())
+        {
+            return InstrumentSpawningManager.instance.leftmostTrack.MatchXCoordinateToLane(xCoordinate);
+        }
+
+        return 1;
+    }
 }

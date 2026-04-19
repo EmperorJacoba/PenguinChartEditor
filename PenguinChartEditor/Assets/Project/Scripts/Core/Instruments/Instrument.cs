@@ -68,6 +68,9 @@ public interface IInstrument
     public ISelectionSnapshot SnapTicks(List<int> ticks);
 
     public IInstrument DuplicateToNewInstrument(HeaderType newInstrumentID);
+    
+    public GameInstrument ActiveGameInstrument { get; set; }
+    public int MatchXCoordinateToLane(float xCoordinate);
 }
 
 public interface ISustainableInstrument : IInstrument
@@ -111,11 +114,6 @@ public interface ISustainableInstrument : IInstrument
 // for a template on what to do. Feel free to ask me for any help!
 
 // - Emperor
-
-// FIXME: With the exception of SyncTrack (my design choice for that one was not the best, but I think it makes more sense
-// conceptually), single lane tracks can likely be replaced with a Lanes<T> object with one lane. Investigate this possibility.
-// Note: I think it is more clear with one LaneSet<> how the instrument functions, but it is probably easier to implement
-// new instruments with a Lanes<> object with only one lane.
 
 /// <summary>
 /// This class serves to automatically refresh charts, set up inputs, and call undo/redo actions
@@ -299,7 +297,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     private void CheckForSelectionClear()
     {
-        if (Chart.instance.SceneDetails.IsSceneOverlayUIHit() || Chart.instance.SceneDetails.IsEventDataHit()) return;
+        if (Chart.IsSceneOverlayUIHit() || Chart.IsEventDataHit()) return;
 
         ClearAllSelections();
     }
@@ -538,6 +536,15 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     public abstract IInstrument DuplicateToNewInstrument(HeaderType newInstrumentID);
 
     #endregion
+
+    public GameInstrument ActiveGameInstrument { get; set; }
+    
+    // This exists because StarpowerInstrument is not really an instrument. It's more of a concept. It will never
+    // have a GameInstrument, but lane movements it must support. Thus, a virtual method. Bazinga.
+    public virtual int MatchXCoordinateToLane(float xCoordinate)
+    {
+        return ActiveGameInstrument.MatchXCoordinateToLane(xCoordinate);
+    }
 }
 
 public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustainableInstrument where T : IEventData, ISustainable

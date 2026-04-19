@@ -496,7 +496,7 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
 
                 if (!int.TryParse(eventData, out int bpmNoDecimal))
                 {
-                    Chart.Log($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid tempo entry.");
+                    Debug.LogError($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid tempo entry.");
                     continue;
                 }
 
@@ -514,7 +514,7 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
 
                 if (!int.TryParse(tsParts[0], out int numerator))
                 {
-                    Chart.Log($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature numerator.");
+                    Debug.LogError($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature numerator.");
                     continue;
                 }
 
@@ -523,7 +523,7 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
                 {
                     if (!int.TryParse(tsParts[1], out int denominatorLog2))
                     {
-                        Chart.Log($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature denominator.");
+                        Debug.LogError($"{SYNC_TRACK_ERROR} [{entry.Key} = {entry.Value}]. Error type: Invalid time signature denominator.");
                         continue;
                     }
                     denominator = (int)Math.Pow(TS_POWER_CONVERSION_NUMBER, denominatorLog2);

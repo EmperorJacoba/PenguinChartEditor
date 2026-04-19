@@ -1,16 +1,18 @@
+using System;
 using UnityEngine;
 using System.Linq;
 
 public class GameInstrument : MonoBehaviour
 {
     [SerializeField] private Highway highway;
+    public float laneWidth => highway.laneWidth;
     
     // inject via strikeline script itself
     public Strikeline strikeline;
     [SerializeField] private Waveform waveform;
     [SerializeField] private LaneDetails laneDetails;
-
     [SerializeField] public HeaderType instrumentID;
+    
     public IInstrument representedInstrument
     {
         get
@@ -28,7 +30,6 @@ public class GameInstrument : MonoBehaviour
             return _instRef;
         }
     }
-
     private IInstrument _instRef;
 
     public StarpowerLane StarpowerLane
@@ -42,8 +43,24 @@ public class GameInstrument : MonoBehaviour
             return _sLane;
         }
     }
-
     private StarpowerLane _sLane;
+
+    private void Start()
+    {
+        if (!Chart.IsInstrumentCreated(instrumentID, out var instrument))
+        {
+            Debug.LogError($"Instrument {instrumentID} not found in instrument database.", gameObject);
+            return;
+        }
+
+        instrument.ActiveGameInstrument = this;
+        _instRef = instrument;
+    }
+
+    private void OnDestroy()
+    {
+        representedInstrument.ActiveGameInstrument = null;
+    }
 
     public float HighwayLength => highway.Length;
     public float GetCenterXCoordinateFromLane(int lane) => highway.GetCenterXCoordinateFromLane(lane);
@@ -61,7 +78,7 @@ public class GameInstrument : MonoBehaviour
 
     public bool IsTickStarpower(int tick)
     {
-        if (Chart.instance.SceneDetails.currentScene != SceneType.starpower) return false;
+        if (Chart.LoadedInstrument != Chart.StarpowerInstrument) return false;
         return StarpowerLane.IsTickWithinStarpowerNote(tick);
     }
 }

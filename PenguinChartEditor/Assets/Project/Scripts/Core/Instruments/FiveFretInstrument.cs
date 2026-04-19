@@ -514,7 +514,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
                     case NOTE_INDICATOR:
                         if (!int.TryParse(values[NOTE_IDENTIFIER_INDEX], out noteIdentifier))
                         {
-                            Chart.Log($"Invalid note identifier for {InstrumentName} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
+                            Debug.LogError($"Invalid note identifier for {InstrumentName} @ tick {uniqueTick}: {values[NOTE_IDENTIFIER_INDEX]}");
                             continue;
                         }
 
@@ -522,7 +522,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
 
                         if (!int.TryParse(values[SUSTAIN_INDEX], out sustain))
                         {
-                            Chart.Log($"Invalid sustain for {InstrumentName} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
+                            Debug.LogError($"Invalid sustain for {InstrumentName} @ tick {uniqueTick}: {values[SUSTAIN_INDEX]}");
                             continue;
                         }
 
@@ -568,7 +568,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
 
                         if (!Enum.TryParse(typeof(LocalEventIdentifier), values[EVENT_DATA_INDEX], true, out var localEvent))
                         {
-                            Chart.Log($"Error at {uniqueTick}: Unsupported event type: {values[EVENT_DATA_INDEX]}");
+                            Debug.LogError($"Error at {uniqueTick}: Unsupported event type: {values[EVENT_DATA_INDEX]}");
                             break;
                         }
 

@@ -110,10 +110,10 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
     // the parentInstrument's highway3D highway length. Not already doing this because TempoMap uses UI elements which is different
     // and SceneDetails already works out the conversion in 2D. 
     protected float GetDefaultZ() => 
-        (float)(Waveform.GetWaveformRatio(Tick) * Chart.instance.SceneDetails.HighwayLength);
+        (float)(Waveform.GetWaveformRatio(Tick) * ParentLane.parentGameInstrument.HighwayLength);
 
     protected float GetSpecifiedZ(int tick) =>
-        (float)(Waveform.GetWaveformRatio(tick) * Chart.instance.SceneDetails.HighwayLength);
+        (float)(Waveform.GetWaveformRatio(tick) * ParentLane.parentGameInstrument.HighwayLength);
     
     /// <summary>
     /// Waveform.GetWaveformRatio() deals only with positive cached tick:time ratios for efficiency, so if a negative z
@@ -123,7 +123,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
     /// The Z coordinate in world space that corresponds to the event's tick, in relation to time t=SongTime.SongPositionSeconds.
     /// </returns>
     protected float GetGuaranteedNegativeZ() =>
-        (float)(Waveform.GetWaveformRatio(Tick, true) * Chart.instance.SceneDetails.HighwayLength);
+        (float)(Waveform.GetWaveformRatio(Tick, true) * ParentLane.parentGameInstrument.HighwayLength);
     
     #endregion
     
