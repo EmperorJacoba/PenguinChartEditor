@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -56,6 +57,11 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
         inputMap.Charting.SetLane5.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.orange);
 
         inputMap.Charting.SetEqualSpacing.performed += x => Chart.GetActiveInstrument<FiveFretInstrument>().SetEqualSpacing();
+    }
+
+    private void OnDestroy()
+    {
+        inputMap.Dispose();
     }
 
     public delegate void UpdatePreviewerDelegate();

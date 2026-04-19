@@ -454,6 +454,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         inputMap.Charting.ClearSelection.performed += x => ClearAllSelections();
     }
     
+    
+    
     #endregion
 
     #region Moving

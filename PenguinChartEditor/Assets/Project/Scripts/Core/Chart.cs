@@ -188,7 +188,7 @@ public class Chart : MonoBehaviour
 
     public static bool ChartLoading { get; private set; }
     
-    public static void LoadFile()
+    public static bool LoadFile()
     {
         var pathCandidates = 
             StandaloneFileBrowser.OpenFilePanel
@@ -204,6 +204,8 @@ public class Chart : MonoBehaviour
                     false
                 );
 
+        if (pathCandidates.Length < 1) return false;
+        
         ChartPath = pathCandidates[0];
         FolderPath = Path.GetDirectoryName(ChartPath);
 
@@ -229,6 +231,8 @@ public class Chart : MonoBehaviour
 
         ChartLoading = false;
         ChartFileLoaded?.Invoke();
+
+        return true;
     }
 
     #endregion
@@ -363,7 +367,10 @@ public class Chart : MonoBehaviour
 
         if (isDebug)
         {
-            LoadFile();
+            if (!LoadFile())
+            {
+                Debug.Break();
+            }
         }
         
         SetUpInputMap();
@@ -376,6 +383,11 @@ public class Chart : MonoBehaviour
         inputMap.Charting.Copy.performed += _ => Clipboard.Copy();
         inputMap.Charting.Paste.performed += _ => Clipboard.Paste();
         inputMap.Charting.Cut.performed += _ => Clipboard.Cut();
+    }
+
+    private void OnDestroy()
+    {
+        inputMap?.Disable();
     }
 
     public static void SetLoadedInstrument(InstrumentType instrumentName, DifficultyType difficulty)

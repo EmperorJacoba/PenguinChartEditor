@@ -22,6 +22,11 @@ public class UndoStack : MonoBehaviour
         inputMap.ExternalCharting.Redo.performed += _ => Redo();
     }
 
+    private void OnDestroy()
+    {
+        inputMap.Disable();
+    }
+
     public void PushAction(IUndoSnapshot undoSnapshot)
     {
         undoStack.Push(undoSnapshot);

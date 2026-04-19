@@ -34,6 +34,12 @@ public class DivisionChanger : MonoBehaviour
         inputMap.ExternalCharting.IncreaseStepByOne.performed += _ => IncreaseDivisionByOne();
         inputMap.ExternalCharting.DecreaseStepByOne.performed += _ => DecreaseDivisionByOne();
     }
+
+    private void OnDestroy()
+    {
+        inputMap.Dispose();
+    }
+
     public void IncreaseDivision()
     {
         if (CurrentDivision >= MAX_DIVISION) return;

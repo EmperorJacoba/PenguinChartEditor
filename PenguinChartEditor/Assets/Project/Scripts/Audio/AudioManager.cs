@@ -131,6 +131,11 @@ public class AudioManager : MonoBehaviour
         };
     }
 
+    private void OnDestroy()
+    {
+        inputMap.Disable();
+    }
+
     private void OnApplicationQuit()
     {
         Bass.Free();

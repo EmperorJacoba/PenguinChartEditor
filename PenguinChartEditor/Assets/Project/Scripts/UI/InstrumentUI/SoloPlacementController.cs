@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,5 +21,10 @@ public class SoloPlacementController : MonoBehaviour
         {
             toggle.isOn = !toggle.isOn;
         };
+    }
+
+    private void OnDestroy()
+    {
+        inputMap.Dispose();
     }
 }

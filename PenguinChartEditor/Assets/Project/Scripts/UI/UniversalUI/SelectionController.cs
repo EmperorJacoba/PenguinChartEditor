@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +23,11 @@ public class SelectionController : MonoBehaviour
 
         dropdown.value = (int)Chart.currentSelectionMode;
         dropdown.onValueChanged.AddListener(OnValueChanged);
+    }
+
+    private void OnDestroy()
+    {
+        inputMap.Dispose();
     }
 
     private void OnValueChanged(int index)

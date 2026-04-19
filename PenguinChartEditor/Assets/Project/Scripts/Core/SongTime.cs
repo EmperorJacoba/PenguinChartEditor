@@ -81,6 +81,11 @@ public class SongTime : MonoBehaviour
         inputMap.Charting.MiddleMouseClick.canceled += x => initialMouseY = float.NaN;
     }
 
+    private void OnDestroy()
+    {
+        inputMap.Disable();
+    }
+
     private void Start()
     {
         Waveform.GenerateWaveformPoints();
