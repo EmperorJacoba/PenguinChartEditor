@@ -163,8 +163,19 @@ public class Chart : MonoBehaviour
 
     #region Modify Chart Data
 
-    public void SaveFile()
+    public static void SaveFile()
     {
+        
+    }
+
+    public static void NewFile()
+    {
+        
+    }
+
+    public static void SaveFileAs()
+    {
+        
     }
 
     public static void ApplyFileInformation(

@@ -33,7 +33,7 @@ public class UndoStack : MonoBehaviour
         redoStack.Clear();
     }
 
-    private void Undo()
+    public void Undo()
     {
         if (undoStack.Count == 0) return;
         
@@ -44,7 +44,7 @@ public class UndoStack : MonoBehaviour
         Chart.InPlaceRefresh();
     }
     
-    private void Redo()
+    public void Redo()
     {
         if (redoStack.Count == 0) return;
         
