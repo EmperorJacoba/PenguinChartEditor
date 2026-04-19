@@ -14,18 +14,25 @@ public class SongScrubber : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
-        SongTime.TimeChanged += UpdateSongScrubber;
-
-        scrubber.onValueChanged.AddListener(x => UpdateSongTimeFromScrubber(x));
-        AudioManager.PlaybackStateChanged += playbackState =>
-        {
-            if (playbackState) scrubber.interactable = false;
-            else scrubber.interactable = true;
-        };
-
         rectTransform = GetComponent<RectTransform>();
+        scrubber.onValueChanged.AddListener(x => UpdateSongTimeFromScrubber(x));
+        
+        SongTime.TimeChanged += UpdateSongScrubber;
+        AudioManager.PlaybackStateChanged += SetScrubberInteractableState;
     }
-    
+
+    private void SetScrubberInteractableState(bool playbackState)
+    {
+        if (playbackState) scrubber.interactable = false;
+        else scrubber.interactable = true;
+    }
+
+    private void OnDestroy()
+    {
+        SongTime.TimeChanged -= UpdateSongScrubber;
+        AudioManager.PlaybackStateChanged -= SetScrubberInteractableState;
+    }
+
     // Diagnostic: This function takes <0.05ms on average per frame during song playback.
     private void UpdateSongScrubber()
     {

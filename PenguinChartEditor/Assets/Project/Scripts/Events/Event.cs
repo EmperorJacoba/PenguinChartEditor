@@ -123,7 +123,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
     /// The Z coordinate in world space that corresponds to the event's tick, in relation to time t=SongTime.SongPositionSeconds.
     /// </returns>
     protected float GetGuaranteedNegativeZ() =>
-        (float)(Waveform.GetWaveformRatio(Tick, true) * ParentLane.parentGameInstrument.HighwayLength);
+        (float)(Waveform.GetWaveformRatio(Tick, true) * Highway.highwayLength);
     
     #endregion
     

@@ -37,7 +37,7 @@ public class DivisionChanger : MonoBehaviour
 
     private void OnDestroy()
     {
-        inputMap.Dispose();
+        inputMap.Disable();
     }
 
     public void IncreaseDivision()

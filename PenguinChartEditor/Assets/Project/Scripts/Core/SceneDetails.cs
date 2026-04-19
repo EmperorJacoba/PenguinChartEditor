@@ -31,7 +31,7 @@ public class SceneDetails : MonoBehaviour
     // with 3D physics raycaster, make sure lane objects are castable by the raycaster
     public bool IsEventDataHit() => IsRaycasterHit(eventRaycaster);
     
-    private static bool IsRaycasterHit(BaseRaycaster targetRaycaster)
+    public static bool IsRaycasterHit(BaseRaycaster targetRaycaster)
     {
         PointerEventData pointerData = new(EventSystem.current)
         {
@@ -40,7 +40,7 @@ public class SceneDetails : MonoBehaviour
 
         List<RaycastResult> results = new();
         targetRaycaster.Raycast(pointerData, results);
-
+        
         // If a component from the toolboxes is raycasted from the cursor, then the overlay is hit.
         return results.Count > 0;
     }

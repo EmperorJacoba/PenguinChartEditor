@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,8 +17,13 @@ public class AudioNavigationButtons : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
-        AudioManager.PlaybackStateChanged += state => ManagePlaybackButtonStates(state);
-        ManagePlaybackButtonStates(false);
+        AudioManager.PlaybackStateChanged += ManagePlaybackButtonStates;
+        ManagePlaybackButtonStates(AudioManager.AudioPlaying);
+    }
+
+    private void OnDestroy()
+    {
+        AudioManager.PlaybackStateChanged -= ManagePlaybackButtonStates;
     }
 
     // Update is called once per frame

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ChartSceneSpawner : MonoBehaviour
 {
@@ -8,6 +9,15 @@ public class ChartSceneSpawner : MonoBehaviour
     
     public void SpawnTrack(DifficultyType difficulty)
     {
+        var id = InstrumentMetadata.GetHeader(representedInstrument, difficulty);
+        var sceneName = InstrumentMetadata.MatchInstrumentToSceneName(id);
+        
+        ChartSceneLoader.PrepareSceneLoad(id);
+
+        SceneManager.UnloadSceneAsync("ChartingIntermediaryScene");
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+
+        SceneTabSwitcher.forceLoadedScene = sceneName;
     }
 
     public void UpdateButton(DifficultyType difficulty)

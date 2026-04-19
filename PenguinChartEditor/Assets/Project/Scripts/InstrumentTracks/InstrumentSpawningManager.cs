@@ -210,7 +210,7 @@ public class InstrumentSpawningManager : MonoBehaviour
     private GameInstrument CreateNewInstrument(HeaderType instrumentType)
     {
         GameInstrumentPackage.SetActive(false);
-        var spawnedInstrument = Instantiate(GameInstrumentPackage);
+        var spawnedInstrument = Instantiate(GameInstrumentPackage, transform.root);
         var gameInstrument = spawnedInstrument.GetComponent<GameInstrument>();
         gameInstrument.instrumentID = instrumentType;
         spawnedInstrument.SetActive(true);

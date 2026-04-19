@@ -171,7 +171,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     private void OnDestroy()
     {
-        inputMap.Dispose();
+        inputMap.Disable();
     }
 
     protected void Update()

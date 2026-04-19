@@ -27,7 +27,7 @@ public class SelectionController : MonoBehaviour
 
     private void OnDestroy()
     {
-        inputMap.Dispose();
+        inputMap.Disable();
     }
 
     private void OnValueChanged(int index)

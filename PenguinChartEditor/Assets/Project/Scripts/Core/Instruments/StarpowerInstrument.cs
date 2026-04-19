@@ -170,7 +170,13 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     #region Moving
 
-    protected override LinkedList<int> GetLaneProgression() => InstrumentSpawningManager.instance.GetCurrentInstrumentOrdering();
+    protected override LinkedList<int> GetLaneProgression()
+    {
+        return 
+            InstrumentSpawningManager.instance is null ? 
+                new LinkedList<int>() : 
+                InstrumentSpawningManager.instance.GetCurrentInstrumentOrdering();
+    }
 
     #endregion
 

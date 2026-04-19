@@ -420,6 +420,21 @@ public static class InstrumentMetadata
             _ => throw new System.Exception("Invalid mode <=> flag match")
         };
     }
+
+    public static string MatchInstrumentToSceneName(HeaderType instrumentID) =>
+        MatchInstrumentTypeToSceneName(GetInstrumentGroup(instrumentID));
+    public static string MatchInstrumentTypeToSceneName(InstrumentCategory instrumentType)
+    {
+        switch (instrumentType)
+        {
+            case InstrumentCategory.FiveFret:
+                return "FiveFretChartingScene";
+            default:
+                throw new ArgumentException(
+                    $"Please set up scene matching for {instrumentType} in InstrumentMetadata."
+                    );
+        }
+    }
 }
 
 public enum SceneType

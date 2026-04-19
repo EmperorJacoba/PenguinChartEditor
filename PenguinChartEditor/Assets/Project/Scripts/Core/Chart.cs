@@ -24,8 +24,17 @@ public class Chart : MonoBehaviour
     
     // Use this for scene-related generic calculations
     [SerializeField] private SceneDetails sceneDetails;
-    public static void SetSceneDetails(SceneDetails @new) => instance.sceneDetails = @new; 
-    public static bool IsSceneOverlayUIHit() => instance.sceneDetails is not null && instance.sceneDetails.IsSceneOverlayUIHit();
+    public static void SetSceneDetails(SceneDetails @new) => instance.sceneDetails = @new;
+
+    public static bool IsSceneOverlayUIHit()
+    {
+        return
+            instance.sceneDetails is not null &&
+            (
+                TabSceneSpawningManager.IsTabLayerHit() ||
+                instance.sceneDetails.IsSceneOverlayUIHit()
+            );
+    }
     public static bool IsEventDataHit() => instance.sceneDetails is not null && instance.sceneDetails.IsEventDataHit();
     public static float GetCursorHighwayProportion() => instance.sceneDetails?.GetCursorHighwayProportion() ?? 0.0f;
     public static Vector3 GetCursorHighwayPosition() => instance.sceneDetails?.GetCursorHighwayPosition() ?? Vector3.zero;

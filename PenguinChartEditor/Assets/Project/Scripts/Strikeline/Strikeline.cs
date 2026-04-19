@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Strikeline : MonoBehaviour
@@ -43,6 +44,11 @@ public class Strikeline : MonoBehaviour
         parentGameInstrument.strikeline = this;
         StrikelinePosition = strikelinePosition;
         StrikelinePositionUpdated += UpdateStrikelinePosition;
+    }
+
+    private void OnDestroy()
+    {
+        StrikelinePositionUpdated -= UpdateStrikelinePosition;
     }
 
     private void UpdateStrikelinePosition()

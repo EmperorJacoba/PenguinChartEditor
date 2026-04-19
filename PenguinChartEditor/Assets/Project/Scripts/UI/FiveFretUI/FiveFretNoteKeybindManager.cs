@@ -61,7 +61,7 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        inputMap.Dispose();
+        inputMap.Disable();
     }
 
     public delegate void UpdatePreviewerDelegate();

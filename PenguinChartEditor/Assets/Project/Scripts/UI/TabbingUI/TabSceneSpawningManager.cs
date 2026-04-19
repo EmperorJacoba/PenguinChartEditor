@@ -1,12 +1,20 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class TabSceneSpawningManager : MonoBehaviour
 {
     private bool tabbingRibbonActive = false;
     // Should be the ribbon border. 105 pixels tall as of writing this
     [SerializeField] private RectTransform widestRibbonElement;
+    [SerializeField] private GraphicRaycaster ribbonRaycaster;
     public static TabSceneSpawningManager instance;
 
+    public static bool IsTabLayerHit()
+    {
+        return IsTabbingActive() && SceneDetails.IsRaycasterHit(instance.ribbonRaycaster);
+    }
+    
     public static bool IsTabbingActive() => instance is not null && instance.tabbingRibbonActive;
     
     public static Vector2 RealUISize

@@ -17,16 +17,7 @@ public class GameInstrument : MonoBehaviour
     {
         get
         {
-            if (_instRef == null)
-            {
-                var instrumentCandidates = Chart.Instruments.Where(item => item.InstrumentID == instrumentID).ToList();
-                if (instrumentCandidates.Count == 0)
-                {
-                    Debug.LogError($"Instrument {instrumentID} not found in instrument database.", gameObject);
-                    return null;
-                }
-                _instRef = instrumentCandidates.First();
-            }
+            if (_instRef is null) AssignInstrument(instrumentID);
             return _instRef;
         }
     }
@@ -47,6 +38,13 @@ public class GameInstrument : MonoBehaviour
 
     private void Start()
     {
+        if (_instRef is null) AssignInstrument(instrumentID);
+    }
+
+    public void AssignInstrument(HeaderType instrumentID)
+    {
+        this.instrumentID = instrumentID;
+        
         if (!Chart.IsInstrumentCreated(instrumentID, out var instrument))
         {
             Debug.LogError($"Instrument {instrumentID} not found in instrument database.", gameObject);
