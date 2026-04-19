@@ -1,0 +1,51 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public interface ITab
+{
+    void SwitchOff();
+}
+
+public abstract class BasicPenguinTab<T> : MonoBehaviour, IPointerDownHandler, ITab where T : ITab
+{
+    [SerializeField] private PenguinTabImages imageReference;
+    [SerializeField] private Image imageComponent;
+
+    private static readonly List<ITab> tabs = new();
+    private static ITab loadedTab;
+
+    private void Awake()
+    {
+        imageComponent ??= GetComponent<Image>();
+        tabs.Add(this);
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (imageComponent.sprite == imageReference.tabActiveImage) return;
+        
+        loadedTab?.SwitchOff();
+        OnSwitchOn();
+
+        imageComponent.sprite = imageReference.tabActiveImage;
+
+        loadedTab = this;
+    }
+
+    public void SwitchOff()
+    {
+        OnSwitchOff();
+        imageComponent.sprite = imageReference.tabInactiveImage;
+    }
+
+    protected abstract void OnSwitchOff();
+    protected abstract void OnSwitchOn();
+
+    private void OnDestroy()
+    {
+        tabs.Remove(this);
+    }
+}
