@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
     #region Data Setup
 
     protected override IMultiLaneController LaneController => Lanes;
-    private readonly Lanes<SectionData> Lanes;
+    private Lanes<SectionData> Lanes;
 
     public LaneSet<SectionData> GetLaneData() => Lanes.GetLane(0);
     public SelectionSet<SectionData> GetLaneSelection() => Lanes.GetLaneSelection(0);
@@ -59,14 +58,22 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
     
     #region Constructor
 
-    public SectionInstrument(List<KeyValuePair<int, string>> events)
+    private void InitializeReferences()
     {
         InstrumentName = InstrumentType.events;
         Difficulty = DifficultyType.easy;
-
         Lanes = new Lanes<SectionData>(1);
-        
+    }
+
+    public SectionInstrument(List<KeyValuePair<int, string>> events)
+    {
+        InitializeReferences();
         AddChartFormattedEventsToInstrument(events);
+    }
+
+    public SectionInstrument()
+    {
+        InitializeReferences();   
     }
     
     #endregion

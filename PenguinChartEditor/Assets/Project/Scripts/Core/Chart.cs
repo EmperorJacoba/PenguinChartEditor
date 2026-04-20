@@ -9,17 +9,14 @@ public class Chart : MonoBehaviour
 {
     public static Chart instance;
 
+    #region Instance Components
+    
     [SerializeField] private bool isDebug;
     [SerializeField] private HeaderType DebugLoadedInstrument = (HeaderType)(-1);
+    [SerializeField] private GameObject fileChangeDialog;
 
-    private void Start()
-    {
-        if (DebugLoadedInstrument != (HeaderType)(-1) && !TabSceneSpawningManager.IsTabbingActive())
-        {
-            SetLoadedInstrument(DebugLoadedInstrument);
-        }
-    }
-
+    #endregion
+    
     #region SceneDetails
     
     // Use this for scene-related generic calculations
@@ -41,34 +38,202 @@ public class Chart : MonoBehaviour
 
     #endregion
     
+    #region Instance Setup
+    
+    private void Start()
+    {
+        if (DebugLoadedInstrument != (HeaderType)(-1) && !TabSceneSpawningManager.IsTabbingActive())
+        {
+            SetLoadedInstrument(DebugLoadedInstrument);
+        }
+    }
+    
+    private void Awake()
+    {
+        // Only ever one chart game object active, prioritize first loaded
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(instance);
+
+        AudioManager.Initialize();
+
+        if (isDebug)
+        {
+            if (!InternalLoadFile())
+            {
+                Debug.Break();
+            }
+        }
+        
+        SetUpInputMap();
+    }
+
+    private InputMap inputMap;
+    private void SetUpInputMap()
+    {
+        inputMap = new InputMap();
+        inputMap.Enable();
+        inputMap.Charting.Copy.performed += _ => Clipboard.Copy();
+        inputMap.Charting.Paste.performed += _ => Clipboard.Paste();
+        inputMap.Charting.Cut.performed += _ => Clipboard.Cut();
+    }
+    
+    private void OnDestroy()
+    {
+        inputMap?.Disable();
+    }
+    
+    #endregion
+
     #region Chart Data
 
     public static Metadata Metadata { get; private set; } = new();
     public static List<IInstrument> Instruments { get; set; }
-
-    public static bool IsInstrumentCreated(HeaderType instrumentID)
+    public static IInstrument LoadedInstrument { get; set; }
+    
+    // These "instruments" are distinguished because they are not really instruments. They are important non-traditional instruments
+    // that are accessed frequently and outside of LoadedInstrument.
+    public static SyncTrackInstrument SyncTrackInstrument { get; private set; }
+    public static StarpowerInstrument StarpowerInstrument { get; private set; }
+    public static SectionInstrument SectionInstrument { get; private set; }
+    
+    public static ISustainableInstrument LoadedSustainableInstrument
     {
-        return Instruments.Any(x => x.InstrumentID == instrumentID);
+        get
+        {
+            if (LoadedInstrument is ISustainableInstrument sustainedInstrument) return sustainedInstrument;
+            else
+                throw new ArgumentException(
+                    "You are trying to access properties only applicable to sustainable instruments on an instrument " +
+                    "that has not been set up to support sustains. " +
+                    "Please fix the instrument or remove the reference to an ISustainableInstrument."
+                );
+        }
     }
+    public static T GetActiveInstrument<T>() where T : IInstrument => (T)LoadedInstrument;
+    
+    #endregion
+    
+    #region Chart Properties
+
+    /// <summary>
+    /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
+    /// </summary>
+    public static int Resolution
+    {
+        get
+        {
+            return _chartRes == -1 ? throw new ArgumentException("Uninitialized resolution.") : _chartRes;
+        }
+        set
+        {
+            if (value == 0) throw new ArgumentException("Resolution cannot be zero!");
+            _chartRes = value;
+            
+            // From .chart specifications (hopo cutoff). This is cached because this is frequently used.
+            _cachcut = (int)Math.Floor((65.0f / 192.0f) * _chartRes);
+        }
+    }
+    private static int _chartRes = -1;
+
+    public static int HopoCutoff
+    {
+        get
+        {
+            return _cachcut == -1 ? throw new ArgumentException("Uninitialized hopo cutoff.") : _cachcut;
+        }
+    }
+
+    private static int _cachcut = -1;
+
+    public static string FolderPath { get; private set; } = "";
+    public static string ChartPath
+    {
+        get
+        {
+            if (_chPath == null)
+            {
+                var name = Metadata.SongInfo[Metadata.MetadataType.name];
+                var artist = Metadata.SongInfo[Metadata.MetadataType.artist];
+                _chPath = FolderPath + $"\\{artist} - {name}.chart";
+            }
+            return _chPath;
+        }
+        private set
+        {
+            _chPath = value;
+        }
+    }
+    private static string _chPath;
+    
+    public static bool showPreviewers = true;
+    
+    #endregion
+
+    #region Instrument Queries/Changes
+    
+    public static void SetLoadedInstrument(InstrumentType instrumentName, DifficultyType difficulty)
+    {
+        SetLoadedInstrument(
+            InstrumentMetadata.GetHeader(instrumentName, difficulty)
+        );
+    }
+    
+    public static void SetLoadedInstrument(HeaderType instrumentID)
+    {
+        switch (instrumentID)
+        {
+            case HeaderType.SyncTrack:
+            {
+                LoadedInstrument = SyncTrackInstrument;
+                break;
+            }
+            case HeaderType.Starpower:
+            {
+                LoadedInstrument = StarpowerInstrument;
+                break;
+            }
+            case HeaderType.Events:
+            {
+                LoadedInstrument = SectionInstrument;
+                break;
+            }
+            default:
+            {
+                var foundInstruments = Instruments.Where(item => item.InstrumentID == instrumentID).ToList();
+                if (foundInstruments.Count > 0)
+                {
+                    LoadedInstrument = foundInstruments[0];
+                }
+                else LoadedInstrument = CreateNewInstrument(instrumentID);
+
+                break;
+            }
+        }
+    }
+
+    public static List<IInstrument> CompileAllInstruments()
+    {
+        var allInstruments = new List<IInstrument>()
+        {
+            SyncTrackInstrument,
+            SectionInstrument
+        };
+        allInstruments.AddRange(Instruments);
+        return allInstruments;
+    }
+    
+    public static bool IsInstrumentCreated(HeaderType instrumentID) => 
+        CompileAllInstruments().Any(x => x.InstrumentID == instrumentID);
 
     public static bool IsInstrumentCreated(HeaderType instrumentID, out IInstrument instrument)
     {
         instrument = null;
-
-        switch (instrumentID)
-        {
-            case HeaderType.SyncTrack:
-                instrument = SyncTrackInstrument;
-                return true;
-            case HeaderType.Starpower:
-                instrument = StarpowerInstrument;
-                return true;
-            case HeaderType.Events:
-                instrument = SectionInstrument;
-                return true;
-        }
-        
-        var result = Instruments.Where(x => x.InstrumentID == instrumentID);
+        var result = CompileAllInstruments().Where(x => x.InstrumentID == instrumentID);
 
         if (!result.Any()) return false;
         
@@ -76,7 +241,7 @@ public class Chart : MonoBehaviour
         return true;
     }
     
-    public static HashSet<InstrumentType> GetLoadedInstrumentTypes()
+    public static HashSet<InstrumentType> GetLoadedTraditionalInstrumentTypes()
     {
         HashSet<InstrumentType> outputSet = new();
         foreach (var entry in Instruments)
@@ -136,70 +301,87 @@ public class Chart : MonoBehaviour
         return outputSet;
     }
     
-    public static IInstrument LoadedInstrument { get; set; }
-
-    public static ISustainableInstrument LoadedSustainableInstrument
+    private static IInstrument CreateNewInstrument(HeaderType instrumentID)
     {
-        get
+        switch (InstrumentMetadata.GetInstrumentGroup(instrumentID))
         {
-            if (LoadedInstrument is ISustainableInstrument sustainedInstrument) return sustainedInstrument;
-            else
-                throw new ArgumentException(
-                    "You are trying to access properties only applicable to sustainable instruments on an instrument " +
-                    "that has not been set up to support sustains. " +
-                    "Please fix the instrument or remove the reference to an ISustainableInstrument."
-                    );
+            case InstrumentCategory.FiveFret:
+                return new FiveFretInstrument(instrumentID, new List<KeyValuePair<int, string>>());
+            case InstrumentCategory.FourLaneDrums:
+            case InstrumentCategory.EliteDrums:
+            case InstrumentCategory.GHL:
+            case InstrumentCategory.Vox:
+            default:
+                throw new ArgumentOutOfRangeException($"No support for creating instrument type {instrumentID}");
         }
     }
-    public static T GetActiveInstrument<T>() where T : IInstrument => (T)LoadedInstrument;
     
-    // These "instruments" are distinguished because they are not really instruments. They are important non-traditional instruments
-    // that are accessed frequently and outside of LoadedInstrument enough to be distinguished.
-    public static SyncTrackInstrument SyncTrackInstrument { get; private set; }
-    public static StarpowerInstrument StarpowerInstrument { get; private set; }
-    public static SectionInstrument SectionInstrument { get; private set; }
-
     #endregion
 
-    #region Modify Chart Data
+    #region Save/New/Delete
+    
+    public static void LoadFile() => instance.PromptDelete(() => InternalLoadFile());
+    public static void NewFile() => instance.PromptDelete(InternalNewFile);
+    public static void SaveFile() => instance.PromptDelete(InternalSaveFile);
+    public static void SaveFileAs() => instance.PromptDelete(InternalSaveFileAs);
+    
+    public bool saved = true;
 
-    public static void SaveFile()
+    private void PromptDelete(Action resultantAction)
     {
-        
-    }
-
-    public static void NewFile()
-    {
-        
-    }
-
-    public static void SaveFileAs()
-    {
-        
-    }
-
-    public static void ApplyFileInformation(
-        Metadata metadata,
-        List<IInstrument> traditionalInstruments,
-        SyncTrackInstrument syncTrack,
-        StarpowerInstrument starpower,
-        SectionInstrument sections
-        )
-    {
-        Metadata = metadata;
-        Instruments = traditionalInstruments;
-        SyncTrackInstrument = syncTrack;
-        StarpowerInstrument = starpower;
-        SectionInstrument = sections;
-
-        SyncTrackInstrument.SetUpInputMap();
-        StarpowerInstrument.SetUpInputMap();
-        SectionInstrument.SetUpInputMap();
-        
-        foreach (var instrument in Instruments)
+        if (isDebug)
         {
-            instrument.SetUpInputMap();
-        }   
+            saved = true;
+        }
+
+        if (saved) resultantAction();
+        
+        var dialog = Instantiate(fileChangeDialog, TabSceneSpawningManager.instance.canvas.transform).GetComponent<DataWipeDialog>();
+        dialog.Initialize(
+            "This action will delete all unsaved data. Save data before continuing?", 
+            () => {
+                SaveFile();
+                resultantAction();
+            },
+            resultantAction
+            );
+    }
+
+
+    private static void InternalSaveFile()
+    {
+        
+    }
+    
+    private static void InternalNewFile()
+    {
+        var pathCandidates = StandaloneFileBrowser.OpenFolderPanel(
+            "Open folder to create new chart file in.",
+            FolderPath,
+            false
+        );
+        
+        if (pathCandidates.Length < 1) return;
+
+        FolderPath = pathCandidates[0];
+
+        ChartLoading = true;
+        
+        ApplyFileInformation(new ChartFileInformation(
+            new Metadata(), 
+            new List<IInstrument>(), 
+            new SyncTrackInstrument(), 
+            new StarpowerInstrument(), 
+            new SectionInstrument())
+        );
+        
+        ChartLoading = false;
+        ChartFileLoaded?.Invoke();
+    }
+
+    private static void InternalSaveFileAs()
+    {
+        
     }
 
     public delegate void ChartFileLoadedDel();
@@ -207,8 +389,8 @@ public class Chart : MonoBehaviour
     public static event ChartFileLoadedDel ChartFileLoaded;
 
     public static bool ChartLoading { get; private set; }
-    
-    public static bool LoadFile()
+
+    public static bool InternalLoadFile()
     {
         var pathCandidates = 
             StandaloneFileBrowser.OpenFilePanel
@@ -231,7 +413,7 @@ public class Chart : MonoBehaviour
 
         ChartLoading = true;
 
-        ChartParser.ParseChart(ChartPath);
+        ApplyFileInformation(ChartParser.ParseChart(ChartPath));
 
         // also need to parse chart stems
         // find properly named files - add to stems
@@ -254,9 +436,27 @@ public class Chart : MonoBehaviour
 
         return true;
     }
+    
+    private static void ApplyFileInformation(
+        ChartFileInformation info
+    )
+    {
+        Metadata = info.metadata;
+        Instruments = info.traditionalInstruments;
+        SyncTrackInstrument = info.syncTrack;
+        StarpowerInstrument = info.starpower;
+        SectionInstrument = info.sections;
 
-    #endregion
-
+        SyncTrackInstrument.SetUpInputMap();
+        StarpowerInstrument.SetUpInputMap();
+        SectionInstrument.SetUpInputMap();
+        
+        foreach (var instrument in Instruments)
+        {
+            instrument.SetUpInputMap();
+        }   
+    }
+    
     // Currently written for .chart exclusively, rework for other formats later
     public static void ExportFile(string targetDirectory)
     {
@@ -279,19 +479,12 @@ public class Chart : MonoBehaviour
             );
         
         IniWriter.WriteIni(targetDirectory, Metadata);
-
-        var allInstruments = new List<IInstrument>()
-        {
-            SyncTrackInstrument,
-            SectionInstrument
-        };
-        allInstruments.AddRange(Instruments);
         
         ChartWriter.WriteChart(
             targetDirectory: targetDirectory,
             resolution: Resolution,
             metadata: Metadata,
-            instruments: allInstruments,
+            instruments: CompileAllInstruments(),
             includedTracks: exportSettingsManager.GetInstrumentTrackInclusionStatuses(),
             audioFormat: exportSettingsManager.GetExportAudioFormat()
             );
@@ -314,155 +507,10 @@ public class Chart : MonoBehaviour
             File.Copy(Metadata.CoverPath, $"{targetDirectory}/album.jpg");
         }
     }
-
-    #region Chart Properties
-
-    /// <summary>
-    /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
-    /// </summary>
-    public static int Resolution
-    {
-        get
-        {
-            return _chartRes == -1 ? throw new ArgumentException("Uninitialized resolution.") : _chartRes;
-        }
-        set
-        {
-            if (value == 0) throw new ArgumentException("Resolution cannot be zero!");
-            _chartRes = value;
-            // From .chart specifications (hopo cutoff). This is cached because this is frequently used.
-            _cachcut = (int)Math.Floor((65.0f / 192.0f) * _chartRes);
-        }
-    }
-    private static int _chartRes = -1;
-
-    public static int HopoCutoff
-    {
-        get
-        {
-            return _cachcut == -1 ? throw new ArgumentException("Uninitialized hopo cutoff.") : _cachcut;
-        }
-    }
-
-    private static int _cachcut = -1;
-
-    public static string FolderPath { get; private set; }
-    public static string ChartPath
-    {
-        get
-        {
-            if (_chPath == null)
-            {
-                var name = Metadata.SongInfo[Metadata.MetadataType.name];
-                var artist = Metadata.SongInfo[Metadata.MetadataType.artist];
-                _chPath = FolderPath + $"\\{artist} - {name}.chart";
-            }
-            return _chPath;
-        }
-        private set
-        {
-            _chPath = value;
-        }
-    }
-    private static string _chPath;
-
-    #endregion
-
-    public static bool showPreviewers = true;
-
-    private InputMap inputMap;
-
-    private void Awake()
-    {
-        // Only ever one chart game object active, prioritize first loaded
-        if (instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        instance = this;
-        DontDestroyOnLoad(instance);
-
-        AudioManager.Initialize();
-
-        if (isDebug)
-        {
-            if (!LoadFile())
-            {
-                Debug.Break();
-            }
-        }
-        
-        SetUpInputMap();
-    }
-
-    private void SetUpInputMap()
-    {
-        inputMap = new InputMap();
-        inputMap.Enable();
-        inputMap.Charting.Copy.performed += _ => Clipboard.Copy();
-        inputMap.Charting.Paste.performed += _ => Clipboard.Paste();
-        inputMap.Charting.Cut.performed += _ => Clipboard.Cut();
-    }
-
-    private void OnDestroy()
-    {
-        inputMap?.Disable();
-    }
-
-    public static void SetLoadedInstrument(InstrumentType instrumentName, DifficultyType difficulty)
-    {
-        var id = (int)instrumentName + (int)difficulty;
-        SetLoadedInstrument((HeaderType)id);
-    }
     
-    public static void SetLoadedInstrument(HeaderType instrumentID)
-    {
-        switch (instrumentID)
-        {
-            case HeaderType.SyncTrack:
-            {
-                LoadedInstrument = SyncTrackInstrument;
-                break;
-            }
-            case HeaderType.Starpower:
-            {
-                LoadedInstrument = StarpowerInstrument;
-                break;
-            }
-            case HeaderType.Events:
-            {
-                LoadedInstrument = SectionInstrument;
-                break;
-            }
-            default:
-            {
-                var foundInstruments = Instruments.Where(item => item.InstrumentID == instrumentID).ToList();
-                if (foundInstruments.Count > 0)
-                {
-                    LoadedInstrument = foundInstruments[0];
-                }
-                else LoadedInstrument = CreateNewInstrument(instrumentID);
-
-                break;
-            }
-        }
-    }
-
-    private static IInstrument CreateNewInstrument(HeaderType instrumentID)
-    {
-        switch (InstrumentMetadata.GetInstrumentGroup(instrumentID))
-        {
-            case InstrumentCategory.FiveFret:
-                return new FiveFretInstrument(instrumentID, new List<KeyValuePair<int, string>>());
-            case InstrumentCategory.FourLaneDrums:
-            case InstrumentCategory.EliteDrums:
-            case InstrumentCategory.GHL:
-            case InstrumentCategory.Vox:
-            default:
-                throw new ArgumentOutOfRangeException($"No support for creating instrument type {instrumentID}");
-        }
-    }
+    #endregion
+    
+    #region Refresh
 
     public delegate void InPlaceUpdatedDelegate();
     public static event InPlaceUpdatedDelegate InPlaceRefreshNeeded;
@@ -493,6 +541,8 @@ public class Chart : MonoBehaviour
         
         InPlaceRefreshNeeded?.Invoke(); // shortcut for all lanes to update
     }
+    
+    #endregion
     
     #region Scene edit permissions
 
@@ -537,4 +587,22 @@ public class Chart : MonoBehaviour
     }
     
     #endregion
+}
+
+public class ChartFileInformation
+{
+    public readonly Metadata metadata;
+    public readonly List<IInstrument> traditionalInstruments;
+    public readonly SyncTrackInstrument syncTrack;
+    public readonly StarpowerInstrument starpower;
+    public readonly SectionInstrument sections;
+
+    public ChartFileInformation(Metadata metadata, List<IInstrument> traditionalInstruments, SyncTrackInstrument syncTrack, StarpowerInstrument starpower, SectionInstrument sections)
+    {
+        this.metadata = metadata;
+        this.traditionalInstruments = traditionalInstruments;
+        this.syncTrack = syncTrack;
+        this.starpower = starpower;
+        this.sections = sections;
+    }
 }

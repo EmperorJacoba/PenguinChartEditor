@@ -139,12 +139,10 @@ public class SongTime : MonoBehaviour
     {
         if (float.IsNaN(scrollChange) || scrollChange == 0) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
 
-        double newTimeCandidate;
-
         // If it's a middle click, the delta value is wayyy too large so this is a solution FOR NOW
         var scrollSuppressant = 1;
         if (middleClick) scrollSuppressant = 50;
-        newTimeCandidate = SongPositionSeconds + scrollChange / (UserSettings.ScrollSensitivity * scrollSuppressant);
+        var newTimeCandidate = SongPositionSeconds + scrollChange / (UserSettings.ScrollSensitivity * scrollSuppressant);
 
         // Clamp position to within the length of the song
         if (newTimeCandidate < 0)

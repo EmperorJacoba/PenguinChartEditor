@@ -8,6 +8,7 @@ public class TabSceneSpawningManager : MonoBehaviour
     // Should be the ribbon border. 105 pixels tall as of writing this
     [SerializeField] private RectTransform widestRibbonElement;
     [SerializeField] private GraphicRaycaster ribbonRaycaster;
+    [SerializeField] public Canvas canvas;
     public static TabSceneSpawningManager instance;
 
     public static bool IsTabLayerHit()

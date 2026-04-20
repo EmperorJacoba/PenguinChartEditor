@@ -179,4 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf514a7f1a7a5e47a4c6ca2ec02a304, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isDebug: 0
+  DebugLoadedInstrument: -1
+  fileChangeDialog: {fileID: 1835147864841747714, guid: 13fee876285e9b1469de5a800a9bbd61, type: 3}
   sceneDetails: {fileID: 0}

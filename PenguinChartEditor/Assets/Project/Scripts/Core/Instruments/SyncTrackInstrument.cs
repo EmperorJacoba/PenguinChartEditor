@@ -42,14 +42,19 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
         set {}
     }
 
-    public SyncTrackInstrument(List<KeyValuePair<int, string>> fileData)
+    private void InitializeReferences()
     {
         InstrumentName = InstrumentType.synctrack;
         Difficulty = DifficultyType.easy;
-
         Lanes = new SyncTrackLanes();
+    }
 
+    public SyncTrackInstrument(List<KeyValuePair<int, string>> fileData)
+    {
+        InitializeReferences();
+        
         AddChartFormattedEventsToInstrument(fileData);
+        
         if (TempoEvents.Count == 0)
         {
             TempoEvents[0] = new BPMData(120, 0, false);
@@ -59,6 +64,14 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
         {
             TimeSignatureEvents[0] = new TSData(4, 4);
         }
+    }
+
+    public SyncTrackInstrument()
+    {
+        InitializeReferences();
+        
+        TempoEvents[0] = new BPMData(120, 0, false);
+        TimeSignatureEvents[0] = new TSData(4, 4);
     }
 
     public enum LaneOrientation

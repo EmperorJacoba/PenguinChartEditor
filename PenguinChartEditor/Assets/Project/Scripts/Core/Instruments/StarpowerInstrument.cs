@@ -39,6 +39,11 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         ParseRawStarpowerEvents(starpowerEvents);
     }
 
+    public StarpowerInstrument()
+    {
+        SetUpLanes();
+    }
+
     private void SetUpLanes()
     {
         List<int> headerTypeIDs = new();

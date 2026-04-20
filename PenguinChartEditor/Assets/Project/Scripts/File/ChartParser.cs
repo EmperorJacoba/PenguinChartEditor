@@ -33,7 +33,7 @@ public static class ChartParser
     private static ConcurrentBag<IInstrument> instruments = new();
 
     // note: chart resolution is set within FormatEventSections so that SyncTrack can use it via Chart.Resolution
-    public static void ParseChart(string filePath)
+    public static ChartFileInformation ParseChart(string filePath)
     {
         syncTrackInstrument = null;
         metadata = null;
@@ -46,7 +46,7 @@ public static class ChartParser
 
         var starpower = new StarpowerInstrument(rawStarpowerEvents.ToList());
 
-        Chart.ApplyFileInformation(
+        return new ChartFileInformation(
             metadata,
             instruments.ToList(),
             syncTrackInstrument,

@@ -87,7 +87,7 @@ public class StarpowerInstrumentChanger : MonoBehaviour
 
     private void SetDropdownOptions()
     {
-        activeOptionPositions = Chart.GetLoadedInstrumentTypes().OrderBy(x => x).ToList();
+        activeOptionPositions = Chart.GetLoadedTraditionalInstrumentTypes().OrderBy(x => x).ToList();
         instrumentDropdown.options = activeOptionPositions
             .Select(x => new TMP_Dropdown.OptionData(MiscTools.Capitalize(x.ToString()))).ToList();
     }
