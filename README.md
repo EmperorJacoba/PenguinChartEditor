@@ -84,7 +84,7 @@ Penguin Chart Editor is being developed with [Unity, version 6000.0.60f1.](https
 
 # Attributions
 
-This program uses [BASS](https://www.un4seen.com/bass.html) and [BASS.NET](https://www.radio42.com/bass/) for audio functionality. These pieces of software are proprietary. Penguin is licensed as freeware for both of these pieces of software.
+This program uses [BASS](https://www.un4seen.com/bass.html) for audio functionality, which is proprietary, licensed software. Penguin Chart Editor is licensed under freeware. Please obtain a license of your own if you are repackaging this code.
 
 Penguin also uses [UnityStandaloneFileBrowser](https://github.com/gkngkc/UnityStandaloneFileBrowser) for file selection.
 
