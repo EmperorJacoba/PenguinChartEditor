@@ -71,6 +71,8 @@ public interface IInstrument
     
     public GameInstrument ActiveGameInstrument { get; set; }
     public int MatchXCoordinateToLane(float xCoordinate);
+
+    public List<string> ExportDotPenguinData();
 }
 
 public interface ISustainableInstrument : IInstrument
@@ -531,6 +533,18 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         }
 
         return notes;
+    }
+
+    public List<string> ExportDotPenguinData()
+    {
+        List<string> data = new List<string>();
+        
+        data.Add($"{(int)InstrumentID}");
+        data.Add("{");
+        data.AddRange(LaneController.ToPenguinFormat());
+        data.Add("}");
+
+        return data;
     }
 
     public abstract IInstrument DuplicateToNewInstrument(HeaderType newInstrumentID);

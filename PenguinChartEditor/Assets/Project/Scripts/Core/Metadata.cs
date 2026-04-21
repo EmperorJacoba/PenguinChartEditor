@@ -148,6 +148,8 @@ public class Metadata
     private const string QUOTES_STRING = "\"";
     private const string YEAR_COMMA = ", ";
     private const float MS_TO_SECONDS_CONVERSION = 1000.0f;
+
+    public Metadata() {}
     
     public Metadata(SongDataGroup songEventGroup)
     {
@@ -199,25 +201,66 @@ public class Metadata
         }
     }
     
-    public List<string> SerializeToPenguin()
+    private static List<string> SerializeDictionary<TKey, TValue>(
+        string identifier,
+        Dictionary<TKey, TValue> dictionary, 
+        int level
+    )
+    {
+        var mainIndent = string.Concat(Enumerable.Repeat("\t", level + 1));
+        var curlyIndent = string.Concat(Enumerable.Repeat("\t", level));
+
+        List<string> output = new List<string>();
+        
+        output.Add($"{curlyIndent}{identifier}");
+        output.Add($"{curlyIndent}" + "{");
+
+        output.AddRange(dictionary.Select(element => $"{mainIndent}{element.Key} = {element.Value}"));
+        
+        output.Add($"{curlyIndent}" + "}");
+
+        return output;
+    }
+    
+    public List<string> ToPenguinFormat()
     {
         var list = new List<string>()
         {
+            "Meta",
+            "{",
+            $"\tResolution = {Chart.Resolution}",
             $"\tCoverPath = {CoverPath}",
             $"\tBackgroundPath = {BackgroundPath}",
             $"\tPreviewStartTime = {PreviewStartTime}"
         };
         
-        list.AddRange(PenguinSerializer.SerializeBasicDictionary("SongInfo", SongInfo, 1));
-        list.AddRange(PenguinSerializer.SerializeBasicDictionary("Diff", Difficulties, 1));
-        list.AddRange(PenguinSerializer.SerializeBasicDictionary("Completion", InstrumentCompletionStatuses, 1));
-        list.AddRange(PenguinSerializer.SerializeBasicDictionary("StemPaths", StemPaths, 1));
-
+        list.AddRange(SerializeDictionary("SongInfo", SongInfo, 1));
+        list.AddRange(SerializeDictionary("Diff", Difficulties, 1));
+        list.AddRange(SerializeDictionary("Completion", InstrumentCompletionStatuses, 1));
+        list.AddRange(SerializeDictionary("StemPaths", StemPaths, 1));
+        list.Add("}");
         return list;
     }
 
     public void DeserializeFromPenguin()
     {
         
+    }
+
+    public string GenerateFolderName()
+    {
+        var artist = Chart.Metadata.SongInfo[MetadataType.artist];
+        var name = Chart.Metadata.SongInfo[MetadataType.name];
+        var charter = Chart.Metadata.SongInfo[MetadataType.charter];
+
+        return MiscTools.CleanFileName($"{artist} - {name} ({charter})");
+    }
+
+    public string GeneratePenguinFileName()
+    {
+        var artist = Chart.Metadata.SongInfo[MetadataType.artist];
+        var name = Chart.Metadata.SongInfo[MetadataType.name];
+
+        return MiscTools.CleanFileName($"{artist} - {name}");
     }
 }

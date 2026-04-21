@@ -27,13 +27,8 @@ public class ExportButton : MonoBehaviour
         );
 
         if (paths.Length < 1) return;
-        
-        var artist = Chart.Metadata.SongInfo[Metadata.MetadataType.artist];
-        var name = Chart.Metadata.SongInfo[Metadata.MetadataType.name];
-        var charter = Chart.Metadata.SongInfo[Metadata.MetadataType.charter];
 
-        var fileName = MiscTools.CleanFileName($"{artist} - {name} ({charter}");
-        lastDirName = $"{paths[0]}/{fileName})";
+        lastDirName = $"{paths[0]}/{Chart.Metadata.GenerateFolderName()})";
 
         if (Directory.Exists(lastDirName))
         {

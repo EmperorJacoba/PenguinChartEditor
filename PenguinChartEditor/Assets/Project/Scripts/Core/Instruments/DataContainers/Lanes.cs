@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -58,6 +59,8 @@ public interface IMultiLaneController : IEnumerable<LanePairing>
 
     bool CreateEvent(int tick, int lane, IEventData data, out AddSingleDataPackage actionInfo);
     bool IsTickInLane(int tick, int lane);
+
+    List<string> ToPenguinFormat();
 }
 
 public struct LanePairing
@@ -786,6 +789,20 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
 
     public IEnumerator<LanePairing> GetEnumerator() => lanes.Select(lane => new LanePairing(lane.Key, lane.Value)).GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public List<string> ToPenguinFormat()
+    {
+        var outputList = new List<string>();
+        foreach (var lane in lanes)
+        {
+            outputList.Add($"\t{lane.Key}");
+            outputList.Add("\t{");
+            outputList.AddRange(lane.Value.ToPenguinFormat());
+            outputList.Add("\t}");
+        }
+
+        return outputList;
+    }
 }
 
 /// <remarks>Access TempoEvents with Lane = 0. Access TimeSignatureEvents with Lane = 1.</remarks>
@@ -819,8 +836,28 @@ public class SyncTrackLanes : IMultiLaneController
     public ILaneData GetLane(int lane) => lane == 0 ? TempoEvents : TimeSignatureEvents;
     public ISelection GetLaneSelection(int lane) => lane == 0 ? bpmSelection : tsSelection;
 
+    public List<KeyValuePair<int, ILaneData>> GetTotalLanes() => new List<KeyValuePair<int, ILaneData>>()
+    {
+        new KeyValuePair<int, ILaneData>(0, TempoEvents),
+        new KeyValuePair<int, ILaneData>(1, TimeSignatureEvents)
+    };
+
     public bool TryGetTick(int lane, int tick, out IEventData data) => GetLane(lane).TryGetValue(tick, out data);
     public bool IsTickInLane(int tick, int lane) => GetLane(lane).Contains(tick);
+    public List<string> ToPenguinFormat()
+    {
+        var outputList = new List<string>();
+        
+        foreach (var lane in GetTotalLanes())
+        {
+            outputList.Add($"\t{lane.Key}");
+            outputList.Add("\t{");
+            outputList.AddRange(lane.Value.ToPenguinFormat());
+            outputList.Add("\t}");
+        }
+
+        return outputList;
+    }
 
     public List<int> GetUniqueTickSet()
     {

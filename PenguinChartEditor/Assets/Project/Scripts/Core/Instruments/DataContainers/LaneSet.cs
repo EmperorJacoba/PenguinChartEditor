@@ -23,6 +23,8 @@ public interface ILaneData : IEnumerable<TickPairing>
     bool Remove(int tick);
 
     HashSet<int> protectedTicks { get; }
+
+    List<string> ToPenguinFormat();
 }
 
 public struct TickPairing
@@ -108,6 +110,15 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         protectedTicks = laneSet.protectedTicks;
     }
     
+    #endregion
+    
+    #region Export
+
+    public List<string> ToPenguinFormat()
+    {
+        return laneData.Select(kvp => $"\t\t{kvp.Key} = {kvp.Value.ToPenguinFormat()}").ToList();
+    }
+
     #endregion
     
     #region Add

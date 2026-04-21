@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public interface IEventData : IEquatable<IEventData>
 {
     string[] ToChartFormat(int lane);
+    string ToPenguinFormat();
 }
 
 public interface ISustainable
@@ -39,6 +40,24 @@ public struct BPMData : IEquatable<BPMData>, IEventData
 
     public string[] ToChartFormat(int lane) => new string[1] { $"{BPM_IDENTIFIER} {BPMChange * BPM_CONVERSION}" };
 
+    // While I'd love to have timestamps saved, I would probably have to calculate them again for validity anyway. 
+    // The possibility of the tempo map getting screwed up from an extra curious charter is too much for me to justify
+    // that, especially when calculating timestamps is so prevalent already.
+    public string ToPenguinFormat()
+    {
+        return Anchor ? $"{BPMChange} +" : $"{BPMChange}";
+    }
+
+    public BPMData(string penguinString)
+    {
+        var penguinParts = penguinString.Split(" ");
+        
+        BPMChange = float.Parse(penguinParts[0]);
+        Anchor = penguinParts.Length == 2 && penguinParts[1] == "+";
+        
+        Timestamp = -1;
+    }
+    
     public override int GetHashCode()
     {
         return HashCode.Combine(BPMChange, Timestamp, Anchor);
@@ -73,6 +92,20 @@ public struct TSData : IEquatable<TSData>, IEventData
 
         return new string[1] { $"{TS_IDENTIFIER} {Numerator}{denom}" }; // denom will contain leading space if needed
     }
+
+    public string ToPenguinFormat()
+    {
+        return $"{Numerator} {Denominator}";
+    }
+
+    public TSData(string penguinString)
+    {
+        var penguinParts = penguinString.Split(" ");
+
+        Numerator = int.Parse(penguinParts[0]);
+        Denominator = int.Parse(penguinParts[1]);
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Numerator, Denominator);
@@ -112,13 +145,26 @@ public struct FiveFretNoteData : IEventData, ISustainable, IEquatable<FiveFretNo
         Flag = flag;
         Default = defaultOrientation;
     }
-
-
+    
     public override string ToString() => $"(FFN: {Flag}, defaultOrientation = {Default}. {Sustain}T sustain)";
     public string[] ToChartFormat(int lane)
     {
         int laneIdentifier = FiveFretInstrument.MatchLaneOrientationToChartID((FiveFretInstrument.LaneOrientation)lane);
         return new[] { $"N {laneIdentifier} {Sustain}" };
+    }
+
+    public string ToPenguinFormat()
+    {
+        return Default ? $"{(int)Flag} {Sustain} +" : $"{(int)Flag} {Sustain}";
+    }
+
+    public FiveFretNoteData(string penguinString)
+    {
+        var penguinParts = penguinString.Split(" ");
+
+        Flag = (FlagType)int.Parse(penguinParts[0]);
+        Sustain = int.Parse(penguinParts[1]);
+        Default = penguinParts.Length == 3 && penguinParts[2] == "+";
     }
 
     public FiveFretNoteData ExportWithNewFlag(FlagType newFlag)
@@ -192,6 +238,11 @@ public struct FourLaneDrumNoteData : IEventData
         throw new NotImplementedException();
     }
 
+    public string ToPenguinFormat()
+    {
+        throw new NotImplementedException();
+    }
+
     public bool Equals(IEventData other)
     {
         throw new NotImplementedException();
@@ -214,6 +265,11 @@ public struct GHLNoteData : IEventData
         Flag = flag;
     }
     public string[] ToChartFormat(int lane)
+    {
+        throw new NotImplementedException();
+    }
+
+    public string ToPenguinFormat()
     {
         throw new NotImplementedException();
     }
@@ -252,6 +308,19 @@ public struct StarpowerEventData : IEventData, IEquatable<StarpowerEventData>, I
             $"S 64 {Sustain}" : 
             $"S 2 {Sustain}";
         return new string[1] { @event };
+    }
+
+    public string ToPenguinFormat()
+    {
+        return IsFill ? $"{Sustain} +" : $"{Sustain}";
+    }
+
+    public StarpowerEventData(string penguinString)
+    {
+        var penguinParts = penguinString.Split(" ");
+
+        Sustain = int.Parse(penguinParts[0]);
+        IsFill = penguinParts.Length == 2 && penguinParts[1] == "+";
     }
 
     ISustainable ISustainable.ExportWithNewSustain(int newSustain) => ExportWithNewSustain(newSustain);
@@ -334,6 +403,11 @@ public struct SectionData : IEventData, IEquatable<SectionData>
             $"E \"section {Name}\""
         };
     }
+
+    public string ToPenguinFormat()
+    {
+        return Name;
+    }
 }
 
 public struct SoloEventData : IEventData, IEquatable<SoloEventData>
@@ -403,6 +477,19 @@ public struct SoloEventData : IEventData, IEquatable<SoloEventData>
             $"{StartTick} = E solo",
             $"{EndTick} = E soloend"
         };
+    }
+
+    public string ToPenguinFormat()
+    {
+        return $"{StartTick} {EndTick}";
+    }
+
+    public SoloEventData(string penguinString)
+    {
+        var penguinParts = penguinString.Split(" ");
+
+        StartTick = int.Parse(penguinParts[0]);
+        _etick = int.Parse(penguinParts[1]);
     }
 }
 

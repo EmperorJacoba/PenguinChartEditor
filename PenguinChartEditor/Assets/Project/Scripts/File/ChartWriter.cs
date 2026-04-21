@@ -19,13 +19,6 @@ public static class ChartWriter
         AudioFormats audioFormat
         )
     {
-        var filePath = $"{targetDirectory}/notes.chart";
-        
-        if (File.Exists(filePath))
-        {
-            File.Delete(filePath);
-        }
-        
         List<string> dotChartLines = new();
         
         dotChartLines.AddRange(WriteSong(metadata, resolution, audioFormat));
@@ -37,6 +30,13 @@ public static class ChartWriter
             if (!includedTracks.Contains(instrument.InstrumentID)) continue;
             
             dotChartLines.AddRange(WriteInstrument(instrument));
+        }
+        
+        var filePath = $"{targetDirectory}/notes.chart";
+        
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
         }
         
         File.WriteAllLines(filePath, dotChartLines);

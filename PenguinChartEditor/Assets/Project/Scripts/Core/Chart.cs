@@ -70,6 +70,8 @@ public class Chart : MonoBehaviour
         }
         
         SetUpInputMap();
+        
+        InternalSaveFile();
     }
 
     private InputMap inputMap;
@@ -352,7 +354,7 @@ public class Chart : MonoBehaviour
 
     private static void InternalSaveFile()
     {
-        
+        PenguinWriter.WritePenguin(FolderPath, Metadata, CompileAllInstruments());
     }
     
     private static void InternalNewFile()
