@@ -120,6 +120,8 @@ public class Chart : MonoBehaviour
     
     #region Chart Properties
 
+    public static bool IsResolutionInitialized() => _chartRes != -1;
+
     /// <summary>
     /// Number of ticks per quarter note (VERY IMPORTANT FOR SONG RENDERING)
     /// </summary>
@@ -377,6 +379,8 @@ public class Chart : MonoBehaviour
         
         ChartLoading = false;
         ChartFileLoaded?.Invoke();
+        
+        SaveFile();
     }
 
     private static void InternalSaveFileAs()

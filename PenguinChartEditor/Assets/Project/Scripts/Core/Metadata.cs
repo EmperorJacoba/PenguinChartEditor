@@ -7,28 +7,9 @@ public class Metadata
 {
     public string CoverPath { get; set; } = "";
     public string BackgroundPath { get; set; } = "";
-
-    /// <summary>
-    /// Stores valid song metadata fields.
-    /// </summary>
-    public enum MetadataType
-    {
-        name,
-        artist,
-        album,
-        genre,
-        year,
-        charter,
-        icon,
-        loading_phrase,
-        album_track,
-        playlist_track,
-        video_start_time,
-    }
-
+    
     public delegate void PreviewStartTimeUpdatedDel();
     public PreviewStartTimeUpdatedDel PreviewStartTimeUpdated;
-
     public float PreviewStartTime
     {
         get => _pst;
@@ -47,6 +28,24 @@ public class Metadata
             _pst = value;
             PreviewStartTimeUpdated?.Invoke();
         }
+    }
+
+    /// <summary>
+    /// Stores valid song metadata fields.
+    /// </summary>
+    public enum MetadataType
+    {
+        name,
+        artist,
+        album,
+        genre,
+        year,
+        charter,
+        icon,
+        loading_phrase,
+        album_track,
+        playlist_track,
+        video_start_time,
     }
     
     private float _pst = 0;
@@ -146,4 +145,79 @@ public class Metadata
 
     private Dictionary<HeaderType, bool> _ics;
 
+    private const string QUOTES_STRING = "\"";
+    private const string YEAR_COMMA = ", ";
+    private const float MS_TO_SECONDS_CONVERSION = 1000.0f;
+    
+    public Metadata(SongDataGroup songEventGroup)
+    {
+        Debug.LogWarning("Reading metadata from .chart internal data. .chart metadata is less rich than .ini data, " +
+                         "and may not accurately reflect this song's information.");
+        
+        foreach (var kvp in songEventGroup.data)
+        {
+            if (!Enum.TryParse(typeof(MetadataType), kvp.Key, true, out var iniFormattedKey)) continue;
+            
+            var formattedValue = kvp.Value.Replace(QUOTES_STRING, "").Replace(YEAR_COMMA, "");
+            SongInfo.Add((MetadataType)iniFormattedKey, formattedValue);
+        }
+    }
+
+    private static readonly List<string> ignoredData = new List<string>()
+    {
+       "song_length"
+    };
+    
+    public Metadata(IniDataGroup iniDataGroup)
+    {
+        foreach (var kvp in iniDataGroup.data)
+        {
+            if (Enum.TryParse(typeof(MetadataType), kvp.Key, true, out var formattedKey))
+            {
+                SongInfo.Add((MetadataType)formattedKey, kvp.Value);
+            }
+            else if (Enum.TryParse(typeof(InstrumentDifficultyIdentifier), kvp.Key, true, out var formattedInstrumentDiff))
+            {
+                if (!int.TryParse(kvp.Value, out int instrumentDifficulty)) continue;
+                if (instrumentDifficulty < 0) continue;
+                
+                Difficulties.Add((InstrumentDifficultyIdentifier)formattedInstrumentDiff, instrumentDifficulty);
+            }
+            else if (kvp.Key.ToLower().Contains("preview_start_time"))
+            {
+                if (int.TryParse(kvp.Value, out var startTimeMs))
+                {
+                    PreviewStartTime = startTimeMs / MS_TO_SECONDS_CONVERSION;
+                }
+            }
+            else
+            {
+                if (ignoredData.Contains(kvp.Key)) continue;
+                
+                Debug.LogWarning($"Could not parse .ini key \"{kvp.Key}\"");
+            }
+        }
+    }
+    
+    public List<string> SerializeToPenguin()
+    {
+        var list = new List<string>()
+        {
+            $"\tCoverPath = {CoverPath}",
+            $"\tBackgroundPath = {BackgroundPath}",
+            $"\tPreviewStartTime = {PreviewStartTime}"
+        };
+        
+        list.AddRange(PenguinSerializer.SerializeBasicDictionary("SongInfo", SongInfo, 1));
+        list.AddRange(PenguinSerializer.SerializeBasicDictionary("Diff", Difficulties, 1));
+        list.AddRange(PenguinSerializer.SerializeBasicDictionary("Completion", InstrumentCompletionStatuses, 1));
+        list.AddRange(PenguinSerializer.SerializeBasicDictionary("StemPaths", StemPaths, 1));
+
+        return list;
+    }
+
+    public void DeserializeFromPenguin()
+    {
+        
+    }
 }

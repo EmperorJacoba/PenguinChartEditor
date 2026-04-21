@@ -42,7 +42,19 @@ public static class ChartParser
         string[] chartAsLines = File.ReadAllLines(filePath);
         var eventGroups = FormatEventSections(chartAsLines);
 
-        Parallel.ForEach(eventGroups, item => ProcessEventGroup(item));
+        if (!Chart.IsResolutionInitialized())
+        {
+            throw new ArgumentException(
+                "No resolution within chart file. Resolution is required to load a chart file.");
+        }
+
+        Parallel.ForEach(eventGroups, ProcessEventGroup);
+
+        if (syncTrackInstrument is null)
+        {
+            throw new ArgumentException("Chart file does not contain [SyncTrack]. " +
+                                        "Chart file must contain sync track data to be valid.");
+        }
 
         var starpower = new StarpowerInstrument(rawStarpowerEvents.ToList());
 
@@ -60,7 +72,7 @@ public static class ChartParser
         if (eventGroup == null) return;
         switch (eventGroup.InstrumentID)
         {
-            case HeaderType.SyncTrack: // required (needs exception handling)
+            case HeaderType.SyncTrack:
                 syncTrackInstrument = new SyncTrackInstrument(eventGroup.data);
                 break;
             case HeaderType.Events:
@@ -115,21 +127,33 @@ public static class ChartParser
     private static ConcurrentBag<ChartEventGroup> FormatEventSections(string[] chartAsLines)
     {
         // "[" begins a section header => begins a section of interest to parse (details are validated later)
-        List<int> sectionHeaderCandidates = Enumerable.Range(0, chartAsLines.Length).Where(i => chartAsLines[i].Contains("[")).ToList();
+        List<int> sectionHeaderCandidates = 
+            Enumerable.Range(0, chartAsLines.Length).
+                Where(
+                    i => chartAsLines[i].Contains("[")
+                    ).ToList();
 
         if (sectionHeaderCandidates.Count == 0)
             throw new ArgumentException("Invalid chart file. There are no event blocks within the file!");
-
-
-        // song data is processed seperately (string, string) vs (int, string) with all other sections
-        // get it done first to get resolution handled => essential for sync track and others
+        
+        // song data is processed separately (string, string) vs (int, string) with all other sections
         if (sectionHeaderCandidates.Contains(SONG_HEADER_LOCATION))
         {
             sectionHeaderCandidates.Remove(SONG_HEADER_LOCATION);
-
+            
             var songData = InitializeSongGroup(SONG_HEADER_LOCATION, chartAsLines);
             Chart.Resolution = GetChartResolution(songData);
-            metadata = ParseSongMetadata(songData);
+            
+            var iniPath = $"{Chart.FolderPath}/song.ini";
+            
+            if (File.Exists(iniPath))
+            {
+                metadata = new Metadata(InitializeIniGroup(iniPath));
+            }
+            else
+            {
+                metadata = new Metadata(songData);
+            }
         }
 
         ConcurrentBag<ChartEventGroup> identifiedSections = new();
@@ -156,7 +180,8 @@ public static class ChartParser
 
         ChartEventGroup identifiedSection = new(sectionHeader);
 
-        if (chartAsLines[lineIndex + 1] != "{") // line with { to mark beginning of section
+        // line with { marks beginning of section
+        if (chartAsLines[lineIndex + 1] != "{") 
             throw new ArgumentException($"{identifiedSection.InstrumentID} is not enclosed properly. {HELPFUL_REMINDER}");
 
         lineIndex += 2; // line with first bit of data
@@ -167,9 +192,7 @@ public static class ChartParser
         while (workingLine != "}" && lineIndex < chartAsLines.Length - 1)
         {
             if (!InstrumentMetadata.TryParseChartLine(workingLine, out var formattedKVP))
-            {
                 continue;
-            }
 
             if (TryGetStarpowerEvent(formattedKVP, identifiedSection.InstrumentID, out RawStarpowerEvent @event))
             {
@@ -188,7 +211,7 @@ public static class ChartParser
         return identifiedSection;
     }
 
-    private static RawStarpowerEvent defaultRawSPEvent = new((HeaderType)(-1), -1, "");
+    private static readonly RawStarpowerEvent defaultRawSPEvent = new((HeaderType)(-1), -1, "");
 
     private static bool TryGetStarpowerEvent(KeyValuePair<int, string> @event, HeaderType targetInstrument, out RawStarpowerEvent rawStarpowerEvent)
     {
@@ -215,7 +238,7 @@ public static class ChartParser
     /// </summary>
     /// <param name="iniPath">File path of the .ini file.</param>
     /// <returns>ChartEventGroup with data from .ini file.</returns>
-    private static SongDataGroup InitializeIniGroup(string iniPath)
+    private static IniDataGroup InitializeIniGroup(string iniPath)
     {
         var iniData = File.ReadAllLines(iniPath);
 
@@ -228,10 +251,8 @@ public static class ChartParser
             if (lineParts.Length > 1)
                 eventData.Add(new KeyValuePair<string, string>(lineParts[0].Trim(), lineParts[1].Trim()));
         }
-
-        SongDataGroup iniGroup = new(eventData);
-
-        return iniGroup;
+        
+        return new IniDataGroup(eventData);;
     }
 
     private static SongDataGroup InitializeSongGroup(int lineIndex, string[] chartAsLines)
@@ -260,57 +281,6 @@ public static class ChartParser
     #endregion
 
     #region Metadata
-    
-    private static Metadata ParseSongMetadata(SongDataGroup songEventGroup)
-    {
-        Metadata metadata = new();
-        if (File.Exists($"{Chart.FolderPath}/song.ini")) // read from ini if exists (most reliable scenario)
-        {
-            var iniEventGroup = InitializeIniGroup($"{Chart.FolderPath}/song.ini");
-
-            foreach (var kvp in iniEventGroup.data)
-            {
-                if (Enum.TryParse(typeof(Metadata.MetadataType), kvp.Key, true, out var formattedKey))
-                {
-                    metadata.SongInfo.Add((Metadata.MetadataType)formattedKey, kvp.Value);
-                }
-                else if (Enum.TryParse(typeof(Metadata.InstrumentDifficultyIdentifier), kvp.Key, true, out var formattedInstrumentDiff))
-                {
-                    if (int.TryParse(kvp.Value, out int instrumentDifficulty))
-                    {
-                        if (instrumentDifficulty < 0) continue;
-                        metadata.Difficulties.Add((Metadata.InstrumentDifficultyIdentifier)formattedInstrumentDiff, instrumentDifficulty);
-                    }
-                }
-                else if (kvp.Key.ToLower().Contains("preview_start_time"))
-                {
-                    if (int.TryParse(kvp.Value, out var startTimeMs))
-                    {
-                        metadata.PreviewStartTime = startTimeMs / 1000.0f;
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"Could not parse .ini key \"{kvp.Key}\"");
-                }
-            }
-        }
-        else // read what we can from embedded .chart data
-        {
-            // log warning about ini being more efficient?
-
-            foreach (var kvp in songEventGroup.data)
-            {
-                if (Enum.TryParse(typeof(Metadata.MetadataType), kvp.Key, true, out var iniFormattedKey))
-                {
-                    var formattedValue = kvp.Value.Replace(QUOTES_STRING, "").Replace(YEAR_COMMA, "");
-                    metadata.SongInfo.Add((Metadata.MetadataType)iniFormattedKey, formattedValue);
-                }
-            }
-        }
-
-        return metadata;
-    }
 
     private static int GetChartResolution(SongDataGroup songEventGroup)
     {
@@ -345,9 +315,7 @@ public static class ChartParser
                 // parse vox
                 break;
         }
-        //Chart.Log("Skipped instrument group");
         return null;
-        // throw new ArgumentException("Tried to parse an unsupported instrument group.");
     }
 
     #endregion
@@ -370,11 +338,21 @@ public class ChartEventGroup
 }
 
 // ChartEventGroup but formatted for .ini and [Song] sections 
-internal class SongDataGroup
+public class SongDataGroup
 {
     public List<KeyValuePair<string, string>> data;
 
     public SongDataGroup(List<KeyValuePair<string, string>> data)
+    {
+        this.data = data;
+    }
+}
+
+public class IniDataGroup
+{
+    public List<KeyValuePair<string, string>> data;
+
+    public IniDataGroup(List<KeyValuePair<string, string>> data)
     {
         this.data = data;
     }
