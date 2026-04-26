@@ -795,6 +795,8 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
         var outputList = new List<string>();
         foreach (var lane in lanes)
         {
+            if (lane.Value.Count == 0) continue;
+            
             outputList.Add($"\t{lane.Key}");
             outputList.Add("\t{");
             outputList.AddRange(lane.Value.ToPenguinFormat());

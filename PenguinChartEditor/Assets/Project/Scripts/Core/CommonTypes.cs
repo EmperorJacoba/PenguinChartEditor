@@ -85,6 +85,9 @@ public enum LocalEventIdentifier
 /// </summary>
 public enum HeaderType
 {
+    [InstrumentInformation("PenguinDebug")]
+    Penguin = -1,
+    
     [InstrumentInformation("Metadata")]
     Song = 0,
 

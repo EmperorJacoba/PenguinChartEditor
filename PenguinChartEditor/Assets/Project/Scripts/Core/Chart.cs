@@ -354,7 +354,9 @@ public class Chart : MonoBehaviour
 
     private static void InternalSaveFile()
     {
+        var initTime = Time.realtimeSinceStartup;
         PenguinWriter.WritePenguin(FolderPath, Metadata, CompileAllInstruments());
+        print(Time.realtimeSinceStartup - initTime);
     }
     
     private static void InternalNewFile()
@@ -416,7 +418,7 @@ public class Chart : MonoBehaviour
         
         ChartPath = pathCandidates[0];
         FolderPath = Path.GetDirectoryName(ChartPath);
-
+        
         ChartLoading = true;
 
         ApplyFileInformation(ChartParser.ParseChart(ChartPath));
@@ -597,11 +599,11 @@ public class Chart : MonoBehaviour
 
 public class ChartFileInformation
 {
-    public readonly Metadata metadata;
-    public readonly List<IInstrument> traditionalInstruments;
-    public readonly SyncTrackInstrument syncTrack;
-    public readonly StarpowerInstrument starpower;
-    public readonly SectionInstrument sections;
+    public Metadata metadata;
+    public List<IInstrument> traditionalInstruments;
+    public SyncTrackInstrument syncTrack;
+    public StarpowerInstrument starpower;
+    public SectionInstrument sections;
 
     public ChartFileInformation(Metadata metadata, List<IInstrument> traditionalInstruments, SyncTrackInstrument syncTrack, StarpowerInstrument starpower, SectionInstrument sections)
     {
@@ -611,4 +613,6 @@ public class ChartFileInformation
         this.starpower = starpower;
         this.sections = sections;
     }
+    
+    public ChartFileInformation() {}
 }

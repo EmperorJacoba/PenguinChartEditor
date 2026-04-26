@@ -14,7 +14,7 @@ public static class PenguinWriter
     {
         List<string> dotPenguinLines = new List<string>();
         
-        dotPenguinLines.Add("Penguin");
+        dotPenguinLines.Add($"{HeaderType.Penguin}");
         dotPenguinLines.Add("{");
         dotPenguinLines.Add($"\t{Application.version}");
         dotPenguinLines.Add($"\t{DateTime.UtcNow} UTC-0");
@@ -25,14 +25,16 @@ public static class PenguinWriter
         {
             dotPenguinLines.AddRange(instrument.ExportDotPenguinData());
         }
-
+        
         var filePath = $"{targetDirectory}/{metadata.GeneratePenguinFileName()}.penguin";
+        filePath = @"\\?\" + filePath;
         
         if (File.Exists(filePath))
         {
             File.Delete(filePath);
         }
         
+        Debug.Log(filePath);
         File.WriteAllLines(filePath, dotPenguinLines);
     }
 }

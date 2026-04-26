@@ -165,6 +165,95 @@ public class Metadata
         }
     }
 
+    private const string RESOLUTION_IDENTIFIER = "Resolution";
+    private const string PREVIEW_START_TIME_IDENTIFIER = "PreviewStartTime";
+    private const string BACKGROUND_PATH_IDENTIFIER = "BackgroundPath";
+    private const string COVER_PATH_IDENTIFIER = "CoverPath";
+    
+    private const int BASE_ID = 0;
+    private const int SONG_ID = 1;
+    private const int DIFF_ID = 2;
+    private const int COMPLETION_ID = 3;
+    private const int PATHS_ID = 4;
+
+    public Metadata(List<PenguinEventSection> penguinFormattedEvents)
+    {
+        foreach (var section in penguinFormattedEvents)
+        {
+            switch (section.id)
+            {
+                case BASE_ID:
+                {
+                    ParseBasicGroup(section);
+                    break;
+                }
+                case SONG_ID:
+                {
+                    SongInfo = DeserializeDictionary<MetadataType, string>(section.lines);
+                    break;
+                }
+                case DIFF_ID:
+                {
+                    Difficulties = DeserializeDictionary<InstrumentDifficultyIdentifier, int>(section.lines);
+                    break;
+                }
+                case COMPLETION_ID:
+                {
+                    InstrumentCompletionStatuses = DeserializeDictionary<HeaderType, bool>(section.lines);
+                    break;
+                }
+                case PATHS_ID:
+                {
+                    StemPaths = DeserializeDictionary<StemType, string>(section.lines);
+                    break;
+                }
+                default:
+                {
+                    Debug.LogWarning($"Skipping unknown identifier {section.id}");
+                    break;
+                }
+            }
+        }
+    }
+
+    private void ParseBasicGroup(PenguinEventSection section)
+    {
+        var parts = section.lines.Select(line => line.Trim().Split(" = "));
+
+        foreach (var line in parts)
+        {
+            var val = line[1];
+            switch (line[0])
+            {
+                case RESOLUTION_IDENTIFIER:
+                {
+                    Chart.Resolution = int.Parse(val);
+                    break;
+                }
+                case PREVIEW_START_TIME_IDENTIFIER:
+                {
+                    PreviewStartTime = float.Parse(val);
+                    break;
+                }
+                case COVER_PATH_IDENTIFIER:
+                {
+                    CoverPath = val;
+                    break;
+                }
+                case BACKGROUND_PATH_IDENTIFIER:
+                {
+                    BackgroundPath = val;
+                    break;
+                }
+                default:
+                {
+                    Debug.LogWarning($"Skipped unrecognized identifier {line[0]}");
+                    break;
+                }
+            }
+        }
+    }
+
     private static readonly List<string> ignoredData = new List<string>()
     {
        "song_length"
@@ -202,10 +291,10 @@ public class Metadata
     }
     
     private static List<string> SerializeDictionary<TKey, TValue>(
-        string identifier,
+        int identifier,
         Dictionary<TKey, TValue> dictionary, 
         int level
-    )
+    ) where TKey : Enum
     {
         var mainIndent = string.Concat(Enumerable.Repeat("\t", level + 1));
         var curlyIndent = string.Concat(Enumerable.Repeat("\t", level));
@@ -214,39 +303,61 @@ public class Metadata
         
         output.Add($"{curlyIndent}{identifier}");
         output.Add($"{curlyIndent}" + "{");
-
-        output.AddRange(dictionary.Select(element => $"{mainIndent}{element.Key} = {element.Value}"));
+        
+        output.AddRange(dictionary.Select(element => $"{mainIndent}{Convert.ToInt32(element.Key)} = {element.Value}"));
         
         output.Add($"{curlyIndent}" + "}");
 
         return output;
     }
+
+    private static Dictionary<TKey, TValue> DeserializeDictionary<TKey, TValue>(string[] lines)
+    {
+        return
+            lines.Select(
+                line => line.Trim().Split(" = ")
+                ).ToDictionary(
+                parts => 
+                    (TKey)Convert.ChangeType(parts[0], typeof(TKey)), 
+                parts => 
+                    (TValue)Convert.ChangeType(parts[1], typeof(TValue)
+                    )
+                    );
+    }
     
     public List<string> ToPenguinFormat()
     {
-        var list = new List<string>()
+        var list = new List<string>
         {
-            "Meta",
+            $"{(int)HeaderType.Song}",
             "{",
-            $"\tResolution = {Chart.Resolution}",
-            $"\tCoverPath = {CoverPath}",
-            $"\tBackgroundPath = {BackgroundPath}",
-            $"\tPreviewStartTime = {PreviewStartTime}"
         };
         
-        list.AddRange(SerializeDictionary("SongInfo", SongInfo, 1));
-        list.AddRange(SerializeDictionary("Diff", Difficulties, 1));
-        list.AddRange(SerializeDictionary("Completion", InstrumentCompletionStatuses, 1));
-        list.AddRange(SerializeDictionary("StemPaths", StemPaths, 1));
+        list.Add($"\t{BASE_ID}");
+        list.Add("\t{");
+        list.Add($"\t\t{RESOLUTION_IDENTIFIER} = {Chart.Resolution}");
+        list.Add($"\t\t{PREVIEW_START_TIME_IDENTIFIER} = {PreviewStartTime}");
+        
+        if (CoverPath != "")
+        {
+            list.Add($"\t\t{COVER_PATH_IDENTIFIER} = {CoverPath}");
+        }
+
+        if (BackgroundPath != "")
+        {
+            list.Add($"\t\t{BACKGROUND_PATH_IDENTIFIER} = {BackgroundPath}");
+        }
+        
+        list.Add("\t}");
+        
+        list.AddRange(SerializeDictionary(SONG_ID, SongInfo, 1));
+        list.AddRange(SerializeDictionary(DIFF_ID, Difficulties, 1));
+        list.AddRange(SerializeDictionary(COMPLETION_ID, InstrumentCompletionStatuses, 1));
+        list.AddRange(SerializeDictionary(PATHS_ID, StemPaths, 1));
         list.Add("}");
         return list;
     }
-
-    public void DeserializeFromPenguin()
-    {
-        
-    }
-
+    
     public string GenerateFolderName()
     {
         var artist = Chart.Metadata.SongInfo[MetadataType.artist];
