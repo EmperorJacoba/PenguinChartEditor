@@ -149,8 +149,20 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     
     public InstrumentType InstrumentName { get; set; }
     public DifficultyType Difficulty { get; set; }
-    public HeaderType InstrumentID => (HeaderType)((int)InstrumentName + (int)Difficulty);
-    
+    public HeaderType InstrumentID
+    {
+        get
+        {
+            return (HeaderType)((int)InstrumentName + (int)Difficulty);
+        }
+        set
+        {
+            InstrumentName = InstrumentMetadata.GetInstrumentType(value);
+            Difficulty = InstrumentMetadata.GetDifficulty(value);
+            Debug.Log($"{InstrumentID}");
+        }
+    }
+
     #endregion
 
     #region Undo/Redo
@@ -541,9 +553,16 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         
         data.Add($"{(int)InstrumentID}");
         data.Add("{");
+        if (SoloData is not null && SoloData.SoloEvents.Count > 0)
+        {
+            data.Add($"\t{IInstrument.SOLO_DATA_LANE_ID}");
+            data.Add("\t{");
+            data.AddRange(SoloData.SoloEvents.ToPenguinFormat());
+            data.Add("\t}");
+        }
         data.AddRange(LaneController.ToPenguinFormat());
         data.Add("}");
-
+        
         return data;
     }
 

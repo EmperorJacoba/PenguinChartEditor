@@ -225,6 +225,7 @@ public class Chart : MonoBehaviour
         var allInstruments = new List<IInstrument>()
         {
             SyncTrackInstrument,
+            StarpowerInstrument,
             SectionInstrument
         };
         allInstruments.AddRange(Instruments);

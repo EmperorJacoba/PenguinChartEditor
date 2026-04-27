@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor;
+using System.Threading.Tasks;
+using UnityEngine;
 
 public static class PenguinParser
 {
@@ -21,13 +22,39 @@ public static class PenguinParser
         }
 
         fileData.metadata = new Metadata(sectionsLevel1[(int)HeaderType.Song]);
-        
-        
-        return null;
-        // make metadata, then make an IInstrument out of each of the others in parallel
+
+        ConcurrentBag<IInstrument> parsedInstruments = new();
+        Parallel.ForEach
+        (
+            sectionsLevel1, 
+            x =>
+            {
+                var instrument = CreateInstrument(x.Key, x.Value);
+                if (instrument is null) return;
+                
+                switch (instrument.InstrumentID)
+                {
+                    case HeaderType.SyncTrack:
+                        fileData.syncTrack = (SyncTrackInstrument)instrument;
+                        return;
+                    case HeaderType.Events:
+                        fileData.sections = (SectionInstrument)instrument;
+                        return;
+                    case HeaderType.Starpower:
+                        fileData.starpower = (StarpowerInstrument)instrument;
+                        return;
+                }
+
+                parsedInstruments.Add(instrument);
+            }
+        );
+
+        fileData.traditionalInstruments = parsedInstruments.ToList();
+
+        return fileData;
     }
 
-    public static List<PenguinEventSection> FormatEventSections(string[] penguinLines, int indent = 0)
+    private static List<PenguinEventSection> FormatEventSections(string[] penguinLines, int indent = 0)
     {
         var curlyIndent = string.Concat(Enumerable.Repeat("\t", indent));
         var checkString = curlyIndent + "{";
@@ -72,6 +99,30 @@ public static class PenguinParser
         }
 
         return sections;
+    }
+
+    private static IInstrument CreateInstrument(int id, List<PenguinEventSection> lanes)
+    {
+        var instrumentID = (HeaderType)id;
+
+        switch (instrumentID)
+        {
+            case HeaderType.SyncTrack:
+                return new SyncTrackInstrument(lanes);
+            case HeaderType.Starpower:
+                return new StarpowerInstrument(lanes);
+            case HeaderType.Events:
+                return new SectionInstrument(lanes);
+            default:
+                switch (InstrumentMetadata.GetInstrumentGroup(instrumentID))
+                {
+                    case InstrumentCategory.FiveFret:
+                        return new FiveFretInstrument(instrumentID, lanes);
+                    default:
+                        Debug.LogWarning($"No parsing logic for instrument {instrumentID}");
+                        return null;
+                }
+        }
     }
 }
 

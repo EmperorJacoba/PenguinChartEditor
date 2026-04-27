@@ -13,6 +13,27 @@ public interface ISustainable
     ISustainable ExportWithNewSustain(int newSustain);
 }
 
+public static class EventDataFactory
+{
+    private static readonly Dictionary<Type, Func<string, IEventData>> creationMatch = new()
+    {
+        [typeof(BPMData)] = data => new BPMData(data),
+        [typeof(TSData)] = data => new TSData(data),
+        [typeof(FiveFretNoteData)] = data => new FiveFretNoteData(data),
+        [typeof(SectionData)] = data => new SectionData(data),
+        [typeof(StarpowerEventData)] = data => new StarpowerEventData(data),
+        [typeof(SoloEventData)] = data => new SoloEventData(data)
+    };
+    
+    public static T ConvertToEventData<T>(string penguinStringData) where T : IEventData
+    {
+        if (!creationMatch.ContainsKey(typeof(T)))
+            throw new ArgumentException($"No support added for parsing penguin data for {typeof(T)}");
+
+        return (T)creationMatch[typeof(T)](penguinStringData);
+    }
+}
+
 public struct BPMData : IEquatable<BPMData>, IEventData
 {
     public const int BPM_CONVERSION = 1000;

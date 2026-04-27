@@ -362,6 +362,7 @@ public static class InstrumentMetadata
 
     public static DifficultyType GetDifficulty(HeaderType instrumentID)
     {
+        if ((int)instrumentID < 10) return DifficultyType.easy;
         return ((int)instrumentID % 10) switch
         {
             0 => DifficultyType.easy,
@@ -391,6 +392,8 @@ public static class InstrumentMetadata
         return ((int)instrumentID) switch
         {
             1 => InstrumentType.synctrack,
+            2 => InstrumentType.events,
+            3 => InstrumentType.starpower,
             < 20 => InstrumentType.guitar,
             < 30 => InstrumentType.coopGuitar,
             < 40 => InstrumentType.bass,

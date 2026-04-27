@@ -25,6 +25,13 @@ public class SoloDataSet
         SelectedEndEvents = new SelectionSet<SoloEventData>(SoloEvents);
     }
 
+    public SoloDataSet(LaneSet<SoloEventData> events)
+    {
+        SoloEvents = events;
+        SelectedStartEvents = new SelectionSet<SoloEventData>(SoloEvents);
+        SelectedEndEvents = new SelectionSet<SoloEventData>(SoloEvents);
+    }
+
     public void DeleteSelection()
     {
         SelectedStartEvents.PopSelectedTicksFromLane();

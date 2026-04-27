@@ -87,17 +87,9 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
     #endregion
 
     #region Constructor
-
-    public FiveFretInstrument(HeaderType instrumentID, List<KeyValuePair<int, string>> instrumentInfo)
+    
+    private void SetUpUpdateListener()
     {
-        Lanes = new Lanes<FiveFretNoteData>(6);
-        sustainer = new SustainHelper<FiveFretNoteData>(this, Lanes, true);
-
-        InstrumentName = InstrumentMetadata.GetInstrumentType(instrumentID);
-        Difficulty = InstrumentMetadata.GetDifficulty(instrumentID);
-
-        AddChartFormattedEventsToInstrument(instrumentInfo);
-
         foreach (var lane in Lanes.LaneKeys)
         {
             // add Lanes update needed
@@ -111,25 +103,38 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
         }
     }
 
+    public FiveFretInstrument(HeaderType instrumentID, List<KeyValuePair<int, string>> instrumentInfo)
+    {
+        Lanes = new Lanes<FiveFretNoteData>(6);
+        sustainer = new SustainHelper<FiveFretNoteData>(this, Lanes, true);
+
+        InstrumentID = instrumentID;
+
+        AddChartFormattedEventsToInstrument(instrumentInfo);
+
+        SetUpUpdateListener();
+    }
+    
     private FiveFretInstrument(HeaderType instrumentID, FiveFretInstrument originationInstrument)
     {
         Lanes = new Lanes<FiveFretNoteData>(originationInstrument.Lanes);
         sustainer = new SustainHelper<FiveFretNoteData>(this, Lanes, true);
         
-        InstrumentName = InstrumentMetadata.GetInstrumentType(instrumentID);
-        Difficulty = InstrumentMetadata.GetDifficulty(instrumentID);
+        InstrumentID = instrumentID;
+
+        SetUpUpdateListener();
+    }
+
+    public FiveFretInstrument(HeaderType instrumentID, List<PenguinEventSection> lanes)
+    {
+        Lanes = new Lanes<FiveFretNoteData>(lanes, out var soloLane);
+        sustainer = new SustainHelper<FiveFretNoteData>(this, Lanes, true);
         
-        foreach (var lane in Lanes.LaneKeys)
-        {
-            // add Lanes update needed
-            // change to generic validateblic
-            Lanes.GetLane(lane).UpdatesNeededInRange += (startTick, endTick) =>
-            {
-                if (startTick == endTick) CheckForHopos(startTick);
-                else CheckForHoposInRange(startTick, endTick);
-            };
-            Lanes.UpdatesNeededInRange += CheckForHoposInRange;
-        }
+        SoloData = new SoloDataSet(soloLane);
+        
+        InstrumentID = instrumentID;
+        
+        SetUpUpdateListener();
     }
 
     #endregion

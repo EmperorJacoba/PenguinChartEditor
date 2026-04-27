@@ -109,6 +109,25 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         laneData = new SortedDictionary<int, TValue>(laneSet.laneData);
         protectedTicks = laneSet.protectedTicks;
     }
+
+    public LaneSet(int laneID, string[] lines, HashSet<int> protectedTicks = null)
+    {
+        this.laneID = laneID;
+        
+        if (protectedTicks is not null)
+        {
+            this.protectedTicks = protectedTicks;
+        }
+        
+        laneData = 
+            new SortedDictionary<int, TValue>(
+                lines.Select(x => x.Split(" = ", 1)).
+                    ToDictionary(
+                        x => int.Parse(x[0]), 
+                        x => EventDataFactory.ConvertToEventData<TValue>(x[1])
+                    )
+                );
+    }
     
     #endregion
     

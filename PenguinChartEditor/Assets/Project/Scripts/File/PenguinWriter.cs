@@ -14,7 +14,7 @@ public static class PenguinWriter
     {
         List<string> dotPenguinLines = new List<string>();
         
-        dotPenguinLines.Add($"{HeaderType.Penguin}");
+        dotPenguinLines.Add($"{(int)HeaderType.Penguin}");
         dotPenguinLines.Add("{");
         dotPenguinLines.Add($"\t{Application.version}");
         dotPenguinLines.Add($"\t{DateTime.UtcNow} UTC-0");

@@ -137,6 +137,59 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
             selections[id] = new SelectionSet<T>(lanes[id]);
         }
     }
+
+    public Lanes(List<PenguinEventSection> sections)
+    {
+        lanes = new Dictionary<int, LaneSet<T>>(sections.Count);
+        selections = new Dictionary<int, SelectionSet<T>>(sections.Count);
+        
+        foreach (var section in sections)
+        {
+            lanes[section.id] = new LaneSet<T>(section.id, section.lines);
+            selections[section.id] = new SelectionSet<T>(lanes[section.id]);
+        }
+    }
+    
+    public Lanes(List<PenguinEventSection> sections, out LaneSet<SoloEventData> soloData)
+    {
+        soloData = null;
+        
+        lanes = new Dictionary<int, LaneSet<T>>(sections.Count);
+        selections = new Dictionary<int, SelectionSet<T>>(sections.Count);
+        
+        foreach (var section in sections)
+        {
+            if (section.id == IInstrument.SOLO_DATA_LANE_ID)
+            {
+                soloData = new LaneSet<SoloEventData>(section.id, section.lines);
+                continue;
+            }
+            
+            lanes[section.id] = new LaneSet<T>(section.id, section.lines);
+            selections[section.id] = new SelectionSet<T>(lanes[section.id]);
+        }
+    }
+
+    public Lanes(List<PenguinEventSection> sections, List<int> laneIDs)
+    {
+        lanes = new Dictionary<int, LaneSet<T>>(sections.Count);
+        selections = new Dictionary<int, SelectionSet<T>>(sections.Count);
+        
+        foreach (var section in sections)
+        {
+            lanes[section.id] = new LaneSet<T>(section.id, section.lines);
+            selections[section.id] = new SelectionSet<T>(lanes[section.id]);
+        }
+
+        foreach (var laneID in laneIDs)
+        {
+            if (!lanes.ContainsKey(laneID))
+            {
+                lanes[laneID] = new LaneSet<T>(laneID);
+                selections[laneID] = new SelectionSet<T>(lanes[laneID]);
+            }
+        }
+    }
     
     public Lanes(Lanes<T> duplicationLanes)
     {
@@ -835,13 +888,35 @@ public class SyncTrackLanes : IMultiLaneController
         tsSelection = new SelectionSet<TSData>(TimeSignatureEvents);
     }
     
+    public SyncTrackLanes(List<PenguinEventSection> sections)
+    {
+        foreach (var section in sections)
+        {
+            switch (section.id)
+            {
+                case (int)SyncTrackInstrument.LaneOrientation.bpm:
+                    TempoEvents = new LaneSet<BPMData>(section.id, section.lines, new HashSet<int> {0});
+                    continue;
+                case (int)SyncTrackInstrument.LaneOrientation.timeSignature:
+                    TimeSignatureEvents = new LaneSet<TSData>(section.id, section.lines, new HashSet<int> {0});
+                    continue;
+                default:
+                    Debug.LogWarning($"Skipped parsing lane {section.id} in SyncTrackLanes. Unknown identifier.");
+                    break;
+            }
+        }
+        
+        bpmSelection = new SelectionSet<BPMData>(TempoEvents);
+        tsSelection = new SelectionSet<TSData>(TimeSignatureEvents);
+    }
+    
     public ILaneData GetLane(int lane) => lane == 0 ? TempoEvents : TimeSignatureEvents;
     public ISelection GetLaneSelection(int lane) => lane == 0 ? bpmSelection : tsSelection;
 
     public List<KeyValuePair<int, ILaneData>> GetTotalLanes() => new List<KeyValuePair<int, ILaneData>>()
     {
-        new KeyValuePair<int, ILaneData>(0, TempoEvents),
-        new KeyValuePair<int, ILaneData>(1, TimeSignatureEvents)
+        new KeyValuePair<int, ILaneData>((int)SyncTrackInstrument.LaneOrientation.bpm, TempoEvents),
+        new KeyValuePair<int, ILaneData>((int)SyncTrackInstrument.LaneOrientation.timeSignature, TimeSignatureEvents)
     };
 
     public bool TryGetTick(int lane, int tick, out IEventData data) => GetLane(lane).TryGetValue(tick, out data);

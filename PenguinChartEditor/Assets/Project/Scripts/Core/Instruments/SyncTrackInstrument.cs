@@ -44,8 +44,7 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
 
     private void InitializeReferences()
     {
-        InstrumentName = InstrumentType.synctrack;
-        Difficulty = DifficultyType.easy;
+        InstrumentID = HeaderType.SyncTrack;
         Lanes = new SyncTrackLanes();
     }
 
@@ -55,6 +54,11 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
         
         AddChartFormattedEventsToInstrument(fileData);
         
+        CheckForNullLanes();
+    }
+
+    private void CheckForNullLanes()
+    {
         if (TempoEvents.Count == 0)
         {
             TempoEvents[0] = new BPMData(120, 0, false);
@@ -69,9 +73,15 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
     public SyncTrackInstrument()
     {
         InitializeReferences();
+        CheckForNullLanes();
+    }
+
+    public SyncTrackInstrument(List<PenguinEventSection> lanes)
+    {
+        InstrumentID = HeaderType.SyncTrack;
         
-        TempoEvents[0] = new BPMData(120, 0, false);
-        TimeSignatureEvents[0] = new TSData(4, 4);
+        Lanes = new SyncTrackLanes(lanes);
+        CheckForNullLanes();
     }
 
     public enum LaneOrientation

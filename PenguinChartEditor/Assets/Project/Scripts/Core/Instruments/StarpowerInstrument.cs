@@ -35,16 +35,34 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
 
     public StarpowerInstrument(List<RawStarpowerEvent> starpowerEvents)
     {
+        InstrumentID = HeaderType.Starpower;
+        
         SetUpLanes();
         ParseRawStarpowerEvents(starpowerEvents);
     }
 
     public StarpowerInstrument()
     {
+        InstrumentID = HeaderType.Starpower;
+        
         SetUpLanes();
     }
 
+    public StarpowerInstrument(List<PenguinEventSection> lanes)
+    {
+        InstrumentID = HeaderType.Starpower;
+        
+        Lanes = new Lanes<StarpowerEventData>(lanes, GenerateStarpowerLaneIDs());
+        sustainer = new SustainHelper<StarpowerEventData>(this, Lanes, false);
+    }
+
     private void SetUpLanes()
+    {
+        Lanes = new Lanes<StarpowerEventData>(GenerateStarpowerLaneIDs());
+        sustainer = new SustainHelper<StarpowerEventData>(this, Lanes, false);
+    }
+
+    private static List<int> GenerateStarpowerLaneIDs()
     {
         List<int> headerTypeIDs = new();
         foreach (var instrumentType in Enum.GetValues(typeof(HeaderType)))
@@ -53,11 +71,10 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
             if ((int)instrumentType < 10) continue;
             headerTypeIDs.Add((int)instrumentType);
         }
-        Lanes = new Lanes<StarpowerEventData>(headerTypeIDs);
 
-        sustainer = new SustainHelper<StarpowerEventData>(this, Lanes, false);
+        return headerTypeIDs;
     }
-    
+
     #endregion
     
     #region Selections

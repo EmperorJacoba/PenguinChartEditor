@@ -60,8 +60,7 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
 
     private void InitializeReferences()
     {
-        InstrumentName = InstrumentType.events;
-        Difficulty = DifficultyType.easy;
+        InstrumentID = HeaderType.Events;
         Lanes = new Lanes<SectionData>(1);
     }
 
@@ -69,6 +68,13 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
     {
         InitializeReferences();
         AddChartFormattedEventsToInstrument(events);
+    }
+
+    public SectionInstrument(List<PenguinEventSection> lanes)
+    {
+        InstrumentName = InstrumentType.events;
+        Difficulty = DifficultyType.easy;
+        Lanes = new Lanes<SectionData>(lanes);
     }
 
     public SectionInstrument()
