@@ -82,6 +82,7 @@ public class SongScrubber : MonoBehaviour
         
         foreach (var sectionKVP in representedData)
         {
+
             var songRatio = sectionKVP.Key / (float)SongTime.SongLengthTicks;
 
             // Use sliding area because the SongScrubber game object does not have the same bounds as the actual scrubber

@@ -159,7 +159,6 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         {
             InstrumentName = InstrumentMetadata.GetInstrumentType(value);
             Difficulty = InstrumentMetadata.GetDifficulty(value);
-            Debug.Log($"{InstrumentID}");
         }
     }
 

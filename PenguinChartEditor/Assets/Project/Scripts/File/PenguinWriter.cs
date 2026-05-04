@@ -27,14 +27,17 @@ public static class PenguinWriter
         }
         
         var filePath = $"{targetDirectory}/{metadata.GeneratePenguinFileName()}.penguin";
+        
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        // Used to circumvent errors from file paths that are too long. Added because test charts have reeeeeally long names.
         filePath = @"\\?\" + filePath;
+#endif
         
         if (File.Exists(filePath))
         {
             File.Delete(filePath);
         }
         
-        Debug.Log(filePath);
         File.WriteAllLines(filePath, dotPenguinLines);
     }
 }

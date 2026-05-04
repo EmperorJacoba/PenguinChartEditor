@@ -118,15 +118,33 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         {
             this.protectedTicks = protectedTicks;
         }
+
+        laneData = new SortedDictionary<int, TValue>();
+
+        foreach (var VARIABLE in lines)
+        {
+            
+        }
         
         laneData = 
             new SortedDictionary<int, TValue>(
-                lines.Select(x => x.Split(" = ", 1)).
+                lines.Select(x => x.Split(" = ", 2)).
                     ToDictionary(
-                        x => int.Parse(x[0]), 
+                        x => ParseTick(x[0].Trim()), 
                         x => EventDataFactory.ConvertToEventData<TValue>(x[1])
                     )
                 );
+        
+        laneData.Remove(-1);
+    }
+
+    private int ParseTick(string candidate)
+    {
+        if (int.TryParse(candidate, out var tick)) return tick;
+        
+        Debug.LogWarning($"Could not parse tick {candidate}.");
+        return -1;
+
     }
     
     #endregion

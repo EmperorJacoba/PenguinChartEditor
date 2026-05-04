@@ -189,22 +189,26 @@ public class Metadata
                 }
                 case SONG_ID:
                 {
-                    SongInfo = DeserializeDictionary<MetadataType, string>(section.lines);
+                    Func<string, MetadataType> conversionFunc = Enum.Parse<MetadataType>;
+                    SongInfo = DeserializeDictionary<MetadataType, string>(section.lines, conversionFunc);
                     break;
                 }
                 case DIFF_ID:
                 {
-                    Difficulties = DeserializeDictionary<InstrumentDifficultyIdentifier, int>(section.lines);
+                    Func<string, InstrumentDifficultyIdentifier> conversionFunc = Enum.Parse<InstrumentDifficultyIdentifier>;
+                    Difficulties = DeserializeDictionary<InstrumentDifficultyIdentifier, int>(section.lines, conversionFunc);
                     break;
                 }
                 case COMPLETION_ID:
                 {
-                    InstrumentCompletionStatuses = DeserializeDictionary<HeaderType, bool>(section.lines);
+                    Func<string, HeaderType> conversionFunc = Enum.Parse<HeaderType>;
+                    InstrumentCompletionStatuses = DeserializeDictionary<HeaderType, bool>(section.lines, conversionFunc);
                     break;
                 }
                 case PATHS_ID:
                 {
-                    StemPaths = DeserializeDictionary<StemType, string>(section.lines);
+                    Func<string, StemType> conversionFunc = Enum.Parse<StemType>;
+                    StemPaths = DeserializeDictionary<StemType, string>(section.lines, conversionFunc);
                     break;
                 }
                 default:
@@ -311,18 +315,18 @@ public class Metadata
         return output;
     }
 
-    private static Dictionary<TKey, TValue> DeserializeDictionary<TKey, TValue>(string[] lines)
+    private static Dictionary<TKey, TValue> DeserializeDictionary<TKey, TValue>(string[] lines, Func<string, TKey> keyConversionMethod)
     {
         return
             lines.Select(
                 line => line.Trim().Split(" = ")
                 ).ToDictionary(
                 parts => 
-                    (TKey)Convert.ChangeType(parts[0], typeof(TKey)), 
+                    keyConversionMethod(parts[0]), 
                 parts => 
                     (TValue)Convert.ChangeType(parts[1], typeof(TValue)
                     )
-                    );
+                );
     }
     
     public List<string> ToPenguinFormat()

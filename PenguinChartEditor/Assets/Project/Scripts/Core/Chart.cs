@@ -355,9 +355,7 @@ public class Chart : MonoBehaviour
 
     private static void InternalSaveFile()
     {
-        var initTime = Time.realtimeSinceStartup;
         PenguinWriter.WritePenguin(FolderPath, Metadata, CompileAllInstruments());
-        print(Time.realtimeSinceStartup - initTime);
     }
     
     private static void InternalNewFile()
@@ -409,8 +407,8 @@ public class Chart : MonoBehaviour
                     new[]
                     {
                         new ExtensionFilter(
-                            ".chart files ", 
-                            "chart")
+                            "Supported chart/save data formats", 
+                            "chart", "penguin", "pce")
                     }, 
                     false
                 );
@@ -422,21 +420,46 @@ public class Chart : MonoBehaviour
         
         ChartLoading = true;
 
-        ApplyFileInformation(ChartParser.ParseChart(ChartPath));
-
-        // also need to parse chart stems
-        // find properly named files - add to stems
-        // find other audio files - ask to assign
-        // testing: please add audio selection in future if excess audio files are found
-        foreach (StemType key in Enum.GetValues(typeof(StemType)))
+        var fileType = Path.GetExtension(ChartPath);
+        ChartFileInformation readData = null;
+        
+        switch (fileType.ToLower())
         {
-            string targetFilePath = $"{FolderPath}/{key}.opus";
-            if (File.Exists(targetFilePath))
+            case ".chart":
             {
-                Metadata.StemPaths.Add(key, targetFilePath);
+                readData = ChartParser.ParseChart(ChartPath);
+                break;
+            }
+            case ".penguin" or ".pce" or ".pen":
+            {
+                readData = PenguinParser.ParsePenguin(ChartPath);
+                break;
+            }
+            default:
+            {
+                Debug.LogWarning($"No support for parsing file type {fileType}.");
+                break;
             }
         }
-
+        
+        ApplyFileInformation(readData);
+        
+        if (Metadata.StemPaths.Count == 0)
+        {
+            // also need to parse chart stems
+            // find properly named files - add to stems
+            // find other audio files - ask to assign
+            // testing: please add audio selection in future if excess audio files are found
+            foreach (StemType key in Enum.GetValues(typeof(StemType)))
+            {
+                string targetFilePath = $"{FolderPath}/{key}.opus";
+                if (File.Exists(targetFilePath))
+                {
+                    Metadata.StemPaths.Add(key, targetFilePath);
+                }
+            } 
+        }
+        
         AudioManager.RefreshAudioStreams();
         Waveform.InitializeWaveformData();
 

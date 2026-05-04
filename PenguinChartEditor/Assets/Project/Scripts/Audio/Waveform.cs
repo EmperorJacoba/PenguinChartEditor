@@ -92,7 +92,7 @@ public class Waveform : MonoBehaviour
             gameObject.SetActive(value);
         }
     }
-
+    
     #endregion
 
     #region Unity Functions
@@ -101,10 +101,6 @@ public class Waveform : MonoBehaviour
     {
         lineRendererMain = GetComponent<LineRenderer>();
         lineRendererMirror = gameObject.transform.GetChild(0).GetComponent<LineRenderer>();
-    }
-
-    private void OnEnable()
-    {
         PointUpdateNeeded += ApplyGeneratedPositions;
     }
 
@@ -112,7 +108,7 @@ public class Waveform : MonoBehaviour
     {
         PointUpdateNeeded -= ApplyGeneratedPositions;
     }
-
+    
     #endregion
 
     #region Data Initialization

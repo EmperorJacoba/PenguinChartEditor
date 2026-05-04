@@ -27,7 +27,11 @@ public class SoloDataSet
 
     public SoloDataSet(LaneSet<SoloEventData> events)
     {
-        SoloEvents = events;
+        if (events is null)
+        {
+            SoloEvents = new LaneSet<SoloEventData>(IInstrument.SOLO_DATA_LANE_ID);
+        }
+        else SoloEvents = events;
         SelectedStartEvents = new SelectionSet<SoloEventData>(SoloEvents);
         SelectedEndEvents = new SelectionSet<SoloEventData>(SoloEvents);
     }

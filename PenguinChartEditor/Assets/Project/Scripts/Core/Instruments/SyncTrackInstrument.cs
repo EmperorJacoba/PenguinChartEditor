@@ -81,6 +81,9 @@ public sealed class SyncTrackInstrument : BaseInstrument<BPMData>
         InstrumentID = HeaderType.SyncTrack;
         
         Lanes = new SyncTrackLanes(lanes);
+        
+        // Loading in all the data leads to the timestamp of every BPM/TS event being 0. Recalculate to avoid resulting errors.
+        RecalculateTempoEventDictionary();
         CheckForNullLanes();
     }
 

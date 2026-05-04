@@ -72,7 +72,7 @@ public static class PenguinParser
             var id = int.Parse(penguinLines[openingCurlyIndex - 1]);
 
             int sectionEndPoint;
-            if (i + 1 > sectionStartPoints.Count)
+            if (i + 1 >= sectionStartPoints.Count)
             {
                 sectionEndPoint = penguinLines.Length - 1;
             }
@@ -107,6 +107,9 @@ public static class PenguinParser
 
         switch (instrumentID)
         {
+            // Won't be parsed or already parsed.
+            case HeaderType.Penguin or HeaderType.Song:
+                return null;
             case HeaderType.SyncTrack:
                 return new SyncTrackInstrument(lanes);
             case HeaderType.Starpower:

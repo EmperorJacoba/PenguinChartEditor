@@ -40,7 +40,22 @@ public class AudioManager : MonoBehaviour
     private static Dictionary<StemType, BassStream> _streams = new();
     
     // Cached b/c stream link is not changed much. Just make sure to update this when stream link changes.
-    public static double SongLength { get; private set; }
+    public static double SongLength
+    {
+        get
+        {
+            if (_sL <= 0)
+            {
+                Debug.LogWarning("There is no audio loaded in. Returning default value to avoid divide by zero errors.");
+                return 120.0f;
+            }
+
+            return _sL;
+        }
+        private set => _sL = value;
+    }
+
+    private static double _sL = 0;
 
     public delegate void PlayingDelegate(bool state);
     public static event PlayingDelegate PlaybackStateChanged;
