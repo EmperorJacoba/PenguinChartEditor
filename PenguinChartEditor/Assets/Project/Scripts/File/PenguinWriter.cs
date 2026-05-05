@@ -29,6 +29,11 @@ public static class PenguinWriter
         {
             dotPenguinLines.AddRange(instrument.ExportDotPenguinData());
         }
+
+        if (!Directory.Exists(targetDirectory))
+        {
+            Directory.CreateDirectory(targetDirectory);
+        }
         
         var filePath = $"{targetDirectory}/{fileName}.penguin";
         

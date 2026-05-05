@@ -91,7 +91,7 @@ public class Chart : MonoBehaviour
         print(saved);
         if (!saved && fileLoaded)
         {
-            InternalSaveFile(false);
+            InternalSaveFile(false, Application.persistentDataPath, $"autosave-{Hash128.Compute(ChartPath)}");
         }
     }
 
@@ -386,12 +386,14 @@ public class Chart : MonoBehaviour
         return true;
     }
     
-    private static bool InternalSaveFile(bool showSaved)
+    private static bool InternalSaveFile(bool showSaved, string directory = null, string name = null)
     {
         try
         {
-            PenguinWriter.WritePenguin(FolderPath, Metadata, CompileAllInstruments(),
-                Path.GetFileNameWithoutExtension(ChartPath));
+            name ??= Path.GetFileNameWithoutExtension(ChartPath);
+            directory ??= FolderPath;
+
+            PenguinWriter.WritePenguin(directory, Metadata, CompileAllInstruments(), name);
         }
         catch(Exception e)
         {
