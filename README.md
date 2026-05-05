@@ -91,3 +91,5 @@ Penguin also uses [UnityStandaloneFileBrowser](https://github.com/gkngkc/UnitySt
 Instrument icons come from [YARG](https://github.com/YARC-Official/YARG/blob/master/Assets/Art/Menu/Common/InstrumentIcons.png). 
 
 [Metronome](https://thenounproject.com/browse/icons/term/metronome/). Settings icon designed by Freepik.
+
+(Load icon) Folder by Landan Lloyd from <a href="https://thenounproject.com/browse/icons/term/folder/" target="_blank" title="Folder Icons">Noun Project</a> (CC BY 3.0)
