@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using SFB;
 using System.IO;
@@ -70,8 +71,28 @@ public class Chart : MonoBehaviour
         }
 
         Resolution = UserSettings.DefaultResolution;
-        Chart.SyncTrackInstrument = new SyncTrackInstrument();
+        SyncTrackInstrument = new SyncTrackInstrument();
         SetUpInputMap();
+
+        StartCoroutine(AutosaveRoutine());
+    }
+
+    private IEnumerator AutosaveRoutine()
+    {
+        while (true)
+        {
+            Autosave();
+            yield return new WaitForSeconds(5.0f);
+        }
+    }
+    
+    private void Autosave()
+    {
+        print(saved);
+        if (!saved && fileLoaded)
+        {
+            InternalSaveFile(false);
+        }
     }
 
     private InputMap inputMap;
@@ -177,6 +198,8 @@ public class Chart : MonoBehaviour
         }
     }
     private static string _chPath;
+
+    public static string ChartName => Path.GetFileNameWithoutExtension(ChartPath);
     
     public static bool showPreviewers = true;
     
@@ -331,10 +354,11 @@ public class Chart : MonoBehaviour
     
     public static bool LoadFile() => instance.PromptDelete(InternalLoadFile);
     public static bool NewFile() => instance.PromptDelete(InternalNewFile);
-    public static void SaveFile() => instance.PromptDelete(InternalSaveFile);
-    public static void SaveFileAs() => instance.PromptDelete(InternalSaveFileAs);
+    public static void SaveFile() => InternalSaveFile(true);
+    public static void SaveFileAs() => InternalSaveFileAs();
     
-    public bool saved = true;
+    public static bool saved = false;
+    public static bool fileLoaded = false;
 
     private bool PromptDelete(Func<bool> resultantAction)
     {
@@ -343,7 +367,7 @@ public class Chart : MonoBehaviour
             saved = true;
         }
 
-        if (saved)
+        if (saved || !fileLoaded)
         {
             return resultantAction();
         }
@@ -362,19 +386,33 @@ public class Chart : MonoBehaviour
         return true;
     }
     
-    private static bool InternalSaveFile()
+    private static bool InternalSaveFile(bool showSaved)
     {
-        PenguinWriter.WritePenguin(FolderPath, Metadata, CompileAllInstruments(), Path.GetFileNameWithoutExtension(ChartPath));
+        try
+        {
+            PenguinWriter.WritePenguin(FolderPath, Metadata, CompileAllInstruments(),
+                Path.GetFileNameWithoutExtension(ChartPath));
+        }
+        catch(Exception e)
+        {
+            print("Error when saving file");
+            print(e);
+            RightHeaderText.instance?.ShowError();
+            return true;
+        }
+        
+        if (showSaved) RightHeaderText.instance?.ShowSaved();
+        
         return true;
     }
     
     private static bool InternalNewFile()
     {
-        var pathCandidates = StandaloneFileBrowser.SaveFilePanel("Open save location", "", "untitled", "penguin");
+        var pathCandidate = StandaloneFileBrowser.SaveFilePanel("Open save location", "", ChartName, "penguin");
         
-        if (string.IsNullOrEmpty(pathCandidates)) return false;
+        if (string.IsNullOrEmpty(pathCandidate)) return false;
 
-        ChartPath = pathCandidates;
+        ChartPath = pathCandidate;
         FolderPath = Path.GetDirectoryName(ChartPath);
 
         ChartLoading = true;
@@ -391,12 +429,20 @@ public class Chart : MonoBehaviour
         ChartFileLoaded?.Invoke();
         
         SaveFile();
-
         return true;
     }
 
     private static bool InternalSaveFileAs()
     {
+        InternalSaveFile(false);
+        var pathCandidate = StandaloneFileBrowser.SaveFilePanel("Open save location", "", "untitled", "penguin");
+        
+        if (string.IsNullOrEmpty(pathCandidate)) return false;
+
+        ChartPath = pathCandidate;
+        FolderPath = Path.GetDirectoryName(ChartPath);
+
+        InternalSaveFile(true);
         return true;
     }
 
@@ -473,6 +519,7 @@ public class Chart : MonoBehaviour
         Waveform.InitializeWaveformData();
 
         ChartLoading = false;
+        
         ChartFileLoaded?.Invoke();
 
         return true;
@@ -496,6 +543,8 @@ public class Chart : MonoBehaviour
         {
             instrument.SetUpInputMap();
         }   
+        
+        fileLoaded = true;
     }
     
     // Currently written for .chart exclusively, rework for other formats later
