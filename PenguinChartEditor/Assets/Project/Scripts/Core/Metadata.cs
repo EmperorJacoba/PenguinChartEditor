@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class Metadata
@@ -149,7 +151,13 @@ public class Metadata
     private const string YEAR_COMMA = ", ";
     private const float MS_TO_SECONDS_CONVERSION = 1000.0f;
 
-    public Metadata() {}
+    public Metadata()
+    {
+        foreach (MetadataType key in Enum.GetValues(typeof(MetadataType)))
+        {
+            SongInfo[key] = "";
+        } 
+    }
     
     public Metadata(SongDataGroup songEventGroup)
     {
@@ -308,7 +316,10 @@ public class Metadata
         output.Add($"{curlyIndent}{identifier}");
         output.Add($"{curlyIndent}" + "{");
         
-        output.AddRange(dictionary.Select(element => $"{mainIndent}{Convert.ToInt32(element.Key)} = {element.Value}"));
+        output.AddRange(
+            dictionary.Where(x => Convert.ToString(x.Value) != "").
+                Select(element => $"{mainIndent}{Convert.ToInt32(element.Key)} = {element.Value}")
+            );
         
         output.Add($"{curlyIndent}" + "}");
 
@@ -319,7 +330,7 @@ public class Metadata
     {
         return
             lines.Select(
-                line => line.Trim().Split(" = ")
+                line => line.Trim().Split(" = ", 2)
                 ).ToDictionary(
                 parts => 
                     keyConversionMethod(parts[0]), 

@@ -331,7 +331,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -687.3, y: -94.5}
+  m_AnchoredPosition: {x: -687.3008, y: -94.5}
   m_SizeDelta: {x: 1210, y: 749}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &52013297
@@ -2832,7 +2832,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   imageReference: {fileID: 11400000, guid: 6d1ec66b63cb34c4190316b13a366f2a, type: 2}
-  imageComponent: {fileID: 0}
+  imageComponent: {fileID: 546354333}
   controlledComponent: {fileID: 1873188181}
 --- !u!1 &573199759
 GameObject:
@@ -3188,7 +3188,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -687.3, y: -94.5}
+  m_AnchoredPosition: {x: -687.3008, y: -94.5}
   m_SizeDelta: {x: 1200, y: 739}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &701155415
@@ -4106,8 +4106,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentScene: 0
-  highway: {fileID: 0}
-  laneWidth: 0
+  globalHighway: {fileID: 0}
   overlayUIRaycaster: {fileID: 789912693}
   eventRaycaster: {fileID: 789912693}
   cameraHighwayRaycaster: {fileID: 0}
@@ -5504,7 +5503,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   imageReference: {fileID: 11400000, guid: 6d1ec66b63cb34c4190316b13a366f2a, type: 2}
-  imageComponent: {fileID: 0}
+  imageComponent: {fileID: 1163781282}
   controlledComponent: {fileID: 1172059763}
 --- !u!1 &1172059763
 GameObject:
@@ -5544,7 +5543,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -687.2998, y: -97}
+  m_AnchoredPosition: {x: -687.3008, y: -97}
   m_SizeDelta: {x: 1200, y: 744}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1172059765
@@ -7619,6 +7618,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 55859144864384448, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
+      propertyPath: isDebug
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 55859144864384448, guid: 47b72b4bcdaf04b44ba3c0061555d473, type: 3}
       propertyPath: sceneDetails
       value: 

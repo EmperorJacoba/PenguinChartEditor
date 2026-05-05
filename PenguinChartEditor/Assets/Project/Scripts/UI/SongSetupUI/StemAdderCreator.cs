@@ -72,7 +72,7 @@ public class StemAdderCreator : MonoBehaviour
 
     private void SpawnStemSourceSelector(StemType stem)
     {
-        if (activeDropdown is not null) Destroy(activeDropdown.gameObject);
+        if (activeDropdown != null) Destroy(activeDropdown.gameObject);
         
         var stemSourceSelector = Instantiate(stemSourceSelectorPrefab, stemSpawningParent.transform).GetComponent<StemSourceSelector>();
         stemSourceSelector.Initialize(stem);

@@ -127,7 +127,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
 
     public FiveFretInstrument(HeaderType instrumentID, List<PenguinEventSection> lanes)
     {
-        Lanes = new Lanes<FiveFretNoteData>(lanes, out var soloLane);
+        Lanes = new Lanes<FiveFretNoteData>(lanes, laneOrdering.ToList(), out var soloLane);
         sustainer = new SustainHelper<FiveFretNoteData>(this, Lanes, true);
         
         SoloData = new SoloDataSet(soloLane);

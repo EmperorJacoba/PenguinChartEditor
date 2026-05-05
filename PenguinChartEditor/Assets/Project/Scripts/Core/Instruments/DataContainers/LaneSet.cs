@@ -120,11 +120,6 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         }
 
         laneData = new SortedDictionary<int, TValue>();
-
-        foreach (var VARIABLE in lines)
-        {
-            
-        }
         
         laneData = 
             new SortedDictionary<int, TValue>(
@@ -135,6 +130,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
                     )
                 );
         
+        // -1 is used as a fallback in case parsing ticks fails. 
         laneData.Remove(-1);
     }
 
@@ -144,7 +140,6 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         
         Debug.LogWarning($"Could not parse tick {candidate}.");
         return -1;
-
     }
     
     #endregion

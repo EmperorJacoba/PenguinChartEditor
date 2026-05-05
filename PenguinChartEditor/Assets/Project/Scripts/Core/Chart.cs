@@ -68,10 +68,10 @@ public class Chart : MonoBehaviour
                 Debug.Break();
             }
         }
-        
+
+        Resolution = UserSettings.DefaultResolution;
+        Chart.SyncTrackInstrument = new SyncTrackInstrument();
         SetUpInputMap();
-        
-        InternalSaveFile();
     }
 
     private InputMap inputMap;
@@ -82,6 +82,10 @@ public class Chart : MonoBehaviour
         inputMap.Charting.Copy.performed += _ => Clipboard.Copy();
         inputMap.Charting.Paste.performed += _ => Clipboard.Paste();
         inputMap.Charting.Cut.performed += _ => Clipboard.Cut();
+        inputMap.ExternalCharting.Save.performed += _ => SaveFile();
+        inputMap.ExternalCharting.SaveAs.performed += _ => SaveFileAs();
+        inputMap.ExternalCharting.New.performed += _ => NewFile();
+        inputMap.ExternalCharting.Open.performed += _ => LoadFile();
     }
     
     private void OnDestroy()
@@ -325,21 +329,24 @@ public class Chart : MonoBehaviour
 
     #region Save/New/Delete
     
-    public static void LoadFile() => instance.PromptDelete(() => InternalLoadFile());
-    public static void NewFile() => instance.PromptDelete(InternalNewFile);
+    public static bool LoadFile() => instance.PromptDelete(InternalLoadFile);
+    public static bool NewFile() => instance.PromptDelete(InternalNewFile);
     public static void SaveFile() => instance.PromptDelete(InternalSaveFile);
     public static void SaveFileAs() => instance.PromptDelete(InternalSaveFileAs);
     
     public bool saved = true;
 
-    private void PromptDelete(Action resultantAction)
+    private bool PromptDelete(Func<bool> resultantAction)
     {
         if (isDebug)
         {
             saved = true;
         }
 
-        if (saved) resultantAction();
+        if (saved)
+        {
+            return resultantAction();
+        }
         
         var dialog = Instantiate(fileChangeDialog, TabSceneSpawningManager.instance.canvas.transform).GetComponent<DataWipeDialog>();
         dialog.Initialize(
@@ -347,28 +354,28 @@ public class Chart : MonoBehaviour
             () => {
                 SaveFile();
                 resultantAction();
+                return true;
             },
             resultantAction
             );
-    }
-
-
-    private static void InternalSaveFile()
-    {
-        PenguinWriter.WritePenguin(FolderPath, Metadata, CompileAllInstruments());
+        
+        return true;
     }
     
-    private static void InternalNewFile()
+    private static bool InternalSaveFile()
     {
-        var pathCandidates = StandaloneFileBrowser.OpenFolderPanel(
-            "Open folder to create new chart file in.",
-            FolderPath,
-            false
-        );
+        PenguinWriter.WritePenguin(FolderPath, Metadata, CompileAllInstruments(), Path.GetFileNameWithoutExtension(ChartPath));
+        return true;
+    }
+    
+    private static bool InternalNewFile()
+    {
+        var pathCandidates = StandaloneFileBrowser.SaveFilePanel("Open save location", "", "untitled", "penguin");
         
-        if (pathCandidates.Length < 1) return;
+        if (string.IsNullOrEmpty(pathCandidates)) return false;
 
-        FolderPath = pathCandidates[0];
+        ChartPath = pathCandidates;
+        FolderPath = Path.GetDirectoryName(ChartPath);
 
         ChartLoading = true;
         
@@ -384,11 +391,13 @@ public class Chart : MonoBehaviour
         ChartFileLoaded?.Invoke();
         
         SaveFile();
+
+        return true;
     }
 
-    private static void InternalSaveFileAs()
+    private static bool InternalSaveFileAs()
     {
-        
+        return true;
     }
 
     public delegate void ChartFileLoadedDel();

@@ -9,8 +9,8 @@ public class DataWipeDialog : MonoBehaviour
     [SerializeField] private Button yesButton;
     [SerializeField] private Button noButton;
     [SerializeField] private Button cancelButton;
-    private Action runOnYesAction;
-    private Action runOnNoAction;
+    private Func<bool> runOnYesAction;
+    private Func<bool> runOnNoAction;
 
     private void Awake()
     {
@@ -21,8 +21,8 @@ public class DataWipeDialog : MonoBehaviour
 
     public void Initialize(
         string title, 
-        Action positiveResultFunc, 
-        Action negativeResultFunc,
+        Func<bool> positiveResultFunc, 
+        Func<bool> negativeResultFunc,
         float width = 650, 
         float height = 215
         )

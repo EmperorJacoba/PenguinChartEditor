@@ -137,20 +137,8 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
             selections[id] = new SelectionSet<T>(lanes[id]);
         }
     }
-
-    public Lanes(List<PenguinEventSection> sections)
-    {
-        lanes = new Dictionary<int, LaneSet<T>>(sections.Count);
-        selections = new Dictionary<int, SelectionSet<T>>(sections.Count);
-        
-        foreach (var section in sections)
-        {
-            lanes[section.id] = new LaneSet<T>(section.id, section.lines);
-            selections[section.id] = new SelectionSet<T>(lanes[section.id]);
-        }
-    }
     
-    public Lanes(List<PenguinEventSection> sections, out LaneSet<SoloEventData> soloData)
+    public Lanes(List<PenguinEventSection> sections, List<int> laneIDs, out LaneSet<SoloEventData> soloData)
     {
         soloData = null;
         
@@ -168,6 +156,12 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
             lanes[section.id] = new LaneSet<T>(section.id, section.lines);
             selections[section.id] = new SelectionSet<T>(lanes[section.id]);
         }
+        
+        foreach (var laneID in laneIDs.Where(laneID => !lanes.ContainsKey(laneID)))
+        {
+            lanes[laneID] = new LaneSet<T>(laneID);
+            selections[laneID] = new SelectionSet<T>(lanes[laneID]);
+        }
     }
 
     public Lanes(List<PenguinEventSection> sections, List<int> laneIDs)
@@ -181,13 +175,10 @@ public class Lanes<T> : IMultiLaneController where T : IEventData
             selections[section.id] = new SelectionSet<T>(lanes[section.id]);
         }
 
-        foreach (var laneID in laneIDs)
+        foreach (var laneID in laneIDs.Where(laneID => !lanes.ContainsKey(laneID)))
         {
-            if (!lanes.ContainsKey(laneID))
-            {
-                lanes[laneID] = new LaneSet<T>(laneID);
-                selections[laneID] = new SelectionSet<T>(lanes[laneID]);
-            }
+            lanes[laneID] = new LaneSet<T>(laneID);
+            selections[laneID] = new SelectionSet<T>(lanes[laneID]);
         }
     }
     

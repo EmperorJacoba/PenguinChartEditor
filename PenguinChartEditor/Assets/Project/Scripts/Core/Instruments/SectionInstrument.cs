@@ -74,7 +74,7 @@ public sealed class SectionInstrument : BaseInstrument<SectionData>
     {
         InstrumentName = InstrumentType.events;
         Difficulty = DifficultyType.easy;
-        Lanes = new Lanes<SectionData>(lanes);
+        Lanes = new Lanes<SectionData>(lanes, new List<int> {0});
     }
 
     public SectionInstrument()

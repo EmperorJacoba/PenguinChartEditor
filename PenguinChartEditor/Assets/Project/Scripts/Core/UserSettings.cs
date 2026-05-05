@@ -24,7 +24,7 @@ public static class UserSettings
     /// <summary>
     /// Value autofilled into "Resolution" box upon new song creation.
     /// </summary>
-    public static int DefaultResolution = 320;
+    public static int DefaultResolution = 192;
 
     /// <summary>
     /// Is the chart mode currently using extended sustains?

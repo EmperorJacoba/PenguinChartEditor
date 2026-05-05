@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SceneTabSwitcher : BasicPenguinTab<SceneTabSwitcher>
@@ -15,5 +17,20 @@ public class SceneTabSwitcher : BasicPenguinTab<SceneTabSwitcher>
     protected override void OnSwitchOn()
     {
         SceneManager.LoadScene(controlledScene, LoadSceneMode.Additive);
+    }
+
+    public static void LoadScene(string sceneName)
+    {
+        var tabsFound = tabs.Where(x =>
+        {
+            var candidate = (SceneTabSwitcher)x;
+            return candidate.controlledScene == sceneName;
+        }
+            );
+
+        if (!tabsFound.Any())
+            throw new NullReferenceException($"No tab controlling scene of name {sceneName}. Cannot force load scene.");
+        
+        tabsFound.First().SwitchOn();
     }
 }

@@ -1239,6 +1239,42 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""DisableWhenInputActive"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Save"",
+                    ""type"": ""Button"",
+                    ""id"": ""7273929c-cb9a-4b31-b869-aaa36b1be743"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""DisableModifiers(disableOnControl=false)"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SaveAs"",
+                    ""type"": ""Button"",
+                    ""id"": ""4eae975d-5440-4a9e-9ab4-8c8afe50ad48"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""New"",
+                    ""type"": ""Button"",
+                    ""id"": ""b5d79199-0fa9-43c3-8bd2-c0398a336613"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Open"",
+                    ""type"": ""Button"",
+                    ""id"": ""3cc2b23f-4e86-41a8-b5dc-8ee8b8c2829f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1470,6 +1506,149 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""7814b1e6-0540-44db-9e48-9f76d3734685"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Save"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""a5b898ff-b309-42b5-b4d8-25187a68f1a6"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Save"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""2f2c785d-08f3-417d-ab3d-52081bc71259"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Save"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Two Modifiers"",
+                    ""id"": ""5494fb77-460d-4368-ab06-718d82a654cc"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SaveAs"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""5e750379-d038-4b64-8c42-7ad8e55203ad"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SaveAs"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""996e7e71-1b7b-49f8-a886-def51a0de9c2"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SaveAs"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""609f5f97-8837-418b-8418-78a5a7eaf9d6"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SaveAs"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""5627b01c-c0d9-44fd-a3ca-729215ec084e"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""New"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""99356c6d-4d21-4271-98ca-3b03cb47ffdc"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""New"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""32829180-a6ce-4aaa-91f9-53e79f1a475e"",
+                    ""path"": ""<Keyboard>/n"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""New"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""912945f2-1ad5-4e8a-87d3-53b59db22767"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Open"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""495e75ba-44fe-45ec-a188-3e417a56402a"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Open"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""a256125d-ab1e-4f6a-bd65-4b57f1b2be25"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Open"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 }
@@ -2579,6 +2758,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_ExternalCharting_SwitchNotePlacementMode = m_ExternalCharting.FindAction("SwitchNotePlacementMode", throwIfNotFound: true);
         m_ExternalCharting_Undo = m_ExternalCharting.FindAction("Undo", throwIfNotFound: true);
         m_ExternalCharting_Redo = m_ExternalCharting.FindAction("Redo", throwIfNotFound: true);
+        m_ExternalCharting_Save = m_ExternalCharting.FindAction("Save", throwIfNotFound: true);
+        m_ExternalCharting_SaveAs = m_ExternalCharting.FindAction("SaveAs", throwIfNotFound: true);
+        m_ExternalCharting_New = m_ExternalCharting.FindAction("New", throwIfNotFound: true);
+        m_ExternalCharting_Open = m_ExternalCharting.FindAction("Open", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -3186,6 +3369,10 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_ExternalCharting_SwitchNotePlacementMode;
     private readonly InputAction m_ExternalCharting_Undo;
     private readonly InputAction m_ExternalCharting_Redo;
+    private readonly InputAction m_ExternalCharting_Save;
+    private readonly InputAction m_ExternalCharting_SaveAs;
+    private readonly InputAction m_ExternalCharting_New;
+    private readonly InputAction m_ExternalCharting_Open;
     /// <summary>
     /// Provides access to input actions defined in input action map "ExternalCharting".
     /// </summary>
@@ -3233,6 +3420,22 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "ExternalCharting/Redo".
         /// </summary>
         public InputAction @Redo => m_Wrapper.m_ExternalCharting_Redo;
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/Save".
+        /// </summary>
+        public InputAction @Save => m_Wrapper.m_ExternalCharting_Save;
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/SaveAs".
+        /// </summary>
+        public InputAction @SaveAs => m_Wrapper.m_ExternalCharting_SaveAs;
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/New".
+        /// </summary>
+        public InputAction @New => m_Wrapper.m_ExternalCharting_New;
+        /// <summary>
+        /// Provides access to the underlying input action "ExternalCharting/Open".
+        /// </summary>
+        public InputAction @Open => m_Wrapper.m_ExternalCharting_Open;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -3286,6 +3489,18 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Redo.started += instance.OnRedo;
             @Redo.performed += instance.OnRedo;
             @Redo.canceled += instance.OnRedo;
+            @Save.started += instance.OnSave;
+            @Save.performed += instance.OnSave;
+            @Save.canceled += instance.OnSave;
+            @SaveAs.started += instance.OnSaveAs;
+            @SaveAs.performed += instance.OnSaveAs;
+            @SaveAs.canceled += instance.OnSaveAs;
+            @New.started += instance.OnNew;
+            @New.performed += instance.OnNew;
+            @New.canceled += instance.OnNew;
+            @Open.started += instance.OnOpen;
+            @Open.performed += instance.OnOpen;
+            @Open.canceled += instance.OnOpen;
         }
 
         /// <summary>
@@ -3324,6 +3539,18 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Redo.started -= instance.OnRedo;
             @Redo.performed -= instance.OnRedo;
             @Redo.canceled -= instance.OnRedo;
+            @Save.started -= instance.OnSave;
+            @Save.performed -= instance.OnSave;
+            @Save.canceled -= instance.OnSave;
+            @SaveAs.started -= instance.OnSaveAs;
+            @SaveAs.performed -= instance.OnSaveAs;
+            @SaveAs.canceled -= instance.OnSaveAs;
+            @New.started -= instance.OnNew;
+            @New.performed -= instance.OnNew;
+            @New.canceled -= instance.OnNew;
+            @Open.started -= instance.OnOpen;
+            @Open.performed -= instance.OnOpen;
+            @Open.canceled -= instance.OnOpen;
         }
 
         /// <summary>
@@ -4138,6 +4365,34 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRedo(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Save" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSave(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SaveAs" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSaveAs(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "New" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnNew(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Open" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpen(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

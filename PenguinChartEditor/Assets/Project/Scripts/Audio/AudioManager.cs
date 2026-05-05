@@ -25,7 +25,28 @@ public class AudioManager : MonoBehaviour
     /// The stem with the longest stream length in StemStreams. All other stem streams are linked to this stem for playback purposes.
     /// <remarks>This stream is guaranteed to exist in StemStreams at all times EXCEPT when there is no audio loaded.</remarks> 
     /// </summary>
-    private static BassStream StreamLink;
+    private static BassStream StreamLink
+    {
+        get => _l;
+        set
+        {
+            _l = value;
+            if (_l is null)
+            {
+                Debug.LogWarning("StreamLink is being set to null. This may cause issues with playback.");
+                SongLength = 0;
+                return;
+            }
+            
+            SongLength = _l.TimeLength;
+
+            foreach (var stream in Streams.Values)
+            {
+                stream.LinkTo(value);
+            }
+        } 
+    }
+    private static BassStream _l;
     
     // Don't use .Clear(). Assign to a new dict every time to make sure all the streams are freed first.
     private static Dictionary<StemType, BassStream> Streams
@@ -44,12 +65,6 @@ public class AudioManager : MonoBehaviour
     {
         get
         {
-            if (_sL <= 0)
-            {
-                Debug.LogWarning("There is no audio loaded in. Returning default value to avoid divide by zero errors.");
-                return 120.0f;
-            }
-
             return _sL;
         }
         private set => _sL = value;
@@ -97,7 +112,6 @@ public class AudioManager : MonoBehaviour
     
     public static void Initialize()
     {
-        
         if (Bass.Init())
         {
             string path = $"{Application.dataPath}/Plugins/Bass/";
@@ -116,12 +130,11 @@ public class AudioManager : MonoBehaviour
                 if (file.Contains("meta")) continue;
                 var fileName = Path.GetFileName(file);
                 if (fileName == "bass.dll" || fileName.Contains("bassenc") || fileName.Contains("bassmix")) continue;
+
+                if (Bass.PluginLoad(file) != 0) continue;
+                if (Bass.LastError == Errors.Already) continue;
                 
-                if (Bass.PluginLoad(file) == 0)
-                {
-                    if (Bass.LastError == Errors.Already) continue;
-                    Debug.LogWarning($"Plugin Load error for {file}. Bass Error: {Bass.LastError}");
-                }
+                Debug.LogWarning($"Plugin Load error for {file}. Bass Error: {Bass.LastError}");
             }
         }
         else
@@ -132,6 +145,8 @@ public class AudioManager : MonoBehaviour
 
         metronome = new BassStream($"{Application.streamingAssetsPath}/metronomeclick.mp3");
         clap = new BassStream($"{Application.streamingAssetsPath}/clap.mp3");
+        placeholder = new BassStream($"{Application.streamingAssetsPath}/placeholder_silence.opus");
+        StreamLink = placeholder;
     }
 
     private InputMap inputMap;
@@ -257,7 +272,7 @@ public class AudioManager : MonoBehaviour
         Streams[stemType] = stream;
         Chart.Metadata.StemPaths[stemType] = songPath;
         
-        RecalculateStreamLink();
+        StreamLink = GetLongestStream();
         
         return true;
     }
@@ -268,35 +283,14 @@ public class AudioManager : MonoBehaviour
 
         stream.Free();
         Streams.Remove(stem);
-        
-        if (StreamLink == stream) RecalculateStreamLink();
-    }
 
-    private static void RecalculateStreamLink()
-    {
-        var targetStream = GetLongestStream();
-        StreamLink = targetStream;
-
-        if (targetStream is null)
-        {
-            SongLength = 0;
-            return;
-        }
-        else
-        {
-            SongLength = targetStream.TimeLength;
-        }
-
-        foreach (var stream in Streams.Values)
-        {
-            stream.LinkTo(targetStream);
-        }
+        if (StreamLink == stream) StreamLink = GetLongestStream();
     }
 
     private static BassStream GetLongestStream()
     {
         long streamLength = 0;
-        BassStream longestStream = null;
+        BassStream longestStream = placeholder;
         
         foreach (var stream in Streams)
         {
@@ -408,6 +402,7 @@ public class AudioManager : MonoBehaviour
 
     private static BassStream metronome;
     private static BassStream clap;
+    private static BassStream placeholder;
 
     public static void PlayMetronomeSound() => metronome.Play();
     public static void PlayClapSound() => clap.Play();
@@ -441,54 +436,18 @@ public class AudioManager : MonoBehaviour
             Debug.LogError($"Bass error. Failed to create decode stream. Aborting encoding of {stem}. {Bass.LastError}");
             return;
         }
-        
-        int encoderHandle = -1;
 
-        switch (format)
+        int encoderHandle = format switch
         {
-            case AudioFormats.opus:
-            {
-                encoderHandle = BassEnc_Opus.Start(
-                    handle, 
-                    $"--bitrate {bitrate}",
-                    EncodeFlags.AutoFree, 
-                    targetFileName
-                    );
-                break;
-            }
-            case AudioFormats.ogg:
-            {
-                encoderHandle = BassEnc_Ogg.Start(
-                    handle, 
-                    $"-b {bitrate}", 
-                    EncodeFlags.AutoFree, 
-                    targetFileName
-                    );
-                break;
-            }
-            case AudioFormats.mp3:
-            {
-                encoderHandle = BassEnc_Mp3.Start(
-                    handle, 
-                    $"-b {bitrate}", 
-                    EncodeFlags.AutoFree, 
-                    targetFileName
-                    );
-                break;
-            }
-            case AudioFormats.wav:
-            {
+            AudioFormats.opus => BassEnc_Opus.Start(handle, $"--bitrate {bitrate}", EncodeFlags.AutoFree, targetFileName),
+            AudioFormats.ogg => BassEnc_Ogg.Start(handle, $"-b {bitrate}", EncodeFlags.AutoFree, targetFileName),
+            AudioFormats.mp3 => BassEnc_Mp3.Start(handle, $"-b {bitrate}", EncodeFlags.AutoFree, targetFileName),
+            AudioFormats.wav =>
                 // As far as I can tell, bitrates don't really exist in wav, since it's uncompressed.
                 // The bitrate can be whatever it wants to be. Also I hate wav files. Please don't use them.
-                encoderHandle = BassEnc.EncodeStart(
-                    handle, 
-                    targetFileName, 
-                    EncodeFlags.AutoFree | EncodeFlags.PCM, 
-                    null
-                    );
-                break;
-            }
-        }
+                BassEnc.EncodeStart(handle, targetFileName, EncodeFlags.AutoFree | EncodeFlags.PCM, null),
+            _ => -1
+        };
 
         if (encoderHandle <= 0)
         {

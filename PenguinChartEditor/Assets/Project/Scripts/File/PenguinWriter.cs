@@ -9,7 +9,8 @@ public static class PenguinWriter
     public static void WritePenguin(
         string targetDirectory,
         Metadata metadata,
-        List<IInstrument> instruments
+        List<IInstrument> instruments,
+        string fileName
         )
     {
         List<string> dotPenguinLines = new List<string>();
@@ -26,7 +27,7 @@ public static class PenguinWriter
             dotPenguinLines.AddRange(instrument.ExportDotPenguinData());
         }
         
-        var filePath = $"{targetDirectory}/{metadata.GeneratePenguinFileName()}.penguin";
+        var filePath = $"{targetDirectory}/{fileName}.penguin";
         
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
         // Used to circumvent errors from file paths that are too long. Added because test charts have reeeeeally long names.
