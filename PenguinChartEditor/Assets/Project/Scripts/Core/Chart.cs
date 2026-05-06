@@ -397,8 +397,7 @@ public class Chart : MonoBehaviour
         }
         catch(Exception e)
         {
-            print("Error when saving file");
-            print(e);
+            print($"Error when saving file\n\t{e}");
             RightHeaderText.instance?.ShowError();
             return true;
         }
