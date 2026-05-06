@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SFB;
 using System.IO;
 using System.Linq;
+using Penguin.Dialogs;
 
 public class Chart : MonoBehaviour
 {
@@ -14,7 +15,6 @@ public class Chart : MonoBehaviour
     
     [SerializeField] private bool isDebug;
     [SerializeField] private HeaderType DebugLoadedInstrument = (HeaderType)(-1);
-    [SerializeField] private GameObject fileChangeDialog;
 
     #endregion
     
@@ -371,8 +371,8 @@ public class Chart : MonoBehaviour
         {
             return resultantAction();
         }
-        
-        var dialog = Instantiate(fileChangeDialog, TabSceneSpawningManager.instance.canvas.transform).GetComponent<DataWipeDialog>();
+
+        var dialog = DialogManager.SpawnDialog<DataWipeDialog>();
         dialog.Initialize(
             "This action will delete all unsaved data. Save data before continuing?", 
             () => {

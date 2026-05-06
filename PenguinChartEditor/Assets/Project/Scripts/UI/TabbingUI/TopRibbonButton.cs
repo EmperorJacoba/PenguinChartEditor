@@ -21,6 +21,7 @@ public class TopRibbonButton : MonoBehaviour
         controlledPanel.transform.position = Vector3.left * 100000;
     }
 
+    
     private void LateUpdate()
     {
         if (Input.GetMouseButtonDown(0) && controlledPanel.transform.position.x > 0)
@@ -29,6 +30,11 @@ public class TopRibbonButton : MonoBehaviour
         }
     }
 
+    public void DisableContent()
+    {
+        controlledPanel.transform.position = Vector3.left * 100000;
+    }
+    
     private void EnableContent()
     {
         controlledPanel.transform.position = originalCoordinates;

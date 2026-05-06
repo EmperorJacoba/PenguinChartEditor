@@ -1,20 +1,16 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class MenuActionButton : MonoBehaviour, IPointerDownHandler
 {
-    private Button button;
     [SerializeField] private ActionType actionType;
-
-    private void Awake()
-    {
-        button = GetComponent<Button>();
-    }
+    [SerializeField] private TopRibbonButton parentRibbonButton;
 
     public void OnPointerDown(PointerEventData ped)
     {
+        parentRibbonButton.DisableContent();
+        
         switch (actionType)
         {
             case ActionType.@new:
@@ -47,6 +43,7 @@ public class MenuActionButton : MonoBehaviour, IPointerDownHandler
             default:
                 throw new ArgumentOutOfRangeException();
         }
+        
     }
 
     public enum ActionType

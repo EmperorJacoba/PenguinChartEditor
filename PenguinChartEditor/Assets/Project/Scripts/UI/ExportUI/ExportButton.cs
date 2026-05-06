@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Penguin.Dialogs;
 using SFB;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,8 +8,6 @@ using UnityEngine.UI;
 public class ExportButton : MonoBehaviour
 {
     private Button button;
-    [SerializeField] private GameObject canvas;
-    [SerializeField] private GameObject overwriteDialog;
 
     private void Awake()
     {
@@ -32,7 +31,7 @@ public class ExportButton : MonoBehaviour
 
         if (Directory.Exists(lastDirName))
         {
-            var dialog = Instantiate(overwriteDialog, canvas.transform).GetComponent<ConfirmationDialog>();
+            var dialog = DialogManager.SpawnDialog<ConfirmationDialog>();
             dialog.Initialize("File already exists. Overwrite?", ConfirmExport);
             return;
         }

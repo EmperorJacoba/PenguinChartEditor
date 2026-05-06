@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Penguin.Dialogs;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class ChartTrackSpawningButton : MonoBehaviour
@@ -12,8 +13,6 @@ public class ChartTrackSpawningButton : MonoBehaviour
 
     // Functionality of this should probably be in its own script but needs most of the same references as this one.
     [SerializeField] private Button copyDownButton;
-    [SerializeField] private GameObject confirmationDialogPrefab;
-    private static GameObject Canvas => GameObject.Find("Canvas");
 
     private void Start()
     {
@@ -60,8 +59,7 @@ public class ChartTrackSpawningButton : MonoBehaviour
         
         if (Chart.IsInstrumentCreated(targetDiff))
         {
-            var dialog = Instantiate(confirmationDialogPrefab, Canvas.transform).GetComponent<ConfirmationDialog>();
-            print(dialog.gameObject);
+            var dialog = DialogManager.SpawnDialog<ConfirmationDialog>();
             dialog.Initialize(
                 $"This will overwrite {InstrumentMetadata.GetInstrumentName(targetDiff)}.\nThis action cannot be undone. Overwrite?", 
                 ExecuteCopyAction,
