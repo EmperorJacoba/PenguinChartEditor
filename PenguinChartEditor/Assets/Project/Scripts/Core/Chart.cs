@@ -88,7 +88,6 @@ public class Chart : MonoBehaviour
     
     private void Autosave()
     {
-        print(saved);
         if (!saved && fileLoaded)
         {
             InternalSaveFile(false, Application.persistentDataPath, $"autosave-{Hash128.Compute(ChartPath)}");
@@ -188,7 +187,7 @@ public class Chart : MonoBehaviour
             {
                 var name = Metadata.SongInfo[Metadata.MetadataType.name];
                 var artist = Metadata.SongInfo[Metadata.MetadataType.artist];
-                _chPath = FolderPath + $"\\{artist} - {name}.chart";
+                _chPath = FolderPath + $"\\{artist} - {name}.penguin";
             }
             return _chPath;
         }
@@ -385,8 +384,23 @@ public class Chart : MonoBehaviour
         
         return true;
     }
-    
+
     private static bool InternalSaveFile(bool showSaved, string directory = null, string name = null)
+    {
+        try
+        {
+            return _InternalSaveFile(showSaved, directory, name);
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"Error when saving file.\n\t{e}");
+            var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
+            dialog.Initialize("There was an error saving the file. Please check the log file.");
+            return false;
+        }
+    }
+    
+    private static bool _InternalSaveFile(bool showSaved, string directory = null, string name = null)
     {
         try
         {
@@ -406,8 +420,23 @@ public class Chart : MonoBehaviour
         
         return true;
     }
-    
+
     private static bool InternalNewFile()
+    {
+        try
+        {
+            return _InternalNewFile();
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"Error when creating new file.\n\t{e}");
+            var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
+            dialog.Initialize("There was an error creating new file. Please check the log file.");
+            return false;
+        }
+    }
+    
+    private static bool _InternalNewFile()
     {
         var pathCandidate = StandaloneFileBrowser.SaveFilePanel("Open save location", "", ChartName, "penguin");
         
@@ -435,6 +464,22 @@ public class Chart : MonoBehaviour
 
     private static bool InternalSaveFileAs()
     {
+        try
+        {
+            return _InternalSaveFileAs();
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"Error when saving file as. \n\t{e}");
+            var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
+            dialog.Initialize("There was an error saving the file to a new directory. " +
+                              "Please check the log file.");
+            return false;
+        }
+    }
+    
+    private static bool _InternalSaveFileAs()
+    {
         InternalSaveFile(false);
         var pathCandidate = StandaloneFileBrowser.SaveFilePanel("Open save location", "", "untitled", "penguin");
         
@@ -453,12 +498,27 @@ public class Chart : MonoBehaviour
 
     public static bool ChartLoading { get; private set; }
 
-    public static bool InternalLoadFile()
+    private static bool InternalLoadFile()
+    {
+        try
+        {
+            return _InternalLoadFile();
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"Error when loading file.\n\t{e}");
+            var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
+            dialog.Initialize("There was an error loading the file. Please check the log file.");
+            return false;
+        }
+    }
+    
+    private static bool _InternalLoadFile()
     {
         var pathCandidates = 
             StandaloneFileBrowser.OpenFilePanel
                 (
-                    $"Open .chart file to load from.", 
+                    $"Open chart file", 
                     "", 
                     new[]
                     {
@@ -468,7 +528,6 @@ public class Chart : MonoBehaviour
                     }, 
                     false
                 );
-
         if (pathCandidates.Length < 1) return false;
         
         ChartPath = pathCandidates[0];
@@ -486,7 +545,7 @@ public class Chart : MonoBehaviour
                 readData = ChartParser.ParseChart(ChartPath);
                 break;
             }
-            case ".penguin" or ".pce" or ".pen":
+            case ".penguin" or ".pce" or ".pen": // .PEN happens when the file path is really long
             {
                 readData = PenguinParser.ParsePenguin(ChartPath);
                 break;
@@ -547,9 +606,23 @@ public class Chart : MonoBehaviour
         
         fileLoaded = true;
     }
+
+    public static void ExportFile(string targetDirectory)
+    {
+        try
+        {
+            _ExportFile(targetDirectory);
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"Error when exporting file.\n\t{e}");
+            var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
+            dialog.Initialize("There was an error exporting the file. Please check the log file.");
+        }
+    }
     
     // Currently written for .chart exclusively, rework for other formats later
-    public static void ExportFile(string targetDirectory)
+    private static void _ExportFile(string targetDirectory)
     {
         // need to export chart, image, background, ini, audio
         // export everything to temp directory and then either copy the directory's contents to target,

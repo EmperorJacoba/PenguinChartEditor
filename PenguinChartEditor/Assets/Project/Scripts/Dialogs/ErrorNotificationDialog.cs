@@ -16,14 +16,13 @@ namespace Penguin.Dialogs
             okButton.onClick.AddListener(Okay);
         }
 
-        public void Initialize(string title, Action positiveResultFunc, float width = 830, float height = 430)
+        public void Initialize(string title, float width = 830, float height = 430)
         {
             gameObject.SetActive(true);
             
             descriptionText.text = title;
             var rt = GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(width, height);
-            rt.position = new Vector3(Screen.width / 2.0f, Screen.height / 2.0f);
         }
 
         private void Okay()
