@@ -62,7 +62,7 @@ public static class ChartWriter
 
         int startTime = (int)Mathf.Round(metadata.PreviewStartTime * 1000);
         songGroup.Add($"\tPreviewStart = {startTime}");
-        songGroup.Add($"\tPreviewEnd = {startTime + UserSettings.DefaultPreviewLength}");
+        songGroup.Add($"\tPreviewEnd = {startTime + Chart.settings.DefaultPreviewLength}");
         
         foreach (var stem in metadata.StemPaths)
         {

@@ -142,7 +142,7 @@ public class SongTime : MonoBehaviour
         // If it's a middle click, the delta value is wayyy too large so this is a solution FOR NOW
         var scrollSuppressant = 1;
         if (middleClick) scrollSuppressant = 50;
-        var newTimeCandidate = SongPositionSeconds + scrollChange / (UserSettings.ScrollSensitivity * scrollSuppressant);
+        var newTimeCandidate = SongPositionSeconds + scrollChange / (Chart.settings.ScrollSensitivity * scrollSuppressant);
 
         // Clamp position to within the length of the song
         if (newTimeCandidate < 0)

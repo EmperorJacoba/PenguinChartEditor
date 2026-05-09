@@ -14,6 +14,7 @@ using Penguin.Dialogs;
 public class Chart : MonoBehaviour
 {
     private static Chart instance;
+    public static UserSettings settings;
 
     #region Instance Components
     
@@ -63,6 +64,7 @@ public class Chart : MonoBehaviour
         }
         
         instance = this;
+        settings = UserSettings.ReadFromDisk();
         DontDestroyOnLoad(instance);
 
         AudioManager.Initialize();
@@ -75,7 +77,6 @@ public class Chart : MonoBehaviour
             }
         }
 
-        Resolution = UserSettings.DefaultResolution;
         SyncTrackInstrument = new SyncTrackInstrument();
         SetUpInputMap();
 
@@ -473,11 +474,13 @@ public class Chart : MonoBehaviour
         var pathCandidate = StandaloneFileBrowser.SaveFilePanel("Open save location", "", ChartName, "penguin");
         
         if (string.IsNullOrEmpty(pathCandidate)) return false;
-
+        
         ChartPath = pathCandidate;
         FolderPath = Path.GetDirectoryName(ChartPath);
 
         ChartLoading = true;
+        
+        Resolution = settings.DefaultResolution;
         
         ApplyFileInformation(new ChartFileInformation(
             new Metadata(), 

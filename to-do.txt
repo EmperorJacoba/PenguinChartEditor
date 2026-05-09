@@ -2,11 +2,11 @@
 
 - hotkey to jump X number of bars/beats
 
-=> prompt user to save data upon application quit
 => basic settings menu
 	- save user settings
 => release
 
+=> save waveform properties
 => save user song position, export settings, other QoL features
 
 => parse .mid

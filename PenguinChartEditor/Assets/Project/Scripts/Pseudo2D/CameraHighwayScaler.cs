@@ -45,7 +45,7 @@ public class CameraHighwayScaler : MonoBehaviour
 
     private void OnDestroy()
     {
-        Highway.highwayLength = UserSettings.userSetHighwayLength;
+        Highway.highwayLength = Chart.settings.userSetHighwayLength;
         PenguinSceneTabScaler.ScreenSizeUpdated -= UpdateCameraConfiguration;
         instance = null;
     }

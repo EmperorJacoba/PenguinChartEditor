@@ -10,7 +10,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
     private readonly IInstrument parentInstrument;
 
     private readonly bool obeyExtendedSustainSetting;
-    private bool independentLanes => UserSettings.ExtSustains || !obeyExtendedSustainSetting;
+    private bool independentLanes => Chart.settings.ExtSustains || !obeyExtendedSustainSetting;
 
     public SustainHelper(IInstrument parentInstrument, Lanes<T> lanes, bool obeyExtended)
     {
@@ -140,9 +140,9 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         int clampedSustain = sustainLength;
         if (nextTick != LaneSet<FiveFretNoteData>.NO_TICK_EVENT)
         {
-            if (sustainLength + tick >= nextTick - UserSettings.SustainGapTicks)
+            if (sustainLength + tick >= nextTick - Chart.settings.SustainGapTicks)
             {
-                clampedSustain = (nextTick - tick) - UserSettings.SustainGapTicks;
+                clampedSustain = (nextTick - tick) - Chart.settings.SustainGapTicks;
             }
         }
         else
@@ -156,7 +156,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         if (clampedSustain < 0) clampedSustain = 0;
 
         var sustainLengthMS = Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick + clampedSustain) - Chart.SyncTrackInstrument.ConvertTickTimeToSeconds(tick);
-        return sustainLengthMS < UserSettings.MINIMUM_SUSTAIN_LENGTH_SECONDS ? 0 : clampedSustain;
+        return sustainLengthMS < Chart.settings.MinimumSustainLengthSeconds ? 0 : clampedSustain;
     }
 
     private void ShiftClickSustainClamp(int tick, int tickLength)

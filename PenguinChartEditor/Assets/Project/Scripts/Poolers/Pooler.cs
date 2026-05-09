@@ -126,7 +126,7 @@ public abstract class Pooler<T> : MonoBehaviour, IPooler<T> where T : MonoBehavi
     /// <returns></returns>
     private IEnumerator DestructionTimer(T @object)
     {
-        yield return new WaitForSeconds(UserSettings.TimeToCullObjects);
+        yield return new WaitForSeconds(Chart.settings.TimeToCullObjects);
 
         if (@object != null && !@object.Visible)
         {

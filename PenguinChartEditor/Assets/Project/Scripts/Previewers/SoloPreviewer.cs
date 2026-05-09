@@ -64,7 +64,7 @@ public class SoloPreviewer : Previewer
     protected override bool IsHitPositionValid(Vector3 hitPosition)
     {
         return !(parentGameInstrument.GetCursorHighwayPosition().x < parentGameInstrument.HighwayRightEndCoordinate) &&
-               UserSettings.SoloPlacingAllowed;
+               Chart.settings.SoloPlacingAllowed;
     }
     
 

@@ -91,7 +91,7 @@ public class AudioManager : MonoBehaviour
 
     public static double AudioPosition
     {
-        get => StreamLink.AudioPosition - UserSettings.Calibration;
+        get => StreamLink.AudioPosition - Chart.settings.Calibration;
         set
         {
             SetStreamPositions(value);
@@ -391,7 +391,7 @@ public class AudioManager : MonoBehaviour
 
     public static void SetStemVolume(StemType stem, float volume) => Streams[stem].Volume = volume;
 
-    private static void SetStreamPositions() => SetStreamPositions(SongTime.SongPositionSeconds + UserSettings.Calibration);
+    private static void SetStreamPositions() => SetStreamPositions(SongTime.SongPositionSeconds + Chart.settings.Calibration);
     private static void SetStreamPositions(double position)
     {
         foreach (var stream in Streams.Values)

@@ -11,8 +11,8 @@ public class SoloPlacementController : MonoBehaviour
     private void Awake()
     {
         toggle = GetComponent<Toggle>();
-        toggle.onValueChanged.AddListener(x => UserSettings.SoloPlacingAllowed = x);
-        toggle.isOn = UserSettings.SoloPlacingAllowed;
+        toggle.onValueChanged.AddListener(x => Chart.settings.SoloPlacingAllowed = x);
+        toggle.isOn = Chart.settings.SoloPlacingAllowed;
 
         inputMap = new InputMap();
         inputMap.Enable();

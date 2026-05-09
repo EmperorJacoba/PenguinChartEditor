@@ -67,7 +67,7 @@ public class Highway : MonoBehaviour, IPointerDownHandler
             // for pitch reasons. Green is effectively lane zero but pitch says otherwise
             var laneOneCenterCoordinate = LeftEndCoordinate + (laneWidth / 2);
 
-            if (UserSettings.OpenNoteAsFret)
+            if (Chart.settings.OpenNoteAsFret)
             {
                 if (lane == (int)FiveFretInstrument.LaneOrientation.open) return laneOneCenterCoordinate;
             }

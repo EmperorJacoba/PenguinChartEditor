@@ -33,11 +33,11 @@ public class AudioNavigationButtons : MonoBehaviour
         // Check for interactability or you can use them even when uninteractable
         if (RWButtonDown && RWButton.interactable)
         {
-            SongTime.ChangeTime(-UserSettings.ButtonScrollSensitivity);
+            SongTime.ChangeTime(-Chart.settings.ButtonScrollSensitivity);
         }
         if (FFWButtonDown && FFWButton.interactable)
         {
-            SongTime.ChangeTime(UserSettings.ButtonScrollSensitivity);
+            SongTime.ChangeTime(Chart.settings.ButtonScrollSensitivity);
         }
     }
     

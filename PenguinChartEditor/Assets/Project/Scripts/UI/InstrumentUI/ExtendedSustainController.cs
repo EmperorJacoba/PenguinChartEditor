@@ -8,13 +8,13 @@ public class ExtendedSustainController : MonoBehaviour
     private void Awake()
     {
         toggle.onValueChanged.AddListener(UpdateExtendedSustain);
-        toggle.isOn = UserSettings.ExtSustains;
+        toggle.isOn = Chart.settings.ExtSustains;
     }
 
-    private void UpdateExtendedSustain(bool mode) => UserSettings.ExtSustains = mode;
+    private void UpdateExtendedSustain(bool mode) => Chart.settings.ExtSustains = mode;
     public void SetExtendedSustains(bool mode)
     {
-        UserSettings.ExtSustains = mode;
+        Chart.settings.ExtSustains = mode;
         toggle.isOn = mode;
     }
 }

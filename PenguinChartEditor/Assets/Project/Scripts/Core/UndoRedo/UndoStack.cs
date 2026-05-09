@@ -13,8 +13,8 @@ public class UndoStack : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        instance.undoStack = new FiniteStack<IUndoSnapshot>(UserSettings.MaximumSavedUndoActions);
-        instance.redoStack = new FiniteStack<IUndoSnapshot>(UserSettings.MaximumSavedUndoActions);
+        instance.undoStack = new FiniteStack<IUndoSnapshot>(Chart.settings.MaximumSavedUndoActions);
+        instance.redoStack = new FiniteStack<IUndoSnapshot>(Chart.settings.MaximumSavedUndoActions);
 
         inputMap = new InputMap();
         inputMap.Enable();

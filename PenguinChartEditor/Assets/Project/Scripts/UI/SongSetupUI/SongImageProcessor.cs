@@ -53,12 +53,12 @@ public class SongImageProcessor : MonoBehaviour, IPointerDownHandler
         
         image.Mutate(x => x.Resize(width, height));
         
-        if (!Directory.Exists(UserSettings.MetadataImagePaths))
+        if (!Directory.Exists(Chart.settings.MetadataImagePaths))
         {
-            Directory.CreateDirectory(UserSettings.MetadataImagePaths);
+            Directory.CreateDirectory(Chart.settings.MetadataImagePaths);
         }
         // var savedImagePath = $"{UserSettings.MetadataImagePaths}/{System.Guid.NewGuid().ToString()}.jpg";
-        var savedImagePath = $"{UserSettings.MetadataImagePaths}/{imageToProcess}-formatted.jpg";
+        var savedImagePath = $"{Chart.settings.MetadataImagePaths}/{imageToProcess}-formatted.jpg";
         
         image.SaveAsJpeg(savedImagePath);
         if (imageToProcess == ImageType.album)
