@@ -7,9 +7,13 @@ using System.IO;
 using System.Linq;
 using Penguin.Dialogs;
 
+/// <summary>
+/// The central unit of Penguin. An instance of this class is guaranteed to exist at all times. Handles file I/O, various
+/// events, spawning rules, etc.
+/// </summary>
 public class Chart : MonoBehaviour
 {
-    public static Chart instance;
+    private static Chart instance;
 
     #region Instance Components
     
@@ -57,6 +61,7 @@ public class Chart : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        
         instance = this;
         DontDestroyOnLoad(instance);
 
@@ -75,6 +80,8 @@ public class Chart : MonoBehaviour
         SetUpInputMap();
 
         StartCoroutine(AutosaveRoutine());
+
+        Application.wantsToQuit += AskForDataSave;
     }
 
     private IEnumerator AutosaveRoutine()
@@ -111,6 +118,34 @@ public class Chart : MonoBehaviour
     private void OnDestroy()
     {
         inputMap?.Disable();
+    }
+
+    /// <summary>
+    /// Check to make sure changes are saved upon application quit.
+    /// </summary>
+    /// <returns>Can the program safely quit?</returns>
+    private bool AskForDataSave()
+    {
+        if (saved) return true;
+        
+        var dialog = DialogManager.SpawnDialog<DataWipeDialog>();
+        
+        dialog.Initialize(
+            "Save unsaved changes before exiting?",
+            () =>
+            {
+                if (!InternalSaveFile(false)) return false;
+                
+                Application.Quit();
+                return true;
+            },
+            () =>
+            {
+                Application.Quit();
+                return false;
+            });
+
+        return false;
     }
     
     #endregion
@@ -396,25 +431,22 @@ public class Chart : MonoBehaviour
             Debug.Log($"Error when saving file.\n\t{e}");
             var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
             dialog.Initialize("There was an error saving the file. Please check the log file.");
+            RightHeaderText.instance?.ShowError();
             return false;
         }
     }
     
     private static bool _InternalSaveFile(bool showSaved, string directory = null, string name = null)
     {
-        try
-        {
-            name ??= Path.GetFileNameWithoutExtension(ChartPath);
-            directory ??= FolderPath;
-
-            PenguinWriter.WritePenguin(directory, Metadata, CompileAllInstruments(), name);
-        }
-        catch(Exception e)
-        {
-            print($"Error when saving file\n\t{e}");
-            RightHeaderText.instance?.ShowError();
-            return true;
-        }
+        name ??= Path.GetFileNameWithoutExtension(ChartPath);
+        directory ??= FolderPath;
+        
+        PenguinWriter.WritePenguin(
+            directory, 
+            Metadata, 
+            CompileAllInstruments(), 
+            name
+            );
         
         if (showSaved) RightHeaderText.instance?.ShowSaved();
         
@@ -472,7 +504,7 @@ public class Chart : MonoBehaviour
         {
             Debug.Log($"Error when saving file as. \n\t{e}");
             var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
-            dialog.Initialize("There was an error saving the file to a new directory. " +
+            dialog.Initialize("There was an error saving the file to a new location. " +
                               "Please check the log file.");
             return false;
         }
