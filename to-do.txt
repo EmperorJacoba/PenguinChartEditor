@@ -1,0 +1,38 @@
+- general: keybinds for all placement and selection buttons
+
+- hotkey to jump X number of bars/beats
+
+=> prompt user to save data upon application quit
+=> basic settings menu
+	- save user settings
+=> release
+
+=> save user song position, export settings, other QoL features
+
+=> parse .mid
+=> placement tab for tempo map
+	=> allow edit TS/BPM values there
+	=> allow dynamic/exclusive placement mode changes
+
+=> re test metronome and clap
+
+SortedDictionary improvements
+- Create a new BinarySearchTree implementation for GetUniqueTickSet and the underlying SortedDictionary data structure
+- Benefits:
+	- More efficient traversal to find tick boundaries - could directly traverse the tree in less than 
+	O(n) time to get next tick node, previous tick node, data, etc
+
+make previewers use InitializeProperties in Awake()
+
+pull ClearLaneSelection() up to IInstrument from SPInstrument
+
+Good README:
+	What can I currently do with Penguin?
+	What's coming next?
+	How do I download it?
+	How do I give feedback?
+	What do I do if Penguin crashes?
+	When will the full release be?
+	Limitations:
+		Notes are preloaded so large charts do not fair well currently
+
