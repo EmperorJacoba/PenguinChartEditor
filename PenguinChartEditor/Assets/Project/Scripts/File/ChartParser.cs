@@ -8,13 +8,7 @@ using UnityEngine;
 
 public static class ChartParser
 {
-    #region Metadata Constants
-
-    private const string QUOTES_STRING = "\"";
-    private const string YEAR_COMMA = ", ";
     private const int SONG_HEADER_LOCATION = 0;
-
-    #endregion
 
     #region Sync Track Constants
 
@@ -120,7 +114,6 @@ public static class ChartParser
 
         sectionInstrument = new SectionInstrument(identifiedSectionEvents);
     }
-    
     
     #region Event Section Setup
 

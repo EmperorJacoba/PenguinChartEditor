@@ -2,17 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d92372fb-226c-4365-b707-bf009f4886da" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Plugins/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Plugins/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Bold SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Bold SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-BoldItalic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-BoldItalic SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-ExtraBold SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-ExtraBold SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-ExtraBoldItalic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-ExtraBoldItalic SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Italic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Italic SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Medium SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Medium SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-MediumItalic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-MediumItalic SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Regular SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-Regular SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-SemiBold SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-SemiBold SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-SemiBoldItalic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Fonts/Wix_Madefor_Text/static/WixMadeforText-SemiBoldItalic SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Scripts/File/ChartParser.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PenguinChartEditor/Assets/Project/Scripts/File/ChartParser.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +30,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "nodejs_package_manager_path": "npm",
@@ -47,8 +40,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.29346.308" />
-        <option value="bundled-python-sdk-ca5e2b39c7df-6e1f45a539f7-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.29346.308" />
+        <option value="bundled-python-sdk-b63d5a1f7c97-b61e75351b1f-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.22158.340" />
       </set>
     </attachedChunks>
   </component>
