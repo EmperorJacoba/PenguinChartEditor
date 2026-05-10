@@ -91,6 +91,14 @@ The full release will be when all targeted features are implemented stably.
 I do not have an exact timeframe for this due to other commitments in my life 
 (I work on Penguin whenever I get the chance between classes, work, etc.)
 
+# Screenshots
+
+<img width="1920" height="1041" alt="PenguinChartEditor_pU9z5vAQtk" src="https://github.com/user-attachments/assets/742cc434-db37-45ba-ba76-e5238f1ade0e" />
+<img width="1920" height="1041" alt="PenguinChartEditor_FKzFk8gLKp" src="https://github.com/user-attachments/assets/7bbf22fd-9b33-4810-8fb1-e131c079b057" />
+<img width="1920" height="1041" alt="PenguinChartEditor_BgFu4gnCZU" src="https://github.com/user-attachments/assets/1b1b1265-9e54-410c-b052-b5095432ffc4" />
+<img width="1920" height="1041" alt="PenguinChartEditor_EPrk2TASU0" src="https://github.com/user-attachments/assets/1dfacbbc-4cfc-48aa-90d7-1f4b1af8ff98" />
+<img width="1920" height="1041" alt="PenguinChartEditor_G45KWkGlyU" src="https://github.com/user-attachments/assets/b984d88d-81d2-41b7-8d0b-47a58062b970" />
+
 # Limitations/Known errors
 
 - Loading extremely large charts (estimated >10,000 notes) have not been rigourously tested and will be slow. 
