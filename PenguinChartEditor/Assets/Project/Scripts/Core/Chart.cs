@@ -127,6 +127,7 @@ public class Chart : MonoBehaviour
     /// <returns>Can the program safely quit?</returns>
     private bool AskForDataSave()
     {
+        settings.SaveSettingsToDisk();
         if (saved) return true;
         
         var dialog = DialogManager.SpawnDialog<DataWipeDialog>();

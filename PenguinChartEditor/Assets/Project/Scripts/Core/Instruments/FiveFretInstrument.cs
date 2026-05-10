@@ -313,7 +313,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
             var activeLane = Lanes.GetLane(i);
             if (!activeLane.Contains(tick)) continue;
             
-            var sustain = Chart.settings.ExtSustains ? activeLane[tick].Sustain : data.Sustain;
+            var sustain = Chart.settings.ExtendedSustains ? activeLane[tick].Sustain : data.Sustain;
             activeLane[tick] = new FiveFretNoteData(sustain, flag, @default);
         }
     }

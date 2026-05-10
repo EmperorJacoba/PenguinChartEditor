@@ -10,7 +10,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
     private readonly IInstrument parentInstrument;
 
     private readonly bool obeyExtendedSustainSetting;
-    private bool independentLanes => Chart.settings.ExtSustains || !obeyExtendedSustainSetting;
+    private bool independentLanes => Chart.settings.ExtendedSustains || !obeyExtendedSustainSetting;
 
     public SustainHelper(IInstrument parentInstrument, Lanes<T> lanes, bool obeyExtended)
     {

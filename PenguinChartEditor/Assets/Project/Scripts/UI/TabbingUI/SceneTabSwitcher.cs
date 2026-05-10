@@ -16,6 +16,7 @@ public class SceneTabSwitcher : BasicPenguinTab<SceneTabSwitcher>
 
     protected override void OnSwitchOn()
     {
+        SettingsIcon.UnloadSettingsScene();
         SceneManager.LoadScene(controlledScene, LoadSceneMode.Additive);
     }
 

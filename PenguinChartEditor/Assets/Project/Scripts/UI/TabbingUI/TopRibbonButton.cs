@@ -13,12 +13,12 @@ public class TopRibbonButton : MonoBehaviour
     private void Awake()
     {
         button = GetComponent<Button>();
-        button.onClick.AddListener(EnableContent);
+        button.onClick.AddListener(HandleButtonPress);
     
         controlledPanel.SetActive(true);
         originalCoordinates = controlledPanel.transform.position;
             
-        controlledPanel.transform.position = Vector3.left * 100000;
+        DisableContent();
     }
 
     
@@ -26,7 +26,7 @@ public class TopRibbonButton : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && controlledPanel.transform.position.x > 0)
         {
-            controlledPanel.transform.position = Vector3.left * 100000;
+            DisableContent();
         }
     }
 
@@ -35,8 +35,14 @@ public class TopRibbonButton : MonoBehaviour
         controlledPanel.transform.position = Vector3.left * 100000;
     }
     
-    private void EnableContent()
+    private void HandleButtonPress()
     {
+        if (controlledPanel.transform.position == originalCoordinates)
+        {
+            DisableContent();
+            return;
+        }
+        
         controlledPanel.transform.position = originalCoordinates;
     }
 }

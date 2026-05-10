@@ -10,7 +10,7 @@ public class UndoStack : MonoBehaviour
     public static UndoStack instance;
 
     private InputMap inputMap;
-    private void Awake()
+    private void Start()
     {
         instance = this;
         instance.undoStack = new FiniteStack<IUndoSnapshot>(Chart.settings.MaximumSavedUndoActions);
@@ -24,7 +24,7 @@ public class UndoStack : MonoBehaviour
 
     private void OnDestroy()
     {
-        inputMap.Disable();
+        inputMap?.Disable();
     }
 
     public void PushAction(IUndoSnapshot undoSnapshot)

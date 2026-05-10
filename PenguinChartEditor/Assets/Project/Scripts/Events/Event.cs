@@ -236,7 +236,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
         // Sustain management/activation
         if (HasSustainTrail && pointerEventData.button == PointerEventData.InputButton.Right)
         {
-            if (Input.GetKey(KeyCode.LeftShift) || !Chart.settings.ExtSustains)
+            if (Input.GetKey(KeyCode.LeftShift) || !Chart.settings.ExtendedSustains)
             {
                 ParentInstrument.ShiftClickSelect(Tick);
                 return;

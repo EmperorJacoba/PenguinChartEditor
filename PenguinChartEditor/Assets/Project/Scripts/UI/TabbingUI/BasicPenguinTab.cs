@@ -50,6 +50,13 @@ public abstract class BasicPenguinTab<T> : MonoBehaviour, IPointerDownHandler, I
     {
         OnSwitchOff();
         imageComponent.sprite = imageReference.tabInactiveImage;
+
+        loadedTab = null;
+    }
+
+    public static void SwitchOffActiveTab()
+    {
+        loadedTab?.SwitchOff();
     }
 
     protected abstract void OnSwitchOff();

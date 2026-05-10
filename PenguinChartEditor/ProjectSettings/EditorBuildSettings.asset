@@ -29,6 +29,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Project/Scenes/TempoMapSceneV2.unity
     guid: 81cc5782704b6a24abe55318f9a35598
+  - enabled: 1
+    path: Assets/Project/Scenes/SettingsScene.unity
+    guid: 0b1e95e0e63b9fd4e99a7227c7040ca2
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

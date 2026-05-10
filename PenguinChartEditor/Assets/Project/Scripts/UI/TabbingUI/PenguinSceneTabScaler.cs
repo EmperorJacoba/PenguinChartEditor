@@ -8,9 +8,9 @@ using UnityEngine.EventSystems;
 /// This is a direct copy of the CanvasScaler component except for HandleScaleWithScreenSize().
 /// For the tabbing system to work, the tabbing system has to effectively lie about the size of the screen to get the canvas
 /// to size correctly for the available tab area. This is because during development, it is miles easier to design a UI in a vacuum
-/// (without considering the ribbon) and then resize it after (which already needs to be implemented, through this component.
+/// (without considering the ribbon) and then resize it after (which already needs to be implemented), through this component.
 /// The tabbing system provides a working area, which this script uses as a model for how to *SCALE* the components.
-/// Repositioning of the elements must happen separately (through UI
+/// Repositioning of the elements must happen separately through UI
 /// ********************************************************************************************************************
 
 [RequireComponent(typeof(Canvas))]

@@ -47,7 +47,7 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
             }
         };
 
-        inputMap.Charting.SustainExtended.performed += x => esc.SetExtendedSustains(!Chart.settings.ExtSustains);
+        inputMap.Charting.SustainExtended.performed += x => esc.SetExtendedSustains(!Chart.settings.ExtendedSustains);
 
         inputMap.Charting.SetLane0.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.open);
         inputMap.Charting.SetLane1.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.green);

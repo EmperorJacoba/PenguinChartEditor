@@ -2,10 +2,6 @@
 
 - hotkey to jump X number of bars/beats
 
-=> basic settings menu
-	- save user settings
-=> release
-
 => save waveform properties
 => save user song position, export settings, other QoL features
 
