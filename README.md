@@ -1,86 +1,92 @@
-# Welcome to the future of charting!
+# Penguin Chart Editor
+### a new way to chart Guitar Hero/Rock Band/Clone Hero/YARG custom songs
 
-Penguin Chart Editor is a work-in-progress chart editing software for Guitar Hero/Rock Band-style rhythm games, that will support five-fret and six-fret guitar-based instruments, 
-four-lane and eight-lane (Elite) drums, and most importantly, **Vocals/Harmonies gamemodes**. Pro Keys is a reach goal, pro guitar/bass & 5L drums are not planned but are considered.
-
+Penguin Chart Editor is a new chart editing software designed for speed and ease of use. 
 Unlike other chart editors, Penguin separates the stages of chart editing into distinctive "tabs," each structured and streamlined to best achieve certain charting tasks. Each tab is designed in a simple, accessible, and user-friendly way.
 This method of chart editing is inspired by Steinberg's Dorico, a program used for creating sheet music.
 
-## An important note about Penguin
+**[Join the discord!](https://discord.gg/3QYRbTGzS5)**
 
-### **Please do not submit issues or pull requests at this time. If you have any feature requests, questions, feedback, or want to contribute, please join the [discord server](https://discord.gg/z2UTt2p6uM) and contact Emperor.**
+**To download and use Penguin, please see the releases tab in the right sidebar.**
+(screenshot here)
 
-Penguin is **still in development**, and no built version of Penguin exists yet. I hope to have an alpha version of Penguin released by ~~**March-April 2026**~~ *(soon. currently preoccupied with finals. I only have a few more tasks to do, so build is imminent)*. 
-**Please star and watch this repository to get notifications when I (eventually) release builds!**
-
-The first version (version 0.1.0-alpha) of Penguin will include the following:
-
-- **Song setup**/metadata tab (enter in song metadata, audio stems, etc)
-- **Tempo Map** tab (set beatline positions and time signature changes)
-- **Chart** tab with support for five-fret instruments (guitar, bass, coop guitar, rhythm, keys)
-- **Starpower/Sections** tab (set starpower for instruments, lay down practice sections)
-- **Export** tab (create chart directory/file/folder as .zip or .chart)
-
-Files will be saved as .penguin, a file format that mirrors the data structure of Penguin.
-
-In following versions (roughly in this order - no promises), more features will be added:
-
-- ~~Undo/Redo~~ (already implemented)
-- Customizable keybinds/settings - including Lefty Flip
-- .mid support: importing and exporting
-- ***Vocal charting***
-- Pro drum charting
-- Bookmarks (local editor sections)
-- Elite drum charting
-- Six-fret (GHL) charting
-- RB3/YARG venue, lighting, and character animation editing tab
-- Linux support
-
-Plus other major & minor features not listed. Planned features are usually outlined as an issue in the [issues tab](https://github.com/EmperorJacoba/PenguinChartEditor/issues).
+Penguin is currently in alpha, meaning that bugs should be expected and the current state/feature set/appearance
+of the program is not finalized. Penguin currently only has a working build for Windows. Linux/MacOS are in the works.
 
 Penguin Chart Editor is being developed with [Unity, version 6000.0.60f1.](https://unity.com/releases/editor/whats-new/6000.0.60f1)
 
-# Images
-<figure>
-  <img width="1959" height="1122" alt="Five fret charting - Previewer" src="https://github.com/user-attachments/assets/051cd531-d516-44a6-bb5f-55810a75f199" />
-  <figcaption>You can place notes with a predefined sustain length.</figcaption>
-</figure>
+# FAQ
 
---
+## What can I currently do with Penguin?
 
-<figure>
-  <img width="1961" height="1122" alt="Five fret charting - Tap note and selection" src="https://github.com/user-attachments/assets/7f6919c5-1d6e-49af-b59c-21ac282574a5" />
-  <figcaption>Selection options/modifications have many common modifications you would want to make to a selection, including a custom sustain length.</figcaption>
-</figure>
+Penguin currently primarily supports five-fret instrument charting, along with a tempo mapping and starpower tab. Essentially,
+the tools required to make a full five-fret chart from start to finish.
 
---
+## What's coming next?
 
-<figure>
-  <img width="1948" height="1104" alt="Five fret charting - mixer and chords" src="https://github.com/user-attachments/assets/3afa48cb-f62a-4cfa-9c32-7813175f6b9a" />
-  <figcaption>Penguin comes with an easily accessible mixer with standard mute and solo functionality.</figcaption>
-</figure>
+I plan to expand on the available instruments, including:
 
---
+- Four-lane (pro) drums
+- Vocals
+- Elite (eight-lane) drums
+- Six-lane (GHL) instruments
 
-<figure>
-  <img width="1920" height="1080" alt="Starpower tab" src="https://github.com/user-attachments/assets/36151e5c-23ee-4ef4-baa6-41c1b1d2e281" />
-  <figcaption>This is the sections/starpower tab. You can display any number of the instruments you've charted next to each other for easy creation of starpower, RB unison phrases, BREs, sections, and drum fills.</figcaption>
-</figure>
+as well as new QoL features, such as:
 
---
+- chart splicing in-editor (combining/splitting charts)
+- audio editing in-editor (add/remove leading/lagging silence)
+- chart blueprints (reusable chart patterns)
+- chart bookmarks (to save notable editing/revision locations)
 
-<figure>
-  <img width="1940" height="1098" alt="Five fret charting - solo display" src="https://github.com/user-attachments/assets/8101c699-a953-41da-a2df-5b98f99e1eed" />
-  <figcaption>This is what a solo section looks like in Penguin. It is designed to mimic the appearance of a solo in YARG/RB3, and automatically accounts for end events, meaning you'll never accidentally leave a solo open forever again. Additionally, the third yellow note is forced, which is easily identifiable by the light blue base of the note. Display options, like hyperspeed, amplitude (the appearance of the waveform), play speed, and highway length, are infinitely customizable (so long as your computer can handle it).</figcaption>
-</figure>
+and support for file formats such as:
 
---
+- .mid
+- .sng
+- .rb2CON
+- .rb3CON
 
-<figure>
-  <img width="1970" height="1138" alt="Tempo Map" src="https://github.com/user-attachments/assets/6b54700b-ee5e-4b79-ba62-2c8d60b636d6" />
-  <figcaption>The tempo map tab is structured as a pure 2D, top-down view of a track for the highest level of precision when tempo mapping. This is unlike Moonscraper, where the distortion of the waveform by the angled track and large, blocky, event indicators covering the waveform makes it hard to tempo map. You can adjust BPM changes with the standard control+click+drag event you're familiar with in Moonscraper, or adjust time signature events and BPM events directly through the label (which can be edited with a simple double-click). </figcaption>
-</figure>
+> note: PenguinChartEditor saves data as .penguin. Exporting/reading .chart files is already supported.
 
+## How do I download Penguin?
+
+See the "releases" tab in the right sidebar and follow download instructions for the latest release.
+
+## How do I give feedback/report bugs?
+
+If you encounter a bug in game, please report it using the "Issues" tab in the top ribbon in this repository. 
+Please provide the steps you took leading up to the issue with screenshots/videos of the unexpected behavior as well as your log file and a description of the issue. 
+I will do my best to contact you promptly and fix the bug as soon as possible. 
+
+Instructions on how to find the log file (windows):
+1. Use `Win+R` to open the "run" window and type `%APPDATA%`, and then hit "OK".
+2. Go back one folder to the `{username}\AppData` folder. (not `{username}\AppData\Roaming`)
+3. Click on the `LocalLow` folder, then `EmperorJacoba` folder, then `PenguinChartEditor`.
+4. Upload `player.log` to your issue.
+
+To give feedback or feature requests, please contact me via the [discord server](https://discord.gg/3QYRbTGzS5) 
+and/or submit issues marked as feature requests. 
+I appreciate feature requests and feedback! I want Penguin Chart Editor to be the best it can be and satisfy as many charting needs as possible.
+
+## What do I do if Penguin crashes?
+
+If you had unsaved changes, find the latest autosave file to recover your changes (Penguin autosaves every 10 seconds).
+
+1. Use `Win+R` to open the "run" window and type `%APPDATA%`, and then hit "OK".
+2. Go back one folder to the `{username}\AppData` folder. (not `{username}\AppData\Roaming`)
+3. Click on the `LocalLow` folder, then `EmperorJacoba` folder, then `PenguinChartEditor`.
+4. Locate the latest autosave (sort by "date modified").
+
+Please take screenshots of the error notification (if one appears) and report the issue using the instructions above.
+
+## When will the full release be?
+
+The full release will be when all targeted features are implemented stably. 
+I do not have an exact timeframe for this due to other commitments in my life 
+(I work on Penguin whenever I get the chance between classes, work, etc.)
+
+# Limitations/Known errors
+
+- Loading extremely large charts (estimated >10,000 notes) have not been rigourously tested and will be slow. 
 
 # Attributions
 
