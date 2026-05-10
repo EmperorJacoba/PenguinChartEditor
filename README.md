@@ -1,11 +1,11 @@
 # Penguin Chart Editor
 ### a new way to chart Guitar Hero/Rock Band/Clone Hero/YARG custom songs
 
+**[Join the discord!](https://discord.gg/3QYRbTGzS5)**
+
 Penguin Chart Editor is a new chart editing software designed for speed and ease of use. 
 Unlike other chart editors, Penguin separates the stages of chart editing into distinctive "tabs," each structured and streamlined to best achieve certain charting tasks. Each tab is designed in a simple, accessible, and user-friendly way.
 This method of chart editing is inspired by Steinberg's Dorico, a program used for creating sheet music.
-
-**[Join the discord!](https://discord.gg/3QYRbTGzS5)**
 
 **To download and use Penguin, please see the releases tab in the right sidebar.**
 (screenshot here)
