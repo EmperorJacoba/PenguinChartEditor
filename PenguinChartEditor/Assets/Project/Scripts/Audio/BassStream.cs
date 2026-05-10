@@ -45,7 +45,7 @@ public class BassStream
             Bass.ChannelSetAttribute(streamHandle, ChannelAttribute.Volume, value);
         }
     }
-    private float _internalVolume;
+    private float _internalVolume = 1.0f;
 
     // ChannelAttribute.Speed seems to be another option - perhaps the other form of speed? freq vs. sample cut
     public float PlaySpeed
@@ -85,7 +85,7 @@ public class BassStream
             throw new ArgumentException($"BASS error when creating sfx stream. {Bass.LastError}");
         }
 
-       // Volume = 1f;
+        Volume = 1f;
         Muted = false;
     }
     
@@ -105,12 +105,11 @@ public class BassStream
 
     private static int CreatePlayingStream(string filePath)
     {
-        return 
-            Bass.CreateStream
-            (
-                filePath,
-                Flags: BassFlags.Default | BassFlags.Prescan
-            );
+        return Bass.CreateStream
+        (
+            filePath,
+            Flags: BassFlags.Default | BassFlags.Prescan
+        );
     }
     
     public void Free()
@@ -118,8 +117,21 @@ public class BassStream
         Bass.StreamFree(streamHandle);
     }
 
-    public void Play() => Bass.ChannelPlay(streamHandle);
-    public void Pause() => Bass.ChannelPause(streamHandle);
+    public void Play()
+    {
+        if (!Bass.ChannelPlay(streamHandle))
+        {
+            Debug.LogWarning($"There was an error playing a stream handle. Bass Error {Bass.LastError}");
+        }
+    }
+
+    public void Pause()
+    {
+        if (!Bass.ChannelPause(streamHandle))
+        {
+            Debug.LogWarning($"There was an error pausing a stream handle. Bass Error {Bass.LastError}");
+        }
+    }
 
     public long ByteLength => Bass.ChannelGetLength(streamHandle);
     public double TimeLength => Bass.ChannelBytes2Seconds(streamHandle, ByteLength);
