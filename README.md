@@ -53,7 +53,7 @@ See the "releases" tab in the right sidebar and follow download instructions for
 
 ## How do I give feedback/report bugs?
 
-If you encounter a bug in game, please report it using the "Issues" tab in the top ribbon in this repository. 
+If you encounter a bug in editor, please report it using the "Issues" tab in the top ribbon in this repository. 
 Please provide the steps you took leading up to the issue with screenshots/videos of the unexpected behavior as well as your log file and a description of the issue. 
 I will do my best to contact you promptly and fix the bug as soon as possible. 
 
