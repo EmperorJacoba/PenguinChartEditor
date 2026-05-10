@@ -67,6 +67,8 @@ public class Chart : MonoBehaviour
         settings = UserSettings.ReadFromDisk();
         DontDestroyOnLoad(instance);
 
+        Resolution = settings.DefaultResolution;
+
         AudioManager.Initialize();
 
         if (isDebug)
@@ -90,6 +92,9 @@ public class Chart : MonoBehaviour
         while (true)
         {
             Autosave();
+            
+            // temporary measure to stop wantsToQuit from bugging out
+            saved = false;
             yield return new WaitForSeconds(5.0f);
         }
     }
@@ -121,6 +126,7 @@ public class Chart : MonoBehaviour
         inputMap?.Disable();
     }
 
+    private bool quitNextRound = false;
     /// <summary>
     /// Check to make sure changes are saved upon application quit.
     /// </summary>
@@ -128,7 +134,7 @@ public class Chart : MonoBehaviour
     private bool AskForDataSave()
     {
         settings.SaveSettingsToDisk();
-        if (saved) return true;
+        if (saved || quitNextRound) return true;
         
         var dialog = DialogManager.SpawnDialog<DataWipeDialog>();
         
@@ -137,12 +143,14 @@ public class Chart : MonoBehaviour
             () =>
             {
                 if (!InternalSaveFile(false)) return false;
-                
+
+                quitNextRound = true;
                 Application.Quit();
                 return true;
             },
             () =>
             {
+                quitNextRound = true;
                 Application.Quit();
                 return false;
             });
@@ -451,6 +459,8 @@ public class Chart : MonoBehaviour
             );
         
         if (showSaved) RightHeaderText.instance?.ShowSaved();
+
+        saved = true;
         
         return true;
     }

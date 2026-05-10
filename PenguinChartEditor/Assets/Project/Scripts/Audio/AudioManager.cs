@@ -114,11 +114,16 @@ public class AudioManager : MonoBehaviour
     {
         if (Bass.Init())
         {
-            string path = $"{Application.dataPath}/Plugins/Bass/";
+            string path = $"{Application.dataPath}/Plugins/";
 
-#if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-            path += "Bass_win";
+#if UNITY_EDITOR_WIN && UNITY_EDITOR
+            path += "Bass/Bass_win";
 #endif
+            
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+            path += "x86_64";
+#endif
+            // fix: these file paths are not valid in standalone builds
 #if (UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX)
             path += "Bass_macOS";
 #endif
