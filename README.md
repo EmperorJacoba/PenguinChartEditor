@@ -78,6 +78,13 @@ If you had unsaved changes, find the latest autosave file to recover your change
 
 Please take screenshots of the error notification (if one appears) and report the issue using the instructions above.
 
+## How do I contribute?
+
+As Penguin is open source, you are free to fork and modify (and submit pull requests to) Penguin at your own discretion. 
+However, if you are creating very large features/bug fixes, please contact Emperor to discuss changes so that they can be cleanly implemented.
+
+If you need any assistance/guidance navigating the codebase, please contact Emperor. I will create proper documentation of the codebase in the future. 
+
 ## When will the full release be?
 
 The full release will be when all targeted features are implemented stably. 
