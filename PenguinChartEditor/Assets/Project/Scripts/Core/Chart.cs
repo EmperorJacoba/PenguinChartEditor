@@ -6,6 +6,7 @@ using SFB;
 using System.IO;
 using System.Linq;
 using Penguin.Dialogs;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// The central unit of Penguin. An instance of this class is guaranteed to exist at all times. Handles file I/O, various
@@ -52,8 +53,14 @@ public class Chart : MonoBehaviour
         {
             SetLoadedInstrument(DebugLoadedInstrument);
         }
+
+        if (openWithFileError)
+        {
+            ShowLoadError();
+        }
     }
-    
+
+    private static bool openWithFileError = false;
     private void Awake()
     {
         // Only ever one chart game object active, prioritize first loaded
@@ -64,11 +71,11 @@ public class Chart : MonoBehaviour
         }
         
         instance = this;
-        settings = UserSettings.ReadFromDisk();
         DontDestroyOnLoad(instance);
+        
+        settings = UserSettings.ReadFromDisk();
 
         Resolution = settings.DefaultResolution;
-
         AudioManager.Initialize();
 
         if (isDebug)
@@ -78,8 +85,26 @@ public class Chart : MonoBehaviour
                 Debug.Break();
             }
         }
+        
+        if (Environment.GetCommandLineArgs().Length > 1)
+        {
+            try
+            {
+                _InternalLoadFile(Environment.GetCommandLineArgs()[1]);
+                SceneManager.LoadScene("ContainerSceneV2");
+            }
+            catch (Exception e)
+            {
+                Debug.Log($"Error when loading file with \"open with\".\n\t{e}");
+                openWithFileError = true;
+            }
+        }
+        else
+        {
+            // for stability reasons as most rendering depends on this
+            SyncTrackInstrument = new SyncTrackInstrument();
+        }
 
-        SyncTrackInstrument = new SyncTrackInstrument();
         SetUpInputMap();
 
         StartCoroutine(AutosaveRoutine());
@@ -553,30 +578,42 @@ public class Chart : MonoBehaviour
         catch (Exception e)
         {
             Debug.Log($"Error when loading file.\n\t{e}");
-            var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
-            dialog.Initialize("There was an error loading the file. Please check the log file.");
+            ShowLoadError();
             return false;
         }
     }
-    
+
+    private static void ShowLoadError()
+    {
+        var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
+        dialog.Initialize("There was an error loading the file. Please check the log file.");
+    }
+
     private static bool _InternalLoadFile()
     {
         var pathCandidates = 
             StandaloneFileBrowser.OpenFilePanel
-                (
-                    $"Open chart file", 
-                    "", 
-                    new[]
-                    {
-                        new ExtensionFilter(
-                            "Supported chart/save data formats", 
-                            "chart", "penguin", "pce")
-                    }, 
-                    false
-                );
+            (
+                $"Open chart file", 
+                "", 
+                new[]
+                {
+                    new ExtensionFilter(
+                        "Supported chart/save data formats", 
+                        "chart", "penguin", "pce")
+                }, 
+                false
+            );
         if (pathCandidates.Length < 1) return false;
+
+        return _InternalLoadFile(pathCandidates[0]);
+    }
+    
+    private static bool _InternalLoadFile(string filePath)
+    {
+        openWithFileError = false;
         
-        ChartPath = pathCandidates[0];
+        ChartPath = filePath;
         FolderPath = Path.GetDirectoryName(ChartPath);
         
         ChartLoading = true;
