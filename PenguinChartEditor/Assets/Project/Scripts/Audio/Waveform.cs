@@ -128,6 +128,18 @@ public class Waveform : MonoBehaviour
         WaveformData = threadSafeDict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
 
+    public static void UpdateStemWaveformData(StemType stem)
+    {
+        var kvp = UpdateWaveformData(stem);
+
+        WaveformData[kvp.Key] = kvp.Value;
+    }
+
+    public static void RemoveStemWaveformData(StemType stem)
+    {
+        WaveformData.Remove(stem);
+    }
+
     /// <summary>
     /// Update waveform data to a new audio file.
     /// </summary>

@@ -13,9 +13,12 @@ public class StemSourceSelector : MonoBehaviour
     [SerializeField] private TMP_InputField stemDisplayField;
     [SerializeField] private Button removeButton;
 
-    public void Initialize(StemType representedStem)
+    private StemAdderCreator parentManager;
+
+    public void Initialize(StemType representedStem, StemAdderCreator parentManager)
     {
         audioStemType = representedStem;
+        this.parentManager = parentManager;
         
         stemLabel.text = MiscTools.Capitalize(audioStemType.ToString().Replace("_", " ")) + ":";
         selectButton.onClick.AddListener(SetAudioStem);
@@ -50,6 +53,7 @@ public class StemSourceSelector : MonoBehaviour
     private void RemoveAudioStem()
     {
         AudioManager.SafeDeleteStream(audioStemType);
+        parentManager.RemoveStemSourceSelectorReference(this);
         Destroy(gameObject);
     }
 }

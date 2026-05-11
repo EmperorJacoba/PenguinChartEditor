@@ -277,6 +277,8 @@ public class AudioManager : MonoBehaviour
         Streams[stemType] = stream;
         Chart.Metadata.StemPaths[stemType] = songPath;
         
+        Waveform.UpdateStemWaveformData(stemType);
+        
         StreamLink = GetLongestStream();
         
         return true;
@@ -288,6 +290,7 @@ public class AudioManager : MonoBehaviour
 
         stream.Free();
         Streams.Remove(stem);
+        Waveform.RemoveStemWaveformData(stem);
 
         if (StreamLink == stream) StreamLink = GetLongestStream();
     }
