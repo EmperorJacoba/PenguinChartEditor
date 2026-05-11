@@ -57,7 +57,7 @@ public static class ChartParser
             instruments.ToList(),
             syncTrackInstrument,
             starpower,
-            sectionInstrument
+            sectionInstrument ?? new SectionInstrument()
             );
     }
 

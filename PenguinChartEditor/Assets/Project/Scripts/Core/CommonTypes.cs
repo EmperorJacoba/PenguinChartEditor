@@ -17,7 +17,8 @@ public enum DifficultyType
 
 public enum InstrumentCategory
 {
-    None = 1,
+    SyncTrack = 1,
+    Sections = 2,
     FiveFret = 10,
     FourLaneDrums = 100,
     EliteDrums = 110,
@@ -350,7 +351,8 @@ public static class InstrumentMetadata
     {
         return (int)headerType switch
         {
-            < 10 => InstrumentCategory.None,
+            1 => InstrumentCategory.SyncTrack,
+            2 => InstrumentCategory.Sections,
             < 100 => InstrumentCategory.FiveFret,
             < 110 => InstrumentCategory.FourLaneDrums,
             < 120 => InstrumentCategory.EliteDrums,

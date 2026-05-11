@@ -196,8 +196,6 @@ public class AudioManager : MonoBehaviour
 
         var songLengthBytes = Bass.ChannelGetLength(streamHandle);
         var sampleIntervalBytes = Bass.ChannelSeconds2Bytes(streamHandle, ARRAY_RESOLUTION) / sizeof(float);
-
-        var bytesPerSample = sampleIntervalBytes * 2; // stereo = 2
         
         var arraySize = (int)Math.Floor((double)songLengthBytes / sampleIntervalBytes) / sizeof(float);
 
@@ -402,6 +400,14 @@ public class AudioManager : MonoBehaviour
     private static void SetStreamPositions() => SetStreamPositions(SongTime.SongPositionSeconds + Chart.settings.Calibration);
     private static void SetStreamPositions(double position)
     {
+        // Happens when no audio loaded. StreamLink exists for stability reasons, but does not exist in Streams.Values
+        // as it is just a placeholder.
+        if (Streams.Count == 0)
+        {
+            StreamLink.AudioPosition = position;
+            return;
+        }
+        
         foreach (var stream in Streams.Values)
         {
             stream.AudioPosition = position;
