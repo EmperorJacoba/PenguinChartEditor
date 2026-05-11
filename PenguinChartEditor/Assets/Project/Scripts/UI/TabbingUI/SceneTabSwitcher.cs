@@ -20,6 +20,13 @@ public class SceneTabSwitcher : BasicPenguinTab<SceneTabSwitcher>
         SceneManager.LoadScene(controlledScene, LoadSceneMode.Additive);
     }
 
+    public static void FullRefreshLoadedTab()
+    {
+        if (loadedTab is not SceneTabSwitcher loadedTabTyped) return;
+        loadedTabTyped.SwitchOff();
+        loadedTabTyped.SwitchOn();
+    }
+
     public static void LoadScene(string sceneName)
     {
         var tabsFound = tabs.Where(x =>

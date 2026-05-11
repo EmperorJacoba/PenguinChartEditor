@@ -529,6 +529,10 @@ public class Chart : MonoBehaviour
         ChartFileLoaded?.Invoke();
         
         SaveFile();
+        
+        // do this to avoid nasty errors with trying to load invalid data (which WILL happen if the active tab is not
+        // reloaded). InPlaceRefresh() does not work here.
+        SceneTabSwitcher.FullRefreshLoadedTab();
         return true;
     }
 
@@ -675,7 +679,10 @@ public class Chart : MonoBehaviour
         ChartLoading = false;
         
         ChartFileLoaded?.Invoke();
-
+        
+        // do this to avoid nasty errors with trying to load invalid data (which WILL happen if the active tab is not
+        // reloaded). InPlaceRefresh() does not work here.
+        SceneTabSwitcher.FullRefreshLoadedTab();
         return true;
     }
     

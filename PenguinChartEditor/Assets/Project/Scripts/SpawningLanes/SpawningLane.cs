@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 #region ILane
@@ -86,6 +87,8 @@ public abstract class SpawningLane<TEvent> : MonoBehaviour, ILane where TEvent :
 
     private void InPlaceRefresh()
     {
+        if (Chart.ChartLoading) return;
+        
         RefreshEventsToDisplay();
         UpdateEvents();
         startUpdateTick = -1;
