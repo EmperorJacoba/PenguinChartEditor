@@ -19,6 +19,8 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 => unload/reload waveform across scene change
 => timestamp should say "No Audio Loaded" instead of being out of 1:30
 
+=> automatically poll GitHub for new releases
+
 => parse .mid
 => placement tab for tempo map
 	=> allow edit TS/BPM values there
@@ -36,7 +38,8 @@ pull ClearLaneSelection() up to IInstrument from SPInstrument
 
 patch notes:
 - Fixed bug where audio position would reset itself to incorrect position if no audio loaded
-- Fixed bug where the lack of an [Events] header (nonessential section) in a .chart file would cause load failure
+- Fixed bug where the lack of an `[Events]` header (nonessential section) in a .chart file would cause load failure
 - Reordered dialog boxes in the opening scene so that error notifications are not blocked
 - Pause audio on tab change
 - Fix audio playback state change listener from being active in Setup, Export, and Settings tabs
+- Add log file markers to load file logic so that file load errors are easier to spot

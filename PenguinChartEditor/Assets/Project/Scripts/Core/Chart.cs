@@ -632,27 +632,32 @@ public class Chart : MonoBehaviour
         ChartLoading = true;
 
         var fileType = Path.GetExtension(ChartPath);
-        ChartFileInformation readData = null;
+        ChartFileInformation readData;
+
+        var startTime = Time.realtimeSinceStartup;
         
         switch (fileType.ToLower())
         {
             case ".chart":
             {
+                print($"Beginning new parsing operation on a .chart file with path {ChartPath}\n");
                 readData = ChartParser.ParseChart(ChartPath);
                 break;
             }
             case ".penguin" or ".pce" or ".pen": // .PEN happens when the file path is really long
             {
+                print($"Beginning new parsing operation on a penguin save file with path {ChartPath}\n");
                 readData = PenguinParser.ParsePenguin(ChartPath);
                 break;
             }
             default:
             {
-                Debug.LogWarning($"No support for parsing file type {fileType}.");
-                break;
+                throw new ArgumentException($"No support for parsing file type {fileType}.");
             }
         }
-        
+
+        print($"\nFile data successfully parsed. {(Time.realtimeSinceStartup - startTime)*1000}ms.");
+
         ApplyFileInformation(readData);
         
         if (Metadata.StemPaths.Count == 0)
