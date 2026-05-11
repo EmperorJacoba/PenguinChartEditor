@@ -159,11 +159,17 @@ public class AudioManager : MonoBehaviour
     {
         inputMap = new InputMap();
         inputMap.Enable();
-        inputMap.ExternalCharting.PlayPause.performed += _ =>
-        {
-            if (AudioPlaying) PauseAudio();
-            else PlayAudio();
-        };
+        inputMap.ExternalCharting.PlayPause.performed += _ => ToggleAudioPlayback();
+
+        SceneTabSwitcher.TabChanged += PauseAudio;
+    }
+
+    private void ToggleAudioPlayback()
+    {
+        if (Chart.LoadedInstrument is null) return;
+        
+        if (AudioPlaying) PauseAudio();
+        else PlayAudio();
     }
 
     private void OnDestroy()

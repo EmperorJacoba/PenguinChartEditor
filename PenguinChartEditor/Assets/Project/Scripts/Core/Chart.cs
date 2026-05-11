@@ -286,6 +286,11 @@ public class Chart : MonoBehaviour
     {
         switch (instrumentID)
         {
+            case HeaderType.Song:
+            {
+                LoadedInstrument = null;
+                break;
+            }
             case HeaderType.SyncTrack:
             {
                 LoadedInstrument = SyncTrackInstrument;

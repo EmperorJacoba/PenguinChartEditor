@@ -7,6 +7,9 @@ public class SceneTabSwitcher : BasicPenguinTab<SceneTabSwitcher>
 {
     [SerializeField] private string controlledScene;
     public static string forceLoadedScene = null;
+
+    public delegate void TabChangedDelegate();
+    public static event TabChangedDelegate TabChanged;
     
     protected override void OnSwitchOff()
     {
@@ -18,6 +21,8 @@ public class SceneTabSwitcher : BasicPenguinTab<SceneTabSwitcher>
     {
         SettingsIcon.UnloadSettingsScene();
         SceneManager.LoadScene(controlledScene, LoadSceneMode.Additive);
+        
+        TabChanged?.Invoke();
     }
 
     public static void LoadScene(string sceneName)

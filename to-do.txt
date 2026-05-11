@@ -38,3 +38,5 @@ patch notes:
 - Fixed bug where audio position would reset itself to incorrect position if no audio loaded
 - Fixed bug where the lack of an [Events] header (nonessential section) in a .chart file would cause load failure
 - Reordered dialog boxes in the opening scene so that error notifications are not blocked
+- Pause audio on tab change
+- Fix audio playback state change listener from being active in Setup, Export, and Settings tabs
