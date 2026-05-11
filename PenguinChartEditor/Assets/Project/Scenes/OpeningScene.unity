@@ -239,9 +239,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1820031143630282711, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1820031143630282711, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1820031143630282711, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1820031143630282711, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3243167920233622715, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3310980522686117109, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
       propertyPath: m_Name
       value: DialogManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 5713962369698069465, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6512594887457154974, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -291,14 +315,50 @@ PrefabInstance:
       propertyPath: m_ScreenMatchMode
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 8123412993031976567, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8123412993031976567, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8123412993031976567, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8123412993031976567, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8513265331877198517, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9004899803704270052, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9004899803704270052, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9004899803704270052, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9004899803704270052, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7563897435808398749, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
-      insertIndex: -1
+      insertIndex: 0
       addedObject: {fileID: 6690789936800108011}
     - targetCorrespondingSourceObject: {fileID: 7563897435808398749, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
-      insertIndex: -1
+      insertIndex: 1
       addedObject: {fileID: 1992185064}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
@@ -1919,7 +1979,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1992185064}
   m_Layer: 5
-  m_Name: ConfirmationDialog (2)
+  m_Name: alpha
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2173,7 +2233,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6690789936800108011}
   m_Layer: 5
-  m_Name: ConfirmationDialog (1)
+  m_Name: welcome
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
