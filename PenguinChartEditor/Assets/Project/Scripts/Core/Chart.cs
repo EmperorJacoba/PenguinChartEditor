@@ -85,7 +85,7 @@ public class Chart : MonoBehaviour
                 Debug.Break();
             }
         }
-        
+#if UNITY_STANDALONE_WIN
         if (Environment.GetCommandLineArgs().Length > 1)
         {
             try
@@ -100,10 +100,9 @@ public class Chart : MonoBehaviour
             }
         }
         else
-        {
+#endif
             // for stability reasons as most rendering depends on this
             SyncTrackInstrument = new SyncTrackInstrument();
-        }
 
         SetUpInputMap();
 
@@ -608,6 +607,15 @@ public class Chart : MonoBehaviour
 
         return _InternalLoadFile(pathCandidates[0]);
     }
+
+    private static readonly string[] supportedFileFormats =
+    {
+        "opus",
+        "ogg",
+        "mp3",
+        "flac",
+        "wav"
+    };
     
     private static bool _InternalLoadFile(string filePath)
     {
@@ -650,10 +658,13 @@ public class Chart : MonoBehaviour
             // testing: please add audio selection in future if excess audio files are found
             foreach (StemType key in Enum.GetValues(typeof(StemType)))
             {
-                string targetFilePath = $"{FolderPath}/{key}.opus";
-                if (File.Exists(targetFilePath))
+                foreach (var format in supportedFileFormats)
                 {
-                    Metadata.StemPaths.Add(key, targetFilePath);
+                    string targetFilePath = $"{FolderPath}/{key}.{format}";
+                    if (File.Exists(targetFilePath))
+                    {
+                        Metadata.StemPaths[key] = targetFilePath;
+                    }
                 }
             } 
         }
