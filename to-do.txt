@@ -11,10 +11,13 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 => save waveform properties
 => save user song position, export settings
-=> "open as" file support - using command line arguments
 => keybinds system/editor - settings
 => change window header based on charting status 
 => "saved" field needs to work properly, not just be hardcoded
+=> settings menu doesn't close?
+=> master volume
+=> sfx (metronome/clap) volume adjustment
+=> unload/reload waveform across scene change
 
 => parse .mid
 => placement tab for tempo map
@@ -30,4 +33,13 @@ SortedDictionary improvements
 make previewers use InitializeProperties in Awake()
 
 pull ClearLaneSelection() up to IInstrument from SPInstrument
+
+patch notes:
+
+- add "open with" file support
+- add autodetect for standard named audio files other than .opus (.flac, .mp3, .wav, .ogg)
+- waveform now updates properly upon an audio change
+- fix duplicate audio displays upon tab changes in the Setup tab 
+- fix audio stem types not reappearing in the "Add Audio Stem" dropdown after removing the stem from the list
+- remove ability to have duplicate "Add Audio Stem" dropdowns, which broke setup if duplicated
 

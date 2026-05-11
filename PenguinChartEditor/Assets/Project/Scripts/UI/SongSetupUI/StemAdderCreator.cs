@@ -45,6 +45,8 @@ public class StemAdderCreator : MonoBehaviour
     
     private void SpawnAudioMenu()
     {
+        if (activeDropdown != null) return;
+        
         activeDropdown = Instantiate(templateDropdown, canvas.transform);
         activeDropdown.transform.position = Input.mousePosition;
         activeDropdown.options.Clear();
@@ -75,7 +77,12 @@ public class StemAdderCreator : MonoBehaviour
         if (activeDropdown != null) Destroy(activeDropdown.gameObject);
         
         var stemSourceSelector = Instantiate(stemSourceSelectorPrefab, stemSpawningParent.transform).GetComponent<StemSourceSelector>();
-        stemSourceSelector.Initialize(stem);
+        stemSourceSelector.Initialize(stem, this);
         activeStemSelectors.Add(stemSourceSelector);
+    }
+
+    public void RemoveStemSourceSelectorReference(StemSourceSelector obj)
+    {
+        activeStemSelectors.Remove(obj);
     }
 }
