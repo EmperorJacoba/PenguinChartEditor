@@ -14,7 +14,6 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 => keybinds system/editor - settings
 => change window header based on charting status 
 => "saved" field needs to work properly, not just be hardcoded
-=> settings menu doesn't close?
 => master volume
 => sfx (metronome/clap) volume adjustment
 => unload/reload waveform across scene change
@@ -42,4 +41,5 @@ patch notes:
 - fix duplicate audio displays upon tab changes in the Setup tab 
 - fix audio stem types not reappearing in the "Add Audio Stem" dropdown after removing the stem from the list
 - remove ability to have duplicate "Add Audio Stem" dropdowns, which broke setup if duplicated
-
+- switch .zip toggle interactability off as it is not implemented
+- fix settings loading multiple times upon multiple settings button presses

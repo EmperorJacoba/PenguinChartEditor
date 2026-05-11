@@ -1042,8 +1042,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f00876d1fbb443eabc77311330a25a6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 789912692}
-  overwriteDialog: {fileID: 1835147864841747714, guid: eab525480704ffe418cc7d900345307e, type: 3}
 --- !u!1 &112324535
 GameObject:
   m_ObjectHideFlags: 0
@@ -4409,7 +4407,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 547671810}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999714
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5754,8 +5752,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentScene: 0
-  highway: {fileID: 0}
-  laneWidth: 0
+  globalHighway: {fileID: 0}
   overlayUIRaycaster: {fileID: 789912693}
   eventRaycaster: {fileID: 789912693}
   cameraHighwayRaycaster: {fileID: 0}
@@ -6374,7 +6371,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.0005249335}
+  m_AnchoredPosition: {x: 0, y: 0.00012973267}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &955902974
@@ -10804,7 +10801,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1784695270}
   toggleTransition: 1
   graphic: {fileID: 923184086}

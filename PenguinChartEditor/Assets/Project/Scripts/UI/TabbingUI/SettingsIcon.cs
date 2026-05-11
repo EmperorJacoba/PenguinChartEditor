@@ -15,7 +15,10 @@ public class SettingsIcon : MonoBehaviour
 
     private void OnLoadSettings()
     {
+        if (settingsLoaded) return;
+        
         SceneTabSwitcher.SwitchOffActiveTab();
+
         SceneManager.LoadScene("SettingsScene", LoadSceneMode.Additive);
         settingsLoaded = true;
     }
