@@ -286,6 +286,11 @@ public class Chart : MonoBehaviour
     {
         switch (instrumentID)
         {
+            case HeaderType.Song:
+            {
+                LoadedInstrument = null;
+                break;
+            }
             case HeaderType.SyncTrack:
             {
                 LoadedInstrument = SyncTrackInstrument;
@@ -529,6 +534,10 @@ public class Chart : MonoBehaviour
         ChartFileLoaded?.Invoke();
         
         SaveFile();
+        
+        // do this to avoid nasty errors with trying to load invalid data (which WILL happen if the active tab is not
+        // reloaded). InPlaceRefresh() does not work here.
+        SceneTabSwitcher.FullRefreshLoadedTab();
         return true;
     }
 
@@ -627,27 +636,32 @@ public class Chart : MonoBehaviour
         ChartLoading = true;
 
         var fileType = Path.GetExtension(ChartPath);
-        ChartFileInformation readData = null;
+        ChartFileInformation readData;
+
+        var startTime = Time.realtimeSinceStartup;
         
         switch (fileType.ToLower())
         {
             case ".chart":
             {
+                print($"Beginning new parsing operation on a .chart file with path {ChartPath}\n");
                 readData = ChartParser.ParseChart(ChartPath);
                 break;
             }
             case ".penguin" or ".pce" or ".pen": // .PEN happens when the file path is really long
             {
+                print($"Beginning new parsing operation on a penguin save file with path {ChartPath}\n");
                 readData = PenguinParser.ParsePenguin(ChartPath);
                 break;
             }
             default:
             {
-                Debug.LogWarning($"No support for parsing file type {fileType}.");
-                break;
+                throw new ArgumentException($"No support for parsing file type {fileType}.");
             }
         }
-        
+
+        print($"\nFile data successfully parsed. {(Time.realtimeSinceStartup - startTime)*1000}ms.");
+
         ApplyFileInformation(readData);
         
         if (Metadata.StemPaths.Count == 0)
@@ -675,7 +689,10 @@ public class Chart : MonoBehaviour
         ChartLoading = false;
         
         ChartFileLoaded?.Invoke();
-
+        
+        // do this to avoid nasty errors with trying to load invalid data (which WILL happen if the active tab is not
+        // reloaded). InPlaceRefresh() does not work here.
+        SceneTabSwitcher.FullRefreshLoadedTab();
         return true;
     }
     

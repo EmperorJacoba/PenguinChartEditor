@@ -17,6 +17,10 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 => master volume
 => sfx (metronome/clap) volume adjustment
 => unload/reload waveform across scene change
+=> timestamp should say "No Audio Loaded" instead of being out of 1:30 when no audio
+
+=> automatically poll GitHub for new releases
+=> progress bar for loading files
 
 => parse .mid
 => placement tab for tempo map
@@ -34,12 +38,10 @@ make previewers use InitializeProperties in Awake()
 pull ClearLaneSelection() up to IInstrument from SPInstrument
 
 patch notes:
-
-- add "open with" file support
-- add autodetect for standard named audio files other than .opus (.flac, .mp3, .wav, .ogg)
-- waveform now updates properly upon an audio change
-- fix duplicate audio displays upon tab changes in the Setup tab 
-- fix audio stem types not reappearing in the "Add Audio Stem" dropdown after removing the stem from the list
-- remove ability to have duplicate "Add Audio Stem" dropdowns, which broke setup if duplicated
-- switch .zip toggle interactability off as it is not implemented
-- fix settings loading multiple times upon multiple settings button presses
+- Fixed bug where audio position would reset itself to incorrect position if no audio loaded
+- Fixed bug where the lack of an `[Events]` header (nonessential section) in a .chart file would cause load failure
+- Reordered dialog boxes in the opening scene so that error notifications are not blocked
+- Pause audio on tab change
+- Fix audio playback state change listener from being active in Setup, Export, and Settings tabs
+- Add log file markers to load file logic so that file load errors are easier to spot
+- Fix attempts to load unloaded/invalid/disposed data into a charting scene after an Open command
