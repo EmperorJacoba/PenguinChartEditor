@@ -604,7 +604,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
         if (openSoloEvent.StartTick >= 0) SoloData.SoloEvents.Add(openSoloEvent.StartTick, openSoloEvent);
         CheckForHoposInRange(uniqueTicks.Min(), uniqueTicks.Max());
 
-        if (Chart.SyncTrackInstrument is not null) ValidateSustainsInRange(uniqueTicks.Min(), uniqueTicks.Max());
+        if (!Chart.ChartLoading) ValidateSustainsInRange(uniqueTicks.Min(), uniqueTicks.Max());
 
         FlipTicks(flippedTicks);
     }

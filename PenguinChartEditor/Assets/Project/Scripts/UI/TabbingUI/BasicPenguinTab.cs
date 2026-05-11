@@ -16,7 +16,7 @@ public abstract class BasicPenguinTab<T> : MonoBehaviour, IPointerDownHandler, I
     [SerializeField] private Image imageComponent;
 
     protected static readonly List<ITab> tabs = new();
-    private static ITab loadedTab;
+    protected static ITab loadedTab;
 
     private void Awake()
     {
