@@ -17,9 +17,10 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 => master volume
 => sfx (metronome/clap) volume adjustment
 => unload/reload waveform across scene change
-=> timestamp should say "No Audio Loaded" instead of being out of 1:30
+=> timestamp should say "No Audio Loaded" instead of being out of 1:30 when no audio
 
 => automatically poll GitHub for new releases
+=> progress bar for loading files
 
 => parse .mid
 => placement tab for tempo map
@@ -43,3 +44,4 @@ patch notes:
 - Pause audio on tab change
 - Fix audio playback state change listener from being active in Setup, Export, and Settings tabs
 - Add log file markers to load file logic so that file load errors are easier to spot
+- Fix attempts to load unloaded/invalid/disposed data into a charting scene after an Open command
