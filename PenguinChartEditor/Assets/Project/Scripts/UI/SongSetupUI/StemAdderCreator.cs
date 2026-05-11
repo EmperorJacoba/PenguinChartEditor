@@ -33,7 +33,7 @@ public class StemAdderCreator : MonoBehaviour
     {
         foreach (var selector in activeStemSelectors)
         {
-            Destroy(selector);
+            Destroy(selector.gameObject);
         }
         
         addButton.onClick.RemoveListener(SpawnAudioMenu);

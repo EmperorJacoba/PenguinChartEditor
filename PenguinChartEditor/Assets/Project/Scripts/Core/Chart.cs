@@ -85,7 +85,7 @@ public class Chart : MonoBehaviour
                 Debug.Break();
             }
         }
-#if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
         if (Environment.GetCommandLineArgs().Length > 1)
         {
             try
