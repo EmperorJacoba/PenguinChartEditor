@@ -31,32 +31,21 @@ public class BassStream
     {
         get
         {
-            return Muted ? 0 : _internalVolume;
+            return (float)Bass.ChannelGetAttribute(streamHandle, ChannelAttribute.Volume);
         }
         set
         {
-            // value can exceed 1, is just amplification
-            if (value < 0) value = 0;
-            
             // Use an internal volume so that adjusting the volume of a stem in the StemVolumeEditor will still affect volume
             // when unmuted.
             _internalVolume = value;
             if (Muted) return;
-         
-            RefreshInternalVolume();
+            if (value > 1) value = 1;
+            if (value < 0) value = 0;
+
+            Bass.ChannelSetAttribute(streamHandle, ChannelAttribute.Volume, value);
         }
     }
     private float _internalVolume = 1.0f;
-
-    public void RefreshInternalVolume()
-    {
-        // Bass.Volume controls the OS volume level and lowk sucks
-        // This is an alternative to that, where master volume is just a volume scalar as opposed to actually changing
-        // the system volume. 
-        
-        Bass.ChannelSetAttribute(streamHandle, ChannelAttribute.Volume, _internalVolume * AudioManager.MasterVolume);
-        MonoBehaviour.print(_internalVolume * AudioManager.MasterVolume);
-    }
 
     // ChannelAttribute.Speed seems to be another option - perhaps the other form of speed? freq vs. sample cut
     public float PlaySpeed
