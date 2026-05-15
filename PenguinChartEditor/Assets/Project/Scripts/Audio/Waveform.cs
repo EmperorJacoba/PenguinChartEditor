@@ -147,7 +147,7 @@ public class Waveform : MonoBehaviour
     private static KeyValuePair<StemType, StemWaveformData> UpdateWaveformData(StemType stem)
     {
         float[] stemWaveformData = AudioManager.GetAllAudioSamples(stem);
-
+        
         return new KeyValuePair<StemType, StemWaveformData>(stem, new StemWaveformData(stemWaveformData));
     }
 
