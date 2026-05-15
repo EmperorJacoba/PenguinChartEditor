@@ -10,10 +10,17 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 - hotkey to jump X number of bars/beats
 
 => save waveform properties
-=> save user song position, export settings
+	=> save master, sfx volume to user settings
+	=> save stem volumes to .penguin file
+	=> save user song position to .penguin file
+	=> save export settings to disk
+
 => keybinds system/editor - settings
+
 => change window header based on charting status 
+
 => "saved" chart field needs to work properly, not just be hardcoded
+
 => unload/reload waveform across scene change
 => timestamp should say "No Audio Loaded" instead of being out of 1:30 when no audio
 => chunk waveform data processing
@@ -42,3 +49,4 @@ patch notes:
 - Changed SFX file formats to .opus for better space efficiency and made SFX louder
 - Added Master Volume, Metronome Volume, and Clap Volume controllers into Mixer sub-tab
 - Optimize new chart creation by removing duplicate data production call (reduced load times from 22.9s -> 4.9s for large test file)
+- Fixed a potential bug where audio tracks would not get reset upon making a new file
