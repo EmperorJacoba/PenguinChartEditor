@@ -528,6 +528,9 @@ public class Chart : MonoBehaviour
             new SectionInstrument())
         );
         
+        // also resets audio
+        AudioManager.CreateAudioStreams();
+        
         ChartLoading = false;
         ChartFileLoaded?.Invoke();
         
@@ -626,7 +629,6 @@ public class Chart : MonoBehaviour
     
     private static bool _InternalLoadFile(string filePath)
     {
-        TimeDiagnoser timer = new TimeDiagnoser("File loader");
         openWithFileError = false;
         
         ChartPath = filePath;
@@ -637,10 +639,9 @@ public class Chart : MonoBehaviour
         var fileType = Path.GetExtension(ChartPath);
         ChartFileInformation readData;
         
-        timer.RecordTime("Setup");
-
         var startTime = Time.realtimeSinceStartup;
         
+        // Diagnostics: file parsing is good chunk of load time for non-penguin files
         switch (fileType.ToLower())
         {
             case ".chart":
@@ -663,11 +664,7 @@ public class Chart : MonoBehaviour
 
         print($"\nFile data successfully parsed. {(Time.realtimeSinceStartup - startTime)*1000}ms.");
         
-        timer.RecordTime("Parsing");
-
         ApplyFileInformation(readData);
-        
-        timer.RecordTime("Applied file info");
         
         if (Metadata.StemPaths.Count == 0)
         {
@@ -688,28 +685,18 @@ public class Chart : MonoBehaviour
             } 
         }
         
-        timer.RecordTime("Scanned for stem paths");
-        
         AudioManager.CreateAudioStreams();
         
-        timer.RecordTime("Refresh audio streams");
-        
+        // Diagnostics: lots of load time here due to data that must be fetched
         Waveform.InitializeWaveformData();
 
-        timer.RecordTime("Generated waveform data");
-        
         ChartLoading = false;
         
         ChartFileLoaded?.Invoke();
         
-        timer.RecordTime("Wrap up");
-        
         // do this to avoid nasty errors with trying to load invalid data (which WILL happen if the active tab is not
         // reloaded). InPlaceRefresh() does not work here.
         SceneTabSwitcher.FullRefreshLoadedTab();
-        
-        timer.RecordTime("Full refresh, complete");
-        timer.Report();
         
         return true;
     }

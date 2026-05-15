@@ -55,7 +55,6 @@ public class BassStream
         // the system volume. 
         
         Bass.ChannelSetAttribute(streamHandle, ChannelAttribute.Volume, _internalVolume * AudioManager.MasterVolume);
-        MonoBehaviour.print(_internalVolume * AudioManager.MasterVolume);
     }
 
     // ChannelAttribute.Speed seems to be another option - perhaps the other form of speed? freq vs. sample cut

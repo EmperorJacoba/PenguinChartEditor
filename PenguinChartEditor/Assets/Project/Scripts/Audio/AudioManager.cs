@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ManagedBass;
 using ManagedBass.Enc;
+using Penguin.Debug;
 using UnityEngine;
 
 // This file is based around the licensed product plugin BASS, interacting through the ManagedBass plugin.
@@ -219,18 +220,17 @@ public class AudioManager : MonoBehaviour
                            $"stem {stem} with file path: {Chart.Metadata.StemPaths[stem]}. {Bass.LastError}");
             return Array.Empty<float>();
         }
-
+        
         var songLengthBytes = Bass.ChannelGetLength(streamHandle);
         var sampleIntervalBytes = Bass.ChannelSeconds2Bytes(streamHandle, ARRAY_RESOLUTION) / sizeof(float);
-        
         var arraySize = (int)Math.Floor((double)songLengthBytes / sampleIntervalBytes) / sizeof(float);
-
+        
         var waveformData = new float[arraySize];
-
+        
         var bytesUnread = songLengthBytes;
         var currentCumulativeSamplePos = 0L;
         var buffer = Bass.ChannelSeconds2Bytes(streamHandle, BUFFER_SIZE);
-
+        
         while (bytesUnread > 0)
         {
             var bytesThisPass = Math.Min(buffer, bytesUnread);
@@ -259,8 +259,9 @@ public class AudioManager : MonoBehaviour
             currentCumulativeSamplePos += sample;
             Bass.ChannelSetPosition(streamHandle, songLengthBytes - bytesUnread);
         }
-
+        
         Bass.StreamFree(streamHandle);
+        
         return waveformData;
     }
 
@@ -274,7 +275,7 @@ public class AudioManager : MonoBehaviour
                 BassFlags.Decode
             );
     }
-
+    
     public static void CreateAudioStreams()
     {
         Streams = new Dictionary<StemType, BassStream>();
