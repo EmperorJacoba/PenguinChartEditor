@@ -34,7 +34,7 @@ public class StemVolumeEditor : MonoBehaviour
 
     private static event UnsoloDelegate SoloedStemOccurred;
 
-    private enum ButtonStates
+    public enum ButtonStates
     {
         normal,
         muted,
@@ -44,9 +44,11 @@ public class StemVolumeEditor : MonoBehaviour
     private void Start()
     {
         SoloedStemOccurred += UpdateMuteButton;
+        muteButton.onClick.AddListener(OnMuteButtonPress);
+        soloButton.onClick.AddListener(OnSoloButtonPress);
 
-        slider.onValueChanged.AddListener(x => SliderChange(x));
-        entryBox.onEndEdit.AddListener(x => EntryBoxChange(x));
+        slider.onValueChanged.AddListener(SliderChange);
+        entryBox.onEndEdit.AddListener(EntryBoxChange);
     }
 
     /// <summary>

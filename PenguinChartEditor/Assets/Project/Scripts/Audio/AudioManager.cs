@@ -109,6 +109,24 @@ public class AudioManager : MonoBehaviour
             }
         }
     }
+
+    public static double MasterVolume
+    {
+        get => _mv;
+        set
+        {
+            if (value > 1) value = 1;
+            if (value < 0) value = 0;
+            _mv = value;
+
+            foreach (var stream in Streams.Values)
+            {
+                stream.RefreshInternalVolume();
+            }
+        }
+    }
+
+    private static double _mv = 1;
     
     public static void Initialize()
     {
@@ -147,9 +165,11 @@ public class AudioManager : MonoBehaviour
             Debug.LogError($"Could not load BASS plugin. {Bass.LastError}");
             return;
         }
+        
+        print(MasterVolume);
 
-        metronome = new BassStream($"{Application.streamingAssetsPath}/metronomeclick.mp3");
-        clap = new BassStream($"{Application.streamingAssetsPath}/clap.mp3");
+        metronome = new BassStream($"{Application.streamingAssetsPath}/metronomeclick.opus");
+        clap = new BassStream($"{Application.streamingAssetsPath}/clap.opus");
         placeholder = new BassStream($"{Application.streamingAssetsPath}/placeholder_silence.opus");
         StreamLink = placeholder;
     }
@@ -270,6 +290,7 @@ public class AudioManager : MonoBehaviour
         BassStream stream;
         try
         {
+            // Diagnostic: Creating a new stream is very efficient. 1 * 10^-4 ms avg
             stream = new BassStream(stemType, songPath);
         }
         catch
@@ -420,12 +441,41 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public enum SFX
+    {
+        metronome,
+        clap
+    }
+
     private static BassStream metronome;
     private static BassStream clap;
     private static BassStream placeholder;
 
     public static void PlayMetronomeSound() => metronome.Play();
     public static void PlayClapSound() => clap.Play();
+
+    public static void SetSFXVolume(SFX sfx, float newVolume)
+    {
+        switch (sfx)
+        {
+            case SFX.metronome:
+            {
+                metronome.Volume = newVolume;
+                break;
+            }
+            case SFX.clap:
+            {
+                clap.Volume = newVolume;
+                break;
+            }
+            default:
+            {
+                throw new ArgumentException($"No SFX with id {sfx}");
+            }
+        }
+    }
+
+    #region Encoding / Writing
     
     public static void WriteAudioFiles(
         Metadata metadata, 
@@ -493,4 +543,6 @@ public class AudioManager : MonoBehaviour
         BassEnc.EncodeStop(encoderHandle);
         Bass.StreamFree(handle);
     }
+    
+    #endregion
 }
