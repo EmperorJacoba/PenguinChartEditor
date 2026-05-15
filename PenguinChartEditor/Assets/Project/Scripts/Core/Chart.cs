@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SFB;
 using System.IO;
 using System.Linq;
+using Penguin.Debug;
 using Penguin.Dialogs;
 using UnityEngine.SceneManagement;
 
@@ -222,10 +223,7 @@ public class Chart : MonoBehaviour
     /// </summary>
     public static int Resolution
     {
-        get
-        {
-            return _chartRes == -1 ? throw new ArgumentException("Uninitialized resolution.") : _chartRes;
-        }
+        get => _chartRes == -1 ? throw new ArgumentException("Uninitialized resolution.") : _chartRes;
         set
         {
             if (value == 0) throw new ArgumentException("Resolution cannot be zero!");
@@ -237,13 +235,7 @@ public class Chart : MonoBehaviour
     }
     private static int _chartRes = -1;
 
-    public static int HopoCutoff
-    {
-        get
-        {
-            return _cachcut == -1 ? throw new ArgumentException("Uninitialized hopo cutoff.") : _cachcut;
-        }
-    }
+    public static int HopoCutoff => _cachcut == -1 ? throw new ArgumentException("Uninitialized hopo cutoff.") : _cachcut;
 
     private static int _cachcut = -1;
 
@@ -260,10 +252,7 @@ public class Chart : MonoBehaviour
             }
             return _chPath;
         }
-        private set
-        {
-            _chPath = value;
-        }
+        private set => _chPath = value;
     }
     private static string _chPath;
 
@@ -628,6 +617,7 @@ public class Chart : MonoBehaviour
     
     private static bool _InternalLoadFile(string filePath)
     {
+        TimeDiagnoser timer = new TimeDiagnoser("File loader");
         openWithFileError = false;
         
         ChartPath = filePath;
@@ -637,6 +627,8 @@ public class Chart : MonoBehaviour
 
         var fileType = Path.GetExtension(ChartPath);
         ChartFileInformation readData;
+        
+        timer.RecordTime("Setup");
 
         var startTime = Time.realtimeSinceStartup;
         
@@ -661,8 +653,12 @@ public class Chart : MonoBehaviour
         }
 
         print($"\nFile data successfully parsed. {(Time.realtimeSinceStartup - startTime)*1000}ms.");
+        
+        timer.RecordTime("Parsing");
 
         ApplyFileInformation(readData);
+        
+        timer.RecordTime("Applied file info");
         
         if (Metadata.StemPaths.Count == 0)
         {
@@ -683,16 +679,29 @@ public class Chart : MonoBehaviour
             } 
         }
         
+        timer.RecordTime("Scanned for stem paths");
+        
         AudioManager.RefreshAudioStreams();
+        
+        timer.RecordTime("Refresh audio streams");
+        
         Waveform.InitializeWaveformData();
 
+        timer.RecordTime("Generated waveform data");
+        
         ChartLoading = false;
         
         ChartFileLoaded?.Invoke();
         
+        timer.RecordTime("Wrap up");
+        
         // do this to avoid nasty errors with trying to load invalid data (which WILL happen if the active tab is not
         // reloaded). InPlaceRefresh() does not work here.
         SceneTabSwitcher.FullRefreshLoadedTab();
+        
+        timer.RecordTime("Full refresh, complete");
+        timer.Report();
+        
         return true;
     }
     
