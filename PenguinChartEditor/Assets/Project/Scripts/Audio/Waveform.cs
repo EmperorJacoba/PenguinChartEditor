@@ -119,11 +119,20 @@ public class Waveform : MonoBehaviour
     public static void InitializeWaveformData()
     {
         ConcurrentDictionary<StemType, StemWaveformData> threadSafeDict = new();
+        
         Parallel.ForEach(Chart.Metadata.StemPaths.Keys, item =>
         {
             var kvp = UpdateWaveformData(item);
             threadSafeDict.AddOrUpdate(kvp.Key, kvp.Value, (key, value) => value);
         });
+
+        /*
+        // linear version (for time testing)
+        foreach (var stemPathsKey in Chart.Metadata.StemPaths.Keys)
+        {
+            var kvp = UpdateWaveformData(stemPathsKey);
+            threadSafeDict.AddOrUpdate(kvp.Key, kvp.Value, (key, value) => value);
+        } */
 
         WaveformData = threadSafeDict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
