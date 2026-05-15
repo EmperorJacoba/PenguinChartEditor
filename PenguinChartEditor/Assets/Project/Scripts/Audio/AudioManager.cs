@@ -275,35 +275,43 @@ public class AudioManager : MonoBehaviour
             );
     }
 
-    public static void RefreshAudioStreams()
+    public static void CreateAudioStreams()
     {
         Streams = new Dictionary<StemType, BassStream>();
 
         foreach (var (stem, path) in new Dictionary<StemType, string>(Chart.Metadata.StemPaths))
         {
-            UpdateAudioStream(stem, path);
+            CreateAudioStream(stem, path);
         }
+        
+        StreamLink = GetLongestStream();
     }
 
-    public static bool UpdateAudioStream(StemType stemType, string songPath)
+    private static bool CreateAudioStream(StemType stemType, string stemPath)
     {
         BassStream stream;
         try
         {
             // Diagnostic: Creating a new stream is very efficient. 1 * 10^-4 ms avg
-            stream = new BassStream(stemType, songPath);
+            stream = new BassStream(stemType, stemPath);
         }
         catch
         {
-            Debug.LogError($"Could not load stem {stemType} from {songPath}. Aborting load operation.");
+            Debug.LogError($"Could not load stem {stemType} from {stemPath}. Aborting load operation.");
             return false;
         }
 
         Streams[stemType] = stream;
-        Chart.Metadata.StemPaths[stemType] = songPath;
+        Chart.Metadata.StemPaths[stemType] = stemPath;
+
+        return true;
+    }
+
+    public static bool UpdateAudioStream(StemType stemType, string stemPath)
+    {
+        if (!CreateAudioStream(stemType, stemPath)) return false;
         
         Waveform.UpdateStemWaveformData(stemType);
-        
         StreamLink = GetLongestStream();
         
         return true;

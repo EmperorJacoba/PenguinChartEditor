@@ -690,7 +690,7 @@ public class Chart : MonoBehaviour
         
         timer.RecordTime("Scanned for stem paths");
         
-        AudioManager.RefreshAudioStreams();
+        AudioManager.CreateAudioStreams();
         
         timer.RecordTime("Refresh audio streams");
         
