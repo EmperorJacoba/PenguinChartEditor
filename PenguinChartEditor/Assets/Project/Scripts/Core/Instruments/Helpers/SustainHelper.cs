@@ -170,7 +170,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
         }
     }
 
-    public void ValidateSustain(int tick, int lane)
+    private void ValidateSustain(int tick, int lane)
     {
         if (independentLanes)
         {
@@ -220,7 +220,7 @@ public class SustainHelper<T> where T : IEventData, ISustainable
             // lane orientation is irrelevant, just pass in anything
             ClampSustainsBefore(startTick, 0);
 
-            for (int index = 0; index < uniqueTicksInRange.Count(); index++)
+            for (int index = 0; index < uniqueTicksInRange.Count; index++)
             {
                 int tick = uniqueTicksInRange[index];
                 ValidateSustain(uniqueTicksInRange[index], 0);
