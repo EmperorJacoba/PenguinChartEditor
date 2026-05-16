@@ -173,6 +173,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         UpdatesNeededInRange?.Invoke(key, key);
 
+        Chart.saved = false;
         return true;
     }
 
@@ -197,6 +198,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         laneData[tick] = newData;
         
+        Chart.saved = false;
         return true;
     }
     
@@ -208,6 +210,8 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         {
             laneData[item.Key] = item.Value;
         }
+        
+        Chart.saved = false;
     }
 
     public void AddTicksFromSet(SortedDictionary<int, TValue> dataset,
@@ -223,6 +227,8 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
             laneData[item.Key] = item.Value;
         }
+        
+        Chart.saved = false;
     }
     
     #endregion
@@ -276,6 +282,8 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         var returnVal = laneData.Remove(tick);
         UpdatesNeededInRange?.Invoke(tick, tick);
+        
+        Chart.saved = false;
         return returnVal;
     }
 
@@ -290,6 +298,8 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         // remove must happen before update
         var returnVal = laneData.Remove(tick, out data);
         UpdatesNeededInRange?.Invoke(tick, tick);
+        
+        Chart.saved = false;
         return returnVal;
     }
     
@@ -299,13 +309,14 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         {
             laneData.Remove(tick);
         }
+        Chart.saved = false;
     }
     
     #endregion
 
     #region Pop
 
-    #region Single
+        #region Single
     
     public IEventData PopSingle(int tick)
     {
@@ -315,6 +326,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         UpdatesNeededInRange?.Invoke(tick, tick);
 
+        Chart.saved = false;
         return data;
     }
 
@@ -326,10 +338,11 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
         UpdatesNeededInRange?.Invoke(tick, tick);
 
+        Chart.saved = false;
         return data;
     }
     
-    #endregion
+        #endregion
 
     /// <summary>
     /// Returns removed ticks.
@@ -348,6 +361,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
             subtractedTicks.Add(tick, data);
         }
         
+        Chart.saved = false;
         return subtractedTicks;
     }
 
@@ -365,6 +379,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
             subtractedTicks.Add(tick, data);
         }
         
+        Chart.saved = false;
         return subtractedTicks;
     }
     
@@ -400,10 +415,15 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
             
             laneData.Add(tick, value);
         }
+
+        Chart.saved = false;
     }
 
-    public void OverwriteAllLaneDataWith(SortedDictionary<int, TValue> data) => 
+    public void OverwriteAllLaneDataWith(SortedDictionary<int, TValue> data)
+    {
         laneData = new SortedDictionary<int, TValue>(data);
+        Chart.saved = false;
+    }
 
     public void OverwriteDataWithOffset(SortedDictionary<int, TValue> data, int tickOffset)
     {
@@ -414,6 +434,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
 
             laneData[targetTick] = tick.Value;
         }
+        Chart.saved = false;
     }
     
     #endregion
@@ -474,7 +495,7 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     
     #endregion
 
-    #region Tick triangulation
+    #region Tick Location Algs
     
     private int BinarySearchForTick(int currentTick, out List<int> tickTimeKeys)
     {
@@ -568,11 +589,14 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
     public void Add(KeyValuePair<int, TValue> item)
     {
         Add(item.Key, item.Value);
+        Chart.saved = false;
     }
 
     public bool Remove(KeyValuePair<int, TValue> item)
     {
-        return Remove(item.Key);
+        var b = Remove(item.Key);
+        Chart.saved = false;
+        return b;
     }
 
     public bool TryGetValue(int key, out TValue value)
@@ -606,27 +630,13 @@ public class LaneSet<TValue> : ILaneData, IDictionary<int, TValue> where TValue 
         {
             if (key < 0) return;
             laneData[key] = value;
+            Chart.saved = false;
         }
     }
 
-    public ICollection<int> Keys
-    {
-        get
-        {
-            return laneData.Keys;
-        }
-    }
-
-    public ICollection<TValue> Values
-    {
-        get
-        {
-            return laneData.Values;
-        }
-    }
-
+    public ICollection<int> Keys => laneData.Keys;
+    public ICollection<TValue> Values => laneData.Values;
     public int Count => laneData.Count;
-
     public bool IsReadOnly => false;
 
     #endregion

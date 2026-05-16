@@ -46,7 +46,10 @@ make previewers use InitializeProperties in Awake()
 pull ClearLaneSelection() up to IInstrument from SPInstrument
 
 patch notes:
-- Changed SFX file formats to .opus for better space efficiency and made SFX louder
+- Changed SFX file formats to .opus for better space efficiency
+- Made SFX louder (will no longer get drowned in the mix)
 - Added Master Volume, Metronome Volume, and Clap Volume controllers into Mixer sub-tab
 - Optimize new chart creation by removing duplicate data production call (reduced load times from 22.9s -> 4.9s for large test file)
-- Fixed a potential bug where audio tracks would not get reset upon making a new file
+- Fixed a bug where audio tracks would not get reset upon making a new file
+- Track save status to avoid redundant autosaves
+- 
