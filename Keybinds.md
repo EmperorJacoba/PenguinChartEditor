@@ -8,6 +8,7 @@ In the meantime, enjoy these keybinds:
 | -------- | -------- | ------------ |
 | Ctrl + Drag (on BPM label) | Adjusts beatline position according to drag delta | Tempo Map
 | Ctrl + Alt + Drag (on BPM label) | Adjusts beatline position while anchoring the next event | Tempo Map
+| Double Left Click (on any label) | Enables editing of BPM/TS event via manual typing | Tempo Map
 | Scroll wheel | Adjusts song time according to scroll change | All |
 | Ctrl + Shift + Select | Select all events between two points in a lane | All |
 | Shift + Select | Select all events between two points | All |
