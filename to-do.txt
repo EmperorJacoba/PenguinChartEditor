@@ -10,7 +10,6 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 - hotkey to jump X number of bars/beats
 
 => save waveform properties
-	=> save master, sfx volume to user settings
 	=> save stem volumes to .penguin file
 	=> save user song position to .penguin file
 	=> save export settings to disk
@@ -27,6 +26,8 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 => automatically poll GitHub for new releases
 => progress bar for loading files
+
+=> .penguin documentation
 
 => export as .sng using tool in https://github.com/mdsitton/SngFileFormat/tree/main
 
@@ -52,4 +53,4 @@ patch notes:
 - Optimize new chart creation by removing duplicate data production call (reduced load times from 22.9s -> 4.9s for large test file)
 - Fixed a bug where audio tracks would not get reset upon making a new file
 - Track save status to avoid redundant autosaves
-- 
+- Add saving of in-editor (non-settings window) characteristics

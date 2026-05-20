@@ -13,6 +13,7 @@ using UnityEngine;
 // You must obtain your own license of BASS if you would like to repackage the code in this file by the terms each program specifies.
 // Information on licensing BASS: https://www.un4seen.com/bass.html
 
+// FIXME: Make this a static class OR a Chart object (probably the better choice)
 public class AudioManager : MonoBehaviour
 {
     private const double BUFFER_SIZE = 10.0;
@@ -23,8 +24,12 @@ public class AudioManager : MonoBehaviour
     public const int SAMPLES_PER_SECOND = 1000;
 
     /// <summary>
-    /// The stem with the longest stream length in StemStreams. All other stem streams are linked to this stem for playback purposes.
-    /// <remarks>This stream is guaranteed to exist in StemStreams at all times EXCEPT when there is no audio loaded.</remarks> 
+    /// The stem with the longest stream length in StemStreams.
+    /// All other stem streams are linked to this stem for playback purposes.
+    /// <remarks>
+    /// This stream is guaranteed to exist in StemStreams at all times EXCEPT when there is no audio loaded,
+    /// when it is placeholder_silence.opus. As a placeholder, it will not be in Stems but will still be playable.
+    /// </remarks> 
     /// </summary>
     private static BassStream StreamLink
     {
@@ -131,40 +136,39 @@ public class AudioManager : MonoBehaviour
     
     public static void Initialize()
     {
-        if (Bass.Init())
-        {
-            string path = $"{Application.dataPath}/Plugins/";
-
-#if UNITY_EDITOR_WIN && UNITY_EDITOR
-            path += "Bass/Bass_win";
-#endif
-            
-#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
-            path += "x86_64";
-#endif
-            // fix: these file paths are not valid in standalone builds
-#if (UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX)
-            path += "Bass_macOS";
-#endif
-#if (UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX)
-            path += "Bass_linux/x86_64";
-#endif
-            foreach (var file in Directory.EnumerateFiles(path))
-            {
-                if (file.Contains("meta")) continue;
-                var fileName = Path.GetFileName(file);
-                if (fileName == "bass.dll" || fileName.Contains("bassenc") || fileName.Contains("bassmix")) continue;
-
-                if (Bass.PluginLoad(file) != 0) continue;
-                if (Bass.LastError == Errors.Already) continue;
-                
-                Debug.LogWarning($"Plugin Load error for {file}. Bass Error: {Bass.LastError}");
-            }
-        }
-        else
+        if (!Bass.Init())
         {
             Debug.LogError($"Could not load BASS plugin. {Bass.LastError}");
             return;
+        }
+        
+        string pluginPath = $"{Application.dataPath}/Plugins/";
+
+#if UNITY_EDITOR_WIN && UNITY_EDITOR
+        pluginPath += "Bass/Bass_win";
+#endif
+
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+        path += "x86_64";
+#endif 
+        // fix: these file paths are not valid in standalone builds
+#if (UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX)
+        path += "Bass_macOS";
+#endif
+#if (UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX)
+        path += "Bass_linux/x86_64";
+#endif
+        
+        foreach (var file in Directory.EnumerateFiles(pluginPath))
+        {
+            if (file.Contains("meta")) continue;
+            var fileName = Path.GetFileName(file);
+            if (fileName == "bass.dll" || fileName.Contains("bassenc") || fileName.Contains("bassmix")) continue;
+
+            if (Bass.PluginLoad(file) != 0) continue;
+            if (Bass.LastError == Errors.Already) continue;
+
+            Debug.LogWarning($"Plugin Load error for {file}. Bass Error: {Bass.LastError}");
         }
         
         print(MasterVolume);
@@ -482,6 +486,16 @@ public class AudioManager : MonoBehaviour
                 throw new ArgumentException($"No SFX with id {sfx}");
             }
         }
+    }
+    
+    public static float GetSFXVolume(SFX sfx)
+    {
+        return sfx switch
+        {
+            SFX.metronome => metronome.Volume,
+            SFX.clap => clap.Volume,
+            _ => throw new ArgumentException($"No SFX with id {sfx}")
+        };
     }
 
     #region Encoding / Writing
