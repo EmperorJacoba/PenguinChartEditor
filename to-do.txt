@@ -19,6 +19,8 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 => change window header based on charting status 
 
+=> "saved" chart field needs to work properly, not just be hardcoded
+
 => unload/reload waveform across scene change
 => timestamp should say "No Audio Loaded" instead of being out of 1:30 when no audio
 => chunk waveform data processing

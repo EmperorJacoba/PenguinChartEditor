@@ -117,7 +117,6 @@ public class UserSettings
 
     private static string SettingsDirectoryPath => Path.Combine(Application.persistentDataPath, "settings");
     private static string SettingsFilePath => Path.Combine(SettingsDirectoryPath, "settings.json");
-    private static string EditingOptionsFilePath => Path.Combine(SettingsDirectoryPath, "cosmetics.json");
     
     public void SaveSettingsToDisk()
     {
@@ -140,8 +139,3 @@ public class UserSettings
     
     #endregion
 }
-
-private class CosmeticSettingsCompiler
-{
-    
-} 
