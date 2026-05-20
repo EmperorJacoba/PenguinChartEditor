@@ -32,6 +32,9 @@ public class SFXVolumeEditor : MonoBehaviour
     {
         slider.onValueChanged.AddListener(SliderChange);
         entryBox.onEndEdit.AddListener(EntryBoxChange);
+        
+        // Invokes onValueChanged. The one time that this actually works in my favor.
+        slider.value = AudioManager.GetSFXVolume(ControlledSFX);
     }
 
     /// <summary>

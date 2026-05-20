@@ -6,7 +6,8 @@ using UnityEngine;
 
 public static class PenguinWriter
 {
-    private const float WRITER_VERSION = 1;
+    // Version 1.0 = v0.1.0-alpha to current
+    private const float WRITER_VERSION = 1.0f;
     public static void WritePenguin(
         string targetDirectory,
         Metadata metadata,
@@ -15,14 +16,16 @@ public static class PenguinWriter
         )
     {
         if (metadata is null || instruments is null) return;
+        
         List<string> dotPenguinLines = new List<string>();
         
         dotPenguinLines.Add($"{(int)HeaderType.Penguin}");
-        dotPenguinLines.Add("{");
+        dotPenguinLines.Add("{");                           
         dotPenguinLines.Add($"\t{Application.version}");
         dotPenguinLines.Add($"\t{DateTime.UtcNow} UTC-0");
         dotPenguinLines.Add($"\t{WRITER_VERSION}");
         dotPenguinLines.Add("}");
+        
         dotPenguinLines.AddRange(metadata.ToPenguinFormat());
 
         foreach (var instrument in instruments.Where(instrument => instrument != null))

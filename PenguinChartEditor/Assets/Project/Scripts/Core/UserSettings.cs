@@ -117,6 +117,7 @@ public class UserSettings
 
     private static string SettingsDirectoryPath => Path.Combine(Application.persistentDataPath, "settings");
     private static string SettingsFilePath => Path.Combine(SettingsDirectoryPath, "settings.json");
+    private static string CosmeticSettingsFilePath => Path.Combine(SettingsDirectoryPath, "cosmetics.json");
     
     public void SaveSettingsToDisk()
     {
@@ -125,6 +126,7 @@ public class UserSettings
             Directory.CreateDirectory(SettingsDirectoryPath);
         }
         File.WriteAllText(SettingsFilePath, JsonUtility.ToJson(this));
+        new UniversalCosmeticSettings().WriteToDisk(CosmeticSettingsFilePath);
     }
 
     public static UserSettings ReadFromDisk()
@@ -133,9 +135,54 @@ public class UserSettings
         {
             return (UserSettings)JsonUtility.FromJson(File.ReadAllText(SettingsFilePath), typeof(UserSettings));
         }
+        
+        UniversalCosmeticSettings.ApplySavedSettings(CosmeticSettingsFilePath);
 
         return new UserSettings();
     }
     
     #endregion
 }
+
+// Consider this a gathering mechanism - get everything in one place, then serialize it.
+// Works well with unity objects via JsonUtility in case they are ever required (which is likely as cosmetic options
+// increase in future). While I would like a cleaner functional solution I think this is the best way to keep this
+// future-aware.
+internal class UniversalCosmeticSettings
+{
+    private float hyperspeed = Waveform.ShrinkFactor;
+    private float amplitude = Waveform.Amplitude;
+    private float playSpeed = AudioManager.AudioSpeed;
+    private float highwayLength = Highway.highwayLength;
+    private double masterVolume = AudioManager.MasterVolume;
+    private float metronomeVolume = AudioManager.GetSFXVolume(AudioManager.SFX.metronome);
+    private float clapVolume = AudioManager.GetSFXVolume(AudioManager.SFX.clap);
+
+    public void WriteToDisk(string filePath)
+    {
+        if (!Directory.Exists(filePath))
+        {
+            Directory.CreateDirectory(filePath);
+        }
+        
+        File.WriteAllText(filePath, JsonUtility.ToJson(this));
+    }
+
+    public static void ApplySavedSettings(string filePath)
+    {
+        if (!File.Exists(filePath)) return;
+        var savedData =
+            (UniversalCosmeticSettings)JsonUtility.FromJson(
+                File.ReadAllText(filePath),
+                typeof(UniversalCosmeticSettings)
+            );
+
+        Waveform.ShrinkFactor = savedData.hyperspeed;
+        Waveform.Amplitude = savedData.amplitude;
+        AudioManager.AudioSpeed = savedData.playSpeed;
+        Highway.highwayLength = savedData.highwayLength;
+        AudioManager.MasterVolume = savedData.masterVolume;
+        AudioManager.SetSFXVolume(AudioManager.SFX.metronome, savedData.metronomeVolume);
+        AudioManager.SetSFXVolume(AudioManager.SFX.clap, savedData.clapVolume);
+    }
+} 
