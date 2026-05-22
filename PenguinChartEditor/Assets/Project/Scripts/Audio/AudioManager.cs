@@ -65,6 +65,7 @@ public class AudioManager : MonoBehaviour
         }
     }
     private static Dictionary<StemType, BassStream> _streams = new();
+    public static bool IsAudioLoaded() => Streams.Count > 0;
     
     // Cached b/c stream link is not changed much. Just make sure to update this when stream link changes.
     public static double SongLength

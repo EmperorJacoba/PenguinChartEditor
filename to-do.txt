@@ -18,8 +18,6 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 => change window header based on charting status 
 
-=> "saved" chart field needs to work properly, not just be hardcoded
-
 => unload/reload waveform across scene change
 => timestamp should say "No Audio Loaded" instead of being out of 1:30 when no audio
 => chunk waveform data processing
@@ -28,6 +26,11 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 => progress bar for loading files
 
 => .penguin documentation
+
+=> drums
+	=> drum cymbal model
+
+=> vocals
 
 => export as .sng using tool in https://github.com/mdsitton/SngFileFormat/tree/main
 
@@ -54,3 +57,4 @@ patch notes:
 - Fixed a bug where audio tracks would not get reset upon making a new file
 - Track save status to avoid redundant autosaves
 - Add saving of in-editor (non-settings window) characteristics
+- Change placeholder audio timestamps from `0:00:000 / 01:30:000` to `N/A / N/A`

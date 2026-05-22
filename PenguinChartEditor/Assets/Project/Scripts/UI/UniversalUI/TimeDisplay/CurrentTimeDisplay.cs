@@ -17,7 +17,9 @@ public class CurrentTimeDisplay : MonoBehaviour
     // Diagnostic: This function takes <0.05ms on average per frame during song playback.
     private void UpdateSongText()
     {
-        SongTimestampLabel.text = SongTime.ConvertSecondsToTimestamp(SongTime.SongPositionSeconds);
+        SongTimestampLabel.text = !AudioManager.IsAudioLoaded() ? 
+            "N/A" : 
+            SongTime.ConvertSecondsToTimestamp(SongTime.SongPositionSeconds);
     }
 
     /// <summary>
