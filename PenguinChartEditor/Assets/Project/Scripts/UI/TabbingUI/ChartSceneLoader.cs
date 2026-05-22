@@ -16,8 +16,8 @@ public class ChartSceneLoader : MonoBehaviour
     {
         if (TabSceneSpawningManager.IsTabbingActive())
         {
-            targetGameInstrument.AssignInstrument(requestedInstrument);
             Chart.SetLoadedInstrument(requestedInstrument);
+            targetGameInstrument.AssignInstrument(requestedInstrument);
         }
         Destroy(gameObject);
     }
