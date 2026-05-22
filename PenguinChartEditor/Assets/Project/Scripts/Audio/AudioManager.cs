@@ -172,8 +172,6 @@ public class AudioManager : MonoBehaviour
             Debug.LogWarning($"Plugin Load error for {file}. Bass Error: {Bass.LastError}");
         }
         
-        print(MasterVolume);
-
         metronome = new BassStream($"{Application.streamingAssetsPath}/metronomeclick.opus");
         clap = new BassStream($"{Application.streamingAssetsPath}/clap.opus");
         placeholder = new BassStream($"{Application.streamingAssetsPath}/placeholder_silence.opus");

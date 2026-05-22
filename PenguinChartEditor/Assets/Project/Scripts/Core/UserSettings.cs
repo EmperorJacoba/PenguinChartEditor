@@ -126,7 +126,8 @@ public class UserSettings
             Directory.CreateDirectory(SettingsDirectoryPath);
         }
         File.WriteAllText(SettingsFilePath, JsonUtility.ToJson(this));
-        new UniversalCosmeticSettings().WriteToDisk(CosmeticSettingsFilePath);
+        var cosmetics = new UniversalCosmeticSettings();
+        cosmetics.WriteToDisk(CosmeticSettingsFilePath);
     }
 
     public static UserSettings ReadFromDisk()
@@ -150,19 +151,20 @@ public class UserSettings
 // future-aware.
 internal class UniversalCosmeticSettings
 {
-    private float hyperspeed = Waveform.ShrinkFactor;
-    private float amplitude = Waveform.Amplitude;
-    private float playSpeed = AudioManager.AudioSpeed;
-    private float highwayLength = Highway.highwayLength;
-    private double masterVolume = AudioManager.MasterVolume;
-    private float metronomeVolume = AudioManager.GetSFXVolume(AudioManager.SFX.metronome);
-    private float clapVolume = AudioManager.GetSFXVolume(AudioManager.SFX.clap);
+    // public so that JsonUtility can serialize
+    public float hyperspeed = Waveform.ShrinkFactor;
+    public float amplitude = Waveform.Amplitude;
+    public float playSpeed = AudioManager.AudioSpeed;
+    public float highwayLength = Highway.highwayLength;
+    public double masterVolume = AudioManager.MasterVolume;
+    public float metronomeVolume = AudioManager.GetSFXVolume(AudioManager.SFX.metronome);
+    public float clapVolume = AudioManager.GetSFXVolume(AudioManager.SFX.clap);
 
     public void WriteToDisk(string filePath)
     {
         if (!Directory.Exists(filePath))
         {
-            Directory.CreateDirectory(filePath);
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath) ?? string.Empty);
         }
         
         File.WriteAllText(filePath, JsonUtility.ToJson(this));

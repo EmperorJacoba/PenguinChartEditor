@@ -53,7 +53,7 @@ patch notes:
 - Changed SFX file formats to .opus for better space efficiency
 - Made SFX louder (will no longer get drowned in the mix)
 - Added Master Volume, Metronome Volume, and Clap Volume controllers into Mixer sub-tab
-- Optimize new chart creation by removing duplicate data production call (reduced load times from 22.9s -> 4.9s for large test file)
+- Optimize new chart creation by removing duplicate data production call (reduced load times from 22.9s -> 4.9s for a large test file)
 - Fixed a bug where audio tracks would not get reset upon making a new file
 - Track save status to avoid redundant autosaves
 - Add saving of in-editor (non-settings window) characteristics
