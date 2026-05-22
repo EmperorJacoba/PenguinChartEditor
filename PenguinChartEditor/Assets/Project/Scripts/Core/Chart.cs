@@ -408,10 +408,12 @@ public class Chart : MonoBehaviour
     
     private static IInstrument CreateNewInstrument(HeaderType instrumentID)
     {
+        IInstrument createdInstrument;
         switch (InstrumentMetadata.GetInstrumentGroup(instrumentID))
         {
             case InstrumentCategory.FiveFret:
-                return new FiveFretInstrument(instrumentID, new List<KeyValuePair<int, string>>());
+                createdInstrument = new FiveFretInstrument(instrumentID, new List<KeyValuePair<int, string>>());
+                break;
             case InstrumentCategory.FourLaneDrums:
             case InstrumentCategory.EliteDrums:
             case InstrumentCategory.GHL:
@@ -419,6 +421,9 @@ public class Chart : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException($"No support for creating instrument type {instrumentID}");
         }
+
+        Instruments.Add(createdInstrument);
+        return createdInstrument;
     }
     
     #endregion
