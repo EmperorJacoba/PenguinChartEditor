@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using SFB;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using Penguin.Debug;
 using Penguin.Dialogs;
 using UnityEngine.SceneManagement;

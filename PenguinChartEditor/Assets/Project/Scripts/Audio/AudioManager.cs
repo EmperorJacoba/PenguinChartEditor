@@ -54,7 +54,9 @@ public class AudioManager : MonoBehaviour
     }
     private static BassStream _l;
     
-    // Don't use .Clear(). Assign to a new dict every time to make sure all the streams are freed first.
+    /// <remarks>
+    /// Don't use .Clear(). Assign to a new dict every time to make sure all the streams are freed first.
+    /// </remarks>
     private static Dictionary<StemType, BassStream> Streams
     {
         get => _streams;

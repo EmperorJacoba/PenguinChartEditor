@@ -19,18 +19,24 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 => change window header based on charting status 
 
 => unload/reload waveform across scene change
-=> timestamp should say "No Audio Loaded" instead of being out of 1:30 when no audio
 => chunk waveform data processing
 
-=> automatically poll GitHub for new releases
 => progress bar for loading files
 
 => .penguin documentation
 
 => drums
 	=> drum cymbal model
+	=> look at nathannator docs
+	=> look at c3 docs
 
 => vocals
+	=> copy scene over, set up 2d view
+	=> extend highway to fit notes
+	=> vocal note model
+	=> spectrogram
+	=> look at specs
+	=> look at c3 docs
 
 => export as .sng using tool in https://github.com/mdsitton/SngFileFormat/tree/main
 
@@ -58,3 +64,4 @@ patch notes:
 - Track save status to avoid redundant autosaves
 - Add saving of in-editor (non-settings window) characteristics
 - Change placeholder audio timestamps from `0:00:000 / 01:30:000` to `N/A / N/A`
+- Add notification system to alert user of new releases on GitHub
