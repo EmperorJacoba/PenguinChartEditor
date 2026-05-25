@@ -64,6 +64,9 @@ public class Chart : MonoBehaviour
     }
 
     private static bool openWithFileError = false;
+    
+    // Effectively the entry point into Penguin. Make sure any unity object functions that depend on Chart data run in
+    // Start(), not Awake(), to guarantee a call after Chart setup.
     private void Awake()
     {
         // Only ever one chart game object active, prioritize first loaded

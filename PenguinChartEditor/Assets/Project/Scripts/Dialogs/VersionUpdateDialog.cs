@@ -47,8 +47,14 @@ namespace Penguin.Dialogs
             // yes this is very unstable but this is the simplest way to check it and the fallout is minimal if it goes wrong
             var expectedPageURL = "https://github.com/EmperorJacoba/PenguinChartEditor/releases/tag/" + currentVersion;
         
+            // basically github.com/<user>/<repository>/releases/latest automatically redirects you to the latest version page
+            // the URL physically changes, so you can just compare the directed to URL with the current version's URL and 
+            // bring up a notification if it's different. You can just check for equality because if the current version
+            // is not the latest release than it must be a past/outdated release.
             var webRequest = WebRequest.Create(latestReleasePageURL);
             HttpWebResponse httpResponse = (HttpWebResponse)webRequest.GetResponse();
+            
+            // Yes, this works. URLs are just paths to files on a server after all (although this doesn't have a file extension)
             newVersion = Path.GetFileName(httpResponse.ResponseUri.ToString());
             
             return currentVersion != newVersion;
