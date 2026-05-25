@@ -17,7 +17,7 @@ public class SoloPlacementController : MonoBehaviour
         inputMap = new InputMap();
         inputMap.Enable();
 
-        inputMap.Charting.ToggleSolos.performed += x =>
+        inputMap.PenguinChartingUIShortcuts.ToggleSolos.performed += x =>
         {
             toggle.isOn = !toggle.isOn;
         };

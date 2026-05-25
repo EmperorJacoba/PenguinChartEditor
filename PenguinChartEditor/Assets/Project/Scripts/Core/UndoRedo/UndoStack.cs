@@ -18,8 +18,8 @@ public class UndoStack : MonoBehaviour
 
         inputMap = new InputMap();
         inputMap.Enable();
-        inputMap.ExternalCharting.Undo.performed += _ => Undo();
-        inputMap.ExternalCharting.Redo.performed += _ => Redo();
+        inputMap.StandardCommands.Undo.performed += _ => Undo();
+        inputMap.StandardCommands.Redo.performed += _ => Redo();
     }
 
     private void OnDestroy()

@@ -29,10 +29,10 @@ public class DivisionChanger : MonoBehaviour
         inputMap = new InputMap();
         inputMap.Enable();
 
-        inputMap.ExternalCharting.IncreaseStep.performed += _ => IncreaseDivision();
-        inputMap.ExternalCharting.DecreaseStep.performed += _ => DecreaseDivision();
-        inputMap.ExternalCharting.IncreaseStepByOne.performed += _ => IncreaseDivisionByOne();
-        inputMap.ExternalCharting.DecreaseStepByOne.performed += _ => DecreaseDivisionByOne();
+        inputMap.PenguinChartingUIShortcuts.IncreaseStep.performed += _ => IncreaseDivision();
+        inputMap.PenguinChartingUIShortcuts.DecreaseStep.performed += _ => DecreaseDivision();
+        inputMap.PenguinChartingUIShortcuts.IncreaseStepByOne.performed += _ => IncreaseDivisionByOne();
+        inputMap.PenguinChartingUIShortcuts.DecreaseStepByOne.performed += _ => DecreaseDivisionByOne();
     }
 
     private void OnDestroy()

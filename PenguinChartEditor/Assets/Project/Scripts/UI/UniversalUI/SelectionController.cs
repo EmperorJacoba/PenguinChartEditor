@@ -17,9 +17,9 @@ public class SelectionController : MonoBehaviour
         inputMap = new InputMap();
         inputMap.Enable();
 
-        inputMap.Charting.SelectionView.performed += x => SetSelectionMode(Chart.SelectionMode.View);
-        inputMap.Charting.SelectionEdit.performed += x => SetSelectionMode(Chart.SelectionMode.Edit);
-        inputMap.Charting.SelectionSelect.performed += x => SetSelectionMode(Chart.SelectionMode.Select);
+        inputMap.SelectionMode.SelectionView.performed += x => SetSelectionMode(Chart.SelectionMode.View);
+        inputMap.SelectionMode.SelectionEdit.performed += x => SetSelectionMode(Chart.SelectionMode.Edit);
+        inputMap.SelectionMode.SelectionSelect.performed += x => SetSelectionMode(Chart.SelectionMode.Select);
 
         dropdown.value = (int)Chart.currentSelectionMode;
         dropdown.onValueChanged.AddListener(OnValueChanged);

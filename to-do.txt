@@ -15,6 +15,7 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 	=> save export settings to disk
 
 => keybinds system/editor - settings
+	=> investigate ".interactions" to see how to edit c/s/a disablements
 
 => change window header based on charting status 
 
@@ -44,6 +45,7 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 => placement tab for tempo map
 	=> allow edit TS/BPM values there
 	=> allow dynamic/exclusive placement mode changes
+	=> split five fret keybind manager into sustain keybind manager and five fret keybind manager
 
 SortedDictionary improvements
 - Create a new BinarySearchTree implementation for GetUniqueTickSet and the underlying SortedDictionary data structure
@@ -65,3 +67,4 @@ patch notes:
 - Add saving of in-editor (non-settings window) characteristics
 - Change placeholder audio timestamps from `0:00:000 / 01:30:000` to `N/A / N/A`
 - Add notification system to alert user of new releases on GitHub
+- Add keybinds for "Clap" and "Metronome" features

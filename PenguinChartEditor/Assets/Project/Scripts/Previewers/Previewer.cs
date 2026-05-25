@@ -166,7 +166,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         inputMap = new InputMap();
         inputMap.Enable();
 
-        inputMap.Charting.PreviewMousePos.performed += position => UpdatePosition();
+        inputMap.StandardStaticEvents.PreviewMousePos.performed += position => UpdatePosition();
     }
 
     private void OnDestroy()

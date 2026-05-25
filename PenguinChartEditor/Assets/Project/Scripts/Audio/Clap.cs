@@ -5,12 +5,26 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class Clap : MonoBehaviour
 {
-    public static bool clapActive = false;
+    private static bool clapActive = false;
     [SerializeField] private Button button;
 
     private void Awake()
     {
         button.onClick.AddListener(ToggleClap);
+    }
+
+    private InputMap inputMap;
+    private void OnEnable()
+    {
+        inputMap = new();
+        inputMap.Enable();
+
+        inputMap.PenguinChartingUIShortcuts.Clap.performed += _ => ToggleClap();
+    }
+
+    private void OnDisable()
+    {
+        inputMap.Dispose();
     }
 
     private void ToggleClap()
@@ -34,7 +48,6 @@ public class Clap : MonoBehaviour
 
     private void CheckForClapHit()
     {
-        // might change in case metronome for ffw/rw buttons is a wanted feature
         if (!AudioManager.AudioPlaying || !clapActive)
         {
             firstLoop = true;

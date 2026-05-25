@@ -15,27 +15,27 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
         inputMap = new InputMap();
         inputMap.Enable();
 
-        inputMap.ExternalCharting.SwitchNotePlacementMode.performed += x =>
+        inputMap.FiveFretCharting.SwitchOpenAndFrettedChartingMode.performed += x =>
         {
             FiveFretNotePreviewer.openNoteEditing = !FiveFretNotePreviewer.openNoteEditing;
             UpdatePreviewer?.Invoke();
         };
         
-        inputMap.Charting.ForceTap.performed += x => 
+        inputMap.FiveFretCharting.ForceTap.performed += x => 
             flagPlacementController.ChangeModifierExternal(FiveFretNotePreviewer.NoteOption.tap);
         
-        inputMap.Charting.ForceStrum.performed += x => 
+        inputMap.FiveFretCharting.ForceStrum.performed += x => 
             flagPlacementController.ChangeModifierExternal(FiveFretNotePreviewer.NoteOption.strum);
         
-        inputMap.Charting.ForceHopo.performed += x => 
+        inputMap.FiveFretCharting.ForceHopo.performed += x => 
             flagPlacementController.ChangeModifierExternal(FiveFretNotePreviewer.NoteOption.hopo);
         
-        inputMap.Charting.ForceDefault.performed += x => 
+        inputMap.FiveFretCharting.ForceDefault.performed += x => 
             flagPlacementController.ChangeModifierExternal(FiveFretNotePreviewer.NoteOption.natural);
 
-        inputMap.Charting.SustainMax.performed += x => SetCurrentSustain(SongTime.SongLengthTicks);
-        inputMap.Charting.SustainZero.performed += x => SetCurrentSustain(0);
-        inputMap.Charting.SustainCustom.performed += x =>
+        inputMap.SustainCommands.SustainMax.performed += x => SetCurrentSustain(SongTime.SongLengthTicks);
+        inputMap.SustainCommands.SustainZero.performed += x => SetCurrentSustain(0);
+        inputMap.SustainCommands.SustainCustom.performed += x =>
         {
             if (Chart.GetActiveInstrument<FiveFretInstrument>().IsNoteSelectionEmpty())
             {
@@ -47,16 +47,16 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
             }
         };
 
-        inputMap.Charting.SustainExtended.performed += x => esc.SetExtendedSustains(!Chart.settings.ExtendedSustains);
+        inputMap.SustainCommands.SustainExtended.performed += x => esc.SetExtendedSustains(!Chart.settings.ExtendedSustains);
 
-        inputMap.Charting.SetLane0.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.open);
-        inputMap.Charting.SetLane1.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.green);
-        inputMap.Charting.SetLane2.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.red);
-        inputMap.Charting.SetLane3.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.yellow);
-        inputMap.Charting.SetLane4.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.blue);
-        inputMap.Charting.SetLane5.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.orange);
+        inputMap.FiveFretCharting.SetLaneOpen.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.open);
+        inputMap.FiveFretCharting.SetLaneGreen.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.green);
+        inputMap.FiveFretCharting.SetLaneRed.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.red);
+        inputMap.FiveFretCharting.SetLaneYellow.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.yellow);
+        inputMap.FiveFretCharting.SetLaneBlue.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.blue);
+        inputMap.FiveFretCharting.SetLaneOrange.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.orange);
 
-        inputMap.Charting.SetEqualSpacing.performed += x => Chart.GetActiveInstrument<FiveFretInstrument>().SetEqualSpacing();
+        inputMap.PenguinChartingUIShortcuts.SetEqualSpacing.performed += x => Chart.GetActiveInstrument<FiveFretInstrument>().SetEqualSpacing();
     }
 
     private void OnDestroy()

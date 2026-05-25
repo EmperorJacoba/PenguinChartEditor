@@ -22,10 +22,8 @@ public class SoloPreviewer : Previewer
 
         previewerEventReference = previewSoloPlate;
 
-        inputMap.Charting.PreviewMousePos.performed += position =>
+        inputMap.StandardStaticEvents.PreviewMousePos.performed += position =>
             UpdatePosition();
-
-        inputMap.Charting.EventSpawnClick.performed += x => CreateEvent();
     }
 
     protected override bool IsPreviewerVisible()

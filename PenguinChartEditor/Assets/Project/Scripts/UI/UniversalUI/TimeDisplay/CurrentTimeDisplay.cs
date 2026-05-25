@@ -33,7 +33,7 @@ public class CurrentTimeDisplay : MonoBehaviour
 
         TimeInputField.ActivateInputField();
 
-        SongTime.ToggleChartingInputMap();
+        SongTime.StopPlaybackAndTimeEditActions();
     }
 
     private void PrepTimeEdit(string newTime)
@@ -41,6 +41,6 @@ public class CurrentTimeDisplay : MonoBehaviour
         SongTime.UpdateSongTimestampFromFormattedTimestamp(newTime);
         
         TimeInputField.gameObject.SetActive(false);
-        SongTime.ToggleChartingInputMap();
+        SongTime.AllowPlaybackAndTimeEditActions();
     }
 }

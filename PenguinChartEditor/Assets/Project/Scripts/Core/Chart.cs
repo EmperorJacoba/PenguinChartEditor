@@ -142,13 +142,13 @@ public class Chart : MonoBehaviour
     {
         inputMap = new InputMap();
         inputMap.Enable();
-        inputMap.Charting.Copy.performed += _ => Clipboard.Copy();
-        inputMap.Charting.Paste.performed += _ => Clipboard.Paste();
-        inputMap.Charting.Cut.performed += _ => Clipboard.Cut();
-        inputMap.ExternalCharting.Save.performed += _ => SaveFile();
-        inputMap.ExternalCharting.SaveAs.performed += _ => SaveFileAs();
-        inputMap.ExternalCharting.New.performed += _ => NewFile();
-        inputMap.ExternalCharting.Open.performed += _ => LoadFile();
+        inputMap.StandardCommands.Copy.performed += _ => Clipboard.Copy();
+        inputMap.StandardCommands.Paste.performed += _ => Clipboard.Paste();
+        inputMap.StandardCommands.Cut.performed += _ => Clipboard.Cut();
+        inputMap.StandardCommands.Save.performed += _ => SaveFile();
+        inputMap.StandardCommands.SaveAs.performed += _ => SaveFileAs();
+        inputMap.StandardCommands.New.performed += _ => NewFile();
+        inputMap.StandardCommands.Open.performed += _ => LoadFile();
     }
     
     private void OnDestroy()

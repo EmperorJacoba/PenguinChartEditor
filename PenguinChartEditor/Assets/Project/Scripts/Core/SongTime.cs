@@ -75,10 +75,21 @@ public class SongTime : MonoBehaviour
         inputMap = new InputMap();
         inputMap.Enable();
 
-        inputMap.Charting.ScrollTrack.performed += scrollChange => ChangeTime(scrollChange.ReadValue<float>());
+        inputMap.StandardStaticEvents.ScrollTrack.performed += scrollChange => ChangeTime(scrollChange.ReadValue<float>());
+        inputMap.StandardStaticEvents.MiddleMouseClick.started += x => initialMouseY = Input.mousePosition.y;
+        inputMap.StandardStaticEvents.MiddleMouseClick.canceled += x => initialMouseY = float.NaN;
+    }
 
-        inputMap.Charting.MiddleMouseClick.started += x => initialMouseY = Input.mousePosition.y;
-        inputMap.Charting.MiddleMouseClick.canceled += x => initialMouseY = float.NaN;
+    public static void StopPlaybackAndTimeEditActions()
+    {
+        inputMap.StandardStaticEvents.Disable();
+        AudioManager.DisableAudioPlaybackControls();
+    }
+
+    public static void AllowPlaybackAndTimeEditActions()
+    {
+        inputMap.StandardStaticEvents.Enable();
+        AudioManager.EnableAudioPlaybackControls();
     }
 
     private void OnDestroy()
@@ -110,22 +121,6 @@ public class SongTime : MonoBehaviour
         }
     }
 
-    public static void ToggleChartingInputMap()
-    {
-        if (inputMap.Charting.enabled) inputMap.Charting.Disable();
-        else inputMap.Charting.Enable();
-    }
-
-    public static void DisableChartingInputMap()
-    {
-        inputMap.Charting.Disable();
-    }
-
-    public static void EnableChartingInputMap()
-    {
-        inputMap.Charting.Enable();
-    }
-
     #endregion
 
     #region Time Modification
@@ -137,7 +132,7 @@ public class SongTime : MonoBehaviour
     /// <param name="middleClick"></param>
     public static void ChangeTime(float scrollChange, bool middleClick = false)
     {
-        if (float.IsNaN(scrollChange) || scrollChange == 0) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
+        if (AudioManager.AudioPlaying || float.IsNaN(scrollChange) || scrollChange == 0) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
 
         // If it's a middle click, the delta value is wayyy too large so this is a solution FOR NOW
         var scrollSuppressant = 1;

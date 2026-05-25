@@ -180,15 +180,17 @@ public class AudioManager : MonoBehaviour
         StreamLink = placeholder;
     }
     
-    private InputMap inputMap;
+    private static InputMap inputMap;
     private void Awake()
     {
         inputMap = new InputMap();
         inputMap.Enable();
-        inputMap.ExternalCharting.PlayPause.performed += _ => ToggleAudioPlayback();
+        inputMap.PenguinChartingUIShortcuts.PlayPause.performed += _ => ToggleAudioPlayback();
 
         SceneTabSwitcher.TabChanged += PauseAudio;
     }
+    public static void DisableAudioPlaybackControls() => inputMap.PenguinChartingUIShortcuts.Disable();
+    public static void EnableAudioPlaybackControls() => inputMap.PenguinChartingUIShortcuts.Enable();
 
     private void ToggleAudioPlayback()
     {
@@ -358,7 +360,6 @@ public class AudioManager : MonoBehaviour
         SetStreamPositions();
         StreamLink.Play();
         AudioPlaying = true;
-        SongTime.DisableChartingInputMap(); // remove this?
     }
 
     public static void PauseAudio()
@@ -367,7 +368,6 @@ public class AudioManager : MonoBehaviour
 
         StreamLink.Pause();
         AudioPlaying = false;
-        SongTime.EnableChartingInputMap(); // remove this?
     }
 
     public static void StopAudio()
