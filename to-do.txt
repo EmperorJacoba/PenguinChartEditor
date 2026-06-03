@@ -24,6 +24,8 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 => progress bar for loading files
 
+=> increase step/decrease step fires multiple times
+
 => .penguin documentation
 
 => drums
