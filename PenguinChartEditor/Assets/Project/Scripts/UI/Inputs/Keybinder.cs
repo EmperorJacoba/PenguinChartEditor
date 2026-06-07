@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class KeybindEditor : MonoBehaviour
 {
+    private const string ONE_MODIFIER = "OneModifier";
+    private const string TWO_MODIFIERS = "TwoModifiers";
     [SerializeField] private TMP_Text label;
     [SerializeField] private Button primaryKeybindLabel;
     [SerializeField] private TMP_Text primaryKeybindLabelText;
@@ -28,9 +30,9 @@ public class KeybindEditor : MonoBehaviour
         secondaryKeybindLabel.onClick.AddListener(RebindSecondary);
     }
 
-    private void RebindPrimary() => Rebind(0);
-    private void RebindSecondary() => Rebind(1);
-    private void Rebind(int index)
+    private void RebindPrimary() => Rebind(0, primaryKeybindLabelText);
+    private void RebindSecondary() => Rebind(1, secondaryKeybindLabelText);
+    private void Rebind(int index, TMP_Text buttonText)
     {
         assignedAction.Disable();
 
@@ -41,14 +43,55 @@ public class KeybindEditor : MonoBehaviour
             WithExpectedControlType("Button").
             WithCancelingThrough("<Keyboard>/escape").
             WithControlsExcluding("Mouse").
+            // composites handled separately to preserve ordering (ctrl + alt + <button> vs alt + ctrl + <button)
             WithControlsExcluding("<Keyboard>/ctrl").
-            WithControlsExcluding("<Keyboard>/alt").
+            WithControlsExcluding("<Keyboard>/leftCtrl").
+            WithControlsExcluding("<Keyboard>/rightCtrl").
             WithControlsExcluding("<Keyboard>/shift").
+            WithControlsExcluding("<Keyboard>/leftShift").
+            WithControlsExcluding("<Keyboard>/rightShift").
+            WithControlsExcluding("<Keyboard>/alt").
+            WithControlsExcluding("<Keyboard>/leftAlt").
+            WithControlsExcluding("<Keyboard>/rightAlt").
+            WithControlsExcluding("<Keyboard>/anyKey"). // If any control is ignored (like the ones above), it still fires this. 
             WithControlsHavingToMatchPath("<Keyboard>").
-            OnComplete(x => ProcessRebindOperation(x, index)).
+            OnApplyBinding((x, y) => ProcessRebindOperation(x, y, index)).
             Start();
+
+        buttonText.text = "...";
+    }
+        // todo: make manager class that handles spawning, saving, etc. of keybinds
         
-        
+    private void UpdateKeybindButtonDisplayText()
+    {
+        actionIndeces = DetectBindings();
+
+        primaryKeybindLabelText.text = ConvertBindingToDisplayString(0);
+        secondaryKeybindLabelText.text = ConvertBindingToDisplayString(1);
+    }
+    
+    private string ConvertBindingToDisplayString(int actionIndecesIndex)
+    {
+        if (actionIndecesIndex >= actionIndeces.Count) return "--";
+        var bindingIndex = actionIndeces[actionIndecesIndex];
+        var binding = assignedAction.bindings[bindingIndex];
+
+        switch (binding.path)
+        {
+            case TWO_MODIFIERS:
+                var m1TwoMod = MiscTools.Capitalize(assignedAction.bindings[bindingIndex + 1].ToDisplayString());
+                var m2 = MiscTools.Capitalize(assignedAction.bindings[bindingIndex + 2].ToDisplayString());
+                var actionTwoMod = MiscTools.Capitalize(assignedAction.bindings[bindingIndex + 3].ToDisplayString());
+                return
+                    $"{m1TwoMod} + {m2} + {actionTwoMod}"; 
+            case ONE_MODIFIER:
+                var m1 = MiscTools.Capitalize(assignedAction.bindings[bindingIndex + 1].ToDisplayString());
+                var action = MiscTools.Capitalize(assignedAction.bindings[bindingIndex + 2].ToDisplayString());
+                return
+                    $"{m1} + {action}"; 
+            default:
+                return binding.ToDisplayString();
+        }
     }
 
     private bool captureCompositeActions = false;
@@ -71,12 +114,12 @@ public class KeybindEditor : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt))
             {
-                if (!capturedComposites.Contains(SHIFT_PATH)) capturedComposites.Add(SHIFT_PATH);
+                if (!capturedComposites.Contains(ALT_PATH)) capturedComposites.Add(ALT_PATH);
             }
 
             if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
             {
-                if (!capturedComposites.Contains(ALT_PATH)) capturedComposites.Add(ALT_PATH);
+                if (!capturedComposites.Contains(SHIFT_PATH)) capturedComposites.Add(SHIFT_PATH);
             }
 #if UNITY_STANDALONE_OSX
             if (Input.GetKeyDown(KeyCode.LeftCommand))
@@ -92,11 +135,13 @@ public class KeybindEditor : MonoBehaviour
         }
     }
 
-    private void ProcessRebindOperation(InputActionRebindingExtensions.RebindingOperation operation, int actionIndex)
+    private void ProcessRebindOperation(
+        InputActionRebindingExtensions.RebindingOperation operation, 
+        string path,
+        int actionIndex
+        )
     {
-        if (actionIndex >= actionIndeces.Count) actionIndex = actionIndeces.Count - 1;
-
-        if (actionIndex >= 0)
+        if (actionIndex < actionIndeces.Count)
         {
             // remove existing action to prep for new action
             assignedAction.ChangeBinding(actionIndeces[actionIndex]).Erase();
@@ -104,16 +149,17 @@ public class KeybindEditor : MonoBehaviour
         
         switch (capturedComposites.Count)
         {
+            // Order matters here. With("Modifier").With("Binding") will appear differently from vice versa. 
             case >= 2:
-                assignedAction.AddCompositeBinding("ButtonWithTwoModifiers").
-                    With("Button", operation.selectedControl.path).
-                    With("Modifier1", capturedComposites[0]).
-                    With("Modifier2", capturedComposites[1]);
+                assignedAction.AddCompositeBinding("TwoModifiers").
+                    With("Modifier", capturedComposites[0]).
+                    With("Modifier", capturedComposites[1]).
+                    With("Binding", operation.selectedControl.path);
                 break;
             case >= 1:
-                assignedAction.AddCompositeBinding("ButtonWithOneModifier").
-                    With("Button", operation.selectedControl.path).
-                    With("Modifier", capturedComposites[0]);
+                assignedAction.AddCompositeBinding("OneModifier").
+                    With("Modifier", capturedComposites[0]).
+                    With("Binding", operation.selectedControl.path);
                 break;
             default:
                 assignedAction.AddBinding(operation.selectedControl);
@@ -123,50 +169,55 @@ public class KeybindEditor : MonoBehaviour
         operation.Dispose();
         assignedAction.Enable();
         capturedComposites.Clear();
+        actionIndeces = DetectBindings();
+        UpdateKeybindButtonDisplayText();
+
+        print("[Bindings]");
+        foreach (var binding in assignedAction.bindings)
+        {
+            print(binding);
+            print($"dsp: {binding.ToDisplayString()}");
+        }
+
+        foreach (var idx in actionIndeces)
+        {
+            print(idx);
+        }
     }
     
-    public void Initialize(InputAction assignedInput)
+    public void Initialize(InputAction assignedAction)
     {
-        label.text = assignedInput.name;
-        var bindings = assignedInput.bindings;
+        this.assignedAction = assignedAction;
+        label.text = assignedAction.name;
+        var bindings = assignedAction.bindings;
 
         foreach (var binding in bindings)
         {
             print(binding);
         }
         
-        assignedInput.ChangeBinding(0).Erase();
-
-        foreach (var binding in assignedInput.bindings)
-        {
-            print(binding);
-        }
-        
-
-        //primaryKeybindLabelText.text = bindings.Count > 0 ? bindings[0].ToDisplayString() : "--";
-        //secondaryKeybindLabelText.text = bindings.Count > 1 ? bindings[1].ToDisplayString() : "--";
+        UpdateKeybindButtonDisplayText();
     }
 
-    private List<int> DetectBindings(InputAction action)
+    private List<int> DetectBindings()
     {
-        var actionIndeces = new List<int>();
-        for (int i = 0; i < action.bindings.Count; i++)
+        var foundActionIndeces = new List<int>();
+        for (int i = 0; i < assignedAction.bindings.Count; i++)
         {
-            var identifier = action.bindings[i];
+            var identifier = assignedAction.bindings[i];
+            foundActionIndeces.Add(i);
 
-            if (identifier.path == "OneModifier")
+            if (identifier.path == ONE_MODIFIER)
             {
                 i += 2; // modifier + control
             }
 
-            if (identifier.path == "TwoModifiers")
+            if (identifier.path == TWO_MODIFIERS)
             {
                 i += 3; // modifier + modifier + control
             }
-            
-            actionIndeces.Add(i);
         }
 
-        return actionIndeces;
+        return foundActionIndeces;
     }
 }
