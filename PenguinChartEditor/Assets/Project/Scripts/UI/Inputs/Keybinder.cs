@@ -141,6 +141,7 @@ public class KeybindEditor : MonoBehaviour
         int actionIndex
         )
     {
+        print(path);
         if (actionIndex < actionIndeces.Count)
         {
             // remove existing action to prep for new action
@@ -154,15 +155,15 @@ public class KeybindEditor : MonoBehaviour
                 assignedAction.AddCompositeBinding("TwoModifiers").
                     With("Modifier", capturedComposites[0]).
                     With("Modifier", capturedComposites[1]).
-                    With("Binding", operation.selectedControl.path);
+                    With("Binding", path);
                 break;
             case >= 1:
                 assignedAction.AddCompositeBinding("OneModifier").
                     With("Modifier", capturedComposites[0]).
-                    With("Binding", operation.selectedControl.path);
+                    With("Binding", path);
                 break;
             default:
-                assignedAction.AddBinding(operation.selectedControl);
+                assignedAction.AddBinding(path);
                 break;
         }
         
@@ -175,7 +176,7 @@ public class KeybindEditor : MonoBehaviour
         print("[Bindings]");
         foreach (var binding in assignedAction.bindings)
         {
-            print(binding);
+            print(binding.effectivePath);
             print($"dsp: {binding.ToDisplayString()}");
         }
 

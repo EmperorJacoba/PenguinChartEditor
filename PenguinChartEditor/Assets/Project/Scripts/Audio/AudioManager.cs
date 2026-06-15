@@ -8,6 +8,7 @@ using ManagedBass;
 using ManagedBass.Enc;
 using Penguin.Debug;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // This file is based around the licensed product plugin BASS, interacting through the ManagedBass plugin.
 // You must obtain your own license of BASS if you would like to repackage the code in this file by the terms each program specifies.
@@ -185,15 +186,18 @@ public class AudioManager : MonoBehaviour
     {
         inputMap = new InputMap();
         inputMap.Enable();
-        inputMap.PenguinChartingUIShortcuts.PlayPause.performed += _ => ToggleAudioPlayback();
+        inputMap.PenguinChartingUIShortcuts.PlayPause.performed += ToggleAudioPlayback;
 
         SceneTabSwitcher.TabChanged += PauseAudio;
     }
+    
     public static void DisableAudioPlaybackControls() => inputMap.PenguinChartingUIShortcuts.Disable();
     public static void EnableAudioPlaybackControls() => inputMap.PenguinChartingUIShortcuts.Enable();
 
-    private void ToggleAudioPlayback()
+    private void ToggleAudioPlayback(InputAction.CallbackContext _)
     {
+        print("Here");
+        print(this);
         if (Chart.LoadedInstrument is null) return;
         
         if (AudioPlaying) PauseAudio();
@@ -202,7 +206,8 @@ public class AudioManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        inputMap.Disable();
+        inputMap.PenguinChartingUIShortcuts.PlayPause.performed -= ToggleAudioPlayback;
+        inputMap.Dispose();
     }
 
     private void OnApplicationQuit()

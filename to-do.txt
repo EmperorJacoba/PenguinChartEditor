@@ -70,3 +70,5 @@ patch notes:
 - Change placeholder audio timestamps from `0:00:000 / 01:30:000` to `N/A / N/A`
 - Add notification system to alert user of new releases on GitHub
 - Add keybinds for "Clap" and "Metronome" features
+- Allow support for ignoring unintended keybind calls on One/TwoModifier actions with custom input
+- Remove duplicate keybind calls due to multiple interaction handlers on keybinds

@@ -98,7 +98,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""a1f43e32-c3e7-44e6-9a1e-6e6827410e4c"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -107,7 +107,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""7fbb5e7d-8576-444c-b1b0-f23c5f238b38"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -116,7 +116,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""78a2cd1c-de4e-4006-bd04-3660f24df15f"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -125,7 +125,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""dd6c806c-9a03-4fbb-a4b7-31bbbc19f870"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -134,7 +134,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""b144a97a-e3d7-4f1c-b958-9b3d06048c11"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -143,7 +143,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""da85feca-0f8b-4d68-9c9f-afcf97438624"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -152,7 +152,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""91378876-e819-4a57-bbef-174da1103e4f"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -161,7 +161,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""2064ea4f-7b58-4485-a9c6-588670bf06bc"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableModifiers(disableOnControl=false)"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -170,7 +170,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""4c8e9a15-a17d-4ed9-b73c-fb2634ac8b18"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -179,7 +179,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""cbe33ce2-bbce-465b-9425-d31fd6c87f3e"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -188,7 +188,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""b4ad7890-a1c1-4502-afbf-b485c0973425"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -612,7 +612,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""a074e63d-5ef5-4144-b2a7-131445c16043"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableModifiers,DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -621,7 +621,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""0d6cad2f-8993-4ac0-b023-b3bada9c71cc"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableModifiers,DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -630,7 +630,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""5041fa30-05be-4699-b501-8ceb681d0034"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -639,7 +639,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""ff00a0f8-bd38-4e4f-8847-048f1941fe0b"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -648,7 +648,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""816115bb-21f3-4da1-b39c-94f8289bdcf8"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -657,7 +657,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""7e577d58-2c09-4202-8dac-4b26ce43f966"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -666,7 +666,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""6757fd38-7eba-4c14-9509-0989d6373b60"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -675,7 +675,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""cc632610-efd5-412c-a7cc-179ada79f0c4"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -684,7 +684,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""e39508f7-8a29-4acf-b2a4-6380bf60d331"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -693,7 +693,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""febfd0be-cdad-413a-8688-47510dbf27af"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -1118,7 +1118,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""b4df9e74-a3f4-4662-9928-ab85e63aa589"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1127,7 +1127,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""ac30b5d6-9dbf-4e78-9dbc-be147f137787"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1136,7 +1136,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""7c149117-b747-436e-82ba-9163d683991c"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1145,7 +1145,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""220dc8cf-e6d7-4e76-a5dd-7b52f73c12b9"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1154,7 +1154,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""f1eb6bba-9f6d-441d-a9fc-6de0611bda20"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1163,7 +1163,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""79f272a0-cec4-477a-adc8-eb9b3c68b6e7"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1172,7 +1172,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""d328ddce-b33e-4a78-9040-6b4db5bd82d0"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1181,7 +1181,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""b88d514c-a98f-408f-892c-9b8784a878d6"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1190,7 +1190,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""ec899f25-ac0e-4102-9fb9-196ec8a7fed2"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1199,7 +1199,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""d2cc0cb5-18f4-4b64-a372-68854b9574a4"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1208,7 +1208,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""ce1a1e88-d90f-4c27-9869-de278a6f0011"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -1368,7 +1368,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""cb3a4632-592a-4cc8-996b-ea0d80c87dc7"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1377,7 +1377,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""26dc061b-67f2-4673-93c9-9c4b481fa5cb"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1386,7 +1386,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""fcd4a49b-a0de-4cbe-9b69-1ebe5591d3c3"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1395,7 +1395,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""cd84e6e4-a183-41a8-9fe9-b165604d2d9b"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1404,7 +1404,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""cee73a2f-6f31-4a39-aec1-87bea74acd5d"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1413,7 +1413,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""96d0a828-9798-42e2-b38a-620d28b402e2"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -1496,7 +1496,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""f78fc8d8-e5ac-461f-b30c-8a99631a3cf2"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1505,7 +1505,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""409c175c-1ff5-4dea-b80e-249ea4c9afc6"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1514,7 +1514,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""290c945d-ab8a-44d3-ba11-dcc04dfad0bb"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1523,7 +1523,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""4a8876f4-51d6-473a-a26a-160a95f1caa6"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive,DisableModifiers"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -1694,7 +1694,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""236f0e06-fdb4-44f8-8732-e6b008709f25"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1703,7 +1703,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""d38940cf-b41f-44f3-935f-2dd4c661d2ef"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -1712,7 +1712,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""id"": ""9b57fe51-98a6-4d96-83f7-6b56c1f3155e"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""DisableWhenInputActive"",
+                    ""interactions"": ""PreventCommonInputConflicts"",
                     ""initialStateCheck"": false
                 }
             ],
