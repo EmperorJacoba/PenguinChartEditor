@@ -313,7 +313,10 @@ public class Chart : MonoBehaviour
                 {
                     LoadedInstrument = foundInstruments[0];
                 }
-                else LoadedInstrument = CreateNewInstrument(instrumentID);
+                else
+                {
+                    LoadedInstrument = CreateNewInstrument(instrumentID);
+                }
 
                 break;
             }
@@ -421,7 +424,8 @@ public class Chart : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException($"No support for creating instrument type {instrumentID}");
         }
-
+        
+        createdInstrument.SetUpInputMap();
         Instruments.Add(createdInstrument);
         return createdInstrument;
     }

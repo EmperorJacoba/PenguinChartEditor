@@ -605,7 +605,7 @@ public sealed class FiveFretInstrument : BaseSustainableInstrument<FiveFretNoteD
         if (uniqueTicks.Count > 1)
         {
             CheckForHoposInRange(uniqueTicks.Min(), uniqueTicks.Max());
-            if (!Chart.ChartLoading) ValidateSustainsInRange(uniqueTicks.Min(), uniqueTicks.Max());
+            ValidateSustainsInRange(uniqueTicks.Min(), uniqueTicks.Max());
         }
         
         FlipTicks(flippedTicks);

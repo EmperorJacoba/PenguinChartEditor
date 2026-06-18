@@ -226,8 +226,6 @@ public class SustainHelper<T> where T : IEventData, ISustainable
                 ValidateSustain(uniqueTicksInRange[index], 0);
             }
         }
-
-        Chart.InPlaceRefresh();
     }
 
     public void ClampSustainsBefore(int tick, int lane)
