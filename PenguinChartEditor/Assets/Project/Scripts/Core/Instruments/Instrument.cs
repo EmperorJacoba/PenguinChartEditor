@@ -511,6 +511,8 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         
         var undoAction = mover.Reset();
         UndoStack.instance.PushAction(undoAction);
+        
+        Chart.InPlaceRefresh();
     }
 
     #endregion

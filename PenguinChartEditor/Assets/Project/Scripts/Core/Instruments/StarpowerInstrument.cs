@@ -154,6 +154,8 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         
         undoAction.CloseAction();
         UndoStack.instance.PushAction(undoAction);
+        
+        Chart.InPlaceRefresh();
     }
 
     public void IsolateSelection()
@@ -177,6 +179,8 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         
         undoAction.CloseAction();
         UndoStack.instance.PushAction(undoAction);
+        
+        Chart.InPlaceRefresh();
     }
 
     #endregion
@@ -253,6 +257,7 @@ public class StarpowerInstrument : BaseSustainableInstrument<StarpowerEventData>
         }
         // fixme: calculate range properly
         ValidateSustainsInRange(0, SongTime.SongLengthTicks);
+        Chart.InPlaceRefresh();
     }
 
     private StarpowerEventData defaultSPEvent = new(false, -1);
