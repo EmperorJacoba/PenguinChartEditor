@@ -55,9 +55,6 @@ public class PreventCommonInputConflicts : IInputInteraction
         var activeObj = EventSystem.current.currentSelectedGameObject;
         if (activeObj != null && activeObj.GetComponent<TMP_InputField>() != null) return;
         
-        MonoBehaviour.print(context.phase);
-        foreach (var binding in bindings) MonoBehaviour.print(binding);
-        
         context.Performed();
     }
 

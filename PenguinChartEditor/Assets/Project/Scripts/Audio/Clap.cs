@@ -82,7 +82,7 @@ public class Clap : MonoBehaviour
             listIndex = ~listIndex;
         }
 
-        if (listIndex >= cachedTicks.Count - 1) return -1;
+        if (listIndex >= cachedTicks.Count) return -1;
         return cachedTicks[listIndex];
     }
 }

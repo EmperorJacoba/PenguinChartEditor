@@ -196,8 +196,6 @@ public class AudioManager : MonoBehaviour
 
     private void ToggleAudioPlayback(InputAction.CallbackContext _)
     {
-        print("Here");
-        print(this);
         if (Chart.LoadedInstrument is null) return;
         
         if (AudioPlaying) PauseAudio();
