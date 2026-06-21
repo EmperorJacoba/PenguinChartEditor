@@ -27,7 +27,7 @@ public class ExportButton : MonoBehaviour
 
         if (paths.Length < 1) return;
 
-        lastDirName = $"{paths[0]}/{Chart.Metadata.GenerateFolderName()})";
+        lastDirName = $"{paths[0]}/{Chart.Metadata.GenerateFolderName()}";
 
         if (Directory.Exists(lastDirName))
         {

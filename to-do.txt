@@ -74,3 +74,5 @@ patch notes:
 - Add keybinds for "Clap" and "Metronome" features
 - Allow support for ignoring unintended keybind calls on One/TwoModifier actions with custom input
 - Remove duplicate keybind calls due to multiple interaction handlers on keybinds
+- Remove extra closing parenthesis after charter name in exported folder name
+- Fix stem mixers from displaying "1" as volume on scene load even if the internal volume is not 1
