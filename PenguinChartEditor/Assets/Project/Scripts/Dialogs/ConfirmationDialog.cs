@@ -26,7 +26,7 @@ namespace Penguin.Dialogs
             runOnYesAction = positiveResultFunc;
             var rt = GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(width, height);
-            rt.position = new Vector3(Screen.width / 2.0f, Screen.height / 2.0f);
+            rt.anchoredPosition = Vector3.zero;
         }
 
         private void Yes()
