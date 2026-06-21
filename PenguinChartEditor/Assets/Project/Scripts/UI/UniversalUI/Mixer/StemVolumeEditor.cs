@@ -11,10 +11,7 @@ public class StemVolumeEditor : MonoBehaviour
 {
     public StemType StemType
     {
-        get
-        {
-            return _type;
-        }
+        get => _type;
         set
         {
             // Automatically update the package's label when the stem type is set
@@ -49,6 +46,8 @@ public class StemVolumeEditor : MonoBehaviour
 
         slider.onValueChanged.AddListener(SliderChange);
         entryBox.onEndEdit.AddListener(EntryBoxChange);
+
+        slider.value = AudioManager.GetStemVolume(StemType);
     }
 
     /// <summary>

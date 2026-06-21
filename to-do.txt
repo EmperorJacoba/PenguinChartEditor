@@ -9,6 +9,8 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 - hotkey to jump X number of bars/beats
 
+- fix autosave
+
 => save waveform properties
 	=> save stem volumes to .penguin file
 	=> save user song position to .penguin file

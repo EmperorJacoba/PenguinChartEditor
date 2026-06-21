@@ -442,7 +442,8 @@ public class AudioManager : MonoBehaviour
     }
 
     public static void SetStemVolume(StemType stem, float volume) => Streams[stem].Volume = volume;
-
+    public static float GetStemVolume(StemType stem) => Streams[stem].Volume;
+    
     private static void SetStreamPositions() => SetStreamPositions(SongTime.SongPositionSeconds + Chart.settings.Calibration);
     private static void SetStreamPositions(double position)
     {
