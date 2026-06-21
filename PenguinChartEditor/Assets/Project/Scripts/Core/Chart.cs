@@ -761,6 +761,11 @@ public class Chart : MonoBehaviour
         // it works so i am not touching it
         targetDirectory = Path.Combine(@"\\?\", targetDirectory); 
 #endif
+
+        if (Directory.Exists(targetDirectory))
+        {
+            Directory.Delete(targetDirectory, true);
+        }
         
         Directory.CreateDirectory(targetDirectory);
         

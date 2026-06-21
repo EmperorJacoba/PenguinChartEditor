@@ -76,3 +76,4 @@ patch notes:
 - Remove duplicate keybind calls due to multiple interaction handlers on keybinds
 - Remove extra closing parenthesis after charter name in exported folder name
 - Fix stem mixers from displaying "1" as volume on scene load even if the internal volume is not 1
+- Fix chart package export not actually overwriting existing directory

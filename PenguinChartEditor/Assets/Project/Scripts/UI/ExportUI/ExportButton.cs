@@ -32,7 +32,7 @@ public class ExportButton : MonoBehaviour
         if (Directory.Exists(lastDirName))
         {
             var dialog = DialogManager.SpawnDialog<ConfirmationDialog>();
-            dialog.Initialize("File already exists. Overwrite?", ConfirmExport);
+            dialog.Initialize("Chart package already exists. Overwrite?", ConfirmExport);
             return;
         }
         
