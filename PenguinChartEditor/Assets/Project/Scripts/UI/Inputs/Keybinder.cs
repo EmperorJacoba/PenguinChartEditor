@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -56,12 +57,11 @@ public class KeybindEditor : MonoBehaviour
 
         buttonText.text = "...";
     }
-        // todo: make manager class that handles spawning, saving, etc. of keybinds
         
     private void UpdateKeybindButtonDisplayText()
     {
         actionIndeces = DetectBindings();
-
+        
         primaryKeybindLabelText.text = ConvertBindingToDisplayString(0);
         secondaryKeybindLabelText.text = ConvertBindingToDisplayString(1);
     }
@@ -184,8 +184,11 @@ public class KeybindEditor : MonoBehaviour
     
     public void Initialize(InputAction assignedAction)
     {
-        this.assignedAction = assignedAction;
-        label.text = assignedAction.name;
+        this.assignedAction = assignedAction;        
+        
+        // Adapted from https://stackoverflow.com/a/9283563/31816967
+        // Makes PascalCase input names space separated
+        label.text = Regex.Replace(assignedAction.name, @"(?<=[a-z])([A-Z])|(?<!\A)([A-Z])(?=[a-z])", " $1$2");
         
         UpdateKeybindButtonDisplayText();
         
