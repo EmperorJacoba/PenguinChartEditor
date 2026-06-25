@@ -10,6 +10,12 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 - hotkey to jump X number of bars/beats
 
 - fix autosave
+- does sfx & master volume & sliderboxlinker check for initial state?
+
+=> inputs
+	- save inputs
+	- load inputs
+	- display all input options
 
 => save waveform properties
 	=> save stem volumes to .penguin file

@@ -22,10 +22,6 @@ public class KeybindEditor : MonoBehaviour
 
     private void Awake()
     {
-        inputMap = new InputMap();
-        inputMap.Enable();
-        Initialize(inputMap.StandardCommands.Copy);
-
         primaryKeybindLabel.onClick.AddListener(RebindPrimary);
         secondaryKeybindLabel.onClick.AddListener(RebindSecondary);
     }
@@ -190,14 +186,10 @@ public class KeybindEditor : MonoBehaviour
     {
         this.assignedAction = assignedAction;
         label.text = assignedAction.name;
-        var bindings = assignedAction.bindings;
-
-        foreach (var binding in bindings)
-        {
-            print(binding);
-        }
         
         UpdateKeybindButtonDisplayText();
+        
+        gameObject.SetActive(true);
     }
 
     private List<int> DetectBindings()

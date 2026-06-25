@@ -113,7 +113,7 @@ public class UserSettings
 
     #endregion
     
-    #region Write to disk
+    #region Disk
 
     private static string SettingsDirectoryPath => Path.Combine(Application.persistentDataPath, "settings");
     private static string SettingsFilePath => Path.Combine(SettingsDirectoryPath, "settings.json");
