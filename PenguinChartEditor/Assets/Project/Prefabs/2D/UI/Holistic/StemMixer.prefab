@@ -991,6 +991,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4536794386628450177}
     m_Modifications:
+    - target: {fileID: 37876891653277628, guid: 5ceb134a325f3f344b9f4e4a4ad01625, type: 3}
+      propertyPath: ControlledSFX
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1549970468987340468, guid: 5ceb134a325f3f344b9f4e4a4ad01625, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0.5

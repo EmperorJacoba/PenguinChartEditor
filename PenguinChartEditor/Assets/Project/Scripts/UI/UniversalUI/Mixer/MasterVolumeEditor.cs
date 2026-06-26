@@ -16,6 +16,8 @@ public class MasterVolumeEditor : MonoBehaviour
     {
         slider.onValueChanged.AddListener(SliderChange);
         entryBox.onEndEdit.AddListener(EntryBoxChange);
+
+        slider.value = (float)AudioManager.MasterVolume;
     }
 
     /// <summary>

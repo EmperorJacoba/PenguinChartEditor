@@ -9,20 +9,7 @@ using System.Linq;
 /// </summary>
 public class SFXVolumeEditor : MonoBehaviour
 {
-    public AudioManager.SFX ControlledSFX
-    {
-        get
-        {
-            return _type;
-        }
-        set
-        {
-            // Automatically update the package's label when the stem type is set
-            label.text = MiscTools.Capitalize(value.ToString());
-            _type = value;
-        }
-    }
-    private AudioManager.SFX _type;
+    public AudioManager.SFX ControlledSFX;
 
     [SerializeField] private Slider slider;
     [SerializeField] private TextMeshProUGUI label;
@@ -30,6 +17,8 @@ public class SFXVolumeEditor : MonoBehaviour
 
     private void Start()
     {
+        label.text = MiscTools.Capitalize(ControlledSFX.ToString());
+        
         slider.onValueChanged.AddListener(SliderChange);
         entryBox.onEndEdit.AddListener(EntryBoxChange);
         
