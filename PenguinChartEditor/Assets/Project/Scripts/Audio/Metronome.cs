@@ -42,7 +42,8 @@ public class Metronome : MonoBehaviour
         }
     }
 
-    private void ToggleMetronome(InputAction.CallbackContext _)
+    private void ToggleMetronome(InputAction.CallbackContext _) => ToggleMetronome();
+    private void ToggleMetronome()
     {
         metronomeActive = !metronomeActive;
 
@@ -60,6 +61,9 @@ public class Metronome : MonoBehaviour
     private InputMap inputMap;
     private void OnEnable()
     {
+        var b = GetComponent<Button>();
+        b.onClick.AddListener(ToggleMetronome);
+        
         inputMap = new();
         inputMap.Enable();
 

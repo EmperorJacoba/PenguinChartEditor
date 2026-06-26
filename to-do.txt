@@ -12,6 +12,8 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 - fix autosave
 - metronome sfx does not play
 
+- calibration minigame
+
 => inputs
 	- save inputs
 	- load inputs

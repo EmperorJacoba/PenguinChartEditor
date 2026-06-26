@@ -1803,7 +1803,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dropdown: {fileID: 6848583809936906878}
-  waveformManager: {fileID: 0}
 --- !u!1 &2872718976418858140
 GameObject:
   m_ObjectHideFlags: 0
@@ -2698,8 +2697,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9b1ec8703aceefe4c840dd7ce5bd2d35, type: 2}
+  m_sharedMaterial: {fileID: -8941867732808617394, guid: 9b1ec8703aceefe4c840dd7ce5bd2d35, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3137,7 +3136,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volumeEditor: {fileID: 3982554735591839404, guid: 8e9d4ed7f98590b45a3db53fcea5d040, type: 3}
   scrollViewContentRt: {fileID: 6274896398827021155}
-  scrollView: {fileID: 8978136636737481076}
 --- !u!1 &4290533039149450664
 GameObject:
   m_ObjectHideFlags: 0
@@ -3745,6 +3743,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 4297312114673955732}
   entryBox: {fileID: 1871962314623554363}
+  minValue: 0
+  maxValue: 0
+  defaultStartingValue: 0
   dataType: 1
 --- !u!1 &5636325119295080010
 GameObject:
@@ -4857,6 +4858,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 8751489190899559162}
   entryBox: {fileID: 3764949729324504119}
+  minValue: 0
+  maxValue: 0
+  defaultStartingValue: 0
   dataType: 2
 --- !u!1 &6660598748511427821
 GameObject:
@@ -5032,6 +5036,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entryBox: {fileID: 4137890231157486557}
+  upButton: {fileID: 0}
+  downButton: {fileID: 0}
 --- !u!1 &7027147324288930145
 GameObject:
   m_ObjectHideFlags: 0
@@ -5432,8 +5438,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9b1ec8703aceefe4c840dd7ce5bd2d35, type: 2}
+  m_sharedMaterial: {fileID: -8941867732808617394, guid: 9b1ec8703aceefe4c840dd7ce5bd2d35, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5598,6 +5604,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 7084568804575457621}
   entryBox: {fileID: 2404142054304720360}
+  minValue: 0
+  maxValue: 0
+  defaultStartingValue: 0
   dataType: 0
 --- !u!1 &7508552168397755998
 GameObject:
@@ -6115,19 +6124,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8712194337765706902}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2882893683497481325}
-        m_TargetAssemblyTypeName: Metronome, Assembly-CSharp
-        m_MethodName: ToggleMetronome
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &2882893683497481325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6560,6 +6557,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 380819836908575878}
   entryBox: {fileID: 8858688487125243720}
+  minValue: 0
+  maxValue: 0
+  defaultStartingValue: 0
   dataType: 2
 --- !u!1 &8519174419391235799
 GameObject:
@@ -6839,8 +6839,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9b1ec8703aceefe4c840dd7ce5bd2d35, type: 2}
+  m_sharedMaterial: {fileID: -8941867732808617394, guid: 9b1ec8703aceefe4c840dd7ce5bd2d35, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

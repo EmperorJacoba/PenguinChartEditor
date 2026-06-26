@@ -454,8 +454,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 0
-  properties:
-    is3D: 0
   pooler: {fileID: 6239090008578448591}
 --- !u!224 &588628610 stripped
 RectTransform:
@@ -1128,6 +1126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highway: {fileID: 0}
+  strikeline: {fileID: 0}
   waveform: {fileID: 33159347}
   laneDetails: {fileID: 0}
   instrumentID: 0
@@ -1957,8 +1956,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <isReadOnly>k__BackingField: 0
-  properties:
-    is3D: 0
   pooler: {fileID: 6239090008588641569}
 --- !u!1001 &1532809078
 PrefabInstance:
@@ -2296,9 +2293,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentScene: 1
-  is2D: 1
-  highway: {fileID: 1489170079}
-  laneWidth: 0
+  globalHighway: {fileID: 1489170079}
   overlayUIRaycaster: {fileID: 1606916091}
   eventRaycaster: {fileID: 1814809336}
   cameraHighwayRaycaster: {fileID: 0}
@@ -2877,17 +2872,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7144059694187888909, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
   m_PrefabInstance: {fileID: 1993092257}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1993092259 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6828928993693948052, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
-  m_PrefabInstance: {fileID: 1993092257}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993092260}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02381e1b7d5442549b8dea5a339cd9d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1993092260 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2684071022864669012, guid: eaa71885f5d873049a6f72ec424fdec7, type: 3}
@@ -2905,8 +2889,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5cf94416ef33b046a171528a302b951, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tsLabel: {fileID: 1993092259}
-  boundaryReference: {fileID: 1489170079}
 --- !u!1 &2011355155 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4282045479885994295, guid: 96a8ac1659ccb824f9aee5b49d8913a1, type: 3}
@@ -2927,19 +2909,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 695db4bd8c26acc45a6ac98f3aceb30b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bpmLabel: {fileID: 2011355158}
-  boundaryReference: {fileID: 1489170079}
---- !u!114 &2011355158 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5827053948810469824, guid: 96a8ac1659ccb824f9aee5b49d8913a1, type: 3}
-  m_PrefabInstance: {fileID: 690372726}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2011355155}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd05fffeeb21a9d42a2d063d2c067b0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!222 &8940562199908114
@@ -4773,19 +4742,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 447018305695910630}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8074603164070031667}
-        m_TargetAssemblyTypeName: Metronome, Assembly-CSharp
-        m_MethodName: ToggleMetronome
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &2134084094555258112
 GameObject:
   m_ObjectHideFlags: 0
@@ -5055,7 +5012,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2728955328886321131, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -52.50003
+      value: -52.5
       objectReference: {fileID: 0}
     - target: {fileID: 2728955328886321131, guid: 5a36a32c635121446ace1ae7e6488ce0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
