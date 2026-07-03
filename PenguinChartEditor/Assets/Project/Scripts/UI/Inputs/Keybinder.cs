@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -11,6 +13,7 @@ public class KeybindEditor : MonoBehaviour
 {
     private const string ONE_MODIFIER = "OneModifier";
     private const string TWO_MODIFIERS = "TwoModifiers";
+    private const int KEYBIND_REBIND_FRAME_BUFFER = 10;
     [SerializeField] private TMP_Text label;
     [SerializeField] private Button primaryKeybindLabel;
     [SerializeField] private TMP_Text primaryKeybindLabelText;
@@ -31,7 +34,7 @@ public class KeybindEditor : MonoBehaviour
     private void RebindSecondary() => Rebind(1, secondaryKeybindLabelText);
     private void Rebind(int index, TMP_Text buttonText)
     {
-        assignedAction.Disable();
+        Chart.inputMap.Disable();
 
         captureCompositeActions = true;
 
@@ -172,12 +175,21 @@ public class KeybindEditor : MonoBehaviour
 
     private void CompleteRebindingOperation(InputActionRebindingExtensions.RebindingOperation operation)
     {
-        assignedAction.Enable();
         operation.Dispose();
         captureCompositeActions = false;
         capturedComposites.Clear();
-        Chart.instance.SetUpInputMap();
         foreach (var b in assignedAction.bindings) print(b);
+        
+        StartCoroutine(EnableAfterKeysReleased());
+    }
+    
+    private static IEnumerator EnableAfterKeysReleased()
+    {
+        // Wait an arbitrary number of frames (10) to reenable inputs. After a rebind operation the input will trigger
+        // because Unity didn't think to stop that for some reason. Womp
+        for (int i = 0; i < KEYBIND_REBIND_FRAME_BUFFER; i++) yield return null;
+
+        Chart.inputMap.Enable();
     }
     
     public void Initialize(InputAction assignedAction)

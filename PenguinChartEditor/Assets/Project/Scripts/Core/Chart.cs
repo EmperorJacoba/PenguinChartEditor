@@ -139,11 +139,21 @@ public class Chart : MonoBehaviour
 
     // Input map lives here because rebinds don't apply statically. In previous builds the input map was recreated in
     // every place where it was needed.
-    public static InputMap inputMap;
+    public static InputMap inputMap
+    {
+        get
+        {
+            if (_im is not null) return _im;
+            
+            _im = new InputMap();
+            _im.Enable();
+            return _im;
+        }
+    }
+
+    private static InputMap _im;
     public void SetUpInputMap()
     {
-        inputMap = new InputMap();
-        inputMap.Enable();
         inputMap.StandardCommands.Copy.performed += _ => Clipboard.Copy();
         inputMap.StandardCommands.Paste.performed += _ => Clipboard.Paste();
         inputMap.StandardCommands.Cut.performed += _ => Clipboard.Cut();
