@@ -67,9 +67,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         modeIsBars = !isTicks;
         defaultSustain = value;
     }
-
-    protected InputMap inputMap;
-
+    
     // Some Awakes run before other Awakes. That is why I have it set up like this. I am tired of null reference exceptions. So tired.
     protected IEvent previewerEventReference
     {
@@ -163,15 +161,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected virtual void Awake()
     {
-        inputMap = new InputMap();
-        inputMap.Enable();
-
-        inputMap.StandardStaticEvents.PreviewMousePos.performed += position => UpdatePosition();
-    }
-
-    private void OnDestroy()
-    {
-        inputMap.Disable();
+        Chart.inputMap.StandardStaticEvents.PreviewMousePos.performed += position => UpdatePosition();
     }
 
     protected void Update()

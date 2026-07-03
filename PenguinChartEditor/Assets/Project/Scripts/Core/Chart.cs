@@ -137,7 +137,9 @@ public class Chart : MonoBehaviour
         }
     }
 
-    public InputMap inputMap;
+    // Input map lives here because rebinds don't apply statically. In previous builds the input map was recreated in
+    // every place where it was needed.
+    public static InputMap inputMap;
     public void SetUpInputMap()
     {
         inputMap = new InputMap();

@@ -7,8 +7,6 @@ public class SongTime : MonoBehaviour
     private const float MINUTES_TO_SECONDS_CONVERSION = 60;
     private const float MILLISECONDS_TO_SECONDS_CONVERSION = 1000;
     
-    private static InputMap inputMap;
-
     // Needed for delta calculations when scrolling using MMB
     private float initialMouseY = float.NaN;
 
@@ -72,29 +70,21 @@ public class SongTime : MonoBehaviour
 
     private void Awake()
     {
-        inputMap = new InputMap();
-        inputMap.Enable();
-
-        inputMap.StandardStaticEvents.ScrollTrack.performed += scrollChange => ChangeTime(scrollChange.ReadValue<float>());
-        inputMap.StandardStaticEvents.MiddleMouseClick.started += x => initialMouseY = Input.mousePosition.y;
-        inputMap.StandardStaticEvents.MiddleMouseClick.canceled += x => initialMouseY = float.NaN;
+        Chart.inputMap.StandardStaticEvents.ScrollTrack.performed += scrollChange => ChangeTime(scrollChange.ReadValue<float>());
+        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.started += x => initialMouseY = Input.mousePosition.y;
+        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.canceled += x => initialMouseY = float.NaN;
     }
 
     public static void StopPlaybackAndTimeEditActions()
     {
-        inputMap.StandardStaticEvents.Disable();
+        Chart.inputMap.StandardStaticEvents.Disable();
         AudioManager.DisableAudioPlaybackControls();
     }
 
     public static void AllowPlaybackAndTimeEditActions()
     {
-        inputMap.StandardStaticEvents.Enable();
+        Chart.inputMap.StandardStaticEvents.Enable();
         AudioManager.EnableAudioPlaybackControls();
-    }
-
-    private void OnDestroy()
-    {
-        inputMap.Disable();
     }
 
     private void Start()

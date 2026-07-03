@@ -12,17 +12,14 @@ public class SoloPreviewer : Previewer
     protected override void Awake()
     {
         ParentLane = GetComponentInParent<SoloSectionLane>();
-
-        inputMap = new InputMap();
-        inputMap.Enable();
-
+        
         previewSoloPlate.ParentLane = ParentLane;
         previewEndPlate.IsPreviewEvent = true;
         previewSoloPlate.IsPreviewEvent = true;
 
         previewerEventReference = previewSoloPlate;
 
-        inputMap.StandardStaticEvents.PreviewMousePos.performed += position =>
+        Chart.inputMap.StandardStaticEvents.PreviewMousePos.performed += position =>
             UpdatePosition();
     }
 

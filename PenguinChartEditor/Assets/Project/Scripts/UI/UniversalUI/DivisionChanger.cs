@@ -13,7 +13,6 @@ public class DivisionChanger : MonoBehaviour
     [SerializeField] private Button upButton;
     [SerializeField] private Button downButton;
 
-    private InputMap inputMap;
     public static int CurrentDivision { get; set; } = 16;
 
     private readonly int[] steps = { 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512, 768 };
@@ -25,19 +24,11 @@ public class DivisionChanger : MonoBehaviour
 
         entryBox.text = CurrentDivision.ToString();
         entryBox.onValueChanged.AddListener(x => ManualDivisionChange(x));
-
-        inputMap = new InputMap();
-        inputMap.Enable();
-
-        inputMap.UIShortcuts.IncreaseStep.performed += _ => IncreaseDivision();
-        inputMap.UIShortcuts.DecreaseStep.performed += _ => DecreaseDivision();
-        inputMap.UIShortcuts.IncreaseStepByOne.performed += _ => IncreaseDivisionByOne();
-        inputMap.UIShortcuts.DecreaseStepByOne.performed += _ => DecreaseDivisionByOne();
-    }
-
-    private void OnDestroy()
-    {
-        inputMap.Disable();
+        
+        Chart.inputMap.UIShortcuts.IncreaseStep.performed += _ => IncreaseDivision();
+        Chart.inputMap.UIShortcuts.DecreaseStep.performed += _ => DecreaseDivision();
+        Chart.inputMap.UIShortcuts.IncreaseStepByOne.performed += _ => IncreaseDivisionByOne();
+        Chart.inputMap.UIShortcuts.DecreaseStepByOne.performed += _ => DecreaseDivisionByOne();
     }
 
     public void IncreaseDivision()

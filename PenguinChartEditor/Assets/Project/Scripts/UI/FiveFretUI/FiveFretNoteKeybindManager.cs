@@ -4,7 +4,6 @@ using UnityEngine.Serialization;
 
 public class FiveFretNoteKeybindManager : MonoBehaviour
 {
-    private InputMap inputMap;
     [SerializeField] private FiveFretFlagController flagPlacementController;
     [SerializeField] private ExtendedSustainController esc;
     [FormerlySerializedAs("sustainCustomInput")] [SerializeField] private CustomSustainInputter sustainCustomInputPlacement;
@@ -12,30 +11,27 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
     
     private void Awake()
     {
-        inputMap = new InputMap();
-        inputMap.Enable();
-
-        inputMap.FiveFret.SwitchOpenAndFrettedChartingMode.performed += x =>
+        Chart.inputMap.FiveFret.SwitchOpenAndFrettedChartingMode.performed += x =>
         {
             FiveFretNotePreviewer.openNoteEditing = !FiveFretNotePreviewer.openNoteEditing;
             UpdatePreviewer?.Invoke();
         };
         
-        inputMap.FiveFret.ForceTap.performed += x => 
+        Chart.inputMap.FiveFret.ForceTap.performed += x => 
             flagPlacementController.ChangeModifierExternal(FiveFretNotePreviewer.NoteOption.tap);
         
-        inputMap.FiveFret.ForceStrum.performed += x => 
+        Chart.inputMap.FiveFret.ForceStrum.performed += x => 
             flagPlacementController.ChangeModifierExternal(FiveFretNotePreviewer.NoteOption.strum);
         
-        inputMap.FiveFret.ForceHopo.performed += x => 
+        Chart.inputMap.FiveFret.ForceHopo.performed += x => 
             flagPlacementController.ChangeModifierExternal(FiveFretNotePreviewer.NoteOption.hopo);
         
-        inputMap.FiveFret.ForceDefault.performed += x => 
+        Chart.inputMap.FiveFret.ForceDefault.performed += x => 
             flagPlacementController.ChangeModifierExternal(FiveFretNotePreviewer.NoteOption.natural);
 
-        inputMap.Sustains.SustainMax.performed += x => SetCurrentSustain(SongTime.SongLengthTicks);
-        inputMap.Sustains.SustainZero.performed += x => SetCurrentSustain(0);
-        inputMap.Sustains.SustainCustom.performed += x =>
+        Chart.inputMap.Sustains.SustainMax.performed += x => SetCurrentSustain(SongTime.SongLengthTicks);
+        Chart.inputMap.Sustains.SustainZero.performed += x => SetCurrentSustain(0);
+        Chart.inputMap.Sustains.SustainCustom.performed += x =>
         {
             if (Chart.GetActiveInstrument<FiveFretInstrument>().IsNoteSelectionEmpty())
             {
@@ -47,21 +43,16 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
             }
         };
 
-        inputMap.Sustains.SustainExtended.performed += x => esc.SetExtendedSustains(!Chart.settings.ExtendedSustains);
+        Chart.inputMap.Sustains.SustainExtended.performed += x => esc.SetExtendedSustains(!Chart.settings.ExtendedSustains);
 
-        inputMap.FiveFret.SetLaneOpen.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.open);
-        inputMap.FiveFret.SetLaneGreen.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.green);
-        inputMap.FiveFret.SetLaneRed.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.red);
-        inputMap.FiveFret.SetLaneYellow.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.yellow);
-        inputMap.FiveFret.SetLaneBlue.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.blue);
-        inputMap.FiveFret.SetLaneOrange.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.orange);
+        Chart.inputMap.FiveFret.SetLaneOpen.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.open);
+        Chart.inputMap.FiveFret.SetLaneGreen.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.green);
+        Chart.inputMap.FiveFret.SetLaneRed.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.red);
+        Chart.inputMap.FiveFret.SetLaneYellow.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.yellow);
+        Chart.inputMap.FiveFret.SetLaneBlue.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.blue);
+        Chart.inputMap.FiveFret.SetLaneOrange.performed += x => SetSelectionLane(FiveFretInstrument.LaneOrientation.orange);
 
-        inputMap.UIShortcuts.SetEqualSpacing.performed += x => Chart.GetActiveInstrument<FiveFretInstrument>().SetEqualSpacing();
-    }
-
-    private void OnDestroy()
-    {
-        inputMap.Disable();
+        Chart.inputMap.UIShortcuts.SetEqualSpacing.performed += x => Chart.GetActiveInstrument<FiveFretInstrument>().SetEqualSpacing();
     }
 
     public delegate void UpdatePreviewerDelegate();

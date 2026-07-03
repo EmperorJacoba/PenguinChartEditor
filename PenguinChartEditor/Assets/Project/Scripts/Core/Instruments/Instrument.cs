@@ -452,19 +452,15 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
 
     #region Inputs
 
-    protected InputMap inputMap;
     
     public virtual void SetUpInputMap()
-    {
-        inputMap = new InputMap();
-        inputMap.Enable();
-        
-        inputMap.StandardStaticEvents.XYDrag.performed += x => MoveSelection();
-        inputMap.StandardStaticEvents.LMB.canceled += x => CompleteMove();
-        inputMap.StandardCommands.Delete.performed += x => DeleteSelection();
-        inputMap.StandardStaticEvents.LMB.performed += x => CheckForSelectionClear();
-        inputMap.StandardCommands.SelectAll.performed += x => SelectAll();
-        inputMap.UIShortcuts.ClearSelection.performed += x => ClearAllSelections();
+    { 
+        Chart.inputMap.StandardStaticEvents.XYDrag.performed += x => MoveSelection();
+        Chart.inputMap.StandardStaticEvents.LMB.canceled += x => CompleteMove();
+        Chart.inputMap.StandardCommands.Delete.performed += x => DeleteSelection();
+        Chart.inputMap.StandardStaticEvents.LMB.performed += x => CheckForSelectionClear();
+        Chart.inputMap.StandardCommands.SelectAll.performed += x => SelectAll();
+        Chart.inputMap.UIShortcuts.ClearSelection.performed += x => ClearAllSelections();
     }
     
     #endregion
@@ -587,8 +583,8 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
     {
         base.SetUpInputMap();
         
-        inputMap.StandardStaticEvents.SustainDrag.performed += x => sustainer.SustainSelection();
-        inputMap.StandardStaticEvents.RMB.canceled += x => sustainer.ResetSustainChange();
+        Chart.inputMap.StandardStaticEvents.SustainDrag.performed += x => sustainer.SustainSelection();
+        Chart.inputMap.StandardStaticEvents.RMB.canceled += x => sustainer.ResetSustainChange();
     }
     
     // Remember to initialize in constructor.
