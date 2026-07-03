@@ -102,23 +102,24 @@ public class AudioManager : MonoBehaviour
     public static double AudioPosition
     {
         get => StreamLink.AudioPosition - Chart.settings.Calibration;
-        set
-        {
-            SetStreamPositions(value);
-        }
+        set => SetStreamPositions(value);
     }
 
     public static float AudioSpeed
     {
-        get => StreamLink.PlaySpeed;
+        get => _ps;
         set
         {
+            if (_ps <= 0) _ps = 0.01f;
+            _ps = value;
+            
             foreach (var stream in Streams.Values)
             {
-                stream.PlaySpeed = value;
+                stream.PlaySpeed = _ps;
             }
         }
     }
+    private static float _ps = 1;
 
     public static double MasterVolume
     {
@@ -311,6 +312,8 @@ public class AudioManager : MonoBehaviour
 
         Streams[stemType] = stream;
         Chart.Metadata.StemPaths[stemType] = stemPath;
+
+        stream.PlaySpeed = AudioSpeed;
 
         return true;
     }

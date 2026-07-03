@@ -50,7 +50,7 @@ public class Waveform : MonoBehaviour
         get
         {
             // Relic from old 2D system. *5 was old 2D->3D conversion factor. 
-            return _shrinkFactor * 5;
+            return _shrinkFactor;
         }
         set
         {
@@ -69,7 +69,7 @@ public class Waveform : MonoBehaviour
         get
         {
             // Relic from old 2D system. *5 was old 2D->3D conversion factor.
-            return _amplitude * 5;
+            return _amplitude;
         }
         set
         {
@@ -164,7 +164,7 @@ public class Waveform : MonoBehaviour
 
     #region Properties
 
-    private static int GetSampleCapacity() => (int)Mathf.Round(Highway.highwayLength / (ShrinkFactor));
+    private static int GetSampleCapacity() => (int)Mathf.Round(Highway.highwayLength / (ShrinkFactor * 5));
     private static int GetStrikelineSamplePosition() => (int)Math.Ceiling(GetSampleCapacity() * Strikeline.GetAnyStrikelineProportion());
 
     public static int startTick;
@@ -199,12 +199,12 @@ public class Waveform : MonoBehaviour
         for (int lineRendererIndex = 0; lineRendererIndex < lineRendererPositions.Length; lineRendererIndex++)
         {
             int waveformIndex = startSampleIndex + lineRendererIndex;
-            float incrementPosition = lineRendererIndex * ShrinkFactor;
+            float incrementPosition = lineRendererIndex * ShrinkFactor * 5;
 
             float xPosition = 0;
             if (waveformIndex >= 0 && waveformIndex < waveformData.Length)
             {
-                xPosition = waveformData[waveformIndex] * Amplitude;
+                xPosition = waveformData[waveformIndex] * Amplitude * 5;
             }
 
             lineRendererPositions[lineRendererIndex] =
