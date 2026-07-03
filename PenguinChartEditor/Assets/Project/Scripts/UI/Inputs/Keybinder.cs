@@ -186,9 +186,7 @@ public class KeybindEditor : MonoBehaviour
     {
         this.assignedAction = assignedAction;        
         
-        // Adapted from https://stackoverflow.com/a/9283563/31816967
-        // Makes PascalCase input names space separated
-        label.text = Regex.Replace(assignedAction.name, @"(?<=[a-z])([A-Z])|(?<!\A)([A-Z])(?=[a-z])", " $1$2");
+        label.text = MiscTools.UnpackCamelCase(assignedAction.name);
         
         UpdateKeybindButtonDisplayText();
         
