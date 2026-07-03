@@ -14,6 +14,8 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 - calibration minigame
 
+- disable keybinds when not needed
+
 => inputs
 	- save inputs
 	- load inputs
@@ -32,8 +34,6 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 => chunk waveform data processing
 
 => progress bar for loading files
-
-=> increase step/decrease step fires multiple times
 
 => .penguin documentation
 
