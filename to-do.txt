@@ -19,7 +19,6 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 => inputs
 	- save inputs
 	- load inputs
-	- categorize input options and display them that way
 
 => save waveform properties
 	=> save stem volumes to .penguin file
