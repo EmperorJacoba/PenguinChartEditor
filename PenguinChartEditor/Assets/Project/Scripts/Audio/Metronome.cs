@@ -67,7 +67,7 @@ public class Metronome : MonoBehaviour
         inputMap = new();
         inputMap.Enable();
 
-        inputMap.PenguinChartingUIShortcuts.Metronome.performed += ToggleMetronome;
+        inputMap.UIShortcuts.Metronome.performed += ToggleMetronome;
     }
 
     private void OnDisable()

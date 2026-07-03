@@ -464,7 +464,7 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
         inputMap.StandardCommands.Delete.performed += x => DeleteSelection();
         inputMap.StandardStaticEvents.LMB.performed += x => CheckForSelectionClear();
         inputMap.StandardCommands.SelectAll.performed += x => SelectAll();
-        inputMap.PenguinChartingUIShortcuts.ClearSelection.performed += x => ClearAllSelections();
+        inputMap.UIShortcuts.ClearSelection.performed += x => ClearAllSelections();
     }
     
     #endregion

@@ -19,7 +19,7 @@ public class Clap : MonoBehaviour
         inputMap = new();
         inputMap.Enable();
 
-        inputMap.PenguinChartingUIShortcuts.Clap.performed += _ => ToggleClap();
+        inputMap.UIShortcuts.Clap.performed += _ => ToggleClap();
     }
 
     private void OnDisable()

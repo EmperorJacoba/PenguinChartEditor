@@ -603,7 +603,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             ]
         },
         {
-            ""name"": ""PenguinChartingUIShortcuts"",
+            ""name"": ""UIShortcuts"",
             ""id"": ""f25c031b-b541-4ec1-b78a-b5a06aced40c"",
             ""actions"": [
                 {
@@ -849,6 +849,672 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SetEqualSpacing"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""FiveFret"",
+            ""id"": ""21f37253-7ce7-459c-b5d8-4157d09e54d8"",
+            ""actions"": [
+                {
+                    ""name"": ""ForceTap"",
+                    ""type"": ""Button"",
+                    ""id"": ""b4df9e74-a3f4-4662-9928-ab85e63aa589"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ForceDefault"",
+                    ""type"": ""Button"",
+                    ""id"": ""ac30b5d6-9dbf-4e78-9dbc-be147f137787"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ForceStrum"",
+                    ""type"": ""Button"",
+                    ""id"": ""7c149117-b747-436e-82ba-9163d683991c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ForceHopo"",
+                    ""type"": ""Button"",
+                    ""id"": ""220dc8cf-e6d7-4e76-a5dd-7b52f73c12b9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwitchOpenAndFrettedChartingMode"",
+                    ""type"": ""Button"",
+                    ""id"": ""f1eb6bba-9f6d-441d-a9fc-6de0611bda20"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLaneOpen"",
+                    ""type"": ""Button"",
+                    ""id"": ""79f272a0-cec4-477a-adc8-eb9b3c68b6e7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLaneGreen"",
+                    ""type"": ""Button"",
+                    ""id"": ""d328ddce-b33e-4a78-9040-6b4db5bd82d0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLaneRed"",
+                    ""type"": ""Button"",
+                    ""id"": ""b88d514c-a98f-408f-892c-9b8784a878d6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLaneYellow"",
+                    ""type"": ""Button"",
+                    ""id"": ""ec899f25-ac0e-4102-9fb9-196ec8a7fed2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLaneBlue"",
+                    ""type"": ""Button"",
+                    ""id"": ""d2cc0cb5-18f4-4b64-a372-68854b9574a4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLaneOrange"",
+                    ""type"": ""Button"",
+                    ""id"": ""ce1a1e88-d90f-4c27-9869-de278a6f0011"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""d2e932e9-6285-4047-8008-00b9958b0da8"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForceTap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""947b7674-4b5a-409e-a871-a11b48c04e6f"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForceTap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e8d69e86-a025-4827-afe2-cb21a1257054"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForceDefault"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""893b175d-0e5f-4114-a301-fc0b727c3f8b"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForceStrum"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c1320021-1c33-401a-b81a-f75070b93914"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForceHopo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4ea47006-15e3-437e-bec1-6de048b37251"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForceHopo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""90585870-fc39-4f8d-91a0-953c9c4e73d1"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwitchOpenAndFrettedChartingMode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e15c6679-7ddf-4b7d-ad36-7c1d87c9f994"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLaneOpen"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c965a917-2ce2-49fb-a75a-8819fe3ec3ff"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLaneGreen"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5e5238e0-f34c-43df-b29f-79ccbd3f373b"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLaneRed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8e26d344-528d-4f42-b42d-31db5fe36357"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLaneYellow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""33e2b58c-4451-46d5-ad9f-66bbf1295ab7"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLaneBlue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9498fb7b-224d-47f3-a00f-e8303243a6da"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLaneOrange"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Drums"",
+            ""id"": ""850f82b6-58df-41ed-80a0-2fdafcedd988"",
+            ""actions"": [
+                {
+                    ""name"": ""SetCymbal"",
+                    ""type"": ""Button"",
+                    ""id"": ""cb3a4632-592a-4cc8-996b-ea0d80c87dc7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLaneRed"",
+                    ""type"": ""Button"",
+                    ""id"": ""26dc061b-67f2-4673-93c9-9c4b481fa5cb"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLaneYellow"",
+                    ""type"": ""Button"",
+                    ""id"": ""fcd4a49b-a0de-4cbe-9b69-1ebe5591d3c3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLaneBlue"",
+                    ""type"": ""Button"",
+                    ""id"": ""cd84e6e4-a183-41a8-9fe9-b165604d2d9b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLaneGreen"",
+                    ""type"": ""Button"",
+                    ""id"": ""cee73a2f-6f31-4a39-aec1-87bea74acd5d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLaneKick"",
+                    ""type"": ""Button"",
+                    ""id"": ""96d0a828-9798-42e2-b38a-620d28b402e2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4b787bcc-ef08-4517-8e5a-68eab5f8e48b"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetCymbal"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""805a1151-cdd2-4619-b9bb-d22f3a12cb3b"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLaneKick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""483e6e59-ce21-49ec-9ab7-df12b20bc483"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLaneGreen"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b6dda66a-e250-4d62-8a7c-9b82306bbcfe"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLaneBlue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ae0f8fb1-c182-41f2-919e-6be6f9397c99"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLaneYellow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c58789eb-7c7f-4972-89e2-ffa2719ff26f"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SetLaneRed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Sustains"",
+            ""id"": ""f81211d0-5ffc-497e-bbe5-e860a3062f54"",
+            ""actions"": [
+                {
+                    ""name"": ""SustainZero"",
+                    ""type"": ""Button"",
+                    ""id"": ""f78fc8d8-e5ac-461f-b30c-8a99631a3cf2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SustainMax"",
+                    ""type"": ""Button"",
+                    ""id"": ""409c175c-1ff5-4dea-b80e-249ea4c9afc6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SustainCustom"",
+                    ""type"": ""Button"",
+                    ""id"": ""290c945d-ab8a-44d3-ba11-dcc04dfad0bb"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SustainExtended"",
+                    ""type"": ""Button"",
+                    ""id"": ""4a8876f4-51d6-473a-a26a-160a95f1caa6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""f2e55b18-896c-41c6-b9e6-04d6b9cb2bd7"",
+                    ""path"": ""<Keyboard>/0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainZero"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4563ffa8-9f6e-4c2e-aaae-0a5e25eb2c16"",
+                    ""path"": ""<Keyboard>/numpadDivide"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainZero"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""153c195a-f4b0-4d08-a644-d5567e4e86d5"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainZero"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""c0bcc197-a618-4d65-a4a5-9697291d4ecd"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainZero"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""047c4e85-2b6c-4012-b157-36df1f7795a9"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainZero"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b6dc5650-cddc-454f-96a9-2427a49cd38c"",
+                    ""path"": ""<Keyboard>/9"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainMax"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1fa1d8c6-d123-41f6-aa0e-3593734b03e0"",
+                    ""path"": ""<Keyboard>/numpadMultiply"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainMax"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0d29bf7a-9528-48b6-b42d-0d2e3e47f40b"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": ""DisableModifiers"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainMax"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b9d31157-7e73-42eb-964f-d4cf417efed1"",
+                    ""path"": ""<Keyboard>/minus"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainCustom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d5a311f1-7412-4c0b-b0db-be4de2129234"",
+                    ""path"": ""<Keyboard>/numpadMinus"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainCustom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""d67ff5cb-96a4-4a3d-b2aa-27977513b3a1"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainCustom"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""cc31d915-9c2b-4468-9525-1d9f5a48b8d3"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainCustom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""1895daa4-29f5-449d-abae-6a7b15280f08"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainCustom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8fe13795-571f-4882-8de8-4193a4e67c42"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SustainExtended"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Selections"",
+            ""id"": ""29c0cf3d-45c2-4aad-9b4e-1ccddf0768b0"",
+            ""actions"": [
+                {
+                    ""name"": ""SelectionSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""236f0e06-fdb4-44f8-8732-e6b008709f25"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectionView"",
+                    ""type"": ""Button"",
+                    ""id"": ""d38940cf-b41f-44f3-935f-2dd4c661d2ef"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectionEdit"",
+                    ""type"": ""Button"",
+                    ""id"": ""9b57fe51-98a6-4d96-83f7-6b56c1f3155e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""PreventCommonInputConflicts"",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""180a9673-e45a-49c4-8dda-7e00f4640302"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fc2d2c87-bf73-432b-a87b-310fdddd7c40"",
+                    ""path"": ""<Mouse>/backButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cc4a8458-028d-4bae-94af-a3dbdafaf309"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionView"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5fb16d0d-b96b-4317-9fa0-d568b5ec2b70"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionEdit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""45ec84e8-6b26-4289-8363-e9ea908a02a6"",
+                    ""path"": ""<Mouse>/forwardButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionEdit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1105,672 +1771,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""action"": ""SustainDrag"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
-                }
-            ]
-        },
-        {
-            ""name"": ""FiveFretCharting"",
-            ""id"": ""21f37253-7ce7-459c-b5d8-4157d09e54d8"",
-            ""actions"": [
-                {
-                    ""name"": ""ForceTap"",
-                    ""type"": ""Button"",
-                    ""id"": ""b4df9e74-a3f4-4662-9928-ab85e63aa589"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ForceDefault"",
-                    ""type"": ""Button"",
-                    ""id"": ""ac30b5d6-9dbf-4e78-9dbc-be147f137787"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ForceStrum"",
-                    ""type"": ""Button"",
-                    ""id"": ""7c149117-b747-436e-82ba-9163d683991c"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ForceHopo"",
-                    ""type"": ""Button"",
-                    ""id"": ""220dc8cf-e6d7-4e76-a5dd-7b52f73c12b9"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SwitchOpenAndFrettedChartingMode"",
-                    ""type"": ""Button"",
-                    ""id"": ""f1eb6bba-9f6d-441d-a9fc-6de0611bda20"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SetLaneOpen"",
-                    ""type"": ""Button"",
-                    ""id"": ""79f272a0-cec4-477a-adc8-eb9b3c68b6e7"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SetLaneGreen"",
-                    ""type"": ""Button"",
-                    ""id"": ""d328ddce-b33e-4a78-9040-6b4db5bd82d0"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SetLaneRed"",
-                    ""type"": ""Button"",
-                    ""id"": ""b88d514c-a98f-408f-892c-9b8784a878d6"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SetLaneYellow"",
-                    ""type"": ""Button"",
-                    ""id"": ""ec899f25-ac0e-4102-9fb9-196ec8a7fed2"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SetLaneBlue"",
-                    ""type"": ""Button"",
-                    ""id"": ""d2cc0cb5-18f4-4b64-a372-68854b9574a4"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SetLaneOrange"",
-                    ""type"": ""Button"",
-                    ""id"": ""ce1a1e88-d90f-4c27-9869-de278a6f0011"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""d2e932e9-6285-4047-8008-00b9958b0da8"",
-                    ""path"": ""<Keyboard>/t"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ForceTap"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""947b7674-4b5a-409e-a871-a11b48c04e6f"",
-                    ""path"": ""<Keyboard>/z"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ForceTap"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e8d69e86-a025-4827-afe2-cb21a1257054"",
-                    ""path"": ""<Keyboard>/x"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ForceDefault"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""893b175d-0e5f-4114-a301-fc0b727c3f8b"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ForceStrum"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c1320021-1c33-401a-b81a-f75070b93914"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ForceHopo"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""4ea47006-15e3-437e-bec1-6de048b37251"",
-                    ""path"": ""<Keyboard>/h"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ForceHopo"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""90585870-fc39-4f8d-91a0-953c9c4e73d1"",
-                    ""path"": ""<Keyboard>/tab"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchOpenAndFrettedChartingMode"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e15c6679-7ddf-4b7d-ad36-7c1d87c9f994"",
-                    ""path"": ""<Keyboard>/1"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetLaneOpen"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c965a917-2ce2-49fb-a75a-8819fe3ec3ff"",
-                    ""path"": ""<Keyboard>/2"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetLaneGreen"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""5e5238e0-f34c-43df-b29f-79ccbd3f373b"",
-                    ""path"": ""<Keyboard>/3"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetLaneRed"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""8e26d344-528d-4f42-b42d-31db5fe36357"",
-                    ""path"": ""<Keyboard>/4"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetLaneYellow"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""33e2b58c-4451-46d5-ad9f-66bbf1295ab7"",
-                    ""path"": ""<Keyboard>/5"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetLaneBlue"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9498fb7b-224d-47f3-a00f-e8303243a6da"",
-                    ""path"": ""<Keyboard>/6"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetLaneOrange"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""ProDrumCharting"",
-            ""id"": ""850f82b6-58df-41ed-80a0-2fdafcedd988"",
-            ""actions"": [
-                {
-                    ""name"": ""SetCymbal"",
-                    ""type"": ""Button"",
-                    ""id"": ""cb3a4632-592a-4cc8-996b-ea0d80c87dc7"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SetLaneRed"",
-                    ""type"": ""Button"",
-                    ""id"": ""26dc061b-67f2-4673-93c9-9c4b481fa5cb"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SetLaneYellow"",
-                    ""type"": ""Button"",
-                    ""id"": ""fcd4a49b-a0de-4cbe-9b69-1ebe5591d3c3"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SetLaneBlue"",
-                    ""type"": ""Button"",
-                    ""id"": ""cd84e6e4-a183-41a8-9fe9-b165604d2d9b"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SetLaneGreen"",
-                    ""type"": ""Button"",
-                    ""id"": ""cee73a2f-6f31-4a39-aec1-87bea74acd5d"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SetLaneKick"",
-                    ""type"": ""Button"",
-                    ""id"": ""96d0a828-9798-42e2-b38a-620d28b402e2"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""4b787bcc-ef08-4517-8e5a-68eab5f8e48b"",
-                    ""path"": ""<Keyboard>/c"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetCymbal"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""805a1151-cdd2-4619-b9bb-d22f3a12cb3b"",
-                    ""path"": ""<Keyboard>/5"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetLaneKick"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""483e6e59-ce21-49ec-9ab7-df12b20bc483"",
-                    ""path"": ""<Keyboard>/4"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetLaneGreen"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b6dda66a-e250-4d62-8a7c-9b82306bbcfe"",
-                    ""path"": ""<Keyboard>/3"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetLaneBlue"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""ae0f8fb1-c182-41f2-919e-6be6f9397c99"",
-                    ""path"": ""<Keyboard>/2"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetLaneYellow"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c58789eb-7c7f-4972-89e2-ffa2719ff26f"",
-                    ""path"": ""<Keyboard>/1"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SetLaneRed"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""SustainCommands"",
-            ""id"": ""f81211d0-5ffc-497e-bbe5-e860a3062f54"",
-            ""actions"": [
-                {
-                    ""name"": ""SustainZero"",
-                    ""type"": ""Button"",
-                    ""id"": ""f78fc8d8-e5ac-461f-b30c-8a99631a3cf2"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SustainMax"",
-                    ""type"": ""Button"",
-                    ""id"": ""409c175c-1ff5-4dea-b80e-249ea4c9afc6"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SustainCustom"",
-                    ""type"": ""Button"",
-                    ""id"": ""290c945d-ab8a-44d3-ba11-dcc04dfad0bb"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SustainExtended"",
-                    ""type"": ""Button"",
-                    ""id"": ""4a8876f4-51d6-473a-a26a-160a95f1caa6"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""f2e55b18-896c-41c6-b9e6-04d6b9cb2bd7"",
-                    ""path"": ""<Keyboard>/0"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainZero"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""4563ffa8-9f6e-4c2e-aaae-0a5e25eb2c16"",
-                    ""path"": ""<Keyboard>/numpadDivide"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainZero"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""One Modifier"",
-                    ""id"": ""153c195a-f4b0-4d08-a644-d5567e4e86d5"",
-                    ""path"": ""OneModifier"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainZero"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""modifier"",
-                    ""id"": ""c0bcc197-a618-4d65-a4a5-9697291d4ecd"",
-                    ""path"": ""<Keyboard>/shift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainZero"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""binding"",
-                    ""id"": ""047c4e85-2b6c-4012-b157-36df1f7795a9"",
-                    ""path"": ""<Keyboard>/c"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainZero"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b6dc5650-cddc-454f-96a9-2427a49cd38c"",
-                    ""path"": ""<Keyboard>/9"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainMax"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""1fa1d8c6-d123-41f6-aa0e-3593734b03e0"",
-                    ""path"": ""<Keyboard>/numpadMultiply"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainMax"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""0d29bf7a-9528-48b6-b42d-0d2e3e47f40b"",
-                    ""path"": ""<Keyboard>/c"",
-                    ""interactions"": ""DisableModifiers"",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainMax"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b9d31157-7e73-42eb-964f-d4cf417efed1"",
-                    ""path"": ""<Keyboard>/minus"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainCustom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""d5a311f1-7412-4c0b-b0db-be4de2129234"",
-                    ""path"": ""<Keyboard>/numpadMinus"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainCustom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""One Modifier"",
-                    ""id"": ""d67ff5cb-96a4-4a3d-b2aa-27977513b3a1"",
-                    ""path"": ""OneModifier"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainCustom"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""modifier"",
-                    ""id"": ""cc31d915-9c2b-4468-9525-1d9f5a48b8d3"",
-                    ""path"": ""<Keyboard>/alt"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainCustom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""binding"",
-                    ""id"": ""1895daa4-29f5-449d-abae-6a7b15280f08"",
-                    ""path"": ""<Keyboard>/c"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainCustom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""8fe13795-571f-4882-8de8-4193a4e67c42"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SustainExtended"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""SelectionMode"",
-            ""id"": ""29c0cf3d-45c2-4aad-9b4e-1ccddf0768b0"",
-            ""actions"": [
-                {
-                    ""name"": ""SelectionSelect"",
-                    ""type"": ""Button"",
-                    ""id"": ""236f0e06-fdb4-44f8-8732-e6b008709f25"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SelectionView"",
-                    ""type"": ""Button"",
-                    ""id"": ""d38940cf-b41f-44f3-935f-2dd4c661d2ef"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""SelectionEdit"",
-                    ""type"": ""Button"",
-                    ""id"": ""9b57fe51-98a6-4d96-83f7-6b56c1f3155e"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""PreventCommonInputConflicts"",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""180a9673-e45a-49c4-8dda-7e00f4640302"",
-                    ""path"": ""<Keyboard>/g"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SelectionSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""fc2d2c87-bf73-432b-a87b-310fdddd7c40"",
-                    ""path"": ""<Mouse>/backButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SelectionSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""cc4a8458-028d-4bae-94af-a3dbdafaf309"",
-                    ""path"": ""<Keyboard>/b"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SelectionView"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""5fb16d0d-b96b-4317-9fa0-d568b5ec2b70"",
-                    ""path"": ""<Keyboard>/f"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SelectionEdit"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""45ec84e8-6b26-4289-8363-e9ea908a02a6"",
-                    ""path"": ""<Mouse>/forwardButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SelectionEdit"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -2841,18 +2841,50 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_StandardCommands_Cut = m_StandardCommands.FindAction("Cut", throwIfNotFound: true);
         m_StandardCommands_Copy = m_StandardCommands.FindAction("Copy", throwIfNotFound: true);
         m_StandardCommands_Paste = m_StandardCommands.FindAction("Paste", throwIfNotFound: true);
-        // PenguinChartingUIShortcuts
-        m_PenguinChartingUIShortcuts = asset.FindActionMap("PenguinChartingUIShortcuts", throwIfNotFound: true);
-        m_PenguinChartingUIShortcuts_IncreaseStep = m_PenguinChartingUIShortcuts.FindAction("IncreaseStep", throwIfNotFound: true);
-        m_PenguinChartingUIShortcuts_DecreaseStep = m_PenguinChartingUIShortcuts.FindAction("DecreaseStep", throwIfNotFound: true);
-        m_PenguinChartingUIShortcuts_IncreaseStepByOne = m_PenguinChartingUIShortcuts.FindAction("IncreaseStepByOne", throwIfNotFound: true);
-        m_PenguinChartingUIShortcuts_DecreaseStepByOne = m_PenguinChartingUIShortcuts.FindAction("DecreaseStepByOne", throwIfNotFound: true);
-        m_PenguinChartingUIShortcuts_PlayPause = m_PenguinChartingUIShortcuts.FindAction("PlayPause", throwIfNotFound: true);
-        m_PenguinChartingUIShortcuts_Metronome = m_PenguinChartingUIShortcuts.FindAction("Metronome", throwIfNotFound: true);
-        m_PenguinChartingUIShortcuts_Clap = m_PenguinChartingUIShortcuts.FindAction("Clap", throwIfNotFound: true);
-        m_PenguinChartingUIShortcuts_ToggleSolos = m_PenguinChartingUIShortcuts.FindAction("ToggleSolos", throwIfNotFound: true);
-        m_PenguinChartingUIShortcuts_ClearSelection = m_PenguinChartingUIShortcuts.FindAction("ClearSelection", throwIfNotFound: true);
-        m_PenguinChartingUIShortcuts_SetEqualSpacing = m_PenguinChartingUIShortcuts.FindAction("SetEqualSpacing", throwIfNotFound: true);
+        // UIShortcuts
+        m_UIShortcuts = asset.FindActionMap("UIShortcuts", throwIfNotFound: true);
+        m_UIShortcuts_IncreaseStep = m_UIShortcuts.FindAction("IncreaseStep", throwIfNotFound: true);
+        m_UIShortcuts_DecreaseStep = m_UIShortcuts.FindAction("DecreaseStep", throwIfNotFound: true);
+        m_UIShortcuts_IncreaseStepByOne = m_UIShortcuts.FindAction("IncreaseStepByOne", throwIfNotFound: true);
+        m_UIShortcuts_DecreaseStepByOne = m_UIShortcuts.FindAction("DecreaseStepByOne", throwIfNotFound: true);
+        m_UIShortcuts_PlayPause = m_UIShortcuts.FindAction("PlayPause", throwIfNotFound: true);
+        m_UIShortcuts_Metronome = m_UIShortcuts.FindAction("Metronome", throwIfNotFound: true);
+        m_UIShortcuts_Clap = m_UIShortcuts.FindAction("Clap", throwIfNotFound: true);
+        m_UIShortcuts_ToggleSolos = m_UIShortcuts.FindAction("ToggleSolos", throwIfNotFound: true);
+        m_UIShortcuts_ClearSelection = m_UIShortcuts.FindAction("ClearSelection", throwIfNotFound: true);
+        m_UIShortcuts_SetEqualSpacing = m_UIShortcuts.FindAction("SetEqualSpacing", throwIfNotFound: true);
+        // FiveFret
+        m_FiveFret = asset.FindActionMap("FiveFret", throwIfNotFound: true);
+        m_FiveFret_ForceTap = m_FiveFret.FindAction("ForceTap", throwIfNotFound: true);
+        m_FiveFret_ForceDefault = m_FiveFret.FindAction("ForceDefault", throwIfNotFound: true);
+        m_FiveFret_ForceStrum = m_FiveFret.FindAction("ForceStrum", throwIfNotFound: true);
+        m_FiveFret_ForceHopo = m_FiveFret.FindAction("ForceHopo", throwIfNotFound: true);
+        m_FiveFret_SwitchOpenAndFrettedChartingMode = m_FiveFret.FindAction("SwitchOpenAndFrettedChartingMode", throwIfNotFound: true);
+        m_FiveFret_SetLaneOpen = m_FiveFret.FindAction("SetLaneOpen", throwIfNotFound: true);
+        m_FiveFret_SetLaneGreen = m_FiveFret.FindAction("SetLaneGreen", throwIfNotFound: true);
+        m_FiveFret_SetLaneRed = m_FiveFret.FindAction("SetLaneRed", throwIfNotFound: true);
+        m_FiveFret_SetLaneYellow = m_FiveFret.FindAction("SetLaneYellow", throwIfNotFound: true);
+        m_FiveFret_SetLaneBlue = m_FiveFret.FindAction("SetLaneBlue", throwIfNotFound: true);
+        m_FiveFret_SetLaneOrange = m_FiveFret.FindAction("SetLaneOrange", throwIfNotFound: true);
+        // Drums
+        m_Drums = asset.FindActionMap("Drums", throwIfNotFound: true);
+        m_Drums_SetCymbal = m_Drums.FindAction("SetCymbal", throwIfNotFound: true);
+        m_Drums_SetLaneRed = m_Drums.FindAction("SetLaneRed", throwIfNotFound: true);
+        m_Drums_SetLaneYellow = m_Drums.FindAction("SetLaneYellow", throwIfNotFound: true);
+        m_Drums_SetLaneBlue = m_Drums.FindAction("SetLaneBlue", throwIfNotFound: true);
+        m_Drums_SetLaneGreen = m_Drums.FindAction("SetLaneGreen", throwIfNotFound: true);
+        m_Drums_SetLaneKick = m_Drums.FindAction("SetLaneKick", throwIfNotFound: true);
+        // Sustains
+        m_Sustains = asset.FindActionMap("Sustains", throwIfNotFound: true);
+        m_Sustains_SustainZero = m_Sustains.FindAction("SustainZero", throwIfNotFound: true);
+        m_Sustains_SustainMax = m_Sustains.FindAction("SustainMax", throwIfNotFound: true);
+        m_Sustains_SustainCustom = m_Sustains.FindAction("SustainCustom", throwIfNotFound: true);
+        m_Sustains_SustainExtended = m_Sustains.FindAction("SustainExtended", throwIfNotFound: true);
+        // Selections
+        m_Selections = asset.FindActionMap("Selections", throwIfNotFound: true);
+        m_Selections_SelectionSelect = m_Selections.FindAction("SelectionSelect", throwIfNotFound: true);
+        m_Selections_SelectionView = m_Selections.FindAction("SelectionView", throwIfNotFound: true);
+        m_Selections_SelectionEdit = m_Selections.FindAction("SelectionEdit", throwIfNotFound: true);
         // StandardStaticEvents
         m_StandardStaticEvents = asset.FindActionMap("StandardStaticEvents", throwIfNotFound: true);
         m_StandardStaticEvents_LMB = m_StandardStaticEvents.FindAction("LMB", throwIfNotFound: true);
@@ -2864,38 +2896,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_StandardStaticEvents_YDrag = m_StandardStaticEvents.FindAction("YDrag", throwIfNotFound: true);
         m_StandardStaticEvents_RMB = m_StandardStaticEvents.FindAction("RMB", throwIfNotFound: true);
         m_StandardStaticEvents_SustainDrag = m_StandardStaticEvents.FindAction("SustainDrag", throwIfNotFound: true);
-        // FiveFretCharting
-        m_FiveFretCharting = asset.FindActionMap("FiveFretCharting", throwIfNotFound: true);
-        m_FiveFretCharting_ForceTap = m_FiveFretCharting.FindAction("ForceTap", throwIfNotFound: true);
-        m_FiveFretCharting_ForceDefault = m_FiveFretCharting.FindAction("ForceDefault", throwIfNotFound: true);
-        m_FiveFretCharting_ForceStrum = m_FiveFretCharting.FindAction("ForceStrum", throwIfNotFound: true);
-        m_FiveFretCharting_ForceHopo = m_FiveFretCharting.FindAction("ForceHopo", throwIfNotFound: true);
-        m_FiveFretCharting_SwitchOpenAndFrettedChartingMode = m_FiveFretCharting.FindAction("SwitchOpenAndFrettedChartingMode", throwIfNotFound: true);
-        m_FiveFretCharting_SetLaneOpen = m_FiveFretCharting.FindAction("SetLaneOpen", throwIfNotFound: true);
-        m_FiveFretCharting_SetLaneGreen = m_FiveFretCharting.FindAction("SetLaneGreen", throwIfNotFound: true);
-        m_FiveFretCharting_SetLaneRed = m_FiveFretCharting.FindAction("SetLaneRed", throwIfNotFound: true);
-        m_FiveFretCharting_SetLaneYellow = m_FiveFretCharting.FindAction("SetLaneYellow", throwIfNotFound: true);
-        m_FiveFretCharting_SetLaneBlue = m_FiveFretCharting.FindAction("SetLaneBlue", throwIfNotFound: true);
-        m_FiveFretCharting_SetLaneOrange = m_FiveFretCharting.FindAction("SetLaneOrange", throwIfNotFound: true);
-        // ProDrumCharting
-        m_ProDrumCharting = asset.FindActionMap("ProDrumCharting", throwIfNotFound: true);
-        m_ProDrumCharting_SetCymbal = m_ProDrumCharting.FindAction("SetCymbal", throwIfNotFound: true);
-        m_ProDrumCharting_SetLaneRed = m_ProDrumCharting.FindAction("SetLaneRed", throwIfNotFound: true);
-        m_ProDrumCharting_SetLaneYellow = m_ProDrumCharting.FindAction("SetLaneYellow", throwIfNotFound: true);
-        m_ProDrumCharting_SetLaneBlue = m_ProDrumCharting.FindAction("SetLaneBlue", throwIfNotFound: true);
-        m_ProDrumCharting_SetLaneGreen = m_ProDrumCharting.FindAction("SetLaneGreen", throwIfNotFound: true);
-        m_ProDrumCharting_SetLaneKick = m_ProDrumCharting.FindAction("SetLaneKick", throwIfNotFound: true);
-        // SustainCommands
-        m_SustainCommands = asset.FindActionMap("SustainCommands", throwIfNotFound: true);
-        m_SustainCommands_SustainZero = m_SustainCommands.FindAction("SustainZero", throwIfNotFound: true);
-        m_SustainCommands_SustainMax = m_SustainCommands.FindAction("SustainMax", throwIfNotFound: true);
-        m_SustainCommands_SustainCustom = m_SustainCommands.FindAction("SustainCustom", throwIfNotFound: true);
-        m_SustainCommands_SustainExtended = m_SustainCommands.FindAction("SustainExtended", throwIfNotFound: true);
-        // SelectionMode
-        m_SelectionMode = asset.FindActionMap("SelectionMode", throwIfNotFound: true);
-        m_SelectionMode_SelectionSelect = m_SelectionMode.FindAction("SelectionSelect", throwIfNotFound: true);
-        m_SelectionMode_SelectionView = m_SelectionMode.FindAction("SelectionView", throwIfNotFound: true);
-        m_SelectionMode_SelectionEdit = m_SelectionMode.FindAction("SelectionEdit", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -2924,12 +2924,12 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     ~@InputMap()
     {
         UnityEngine.Debug.Assert(!m_StandardCommands.enabled, "This will cause a leak and performance issues, InputMap.StandardCommands.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_PenguinChartingUIShortcuts.enabled, "This will cause a leak and performance issues, InputMap.PenguinChartingUIShortcuts.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_UIShortcuts.enabled, "This will cause a leak and performance issues, InputMap.UIShortcuts.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_FiveFret.enabled, "This will cause a leak and performance issues, InputMap.FiveFret.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Drums.enabled, "This will cause a leak and performance issues, InputMap.Drums.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Sustains.enabled, "This will cause a leak and performance issues, InputMap.Sustains.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Selections.enabled, "This will cause a leak and performance issues, InputMap.Selections.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_StandardStaticEvents.enabled, "This will cause a leak and performance issues, InputMap.StandardStaticEvents.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_FiveFretCharting.enabled, "This will cause a leak and performance issues, InputMap.FiveFretCharting.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_ProDrumCharting.enabled, "This will cause a leak and performance issues, InputMap.ProDrumCharting.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_SustainCommands.enabled, "This will cause a leak and performance issues, InputMap.SustainCommands.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_SelectionMode.enabled, "This will cause a leak and performance issues, InputMap.SelectionMode.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputMap.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, InputMap.Player.Disable() has not been called.");
     }
@@ -3210,74 +3210,74 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     /// </summary>
     public StandardCommandsActions @StandardCommands => new StandardCommandsActions(this);
 
-    // PenguinChartingUIShortcuts
-    private readonly InputActionMap m_PenguinChartingUIShortcuts;
-    private List<IPenguinChartingUIShortcutsActions> m_PenguinChartingUIShortcutsActionsCallbackInterfaces = new List<IPenguinChartingUIShortcutsActions>();
-    private readonly InputAction m_PenguinChartingUIShortcuts_IncreaseStep;
-    private readonly InputAction m_PenguinChartingUIShortcuts_DecreaseStep;
-    private readonly InputAction m_PenguinChartingUIShortcuts_IncreaseStepByOne;
-    private readonly InputAction m_PenguinChartingUIShortcuts_DecreaseStepByOne;
-    private readonly InputAction m_PenguinChartingUIShortcuts_PlayPause;
-    private readonly InputAction m_PenguinChartingUIShortcuts_Metronome;
-    private readonly InputAction m_PenguinChartingUIShortcuts_Clap;
-    private readonly InputAction m_PenguinChartingUIShortcuts_ToggleSolos;
-    private readonly InputAction m_PenguinChartingUIShortcuts_ClearSelection;
-    private readonly InputAction m_PenguinChartingUIShortcuts_SetEqualSpacing;
+    // UIShortcuts
+    private readonly InputActionMap m_UIShortcuts;
+    private List<IUIShortcutsActions> m_UIShortcutsActionsCallbackInterfaces = new List<IUIShortcutsActions>();
+    private readonly InputAction m_UIShortcuts_IncreaseStep;
+    private readonly InputAction m_UIShortcuts_DecreaseStep;
+    private readonly InputAction m_UIShortcuts_IncreaseStepByOne;
+    private readonly InputAction m_UIShortcuts_DecreaseStepByOne;
+    private readonly InputAction m_UIShortcuts_PlayPause;
+    private readonly InputAction m_UIShortcuts_Metronome;
+    private readonly InputAction m_UIShortcuts_Clap;
+    private readonly InputAction m_UIShortcuts_ToggleSolos;
+    private readonly InputAction m_UIShortcuts_ClearSelection;
+    private readonly InputAction m_UIShortcuts_SetEqualSpacing;
     /// <summary>
-    /// Provides access to input actions defined in input action map "PenguinChartingUIShortcuts".
+    /// Provides access to input actions defined in input action map "UIShortcuts".
     /// </summary>
-    public struct PenguinChartingUIShortcutsActions
+    public struct UIShortcutsActions
     {
         private @InputMap m_Wrapper;
 
         /// <summary>
         /// Construct a new instance of the input action map wrapper class.
         /// </summary>
-        public PenguinChartingUIShortcutsActions(@InputMap wrapper) { m_Wrapper = wrapper; }
+        public UIShortcutsActions(@InputMap wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "PenguinChartingUIShortcuts/IncreaseStep".
+        /// Provides access to the underlying input action "UIShortcuts/IncreaseStep".
         /// </summary>
-        public InputAction @IncreaseStep => m_Wrapper.m_PenguinChartingUIShortcuts_IncreaseStep;
+        public InputAction @IncreaseStep => m_Wrapper.m_UIShortcuts_IncreaseStep;
         /// <summary>
-        /// Provides access to the underlying input action "PenguinChartingUIShortcuts/DecreaseStep".
+        /// Provides access to the underlying input action "UIShortcuts/DecreaseStep".
         /// </summary>
-        public InputAction @DecreaseStep => m_Wrapper.m_PenguinChartingUIShortcuts_DecreaseStep;
+        public InputAction @DecreaseStep => m_Wrapper.m_UIShortcuts_DecreaseStep;
         /// <summary>
-        /// Provides access to the underlying input action "PenguinChartingUIShortcuts/IncreaseStepByOne".
+        /// Provides access to the underlying input action "UIShortcuts/IncreaseStepByOne".
         /// </summary>
-        public InputAction @IncreaseStepByOne => m_Wrapper.m_PenguinChartingUIShortcuts_IncreaseStepByOne;
+        public InputAction @IncreaseStepByOne => m_Wrapper.m_UIShortcuts_IncreaseStepByOne;
         /// <summary>
-        /// Provides access to the underlying input action "PenguinChartingUIShortcuts/DecreaseStepByOne".
+        /// Provides access to the underlying input action "UIShortcuts/DecreaseStepByOne".
         /// </summary>
-        public InputAction @DecreaseStepByOne => m_Wrapper.m_PenguinChartingUIShortcuts_DecreaseStepByOne;
+        public InputAction @DecreaseStepByOne => m_Wrapper.m_UIShortcuts_DecreaseStepByOne;
         /// <summary>
-        /// Provides access to the underlying input action "PenguinChartingUIShortcuts/PlayPause".
+        /// Provides access to the underlying input action "UIShortcuts/PlayPause".
         /// </summary>
-        public InputAction @PlayPause => m_Wrapper.m_PenguinChartingUIShortcuts_PlayPause;
+        public InputAction @PlayPause => m_Wrapper.m_UIShortcuts_PlayPause;
         /// <summary>
-        /// Provides access to the underlying input action "PenguinChartingUIShortcuts/Metronome".
+        /// Provides access to the underlying input action "UIShortcuts/Metronome".
         /// </summary>
-        public InputAction @Metronome => m_Wrapper.m_PenguinChartingUIShortcuts_Metronome;
+        public InputAction @Metronome => m_Wrapper.m_UIShortcuts_Metronome;
         /// <summary>
-        /// Provides access to the underlying input action "PenguinChartingUIShortcuts/Clap".
+        /// Provides access to the underlying input action "UIShortcuts/Clap".
         /// </summary>
-        public InputAction @Clap => m_Wrapper.m_PenguinChartingUIShortcuts_Clap;
+        public InputAction @Clap => m_Wrapper.m_UIShortcuts_Clap;
         /// <summary>
-        /// Provides access to the underlying input action "PenguinChartingUIShortcuts/ToggleSolos".
+        /// Provides access to the underlying input action "UIShortcuts/ToggleSolos".
         /// </summary>
-        public InputAction @ToggleSolos => m_Wrapper.m_PenguinChartingUIShortcuts_ToggleSolos;
+        public InputAction @ToggleSolos => m_Wrapper.m_UIShortcuts_ToggleSolos;
         /// <summary>
-        /// Provides access to the underlying input action "PenguinChartingUIShortcuts/ClearSelection".
+        /// Provides access to the underlying input action "UIShortcuts/ClearSelection".
         /// </summary>
-        public InputAction @ClearSelection => m_Wrapper.m_PenguinChartingUIShortcuts_ClearSelection;
+        public InputAction @ClearSelection => m_Wrapper.m_UIShortcuts_ClearSelection;
         /// <summary>
-        /// Provides access to the underlying input action "PenguinChartingUIShortcuts/SetEqualSpacing".
+        /// Provides access to the underlying input action "UIShortcuts/SetEqualSpacing".
         /// </summary>
-        public InputAction @SetEqualSpacing => m_Wrapper.m_PenguinChartingUIShortcuts_SetEqualSpacing;
+        public InputAction @SetEqualSpacing => m_Wrapper.m_UIShortcuts_SetEqualSpacing;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_PenguinChartingUIShortcuts; }
+        public InputActionMap Get() { return m_Wrapper.m_UIShortcuts; }
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
         public void Enable() { Get().Enable(); }
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
@@ -3285,9 +3285,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
         public bool enabled => Get().enabled;
         /// <summary>
-        /// Implicitly converts an <see ref="PenguinChartingUIShortcutsActions" /> to an <see ref="InputActionMap" /> instance.
+        /// Implicitly converts an <see ref="UIShortcutsActions" /> to an <see ref="InputActionMap" /> instance.
         /// </summary>
-        public static implicit operator InputActionMap(PenguinChartingUIShortcutsActions set) { return set.Get(); }
+        public static implicit operator InputActionMap(UIShortcutsActions set) { return set.Get(); }
         /// <summary>
         /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
         /// </summary>
@@ -3295,11 +3295,11 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <remarks>
         /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
         /// </remarks>
-        /// <seealso cref="PenguinChartingUIShortcutsActions" />
-        public void AddCallbacks(IPenguinChartingUIShortcutsActions instance)
+        /// <seealso cref="UIShortcutsActions" />
+        public void AddCallbacks(IUIShortcutsActions instance)
         {
-            if (instance == null || m_Wrapper.m_PenguinChartingUIShortcutsActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_PenguinChartingUIShortcutsActionsCallbackInterfaces.Add(instance);
+            if (instance == null || m_Wrapper.m_UIShortcutsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_UIShortcutsActionsCallbackInterfaces.Add(instance);
             @IncreaseStep.started += instance.OnIncreaseStep;
             @IncreaseStep.performed += instance.OnIncreaseStep;
             @IncreaseStep.canceled += instance.OnIncreaseStep;
@@ -3338,8 +3338,8 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <remarks>
         /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
         /// </remarks>
-        /// <seealso cref="PenguinChartingUIShortcutsActions" />
-        private void UnregisterCallbacks(IPenguinChartingUIShortcutsActions instance)
+        /// <seealso cref="UIShortcutsActions" />
+        private void UnregisterCallbacks(IUIShortcutsActions instance)
         {
             @IncreaseStep.started -= instance.OnIncreaseStep;
             @IncreaseStep.performed -= instance.OnIncreaseStep;
@@ -3374,12 +3374,12 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         }
 
         /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="PenguinChartingUIShortcutsActions.UnregisterCallbacks(IPenguinChartingUIShortcutsActions)" />.
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="UIShortcutsActions.UnregisterCallbacks(IUIShortcutsActions)" />.
         /// </summary>
-        /// <seealso cref="PenguinChartingUIShortcutsActions.UnregisterCallbacks(IPenguinChartingUIShortcutsActions)" />
-        public void RemoveCallbacks(IPenguinChartingUIShortcutsActions instance)
+        /// <seealso cref="UIShortcutsActions.UnregisterCallbacks(IUIShortcutsActions)" />
+        public void RemoveCallbacks(IUIShortcutsActions instance)
         {
-            if (m_Wrapper.m_PenguinChartingUIShortcutsActionsCallbackInterfaces.Remove(instance))
+            if (m_Wrapper.m_UIShortcutsActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
@@ -3389,21 +3389,625 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <remarks>
         /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
         /// </remarks>
-        /// <seealso cref="PenguinChartingUIShortcutsActions.AddCallbacks(IPenguinChartingUIShortcutsActions)" />
-        /// <seealso cref="PenguinChartingUIShortcutsActions.RemoveCallbacks(IPenguinChartingUIShortcutsActions)" />
-        /// <seealso cref="PenguinChartingUIShortcutsActions.UnregisterCallbacks(IPenguinChartingUIShortcutsActions)" />
-        public void SetCallbacks(IPenguinChartingUIShortcutsActions instance)
+        /// <seealso cref="UIShortcutsActions.AddCallbacks(IUIShortcutsActions)" />
+        /// <seealso cref="UIShortcutsActions.RemoveCallbacks(IUIShortcutsActions)" />
+        /// <seealso cref="UIShortcutsActions.UnregisterCallbacks(IUIShortcutsActions)" />
+        public void SetCallbacks(IUIShortcutsActions instance)
         {
-            foreach (var item in m_Wrapper.m_PenguinChartingUIShortcutsActionsCallbackInterfaces)
+            foreach (var item in m_Wrapper.m_UIShortcutsActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
-            m_Wrapper.m_PenguinChartingUIShortcutsActionsCallbackInterfaces.Clear();
+            m_Wrapper.m_UIShortcutsActionsCallbackInterfaces.Clear();
             AddCallbacks(instance);
         }
     }
     /// <summary>
-    /// Provides a new <see cref="PenguinChartingUIShortcutsActions" /> instance referencing this action map.
+    /// Provides a new <see cref="UIShortcutsActions" /> instance referencing this action map.
     /// </summary>
-    public PenguinChartingUIShortcutsActions @PenguinChartingUIShortcuts => new PenguinChartingUIShortcutsActions(this);
+    public UIShortcutsActions @UIShortcuts => new UIShortcutsActions(this);
+
+    // FiveFret
+    private readonly InputActionMap m_FiveFret;
+    private List<IFiveFretActions> m_FiveFretActionsCallbackInterfaces = new List<IFiveFretActions>();
+    private readonly InputAction m_FiveFret_ForceTap;
+    private readonly InputAction m_FiveFret_ForceDefault;
+    private readonly InputAction m_FiveFret_ForceStrum;
+    private readonly InputAction m_FiveFret_ForceHopo;
+    private readonly InputAction m_FiveFret_SwitchOpenAndFrettedChartingMode;
+    private readonly InputAction m_FiveFret_SetLaneOpen;
+    private readonly InputAction m_FiveFret_SetLaneGreen;
+    private readonly InputAction m_FiveFret_SetLaneRed;
+    private readonly InputAction m_FiveFret_SetLaneYellow;
+    private readonly InputAction m_FiveFret_SetLaneBlue;
+    private readonly InputAction m_FiveFret_SetLaneOrange;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "FiveFret".
+    /// </summary>
+    public struct FiveFretActions
+    {
+        private @InputMap m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public FiveFretActions(@InputMap wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "FiveFret/ForceTap".
+        /// </summary>
+        public InputAction @ForceTap => m_Wrapper.m_FiveFret_ForceTap;
+        /// <summary>
+        /// Provides access to the underlying input action "FiveFret/ForceDefault".
+        /// </summary>
+        public InputAction @ForceDefault => m_Wrapper.m_FiveFret_ForceDefault;
+        /// <summary>
+        /// Provides access to the underlying input action "FiveFret/ForceStrum".
+        /// </summary>
+        public InputAction @ForceStrum => m_Wrapper.m_FiveFret_ForceStrum;
+        /// <summary>
+        /// Provides access to the underlying input action "FiveFret/ForceHopo".
+        /// </summary>
+        public InputAction @ForceHopo => m_Wrapper.m_FiveFret_ForceHopo;
+        /// <summary>
+        /// Provides access to the underlying input action "FiveFret/SwitchOpenAndFrettedChartingMode".
+        /// </summary>
+        public InputAction @SwitchOpenAndFrettedChartingMode => m_Wrapper.m_FiveFret_SwitchOpenAndFrettedChartingMode;
+        /// <summary>
+        /// Provides access to the underlying input action "FiveFret/SetLaneOpen".
+        /// </summary>
+        public InputAction @SetLaneOpen => m_Wrapper.m_FiveFret_SetLaneOpen;
+        /// <summary>
+        /// Provides access to the underlying input action "FiveFret/SetLaneGreen".
+        /// </summary>
+        public InputAction @SetLaneGreen => m_Wrapper.m_FiveFret_SetLaneGreen;
+        /// <summary>
+        /// Provides access to the underlying input action "FiveFret/SetLaneRed".
+        /// </summary>
+        public InputAction @SetLaneRed => m_Wrapper.m_FiveFret_SetLaneRed;
+        /// <summary>
+        /// Provides access to the underlying input action "FiveFret/SetLaneYellow".
+        /// </summary>
+        public InputAction @SetLaneYellow => m_Wrapper.m_FiveFret_SetLaneYellow;
+        /// <summary>
+        /// Provides access to the underlying input action "FiveFret/SetLaneBlue".
+        /// </summary>
+        public InputAction @SetLaneBlue => m_Wrapper.m_FiveFret_SetLaneBlue;
+        /// <summary>
+        /// Provides access to the underlying input action "FiveFret/SetLaneOrange".
+        /// </summary>
+        public InputAction @SetLaneOrange => m_Wrapper.m_FiveFret_SetLaneOrange;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_FiveFret; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="FiveFretActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(FiveFretActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="FiveFretActions" />
+        public void AddCallbacks(IFiveFretActions instance)
+        {
+            if (instance == null || m_Wrapper.m_FiveFretActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_FiveFretActionsCallbackInterfaces.Add(instance);
+            @ForceTap.started += instance.OnForceTap;
+            @ForceTap.performed += instance.OnForceTap;
+            @ForceTap.canceled += instance.OnForceTap;
+            @ForceDefault.started += instance.OnForceDefault;
+            @ForceDefault.performed += instance.OnForceDefault;
+            @ForceDefault.canceled += instance.OnForceDefault;
+            @ForceStrum.started += instance.OnForceStrum;
+            @ForceStrum.performed += instance.OnForceStrum;
+            @ForceStrum.canceled += instance.OnForceStrum;
+            @ForceHopo.started += instance.OnForceHopo;
+            @ForceHopo.performed += instance.OnForceHopo;
+            @ForceHopo.canceled += instance.OnForceHopo;
+            @SwitchOpenAndFrettedChartingMode.started += instance.OnSwitchOpenAndFrettedChartingMode;
+            @SwitchOpenAndFrettedChartingMode.performed += instance.OnSwitchOpenAndFrettedChartingMode;
+            @SwitchOpenAndFrettedChartingMode.canceled += instance.OnSwitchOpenAndFrettedChartingMode;
+            @SetLaneOpen.started += instance.OnSetLaneOpen;
+            @SetLaneOpen.performed += instance.OnSetLaneOpen;
+            @SetLaneOpen.canceled += instance.OnSetLaneOpen;
+            @SetLaneGreen.started += instance.OnSetLaneGreen;
+            @SetLaneGreen.performed += instance.OnSetLaneGreen;
+            @SetLaneGreen.canceled += instance.OnSetLaneGreen;
+            @SetLaneRed.started += instance.OnSetLaneRed;
+            @SetLaneRed.performed += instance.OnSetLaneRed;
+            @SetLaneRed.canceled += instance.OnSetLaneRed;
+            @SetLaneYellow.started += instance.OnSetLaneYellow;
+            @SetLaneYellow.performed += instance.OnSetLaneYellow;
+            @SetLaneYellow.canceled += instance.OnSetLaneYellow;
+            @SetLaneBlue.started += instance.OnSetLaneBlue;
+            @SetLaneBlue.performed += instance.OnSetLaneBlue;
+            @SetLaneBlue.canceled += instance.OnSetLaneBlue;
+            @SetLaneOrange.started += instance.OnSetLaneOrange;
+            @SetLaneOrange.performed += instance.OnSetLaneOrange;
+            @SetLaneOrange.canceled += instance.OnSetLaneOrange;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="FiveFretActions" />
+        private void UnregisterCallbacks(IFiveFretActions instance)
+        {
+            @ForceTap.started -= instance.OnForceTap;
+            @ForceTap.performed -= instance.OnForceTap;
+            @ForceTap.canceled -= instance.OnForceTap;
+            @ForceDefault.started -= instance.OnForceDefault;
+            @ForceDefault.performed -= instance.OnForceDefault;
+            @ForceDefault.canceled -= instance.OnForceDefault;
+            @ForceStrum.started -= instance.OnForceStrum;
+            @ForceStrum.performed -= instance.OnForceStrum;
+            @ForceStrum.canceled -= instance.OnForceStrum;
+            @ForceHopo.started -= instance.OnForceHopo;
+            @ForceHopo.performed -= instance.OnForceHopo;
+            @ForceHopo.canceled -= instance.OnForceHopo;
+            @SwitchOpenAndFrettedChartingMode.started -= instance.OnSwitchOpenAndFrettedChartingMode;
+            @SwitchOpenAndFrettedChartingMode.performed -= instance.OnSwitchOpenAndFrettedChartingMode;
+            @SwitchOpenAndFrettedChartingMode.canceled -= instance.OnSwitchOpenAndFrettedChartingMode;
+            @SetLaneOpen.started -= instance.OnSetLaneOpen;
+            @SetLaneOpen.performed -= instance.OnSetLaneOpen;
+            @SetLaneOpen.canceled -= instance.OnSetLaneOpen;
+            @SetLaneGreen.started -= instance.OnSetLaneGreen;
+            @SetLaneGreen.performed -= instance.OnSetLaneGreen;
+            @SetLaneGreen.canceled -= instance.OnSetLaneGreen;
+            @SetLaneRed.started -= instance.OnSetLaneRed;
+            @SetLaneRed.performed -= instance.OnSetLaneRed;
+            @SetLaneRed.canceled -= instance.OnSetLaneRed;
+            @SetLaneYellow.started -= instance.OnSetLaneYellow;
+            @SetLaneYellow.performed -= instance.OnSetLaneYellow;
+            @SetLaneYellow.canceled -= instance.OnSetLaneYellow;
+            @SetLaneBlue.started -= instance.OnSetLaneBlue;
+            @SetLaneBlue.performed -= instance.OnSetLaneBlue;
+            @SetLaneBlue.canceled -= instance.OnSetLaneBlue;
+            @SetLaneOrange.started -= instance.OnSetLaneOrange;
+            @SetLaneOrange.performed -= instance.OnSetLaneOrange;
+            @SetLaneOrange.canceled -= instance.OnSetLaneOrange;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="FiveFretActions.UnregisterCallbacks(IFiveFretActions)" />.
+        /// </summary>
+        /// <seealso cref="FiveFretActions.UnregisterCallbacks(IFiveFretActions)" />
+        public void RemoveCallbacks(IFiveFretActions instance)
+        {
+            if (m_Wrapper.m_FiveFretActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="FiveFretActions.AddCallbacks(IFiveFretActions)" />
+        /// <seealso cref="FiveFretActions.RemoveCallbacks(IFiveFretActions)" />
+        /// <seealso cref="FiveFretActions.UnregisterCallbacks(IFiveFretActions)" />
+        public void SetCallbacks(IFiveFretActions instance)
+        {
+            foreach (var item in m_Wrapper.m_FiveFretActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_FiveFretActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="FiveFretActions" /> instance referencing this action map.
+    /// </summary>
+    public FiveFretActions @FiveFret => new FiveFretActions(this);
+
+    // Drums
+    private readonly InputActionMap m_Drums;
+    private List<IDrumsActions> m_DrumsActionsCallbackInterfaces = new List<IDrumsActions>();
+    private readonly InputAction m_Drums_SetCymbal;
+    private readonly InputAction m_Drums_SetLaneRed;
+    private readonly InputAction m_Drums_SetLaneYellow;
+    private readonly InputAction m_Drums_SetLaneBlue;
+    private readonly InputAction m_Drums_SetLaneGreen;
+    private readonly InputAction m_Drums_SetLaneKick;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Drums".
+    /// </summary>
+    public struct DrumsActions
+    {
+        private @InputMap m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public DrumsActions(@InputMap wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Drums/SetCymbal".
+        /// </summary>
+        public InputAction @SetCymbal => m_Wrapper.m_Drums_SetCymbal;
+        /// <summary>
+        /// Provides access to the underlying input action "Drums/SetLaneRed".
+        /// </summary>
+        public InputAction @SetLaneRed => m_Wrapper.m_Drums_SetLaneRed;
+        /// <summary>
+        /// Provides access to the underlying input action "Drums/SetLaneYellow".
+        /// </summary>
+        public InputAction @SetLaneYellow => m_Wrapper.m_Drums_SetLaneYellow;
+        /// <summary>
+        /// Provides access to the underlying input action "Drums/SetLaneBlue".
+        /// </summary>
+        public InputAction @SetLaneBlue => m_Wrapper.m_Drums_SetLaneBlue;
+        /// <summary>
+        /// Provides access to the underlying input action "Drums/SetLaneGreen".
+        /// </summary>
+        public InputAction @SetLaneGreen => m_Wrapper.m_Drums_SetLaneGreen;
+        /// <summary>
+        /// Provides access to the underlying input action "Drums/SetLaneKick".
+        /// </summary>
+        public InputAction @SetLaneKick => m_Wrapper.m_Drums_SetLaneKick;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Drums; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="DrumsActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(DrumsActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="DrumsActions" />
+        public void AddCallbacks(IDrumsActions instance)
+        {
+            if (instance == null || m_Wrapper.m_DrumsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_DrumsActionsCallbackInterfaces.Add(instance);
+            @SetCymbal.started += instance.OnSetCymbal;
+            @SetCymbal.performed += instance.OnSetCymbal;
+            @SetCymbal.canceled += instance.OnSetCymbal;
+            @SetLaneRed.started += instance.OnSetLaneRed;
+            @SetLaneRed.performed += instance.OnSetLaneRed;
+            @SetLaneRed.canceled += instance.OnSetLaneRed;
+            @SetLaneYellow.started += instance.OnSetLaneYellow;
+            @SetLaneYellow.performed += instance.OnSetLaneYellow;
+            @SetLaneYellow.canceled += instance.OnSetLaneYellow;
+            @SetLaneBlue.started += instance.OnSetLaneBlue;
+            @SetLaneBlue.performed += instance.OnSetLaneBlue;
+            @SetLaneBlue.canceled += instance.OnSetLaneBlue;
+            @SetLaneGreen.started += instance.OnSetLaneGreen;
+            @SetLaneGreen.performed += instance.OnSetLaneGreen;
+            @SetLaneGreen.canceled += instance.OnSetLaneGreen;
+            @SetLaneKick.started += instance.OnSetLaneKick;
+            @SetLaneKick.performed += instance.OnSetLaneKick;
+            @SetLaneKick.canceled += instance.OnSetLaneKick;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="DrumsActions" />
+        private void UnregisterCallbacks(IDrumsActions instance)
+        {
+            @SetCymbal.started -= instance.OnSetCymbal;
+            @SetCymbal.performed -= instance.OnSetCymbal;
+            @SetCymbal.canceled -= instance.OnSetCymbal;
+            @SetLaneRed.started -= instance.OnSetLaneRed;
+            @SetLaneRed.performed -= instance.OnSetLaneRed;
+            @SetLaneRed.canceled -= instance.OnSetLaneRed;
+            @SetLaneYellow.started -= instance.OnSetLaneYellow;
+            @SetLaneYellow.performed -= instance.OnSetLaneYellow;
+            @SetLaneYellow.canceled -= instance.OnSetLaneYellow;
+            @SetLaneBlue.started -= instance.OnSetLaneBlue;
+            @SetLaneBlue.performed -= instance.OnSetLaneBlue;
+            @SetLaneBlue.canceled -= instance.OnSetLaneBlue;
+            @SetLaneGreen.started -= instance.OnSetLaneGreen;
+            @SetLaneGreen.performed -= instance.OnSetLaneGreen;
+            @SetLaneGreen.canceled -= instance.OnSetLaneGreen;
+            @SetLaneKick.started -= instance.OnSetLaneKick;
+            @SetLaneKick.performed -= instance.OnSetLaneKick;
+            @SetLaneKick.canceled -= instance.OnSetLaneKick;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="DrumsActions.UnregisterCallbacks(IDrumsActions)" />.
+        /// </summary>
+        /// <seealso cref="DrumsActions.UnregisterCallbacks(IDrumsActions)" />
+        public void RemoveCallbacks(IDrumsActions instance)
+        {
+            if (m_Wrapper.m_DrumsActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="DrumsActions.AddCallbacks(IDrumsActions)" />
+        /// <seealso cref="DrumsActions.RemoveCallbacks(IDrumsActions)" />
+        /// <seealso cref="DrumsActions.UnregisterCallbacks(IDrumsActions)" />
+        public void SetCallbacks(IDrumsActions instance)
+        {
+            foreach (var item in m_Wrapper.m_DrumsActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_DrumsActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="DrumsActions" /> instance referencing this action map.
+    /// </summary>
+    public DrumsActions @Drums => new DrumsActions(this);
+
+    // Sustains
+    private readonly InputActionMap m_Sustains;
+    private List<ISustainsActions> m_SustainsActionsCallbackInterfaces = new List<ISustainsActions>();
+    private readonly InputAction m_Sustains_SustainZero;
+    private readonly InputAction m_Sustains_SustainMax;
+    private readonly InputAction m_Sustains_SustainCustom;
+    private readonly InputAction m_Sustains_SustainExtended;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Sustains".
+    /// </summary>
+    public struct SustainsActions
+    {
+        private @InputMap m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public SustainsActions(@InputMap wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Sustains/SustainZero".
+        /// </summary>
+        public InputAction @SustainZero => m_Wrapper.m_Sustains_SustainZero;
+        /// <summary>
+        /// Provides access to the underlying input action "Sustains/SustainMax".
+        /// </summary>
+        public InputAction @SustainMax => m_Wrapper.m_Sustains_SustainMax;
+        /// <summary>
+        /// Provides access to the underlying input action "Sustains/SustainCustom".
+        /// </summary>
+        public InputAction @SustainCustom => m_Wrapper.m_Sustains_SustainCustom;
+        /// <summary>
+        /// Provides access to the underlying input action "Sustains/SustainExtended".
+        /// </summary>
+        public InputAction @SustainExtended => m_Wrapper.m_Sustains_SustainExtended;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Sustains; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="SustainsActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(SustainsActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="SustainsActions" />
+        public void AddCallbacks(ISustainsActions instance)
+        {
+            if (instance == null || m_Wrapper.m_SustainsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_SustainsActionsCallbackInterfaces.Add(instance);
+            @SustainZero.started += instance.OnSustainZero;
+            @SustainZero.performed += instance.OnSustainZero;
+            @SustainZero.canceled += instance.OnSustainZero;
+            @SustainMax.started += instance.OnSustainMax;
+            @SustainMax.performed += instance.OnSustainMax;
+            @SustainMax.canceled += instance.OnSustainMax;
+            @SustainCustom.started += instance.OnSustainCustom;
+            @SustainCustom.performed += instance.OnSustainCustom;
+            @SustainCustom.canceled += instance.OnSustainCustom;
+            @SustainExtended.started += instance.OnSustainExtended;
+            @SustainExtended.performed += instance.OnSustainExtended;
+            @SustainExtended.canceled += instance.OnSustainExtended;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="SustainsActions" />
+        private void UnregisterCallbacks(ISustainsActions instance)
+        {
+            @SustainZero.started -= instance.OnSustainZero;
+            @SustainZero.performed -= instance.OnSustainZero;
+            @SustainZero.canceled -= instance.OnSustainZero;
+            @SustainMax.started -= instance.OnSustainMax;
+            @SustainMax.performed -= instance.OnSustainMax;
+            @SustainMax.canceled -= instance.OnSustainMax;
+            @SustainCustom.started -= instance.OnSustainCustom;
+            @SustainCustom.performed -= instance.OnSustainCustom;
+            @SustainCustom.canceled -= instance.OnSustainCustom;
+            @SustainExtended.started -= instance.OnSustainExtended;
+            @SustainExtended.performed -= instance.OnSustainExtended;
+            @SustainExtended.canceled -= instance.OnSustainExtended;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="SustainsActions.UnregisterCallbacks(ISustainsActions)" />.
+        /// </summary>
+        /// <seealso cref="SustainsActions.UnregisterCallbacks(ISustainsActions)" />
+        public void RemoveCallbacks(ISustainsActions instance)
+        {
+            if (m_Wrapper.m_SustainsActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="SustainsActions.AddCallbacks(ISustainsActions)" />
+        /// <seealso cref="SustainsActions.RemoveCallbacks(ISustainsActions)" />
+        /// <seealso cref="SustainsActions.UnregisterCallbacks(ISustainsActions)" />
+        public void SetCallbacks(ISustainsActions instance)
+        {
+            foreach (var item in m_Wrapper.m_SustainsActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_SustainsActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="SustainsActions" /> instance referencing this action map.
+    /// </summary>
+    public SustainsActions @Sustains => new SustainsActions(this);
+
+    // Selections
+    private readonly InputActionMap m_Selections;
+    private List<ISelectionsActions> m_SelectionsActionsCallbackInterfaces = new List<ISelectionsActions>();
+    private readonly InputAction m_Selections_SelectionSelect;
+    private readonly InputAction m_Selections_SelectionView;
+    private readonly InputAction m_Selections_SelectionEdit;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Selections".
+    /// </summary>
+    public struct SelectionsActions
+    {
+        private @InputMap m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public SelectionsActions(@InputMap wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Selections/SelectionSelect".
+        /// </summary>
+        public InputAction @SelectionSelect => m_Wrapper.m_Selections_SelectionSelect;
+        /// <summary>
+        /// Provides access to the underlying input action "Selections/SelectionView".
+        /// </summary>
+        public InputAction @SelectionView => m_Wrapper.m_Selections_SelectionView;
+        /// <summary>
+        /// Provides access to the underlying input action "Selections/SelectionEdit".
+        /// </summary>
+        public InputAction @SelectionEdit => m_Wrapper.m_Selections_SelectionEdit;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Selections; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="SelectionsActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(SelectionsActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="SelectionsActions" />
+        public void AddCallbacks(ISelectionsActions instance)
+        {
+            if (instance == null || m_Wrapper.m_SelectionsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_SelectionsActionsCallbackInterfaces.Add(instance);
+            @SelectionSelect.started += instance.OnSelectionSelect;
+            @SelectionSelect.performed += instance.OnSelectionSelect;
+            @SelectionSelect.canceled += instance.OnSelectionSelect;
+            @SelectionView.started += instance.OnSelectionView;
+            @SelectionView.performed += instance.OnSelectionView;
+            @SelectionView.canceled += instance.OnSelectionView;
+            @SelectionEdit.started += instance.OnSelectionEdit;
+            @SelectionEdit.performed += instance.OnSelectionEdit;
+            @SelectionEdit.canceled += instance.OnSelectionEdit;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="SelectionsActions" />
+        private void UnregisterCallbacks(ISelectionsActions instance)
+        {
+            @SelectionSelect.started -= instance.OnSelectionSelect;
+            @SelectionSelect.performed -= instance.OnSelectionSelect;
+            @SelectionSelect.canceled -= instance.OnSelectionSelect;
+            @SelectionView.started -= instance.OnSelectionView;
+            @SelectionView.performed -= instance.OnSelectionView;
+            @SelectionView.canceled -= instance.OnSelectionView;
+            @SelectionEdit.started -= instance.OnSelectionEdit;
+            @SelectionEdit.performed -= instance.OnSelectionEdit;
+            @SelectionEdit.canceled -= instance.OnSelectionEdit;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="SelectionsActions.UnregisterCallbacks(ISelectionsActions)" />.
+        /// </summary>
+        /// <seealso cref="SelectionsActions.UnregisterCallbacks(ISelectionsActions)" />
+        public void RemoveCallbacks(ISelectionsActions instance)
+        {
+            if (m_Wrapper.m_SelectionsActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="SelectionsActions.AddCallbacks(ISelectionsActions)" />
+        /// <seealso cref="SelectionsActions.RemoveCallbacks(ISelectionsActions)" />
+        /// <seealso cref="SelectionsActions.UnregisterCallbacks(ISelectionsActions)" />
+        public void SetCallbacks(ISelectionsActions instance)
+        {
+            foreach (var item in m_Wrapper.m_SelectionsActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_SelectionsActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="SelectionsActions" /> instance referencing this action map.
+    /// </summary>
+    public SelectionsActions @Selections => new SelectionsActions(this);
 
     // StandardStaticEvents
     private readonly InputActionMap m_StandardStaticEvents;
@@ -3588,610 +4192,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="StandardStaticEventsActions" /> instance referencing this action map.
     /// </summary>
     public StandardStaticEventsActions @StandardStaticEvents => new StandardStaticEventsActions(this);
-
-    // FiveFretCharting
-    private readonly InputActionMap m_FiveFretCharting;
-    private List<IFiveFretChartingActions> m_FiveFretChartingActionsCallbackInterfaces = new List<IFiveFretChartingActions>();
-    private readonly InputAction m_FiveFretCharting_ForceTap;
-    private readonly InputAction m_FiveFretCharting_ForceDefault;
-    private readonly InputAction m_FiveFretCharting_ForceStrum;
-    private readonly InputAction m_FiveFretCharting_ForceHopo;
-    private readonly InputAction m_FiveFretCharting_SwitchOpenAndFrettedChartingMode;
-    private readonly InputAction m_FiveFretCharting_SetLaneOpen;
-    private readonly InputAction m_FiveFretCharting_SetLaneGreen;
-    private readonly InputAction m_FiveFretCharting_SetLaneRed;
-    private readonly InputAction m_FiveFretCharting_SetLaneYellow;
-    private readonly InputAction m_FiveFretCharting_SetLaneBlue;
-    private readonly InputAction m_FiveFretCharting_SetLaneOrange;
-    /// <summary>
-    /// Provides access to input actions defined in input action map "FiveFretCharting".
-    /// </summary>
-    public struct FiveFretChartingActions
-    {
-        private @InputMap m_Wrapper;
-
-        /// <summary>
-        /// Construct a new instance of the input action map wrapper class.
-        /// </summary>
-        public FiveFretChartingActions(@InputMap wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "FiveFretCharting/ForceTap".
-        /// </summary>
-        public InputAction @ForceTap => m_Wrapper.m_FiveFretCharting_ForceTap;
-        /// <summary>
-        /// Provides access to the underlying input action "FiveFretCharting/ForceDefault".
-        /// </summary>
-        public InputAction @ForceDefault => m_Wrapper.m_FiveFretCharting_ForceDefault;
-        /// <summary>
-        /// Provides access to the underlying input action "FiveFretCharting/ForceStrum".
-        /// </summary>
-        public InputAction @ForceStrum => m_Wrapper.m_FiveFretCharting_ForceStrum;
-        /// <summary>
-        /// Provides access to the underlying input action "FiveFretCharting/ForceHopo".
-        /// </summary>
-        public InputAction @ForceHopo => m_Wrapper.m_FiveFretCharting_ForceHopo;
-        /// <summary>
-        /// Provides access to the underlying input action "FiveFretCharting/SwitchOpenAndFrettedChartingMode".
-        /// </summary>
-        public InputAction @SwitchOpenAndFrettedChartingMode => m_Wrapper.m_FiveFretCharting_SwitchOpenAndFrettedChartingMode;
-        /// <summary>
-        /// Provides access to the underlying input action "FiveFretCharting/SetLaneOpen".
-        /// </summary>
-        public InputAction @SetLaneOpen => m_Wrapper.m_FiveFretCharting_SetLaneOpen;
-        /// <summary>
-        /// Provides access to the underlying input action "FiveFretCharting/SetLaneGreen".
-        /// </summary>
-        public InputAction @SetLaneGreen => m_Wrapper.m_FiveFretCharting_SetLaneGreen;
-        /// <summary>
-        /// Provides access to the underlying input action "FiveFretCharting/SetLaneRed".
-        /// </summary>
-        public InputAction @SetLaneRed => m_Wrapper.m_FiveFretCharting_SetLaneRed;
-        /// <summary>
-        /// Provides access to the underlying input action "FiveFretCharting/SetLaneYellow".
-        /// </summary>
-        public InputAction @SetLaneYellow => m_Wrapper.m_FiveFretCharting_SetLaneYellow;
-        /// <summary>
-        /// Provides access to the underlying input action "FiveFretCharting/SetLaneBlue".
-        /// </summary>
-        public InputAction @SetLaneBlue => m_Wrapper.m_FiveFretCharting_SetLaneBlue;
-        /// <summary>
-        /// Provides access to the underlying input action "FiveFretCharting/SetLaneOrange".
-        /// </summary>
-        public InputAction @SetLaneOrange => m_Wrapper.m_FiveFretCharting_SetLaneOrange;
-        /// <summary>
-        /// Provides access to the underlying input action map instance.
-        /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_FiveFretCharting; }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-        public void Enable() { Get().Enable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-        public void Disable() { Get().Disable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-        public bool enabled => Get().enabled;
-        /// <summary>
-        /// Implicitly converts an <see ref="FiveFretChartingActions" /> to an <see ref="InputActionMap" /> instance.
-        /// </summary>
-        public static implicit operator InputActionMap(FiveFretChartingActions set) { return set.Get(); }
-        /// <summary>
-        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <param name="instance">Callback instance.</param>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-        /// </remarks>
-        /// <seealso cref="FiveFretChartingActions" />
-        public void AddCallbacks(IFiveFretChartingActions instance)
-        {
-            if (instance == null || m_Wrapper.m_FiveFretChartingActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_FiveFretChartingActionsCallbackInterfaces.Add(instance);
-            @ForceTap.started += instance.OnForceTap;
-            @ForceTap.performed += instance.OnForceTap;
-            @ForceTap.canceled += instance.OnForceTap;
-            @ForceDefault.started += instance.OnForceDefault;
-            @ForceDefault.performed += instance.OnForceDefault;
-            @ForceDefault.canceled += instance.OnForceDefault;
-            @ForceStrum.started += instance.OnForceStrum;
-            @ForceStrum.performed += instance.OnForceStrum;
-            @ForceStrum.canceled += instance.OnForceStrum;
-            @ForceHopo.started += instance.OnForceHopo;
-            @ForceHopo.performed += instance.OnForceHopo;
-            @ForceHopo.canceled += instance.OnForceHopo;
-            @SwitchOpenAndFrettedChartingMode.started += instance.OnSwitchOpenAndFrettedChartingMode;
-            @SwitchOpenAndFrettedChartingMode.performed += instance.OnSwitchOpenAndFrettedChartingMode;
-            @SwitchOpenAndFrettedChartingMode.canceled += instance.OnSwitchOpenAndFrettedChartingMode;
-            @SetLaneOpen.started += instance.OnSetLaneOpen;
-            @SetLaneOpen.performed += instance.OnSetLaneOpen;
-            @SetLaneOpen.canceled += instance.OnSetLaneOpen;
-            @SetLaneGreen.started += instance.OnSetLaneGreen;
-            @SetLaneGreen.performed += instance.OnSetLaneGreen;
-            @SetLaneGreen.canceled += instance.OnSetLaneGreen;
-            @SetLaneRed.started += instance.OnSetLaneRed;
-            @SetLaneRed.performed += instance.OnSetLaneRed;
-            @SetLaneRed.canceled += instance.OnSetLaneRed;
-            @SetLaneYellow.started += instance.OnSetLaneYellow;
-            @SetLaneYellow.performed += instance.OnSetLaneYellow;
-            @SetLaneYellow.canceled += instance.OnSetLaneYellow;
-            @SetLaneBlue.started += instance.OnSetLaneBlue;
-            @SetLaneBlue.performed += instance.OnSetLaneBlue;
-            @SetLaneBlue.canceled += instance.OnSetLaneBlue;
-            @SetLaneOrange.started += instance.OnSetLaneOrange;
-            @SetLaneOrange.performed += instance.OnSetLaneOrange;
-            @SetLaneOrange.canceled += instance.OnSetLaneOrange;
-        }
-
-        /// <summary>
-        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <remarks>
-        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-        /// </remarks>
-        /// <seealso cref="FiveFretChartingActions" />
-        private void UnregisterCallbacks(IFiveFretChartingActions instance)
-        {
-            @ForceTap.started -= instance.OnForceTap;
-            @ForceTap.performed -= instance.OnForceTap;
-            @ForceTap.canceled -= instance.OnForceTap;
-            @ForceDefault.started -= instance.OnForceDefault;
-            @ForceDefault.performed -= instance.OnForceDefault;
-            @ForceDefault.canceled -= instance.OnForceDefault;
-            @ForceStrum.started -= instance.OnForceStrum;
-            @ForceStrum.performed -= instance.OnForceStrum;
-            @ForceStrum.canceled -= instance.OnForceStrum;
-            @ForceHopo.started -= instance.OnForceHopo;
-            @ForceHopo.performed -= instance.OnForceHopo;
-            @ForceHopo.canceled -= instance.OnForceHopo;
-            @SwitchOpenAndFrettedChartingMode.started -= instance.OnSwitchOpenAndFrettedChartingMode;
-            @SwitchOpenAndFrettedChartingMode.performed -= instance.OnSwitchOpenAndFrettedChartingMode;
-            @SwitchOpenAndFrettedChartingMode.canceled -= instance.OnSwitchOpenAndFrettedChartingMode;
-            @SetLaneOpen.started -= instance.OnSetLaneOpen;
-            @SetLaneOpen.performed -= instance.OnSetLaneOpen;
-            @SetLaneOpen.canceled -= instance.OnSetLaneOpen;
-            @SetLaneGreen.started -= instance.OnSetLaneGreen;
-            @SetLaneGreen.performed -= instance.OnSetLaneGreen;
-            @SetLaneGreen.canceled -= instance.OnSetLaneGreen;
-            @SetLaneRed.started -= instance.OnSetLaneRed;
-            @SetLaneRed.performed -= instance.OnSetLaneRed;
-            @SetLaneRed.canceled -= instance.OnSetLaneRed;
-            @SetLaneYellow.started -= instance.OnSetLaneYellow;
-            @SetLaneYellow.performed -= instance.OnSetLaneYellow;
-            @SetLaneYellow.canceled -= instance.OnSetLaneYellow;
-            @SetLaneBlue.started -= instance.OnSetLaneBlue;
-            @SetLaneBlue.performed -= instance.OnSetLaneBlue;
-            @SetLaneBlue.canceled -= instance.OnSetLaneBlue;
-            @SetLaneOrange.started -= instance.OnSetLaneOrange;
-            @SetLaneOrange.performed -= instance.OnSetLaneOrange;
-            @SetLaneOrange.canceled -= instance.OnSetLaneOrange;
-        }
-
-        /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="FiveFretChartingActions.UnregisterCallbacks(IFiveFretChartingActions)" />.
-        /// </summary>
-        /// <seealso cref="FiveFretChartingActions.UnregisterCallbacks(IFiveFretChartingActions)" />
-        public void RemoveCallbacks(IFiveFretChartingActions instance)
-        {
-            if (m_Wrapper.m_FiveFretChartingActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        /// <summary>
-        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-        /// </remarks>
-        /// <seealso cref="FiveFretChartingActions.AddCallbacks(IFiveFretChartingActions)" />
-        /// <seealso cref="FiveFretChartingActions.RemoveCallbacks(IFiveFretChartingActions)" />
-        /// <seealso cref="FiveFretChartingActions.UnregisterCallbacks(IFiveFretChartingActions)" />
-        public void SetCallbacks(IFiveFretChartingActions instance)
-        {
-            foreach (var item in m_Wrapper.m_FiveFretChartingActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_FiveFretChartingActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    /// <summary>
-    /// Provides a new <see cref="FiveFretChartingActions" /> instance referencing this action map.
-    /// </summary>
-    public FiveFretChartingActions @FiveFretCharting => new FiveFretChartingActions(this);
-
-    // ProDrumCharting
-    private readonly InputActionMap m_ProDrumCharting;
-    private List<IProDrumChartingActions> m_ProDrumChartingActionsCallbackInterfaces = new List<IProDrumChartingActions>();
-    private readonly InputAction m_ProDrumCharting_SetCymbal;
-    private readonly InputAction m_ProDrumCharting_SetLaneRed;
-    private readonly InputAction m_ProDrumCharting_SetLaneYellow;
-    private readonly InputAction m_ProDrumCharting_SetLaneBlue;
-    private readonly InputAction m_ProDrumCharting_SetLaneGreen;
-    private readonly InputAction m_ProDrumCharting_SetLaneKick;
-    /// <summary>
-    /// Provides access to input actions defined in input action map "ProDrumCharting".
-    /// </summary>
-    public struct ProDrumChartingActions
-    {
-        private @InputMap m_Wrapper;
-
-        /// <summary>
-        /// Construct a new instance of the input action map wrapper class.
-        /// </summary>
-        public ProDrumChartingActions(@InputMap wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "ProDrumCharting/SetCymbal".
-        /// </summary>
-        public InputAction @SetCymbal => m_Wrapper.m_ProDrumCharting_SetCymbal;
-        /// <summary>
-        /// Provides access to the underlying input action "ProDrumCharting/SetLaneRed".
-        /// </summary>
-        public InputAction @SetLaneRed => m_Wrapper.m_ProDrumCharting_SetLaneRed;
-        /// <summary>
-        /// Provides access to the underlying input action "ProDrumCharting/SetLaneYellow".
-        /// </summary>
-        public InputAction @SetLaneYellow => m_Wrapper.m_ProDrumCharting_SetLaneYellow;
-        /// <summary>
-        /// Provides access to the underlying input action "ProDrumCharting/SetLaneBlue".
-        /// </summary>
-        public InputAction @SetLaneBlue => m_Wrapper.m_ProDrumCharting_SetLaneBlue;
-        /// <summary>
-        /// Provides access to the underlying input action "ProDrumCharting/SetLaneGreen".
-        /// </summary>
-        public InputAction @SetLaneGreen => m_Wrapper.m_ProDrumCharting_SetLaneGreen;
-        /// <summary>
-        /// Provides access to the underlying input action "ProDrumCharting/SetLaneKick".
-        /// </summary>
-        public InputAction @SetLaneKick => m_Wrapper.m_ProDrumCharting_SetLaneKick;
-        /// <summary>
-        /// Provides access to the underlying input action map instance.
-        /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_ProDrumCharting; }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-        public void Enable() { Get().Enable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-        public void Disable() { Get().Disable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-        public bool enabled => Get().enabled;
-        /// <summary>
-        /// Implicitly converts an <see ref="ProDrumChartingActions" /> to an <see ref="InputActionMap" /> instance.
-        /// </summary>
-        public static implicit operator InputActionMap(ProDrumChartingActions set) { return set.Get(); }
-        /// <summary>
-        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <param name="instance">Callback instance.</param>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-        /// </remarks>
-        /// <seealso cref="ProDrumChartingActions" />
-        public void AddCallbacks(IProDrumChartingActions instance)
-        {
-            if (instance == null || m_Wrapper.m_ProDrumChartingActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_ProDrumChartingActionsCallbackInterfaces.Add(instance);
-            @SetCymbal.started += instance.OnSetCymbal;
-            @SetCymbal.performed += instance.OnSetCymbal;
-            @SetCymbal.canceled += instance.OnSetCymbal;
-            @SetLaneRed.started += instance.OnSetLaneRed;
-            @SetLaneRed.performed += instance.OnSetLaneRed;
-            @SetLaneRed.canceled += instance.OnSetLaneRed;
-            @SetLaneYellow.started += instance.OnSetLaneYellow;
-            @SetLaneYellow.performed += instance.OnSetLaneYellow;
-            @SetLaneYellow.canceled += instance.OnSetLaneYellow;
-            @SetLaneBlue.started += instance.OnSetLaneBlue;
-            @SetLaneBlue.performed += instance.OnSetLaneBlue;
-            @SetLaneBlue.canceled += instance.OnSetLaneBlue;
-            @SetLaneGreen.started += instance.OnSetLaneGreen;
-            @SetLaneGreen.performed += instance.OnSetLaneGreen;
-            @SetLaneGreen.canceled += instance.OnSetLaneGreen;
-            @SetLaneKick.started += instance.OnSetLaneKick;
-            @SetLaneKick.performed += instance.OnSetLaneKick;
-            @SetLaneKick.canceled += instance.OnSetLaneKick;
-        }
-
-        /// <summary>
-        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <remarks>
-        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-        /// </remarks>
-        /// <seealso cref="ProDrumChartingActions" />
-        private void UnregisterCallbacks(IProDrumChartingActions instance)
-        {
-            @SetCymbal.started -= instance.OnSetCymbal;
-            @SetCymbal.performed -= instance.OnSetCymbal;
-            @SetCymbal.canceled -= instance.OnSetCymbal;
-            @SetLaneRed.started -= instance.OnSetLaneRed;
-            @SetLaneRed.performed -= instance.OnSetLaneRed;
-            @SetLaneRed.canceled -= instance.OnSetLaneRed;
-            @SetLaneYellow.started -= instance.OnSetLaneYellow;
-            @SetLaneYellow.performed -= instance.OnSetLaneYellow;
-            @SetLaneYellow.canceled -= instance.OnSetLaneYellow;
-            @SetLaneBlue.started -= instance.OnSetLaneBlue;
-            @SetLaneBlue.performed -= instance.OnSetLaneBlue;
-            @SetLaneBlue.canceled -= instance.OnSetLaneBlue;
-            @SetLaneGreen.started -= instance.OnSetLaneGreen;
-            @SetLaneGreen.performed -= instance.OnSetLaneGreen;
-            @SetLaneGreen.canceled -= instance.OnSetLaneGreen;
-            @SetLaneKick.started -= instance.OnSetLaneKick;
-            @SetLaneKick.performed -= instance.OnSetLaneKick;
-            @SetLaneKick.canceled -= instance.OnSetLaneKick;
-        }
-
-        /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ProDrumChartingActions.UnregisterCallbacks(IProDrumChartingActions)" />.
-        /// </summary>
-        /// <seealso cref="ProDrumChartingActions.UnregisterCallbacks(IProDrumChartingActions)" />
-        public void RemoveCallbacks(IProDrumChartingActions instance)
-        {
-            if (m_Wrapper.m_ProDrumChartingActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        /// <summary>
-        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-        /// </remarks>
-        /// <seealso cref="ProDrumChartingActions.AddCallbacks(IProDrumChartingActions)" />
-        /// <seealso cref="ProDrumChartingActions.RemoveCallbacks(IProDrumChartingActions)" />
-        /// <seealso cref="ProDrumChartingActions.UnregisterCallbacks(IProDrumChartingActions)" />
-        public void SetCallbacks(IProDrumChartingActions instance)
-        {
-            foreach (var item in m_Wrapper.m_ProDrumChartingActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_ProDrumChartingActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    /// <summary>
-    /// Provides a new <see cref="ProDrumChartingActions" /> instance referencing this action map.
-    /// </summary>
-    public ProDrumChartingActions @ProDrumCharting => new ProDrumChartingActions(this);
-
-    // SustainCommands
-    private readonly InputActionMap m_SustainCommands;
-    private List<ISustainCommandsActions> m_SustainCommandsActionsCallbackInterfaces = new List<ISustainCommandsActions>();
-    private readonly InputAction m_SustainCommands_SustainZero;
-    private readonly InputAction m_SustainCommands_SustainMax;
-    private readonly InputAction m_SustainCommands_SustainCustom;
-    private readonly InputAction m_SustainCommands_SustainExtended;
-    /// <summary>
-    /// Provides access to input actions defined in input action map "SustainCommands".
-    /// </summary>
-    public struct SustainCommandsActions
-    {
-        private @InputMap m_Wrapper;
-
-        /// <summary>
-        /// Construct a new instance of the input action map wrapper class.
-        /// </summary>
-        public SustainCommandsActions(@InputMap wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "SustainCommands/SustainZero".
-        /// </summary>
-        public InputAction @SustainZero => m_Wrapper.m_SustainCommands_SustainZero;
-        /// <summary>
-        /// Provides access to the underlying input action "SustainCommands/SustainMax".
-        /// </summary>
-        public InputAction @SustainMax => m_Wrapper.m_SustainCommands_SustainMax;
-        /// <summary>
-        /// Provides access to the underlying input action "SustainCommands/SustainCustom".
-        /// </summary>
-        public InputAction @SustainCustom => m_Wrapper.m_SustainCommands_SustainCustom;
-        /// <summary>
-        /// Provides access to the underlying input action "SustainCommands/SustainExtended".
-        /// </summary>
-        public InputAction @SustainExtended => m_Wrapper.m_SustainCommands_SustainExtended;
-        /// <summary>
-        /// Provides access to the underlying input action map instance.
-        /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_SustainCommands; }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-        public void Enable() { Get().Enable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-        public void Disable() { Get().Disable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-        public bool enabled => Get().enabled;
-        /// <summary>
-        /// Implicitly converts an <see ref="SustainCommandsActions" /> to an <see ref="InputActionMap" /> instance.
-        /// </summary>
-        public static implicit operator InputActionMap(SustainCommandsActions set) { return set.Get(); }
-        /// <summary>
-        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <param name="instance">Callback instance.</param>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-        /// </remarks>
-        /// <seealso cref="SustainCommandsActions" />
-        public void AddCallbacks(ISustainCommandsActions instance)
-        {
-            if (instance == null || m_Wrapper.m_SustainCommandsActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_SustainCommandsActionsCallbackInterfaces.Add(instance);
-            @SustainZero.started += instance.OnSustainZero;
-            @SustainZero.performed += instance.OnSustainZero;
-            @SustainZero.canceled += instance.OnSustainZero;
-            @SustainMax.started += instance.OnSustainMax;
-            @SustainMax.performed += instance.OnSustainMax;
-            @SustainMax.canceled += instance.OnSustainMax;
-            @SustainCustom.started += instance.OnSustainCustom;
-            @SustainCustom.performed += instance.OnSustainCustom;
-            @SustainCustom.canceled += instance.OnSustainCustom;
-            @SustainExtended.started += instance.OnSustainExtended;
-            @SustainExtended.performed += instance.OnSustainExtended;
-            @SustainExtended.canceled += instance.OnSustainExtended;
-        }
-
-        /// <summary>
-        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <remarks>
-        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-        /// </remarks>
-        /// <seealso cref="SustainCommandsActions" />
-        private void UnregisterCallbacks(ISustainCommandsActions instance)
-        {
-            @SustainZero.started -= instance.OnSustainZero;
-            @SustainZero.performed -= instance.OnSustainZero;
-            @SustainZero.canceled -= instance.OnSustainZero;
-            @SustainMax.started -= instance.OnSustainMax;
-            @SustainMax.performed -= instance.OnSustainMax;
-            @SustainMax.canceled -= instance.OnSustainMax;
-            @SustainCustom.started -= instance.OnSustainCustom;
-            @SustainCustom.performed -= instance.OnSustainCustom;
-            @SustainCustom.canceled -= instance.OnSustainCustom;
-            @SustainExtended.started -= instance.OnSustainExtended;
-            @SustainExtended.performed -= instance.OnSustainExtended;
-            @SustainExtended.canceled -= instance.OnSustainExtended;
-        }
-
-        /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="SustainCommandsActions.UnregisterCallbacks(ISustainCommandsActions)" />.
-        /// </summary>
-        /// <seealso cref="SustainCommandsActions.UnregisterCallbacks(ISustainCommandsActions)" />
-        public void RemoveCallbacks(ISustainCommandsActions instance)
-        {
-            if (m_Wrapper.m_SustainCommandsActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        /// <summary>
-        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-        /// </remarks>
-        /// <seealso cref="SustainCommandsActions.AddCallbacks(ISustainCommandsActions)" />
-        /// <seealso cref="SustainCommandsActions.RemoveCallbacks(ISustainCommandsActions)" />
-        /// <seealso cref="SustainCommandsActions.UnregisterCallbacks(ISustainCommandsActions)" />
-        public void SetCallbacks(ISustainCommandsActions instance)
-        {
-            foreach (var item in m_Wrapper.m_SustainCommandsActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_SustainCommandsActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    /// <summary>
-    /// Provides a new <see cref="SustainCommandsActions" /> instance referencing this action map.
-    /// </summary>
-    public SustainCommandsActions @SustainCommands => new SustainCommandsActions(this);
-
-    // SelectionMode
-    private readonly InputActionMap m_SelectionMode;
-    private List<ISelectionModeActions> m_SelectionModeActionsCallbackInterfaces = new List<ISelectionModeActions>();
-    private readonly InputAction m_SelectionMode_SelectionSelect;
-    private readonly InputAction m_SelectionMode_SelectionView;
-    private readonly InputAction m_SelectionMode_SelectionEdit;
-    /// <summary>
-    /// Provides access to input actions defined in input action map "SelectionMode".
-    /// </summary>
-    public struct SelectionModeActions
-    {
-        private @InputMap m_Wrapper;
-
-        /// <summary>
-        /// Construct a new instance of the input action map wrapper class.
-        /// </summary>
-        public SelectionModeActions(@InputMap wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "SelectionMode/SelectionSelect".
-        /// </summary>
-        public InputAction @SelectionSelect => m_Wrapper.m_SelectionMode_SelectionSelect;
-        /// <summary>
-        /// Provides access to the underlying input action "SelectionMode/SelectionView".
-        /// </summary>
-        public InputAction @SelectionView => m_Wrapper.m_SelectionMode_SelectionView;
-        /// <summary>
-        /// Provides access to the underlying input action "SelectionMode/SelectionEdit".
-        /// </summary>
-        public InputAction @SelectionEdit => m_Wrapper.m_SelectionMode_SelectionEdit;
-        /// <summary>
-        /// Provides access to the underlying input action map instance.
-        /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_SelectionMode; }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-        public void Enable() { Get().Enable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-        public void Disable() { Get().Disable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-        public bool enabled => Get().enabled;
-        /// <summary>
-        /// Implicitly converts an <see ref="SelectionModeActions" /> to an <see ref="InputActionMap" /> instance.
-        /// </summary>
-        public static implicit operator InputActionMap(SelectionModeActions set) { return set.Get(); }
-        /// <summary>
-        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <param name="instance">Callback instance.</param>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-        /// </remarks>
-        /// <seealso cref="SelectionModeActions" />
-        public void AddCallbacks(ISelectionModeActions instance)
-        {
-            if (instance == null || m_Wrapper.m_SelectionModeActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_SelectionModeActionsCallbackInterfaces.Add(instance);
-            @SelectionSelect.started += instance.OnSelectionSelect;
-            @SelectionSelect.performed += instance.OnSelectionSelect;
-            @SelectionSelect.canceled += instance.OnSelectionSelect;
-            @SelectionView.started += instance.OnSelectionView;
-            @SelectionView.performed += instance.OnSelectionView;
-            @SelectionView.canceled += instance.OnSelectionView;
-            @SelectionEdit.started += instance.OnSelectionEdit;
-            @SelectionEdit.performed += instance.OnSelectionEdit;
-            @SelectionEdit.canceled += instance.OnSelectionEdit;
-        }
-
-        /// <summary>
-        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <remarks>
-        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-        /// </remarks>
-        /// <seealso cref="SelectionModeActions" />
-        private void UnregisterCallbacks(ISelectionModeActions instance)
-        {
-            @SelectionSelect.started -= instance.OnSelectionSelect;
-            @SelectionSelect.performed -= instance.OnSelectionSelect;
-            @SelectionSelect.canceled -= instance.OnSelectionSelect;
-            @SelectionView.started -= instance.OnSelectionView;
-            @SelectionView.performed -= instance.OnSelectionView;
-            @SelectionView.canceled -= instance.OnSelectionView;
-            @SelectionEdit.started -= instance.OnSelectionEdit;
-            @SelectionEdit.performed -= instance.OnSelectionEdit;
-            @SelectionEdit.canceled -= instance.OnSelectionEdit;
-        }
-
-        /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="SelectionModeActions.UnregisterCallbacks(ISelectionModeActions)" />.
-        /// </summary>
-        /// <seealso cref="SelectionModeActions.UnregisterCallbacks(ISelectionModeActions)" />
-        public void RemoveCallbacks(ISelectionModeActions instance)
-        {
-            if (m_Wrapper.m_SelectionModeActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        /// <summary>
-        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-        /// </remarks>
-        /// <seealso cref="SelectionModeActions.AddCallbacks(ISelectionModeActions)" />
-        /// <seealso cref="SelectionModeActions.RemoveCallbacks(ISelectionModeActions)" />
-        /// <seealso cref="SelectionModeActions.UnregisterCallbacks(ISelectionModeActions)" />
-        public void SetCallbacks(ISelectionModeActions instance)
-        {
-            foreach (var item in m_Wrapper.m_SelectionModeActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_SelectionModeActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    /// <summary>
-    /// Provides a new <see cref="SelectionModeActions" /> instance referencing this action map.
-    /// </summary>
-    public SelectionModeActions @SelectionMode => new SelectionModeActions(this);
 
     // UI
     private readonly InputActionMap m_UI;
@@ -4722,11 +4722,11 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         void OnPaste(InputAction.CallbackContext context);
     }
     /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "PenguinChartingUIShortcuts" which allows adding and removing callbacks.
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UIShortcuts" which allows adding and removing callbacks.
     /// </summary>
-    /// <seealso cref="PenguinChartingUIShortcutsActions.AddCallbacks(IPenguinChartingUIShortcutsActions)" />
-    /// <seealso cref="PenguinChartingUIShortcutsActions.RemoveCallbacks(IPenguinChartingUIShortcutsActions)" />
-    public interface IPenguinChartingUIShortcutsActions
+    /// <seealso cref="UIShortcutsActions.AddCallbacks(IUIShortcutsActions)" />
+    /// <seealso cref="UIShortcutsActions.RemoveCallbacks(IUIShortcutsActions)" />
+    public interface IUIShortcutsActions
     {
         /// <summary>
         /// Method invoked when associated input action "IncreaseStep" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
@@ -4800,82 +4800,11 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         void OnSetEqualSpacing(InputAction.CallbackContext context);
     }
     /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "StandardStaticEvents" which allows adding and removing callbacks.
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "FiveFret" which allows adding and removing callbacks.
     /// </summary>
-    /// <seealso cref="StandardStaticEventsActions.AddCallbacks(IStandardStaticEventsActions)" />
-    /// <seealso cref="StandardStaticEventsActions.RemoveCallbacks(IStandardStaticEventsActions)" />
-    public interface IStandardStaticEventsActions
-    {
-        /// <summary>
-        /// Method invoked when associated input action "LMB" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnLMB(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "ScrollTrack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnScrollTrack(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "PreviewMousePos" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnPreviewMousePos(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "MiddleScrollMousePos" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnMiddleScrollMousePos(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "MiddleMouseClick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnMiddleMouseClick(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "XYDrag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnXYDrag(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "YDrag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnYDrag(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "RMB" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnRMB(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "SustainDrag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSustainDrag(InputAction.CallbackContext context);
-    }
-    /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "FiveFretCharting" which allows adding and removing callbacks.
-    /// </summary>
-    /// <seealso cref="FiveFretChartingActions.AddCallbacks(IFiveFretChartingActions)" />
-    /// <seealso cref="FiveFretChartingActions.RemoveCallbacks(IFiveFretChartingActions)" />
-    public interface IFiveFretChartingActions
+    /// <seealso cref="FiveFretActions.AddCallbacks(IFiveFretActions)" />
+    /// <seealso cref="FiveFretActions.RemoveCallbacks(IFiveFretActions)" />
+    public interface IFiveFretActions
     {
         /// <summary>
         /// Method invoked when associated input action "ForceTap" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
@@ -4956,11 +4885,11 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         void OnSetLaneOrange(InputAction.CallbackContext context);
     }
     /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ProDrumCharting" which allows adding and removing callbacks.
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Drums" which allows adding and removing callbacks.
     /// </summary>
-    /// <seealso cref="ProDrumChartingActions.AddCallbacks(IProDrumChartingActions)" />
-    /// <seealso cref="ProDrumChartingActions.RemoveCallbacks(IProDrumChartingActions)" />
-    public interface IProDrumChartingActions
+    /// <seealso cref="DrumsActions.AddCallbacks(IDrumsActions)" />
+    /// <seealso cref="DrumsActions.RemoveCallbacks(IDrumsActions)" />
+    public interface IDrumsActions
     {
         /// <summary>
         /// Method invoked when associated input action "SetCymbal" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
@@ -5006,11 +4935,11 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         void OnSetLaneKick(InputAction.CallbackContext context);
     }
     /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "SustainCommands" which allows adding and removing callbacks.
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Sustains" which allows adding and removing callbacks.
     /// </summary>
-    /// <seealso cref="SustainCommandsActions.AddCallbacks(ISustainCommandsActions)" />
-    /// <seealso cref="SustainCommandsActions.RemoveCallbacks(ISustainCommandsActions)" />
-    public interface ISustainCommandsActions
+    /// <seealso cref="SustainsActions.AddCallbacks(ISustainsActions)" />
+    /// <seealso cref="SustainsActions.RemoveCallbacks(ISustainsActions)" />
+    public interface ISustainsActions
     {
         /// <summary>
         /// Method invoked when associated input action "SustainZero" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
@@ -5042,11 +4971,11 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         void OnSustainExtended(InputAction.CallbackContext context);
     }
     /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "SelectionMode" which allows adding and removing callbacks.
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Selections" which allows adding and removing callbacks.
     /// </summary>
-    /// <seealso cref="SelectionModeActions.AddCallbacks(ISelectionModeActions)" />
-    /// <seealso cref="SelectionModeActions.RemoveCallbacks(ISelectionModeActions)" />
-    public interface ISelectionModeActions
+    /// <seealso cref="SelectionsActions.AddCallbacks(ISelectionsActions)" />
+    /// <seealso cref="SelectionsActions.RemoveCallbacks(ISelectionsActions)" />
+    public interface ISelectionsActions
     {
         /// <summary>
         /// Method invoked when associated input action "SelectionSelect" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
@@ -5069,6 +4998,77 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSelectionEdit(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "StandardStaticEvents" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="StandardStaticEventsActions.AddCallbacks(IStandardStaticEventsActions)" />
+    /// <seealso cref="StandardStaticEventsActions.RemoveCallbacks(IStandardStaticEventsActions)" />
+    public interface IStandardStaticEventsActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "LMB" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLMB(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ScrollTrack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnScrollTrack(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "PreviewMousePos" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPreviewMousePos(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MiddleScrollMousePos" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMiddleScrollMousePos(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MiddleMouseClick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMiddleMouseClick(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XYDrag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXYDrag(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "YDrag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnYDrag(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RMB" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRMB(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SustainDrag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSustainDrag(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

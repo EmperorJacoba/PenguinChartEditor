@@ -186,13 +186,13 @@ public class AudioManager : MonoBehaviour
     {
         inputMap = new InputMap();
         inputMap.Enable();
-        inputMap.PenguinChartingUIShortcuts.PlayPause.performed += ToggleAudioPlayback;
+        inputMap.UIShortcuts.PlayPause.performed += ToggleAudioPlayback;
 
         SceneTabSwitcher.TabChanged += PauseAudio;
     }
     
-    public static void DisableAudioPlaybackControls() => inputMap.PenguinChartingUIShortcuts.Disable();
-    public static void EnableAudioPlaybackControls() => inputMap.PenguinChartingUIShortcuts.Enable();
+    public static void DisableAudioPlaybackControls() => inputMap.UIShortcuts.Disable();
+    public static void EnableAudioPlaybackControls() => inputMap.UIShortcuts.Enable();
 
     private void ToggleAudioPlayback(InputAction.CallbackContext _)
     {
@@ -204,7 +204,7 @@ public class AudioManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        inputMap.PenguinChartingUIShortcuts.PlayPause.performed -= ToggleAudioPlayback;
+        inputMap.UIShortcuts.PlayPause.performed -= ToggleAudioPlayback;
         inputMap.Dispose();
     }
 
