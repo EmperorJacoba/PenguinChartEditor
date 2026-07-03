@@ -115,6 +115,8 @@ public class Chart : MonoBehaviour
         StartCoroutine(AutosaveRoutine());
 
         Application.wantsToQuit += AskForDataSave;
+        
+        UserSettings.LoadCosmeticSettings();
     }
 
     private IEnumerator AutosaveRoutine()
@@ -152,7 +154,8 @@ public class Chart : MonoBehaviour
     }
 
     private static InputMap _im;
-    public void SetUpInputMap()
+
+    private void SetUpInputMap()
     {
         inputMap.StandardCommands.Copy.performed += _ => Clipboard.Copy();
         inputMap.StandardCommands.Paste.performed += _ => Clipboard.Paste();

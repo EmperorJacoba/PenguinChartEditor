@@ -118,6 +118,7 @@ public class UserSettings
     private static string SettingsDirectoryPath => Path.Combine(Application.persistentDataPath, "settings");
     private static string SettingsFilePath => Path.Combine(SettingsDirectoryPath, "settings.json");
     private static string CosmeticSettingsFilePath => Path.Combine(SettingsDirectoryPath, "cosmetics.json");
+    private static string CustomKeybindsFilePath => Path.Combine(SettingsDirectoryPath, "inputs.json");
     
     public void SaveSettingsToDisk()
     {
@@ -126,20 +127,31 @@ public class UserSettings
             Directory.CreateDirectory(SettingsDirectoryPath);
         }
         File.WriteAllText(SettingsFilePath, JsonUtility.ToJson(this));
+        File.WriteAllText(CustomKeybindsFilePath, Chart.inputMap.asset.ToJson());
         var cosmetics = new UniversalCosmeticSettings();
         cosmetics.WriteToDisk(CosmeticSettingsFilePath);
     }
 
     public static UserSettings ReadFromDisk()
     {
+        if (File.Exists(CustomKeybindsFilePath))
+        {
+            Chart.inputMap.Disable();
+            Chart.inputMap.asset.LoadFromJson(File.ReadAllText(CustomKeybindsFilePath));
+            Chart.inputMap.Enable();
+        }
+        
         if (File.Exists(SettingsFilePath))
         {
             return (UserSettings)JsonUtility.FromJson(File.ReadAllText(SettingsFilePath), typeof(UserSettings));
         }
         
-        UniversalCosmeticSettings.ApplySavedSettings(CosmeticSettingsFilePath);
-
         return new UserSettings();
+    }
+
+    public static void LoadCosmeticSettings()
+    {
+        UniversalCosmeticSettings.ApplySavedSettings(CosmeticSettingsFilePath);
     }
     
     #endregion
@@ -173,6 +185,7 @@ internal class UniversalCosmeticSettings
     public static void ApplySavedSettings(string filePath)
     {
         if (!File.Exists(filePath)) return;
+        
         var savedData =
             (UniversalCosmeticSettings)JsonUtility.FromJson(
                 File.ReadAllText(filePath),
