@@ -17,7 +17,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class Chart : MonoBehaviour
 {
-    private static Chart instance;
+    public static Chart instance;
     public static UserSettings settings;
 
     #region Instance Components
@@ -137,8 +137,8 @@ public class Chart : MonoBehaviour
         }
     }
 
-    private InputMap inputMap;
-    private void SetUpInputMap()
+    public InputMap inputMap;
+    public void SetUpInputMap()
     {
         inputMap = new InputMap();
         inputMap.Enable();

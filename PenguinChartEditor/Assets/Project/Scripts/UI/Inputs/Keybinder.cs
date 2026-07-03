@@ -53,6 +53,8 @@ public class KeybindEditor : MonoBehaviour
             WithControlsExcluding("<Keyboard>/anyKey"). // If any control is ignored (like the ones above), it still fires this. 
             WithControlsHavingToMatchPath("<Keyboard>").
             OnApplyBinding((x, y) => ProcessRebindOperation(x, y, index)).
+            OnComplete(CompleteRebindingOperation).
+            OnCancel(CompleteRebindingOperation).
             Start();
 
         buttonText.text = "...";
@@ -164,22 +166,18 @@ public class KeybindEditor : MonoBehaviour
         }
         
         operation.Dispose();
-        assignedAction.Enable();
-        capturedComposites.Clear();
         actionIndeces = DetectBindings();
         UpdateKeybindButtonDisplayText();
+    }
 
-        print("[Bindings]");
-        foreach (var binding in assignedAction.bindings)
-        {
-            print(binding.effectivePath);
-            print($"dsp: {binding.ToDisplayString()}");
-        }
-
-        foreach (var idx in actionIndeces)
-        {
-            print(idx);
-        }
+    private void CompleteRebindingOperation(InputActionRebindingExtensions.RebindingOperation operation)
+    {
+        assignedAction.Enable();
+        operation.Dispose();
+        captureCompositeActions = false;
+        capturedComposites.Clear();
+        Chart.instance.SetUpInputMap();
+        foreach (var b in assignedAction.bindings) print(b);
     }
     
     public void Initialize(InputAction assignedAction)
