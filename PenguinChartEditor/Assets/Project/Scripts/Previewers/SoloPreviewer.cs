@@ -18,9 +18,6 @@ public class SoloPreviewer : Previewer
         previewSoloPlate.IsPreviewEvent = true;
 
         previewerEventReference = previewSoloPlate;
-
-        Chart.inputMap.StandardStaticEvents.PreviewMousePos.performed += position =>
-            UpdatePosition();
     }
 
     protected override bool IsPreviewerVisible()

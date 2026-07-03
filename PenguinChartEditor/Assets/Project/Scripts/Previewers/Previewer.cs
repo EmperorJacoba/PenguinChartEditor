@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public interface IPreviewer
 {
@@ -115,8 +116,8 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     public virtual void Hide() => previewerEventReference.Visible = false;
 
     public virtual void Show() => previewerEventReference.Visible = true;
-    
 
+    private void UpdatePosition(InputAction.CallbackContext _) => UpdatePosition();
     /// <summary>
     /// Refresh the previewer, with checks to ensure the previewer is allowed to be active.
     /// </summary>
@@ -161,7 +162,12 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected virtual void Awake()
     {
-        Chart.inputMap.StandardStaticEvents.PreviewMousePos.performed += position => UpdatePosition();
+        Chart.inputMap.StandardStaticEvents.PreviewMousePos.performed += UpdatePosition;
+    }
+
+    private void OnDestroy()
+    {
+        Chart.inputMap.StandardStaticEvents.PreviewMousePos.performed -= UpdatePosition;
     }
 
     protected void Update()

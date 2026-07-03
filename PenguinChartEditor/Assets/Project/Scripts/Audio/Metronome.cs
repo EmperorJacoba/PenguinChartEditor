@@ -63,15 +63,12 @@ public class Metronome : MonoBehaviour
     {
         var b = GetComponent<Button>();
         b.onClick.AddListener(ToggleMetronome);
-        
-        inputMap = new();
-        inputMap.Enable();
 
-        inputMap.UIShortcuts.Metronome.performed += ToggleMetronome;
+        Chart.inputMap.UIShortcuts.Metronome.performed += ToggleMetronome;
     }
 
     private void OnDisable()
     {
-        inputMap.Dispose();
+        Chart.inputMap.UIShortcuts.Metronome.performed -= ToggleMetronome;
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class SongTime : MonoBehaviour
 {
@@ -53,6 +54,7 @@ public class SongTime : MonoBehaviour
     /// <summary>
     /// The length of the song in tick time.
     /// </summary>
+    // FIXME/TODO: Cache this on chart load so that this expensive method isn't called so much
     public static int SongLengthTicks => Chart.SyncTrackInstrument.ConvertSecondsToTickTime(SongLength);
 
     public static float SongLength => (float)AudioManager.SongLength;
@@ -70,9 +72,19 @@ public class SongTime : MonoBehaviour
 
     private void Awake()
     {
-        Chart.inputMap.StandardStaticEvents.ScrollTrack.performed += scrollChange => ChangeTime(scrollChange.ReadValue<float>());
-        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.started += x => initialMouseY = Input.mousePosition.y;
-        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.canceled += x => initialMouseY = float.NaN;
+        Chart.inputMap.StandardStaticEvents.ScrollTrack.performed += ChangeTime;
+        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.started += UpdateInitialMouseY;
+        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.canceled += ResetInitialMouseY;
+    }
+
+    private void UpdateInitialMouseY(InputAction.CallbackContext _) => initialMouseY = Input.mousePosition.y;
+    private void ResetInitialMouseY(InputAction.CallbackContext _) => initialMouseY = float.NaN;
+
+    private void OnDestroy()
+    {
+        Chart.inputMap.StandardStaticEvents.ScrollTrack.performed -= ChangeTime;
+        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.started -= UpdateInitialMouseY;
+        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.canceled -= ResetInitialMouseY;
     }
 
     public static void StopPlaybackAndTimeEditActions()
@@ -114,6 +126,8 @@ public class SongTime : MonoBehaviour
     #endregion
 
     #region Time Modification
+
+    private static void ChangeTime(InputAction.CallbackContext context) => ChangeTime(context.ReadValue<float>());
 
     /// <summary>
     /// Change the timestamp of the song from a specified scroll change.

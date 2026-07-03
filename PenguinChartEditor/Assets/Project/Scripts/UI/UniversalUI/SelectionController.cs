@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
@@ -13,9 +14,9 @@ public class SelectionController : MonoBehaviour
     [SerializeField] private TMP_Dropdown dropdown;
     private void Awake()
     {
-        Chart.inputMap.Selections.SelectionView.performed += x => SetSelectionMode(Chart.SelectionMode.View);
-        Chart.inputMap.Selections.SelectionEdit.performed += x => SetSelectionMode(Chart.SelectionMode.Edit);
-        Chart.inputMap.Selections.SelectionSelect.performed += x => SetSelectionMode(Chart.SelectionMode.Select);
+        Chart.inputMap.Selections.SelectionView.performed += SetSelectionView;
+        Chart.inputMap.Selections.SelectionEdit.performed += SetSelectionEdit;
+        Chart.inputMap.Selections.SelectionSelect.performed += SetSelectionSelect; 
 
         dropdown.value = (int)Chart.currentSelectionMode;
         dropdown.onValueChanged.AddListener(OnValueChanged);
@@ -26,6 +27,9 @@ public class SelectionController : MonoBehaviour
         Chart.currentSelectionMode = (Chart.SelectionMode)index;
     }
 
+    private void SetSelectionView(InputAction.CallbackContext _) => SetSelectionMode(Chart.SelectionMode.View);
+    private void SetSelectionEdit(InputAction.CallbackContext _) => SetSelectionMode(Chart.SelectionMode.Edit);
+    private void SetSelectionSelect(InputAction.CallbackContext _) => SetSelectionMode(Chart.SelectionMode.Select);
     private void SetSelectionMode(Chart.SelectionMode mode)
     {
         dropdown.value = (int)mode;

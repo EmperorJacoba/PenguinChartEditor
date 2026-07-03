@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
 public class Clap : MonoBehaviour
 {
-    private static bool clapActive = false;
+    private static bool clapActive;
     [SerializeField] private Button button;
 
     private void Awake()
@@ -16,17 +17,15 @@ public class Clap : MonoBehaviour
     private InputMap inputMap;
     private void OnEnable()
     {
-        inputMap = new();
-        inputMap.Enable();
-
-        inputMap.UIShortcuts.Clap.performed += _ => ToggleClap();
+        Chart.inputMap.UIShortcuts.Clap.performed += ToggleClap;
     }
 
     private void OnDisable()
     {
-        inputMap.Dispose();
+        Chart.inputMap.UIShortcuts.Clap.performed -= ToggleClap;
     }
 
+    private void ToggleClap(InputAction.CallbackContext _) => ToggleClap();
     private void ToggleClap()
     {
         clapActive = !clapActive;

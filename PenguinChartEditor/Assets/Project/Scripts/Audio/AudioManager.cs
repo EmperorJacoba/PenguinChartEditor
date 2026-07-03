@@ -188,6 +188,7 @@ public class AudioManager : MonoBehaviour
         SceneTabSwitcher.TabChanged += PauseAudio;
     }
     
+    
     public static void DisableAudioPlaybackControls() => Chart.inputMap.UIShortcuts.Disable();
     public static void EnableAudioPlaybackControls() => Chart.inputMap.UIShortcuts.Enable();
 
@@ -202,7 +203,6 @@ public class AudioManager : MonoBehaviour
     private void OnDestroy()
     {
         Chart.inputMap.UIShortcuts.PlayPause.performed -= ToggleAudioPlayback;
-        Chart.inputMap.Dispose();
     }
 
     private void OnApplicationQuit()

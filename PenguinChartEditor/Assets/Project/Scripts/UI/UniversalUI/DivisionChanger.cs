@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class DivisionChanger : MonoBehaviour
@@ -23,14 +24,23 @@ public class DivisionChanger : MonoBehaviour
         downButton.onClick.AddListener(DecreaseDivision);
 
         entryBox.text = CurrentDivision.ToString();
-        entryBox.onValueChanged.AddListener(x => ManualDivisionChange(x));
-        
-        Chart.inputMap.UIShortcuts.IncreaseStep.performed += _ => IncreaseDivision();
-        Chart.inputMap.UIShortcuts.DecreaseStep.performed += _ => DecreaseDivision();
-        Chart.inputMap.UIShortcuts.IncreaseStepByOne.performed += _ => IncreaseDivisionByOne();
-        Chart.inputMap.UIShortcuts.DecreaseStepByOne.performed += _ => DecreaseDivisionByOne();
+        entryBox.onValueChanged.AddListener(ManualDivisionChange);
+
+        Chart.inputMap.UIShortcuts.IncreaseStep.performed += IncreaseDivision;
+        Chart.inputMap.UIShortcuts.DecreaseStep.performed += DecreaseDivision;
+        Chart.inputMap.UIShortcuts.IncreaseStepByOne.performed += IncreaseDivisionByOne;
+        Chart.inputMap.UIShortcuts.DecreaseStepByOne.performed += DecreaseDivisionByOne;
     }
 
+    private void OnDestroy()
+    {
+        Chart.inputMap.UIShortcuts.IncreaseStep.performed -= IncreaseDivision;
+        Chart.inputMap.UIShortcuts.DecreaseStep.performed -= DecreaseDivision;
+        Chart.inputMap.UIShortcuts.IncreaseStepByOne.performed -= IncreaseDivisionByOne;
+        Chart.inputMap.UIShortcuts.DecreaseStepByOne.performed -= DecreaseDivisionByOne;
+    }
+
+    private void IncreaseDivision(InputAction.CallbackContext _) => IncreaseDivision();
     public void IncreaseDivision()
     {
         if (CurrentDivision >= MAX_DIVISION) return;
@@ -46,6 +56,7 @@ public class DivisionChanger : MonoBehaviour
         entryBox.text = CurrentDivision.ToString();
     }
 
+    private void DecreaseDivision(InputAction.CallbackContext _) => DecreaseDivision();
     public void DecreaseDivision()
     {
         if (CurrentDivision <= MIN_DIVISION) return;
@@ -62,14 +73,14 @@ public class DivisionChanger : MonoBehaviour
         entryBox.text = CurrentDivision.ToString();
     }
 
-    public void DecreaseDivisionByOne()
+    public void DecreaseDivisionByOne(InputAction.CallbackContext _)
     {
         if (CurrentDivision <= MIN_DIVISION) return;
         CurrentDivision--;
         entryBox.text = CurrentDivision.ToString();
     }
 
-    public void IncreaseDivisionByOne()
+    public void IncreaseDivisionByOne(InputAction.CallbackContext _)
     {
         if (CurrentDivision >= MAX_DIVISION) return;
         CurrentDivision++;
