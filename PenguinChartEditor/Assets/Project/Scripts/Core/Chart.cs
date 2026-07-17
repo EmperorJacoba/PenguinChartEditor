@@ -79,11 +79,13 @@ public class Chart : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(instance);
         
+        SetUpInputMap();
+        
         settings = UserSettings.ReadFromDisk();
 
         Resolution = settings.DefaultResolution;
         AudioManager.Initialize();
-
+        
         if (isDebug)
         {
             if (!InternalLoadFile())
@@ -109,9 +111,7 @@ public class Chart : MonoBehaviour
 #endif
             // for stability reasons as most rendering depends on this
             SyncTrackInstrument = new SyncTrackInstrument();
-
-        SetUpInputMap();
-
+            
         StartCoroutine(AutosaveRoutine());
 
         Application.wantsToQuit += AskForDataSave;
@@ -138,25 +138,16 @@ public class Chart : MonoBehaviour
             InternalSaveFile(false, Application.persistentDataPath, $"autosave-{Hash128.Compute(ChartPath)}");
         }
     }
-
+    
     // Input map lives here because rebinds don't apply statically. In previous builds the input map was recreated in
     // every place where it was needed.
-    public static InputMap inputMap
-    {
-        get
-        {
-            if (_im is not null) return _im;
-            
-            _im = new InputMap();
-            _im.Enable();
-            return _im;
-        }
-    }
-
-    private static InputMap _im;
+    public InputMap inputMap;
 
     private void SetUpInputMap()
     {
+        inputMap = new();
+        inputMap.Enable();
+        
         inputMap.StandardCommands.Copy.performed += _ => Clipboard.Copy();
         inputMap.StandardCommands.Paste.performed += _ => Clipboard.Paste();
         inputMap.StandardCommands.Cut.performed += _ => Clipboard.Cut();

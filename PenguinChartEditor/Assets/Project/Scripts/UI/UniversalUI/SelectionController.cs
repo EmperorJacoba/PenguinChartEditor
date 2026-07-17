@@ -14,9 +14,9 @@ public class SelectionController : MonoBehaviour
     [SerializeField] private TMP_Dropdown dropdown;
     private void Awake()
     {
-        Chart.inputMap.Selections.SelectionView.performed += SetSelectionView;
-        Chart.inputMap.Selections.SelectionEdit.performed += SetSelectionEdit;
-        Chart.inputMap.Selections.SelectionSelect.performed += SetSelectionSelect; 
+        Chart.instance.inputMap.Selections.SelectionView.performed += SetSelectionView;
+        Chart.instance.inputMap.Selections.SelectionEdit.performed += SetSelectionEdit;
+        Chart.instance.inputMap.Selections.SelectionSelect.performed += SetSelectionSelect; 
 
         dropdown.value = (int)Chart.currentSelectionMode;
         dropdown.onValueChanged.AddListener(OnValueChanged);

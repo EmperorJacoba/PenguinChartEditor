@@ -182,16 +182,15 @@ public class AudioManager : MonoBehaviour
         StreamLink = placeholder;
     }
     
-    private void Awake()
+    private void Start()
     {
-        Chart.inputMap.UIShortcuts.PlayPause.performed += ToggleAudioPlayback;
-
+        Chart.instance.inputMap.UIShortcuts.PlayPause.performed += ToggleAudioPlayback;
         SceneTabSwitcher.TabChanged += PauseAudio;
     }
     
     
-    public static void DisableAudioPlaybackControls() => Chart.inputMap.UIShortcuts.Disable();
-    public static void EnableAudioPlaybackControls() => Chart.inputMap.UIShortcuts.Enable();
+    public static void DisableAudioPlaybackControls() => Chart.instance.inputMap.UIShortcuts.Disable();
+    public static void EnableAudioPlaybackControls() => Chart.instance.inputMap.UIShortcuts.Enable();
 
     private void ToggleAudioPlayback(InputAction.CallbackContext _)
     {
@@ -203,7 +202,7 @@ public class AudioManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        Chart.inputMap.UIShortcuts.PlayPause.performed -= ToggleAudioPlayback;
+        Chart.instance.inputMap.UIShortcuts.PlayPause.performed -= ToggleAudioPlayback;
     }
 
     private void OnApplicationQuit()

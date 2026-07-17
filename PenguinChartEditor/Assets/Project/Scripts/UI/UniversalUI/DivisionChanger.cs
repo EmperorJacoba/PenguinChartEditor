@@ -26,18 +26,18 @@ public class DivisionChanger : MonoBehaviour
         entryBox.text = CurrentDivision.ToString();
         entryBox.onValueChanged.AddListener(ManualDivisionChange);
 
-        Chart.inputMap.UIShortcuts.IncreaseStep.performed += IncreaseDivision;
-        Chart.inputMap.UIShortcuts.DecreaseStep.performed += DecreaseDivision;
-        Chart.inputMap.UIShortcuts.IncreaseStepByOne.performed += IncreaseDivisionByOne;
-        Chart.inputMap.UIShortcuts.DecreaseStepByOne.performed += DecreaseDivisionByOne;
+        Chart.instance.inputMap.UIShortcuts.IncreaseStep.performed += IncreaseDivision;
+        Chart.instance.inputMap.UIShortcuts.DecreaseStep.performed += DecreaseDivision;
+        Chart.instance.inputMap.UIShortcuts.IncreaseStepByOne.performed += IncreaseDivisionByOne;
+        Chart.instance.inputMap.UIShortcuts.DecreaseStepByOne.performed += DecreaseDivisionByOne;
     }
 
     private void OnDestroy()
     {
-        Chart.inputMap.UIShortcuts.IncreaseStep.performed -= IncreaseDivision;
-        Chart.inputMap.UIShortcuts.DecreaseStep.performed -= DecreaseDivision;
-        Chart.inputMap.UIShortcuts.IncreaseStepByOne.performed -= IncreaseDivisionByOne;
-        Chart.inputMap.UIShortcuts.DecreaseStepByOne.performed -= DecreaseDivisionByOne;
+        Chart.instance.inputMap.UIShortcuts.IncreaseStep.performed -= IncreaseDivision;
+        Chart.instance.inputMap.UIShortcuts.DecreaseStep.performed -= DecreaseDivision;
+        Chart.instance.inputMap.UIShortcuts.IncreaseStepByOne.performed -= IncreaseDivisionByOne;
+        Chart.instance.inputMap.UIShortcuts.DecreaseStepByOne.performed -= DecreaseDivisionByOne;
     }
 
     private void IncreaseDivision(InputAction.CallbackContext _) => IncreaseDivision();

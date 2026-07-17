@@ -70,11 +70,15 @@ public class SongTime : MonoBehaviour
 
     #region Unity Functions
 
-    private void Awake()
+    private void Start()
     {
-        Chart.inputMap.StandardStaticEvents.ScrollTrack.performed += ChangeTime;
-        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.started += UpdateInitialMouseY;
-        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.canceled += ResetInitialMouseY;
+        Chart.instance.inputMap.StandardStaticEvents.ScrollTrack.performed += ChangeTime;
+        Chart.instance.inputMap.StandardStaticEvents.MiddleMouseClick.started += UpdateInitialMouseY;
+        Chart.instance.inputMap.StandardStaticEvents.MiddleMouseClick.canceled += ResetInitialMouseY;
+        
+        Waveform.GenerateWaveformPoints();
+        TimeChanged?.Invoke();
+        Chart.InPlaceRefresh();
     }
 
     private void UpdateInitialMouseY(InputAction.CallbackContext _) => initialMouseY = Input.mousePosition.y;
@@ -82,28 +86,21 @@ public class SongTime : MonoBehaviour
 
     private void OnDestroy()
     {
-        Chart.inputMap.StandardStaticEvents.ScrollTrack.performed -= ChangeTime;
-        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.started -= UpdateInitialMouseY;
-        Chart.inputMap.StandardStaticEvents.MiddleMouseClick.canceled -= ResetInitialMouseY;
+        Chart.instance.inputMap.StandardStaticEvents.ScrollTrack.performed -= ChangeTime;
+        Chart.instance.inputMap.StandardStaticEvents.MiddleMouseClick.started -= UpdateInitialMouseY;
+        Chart.instance.inputMap.StandardStaticEvents.MiddleMouseClick.canceled -= ResetInitialMouseY;
     }
 
     public static void StopPlaybackAndTimeEditActions()
     {
-        Chart.inputMap.StandardStaticEvents.Disable();
+        Chart.instance.inputMap.StandardStaticEvents.Disable();
         AudioManager.DisableAudioPlaybackControls();
     }
 
     public static void AllowPlaybackAndTimeEditActions()
     {
-        Chart.inputMap.StandardStaticEvents.Enable();
+        Chart.instance.inputMap.StandardStaticEvents.Enable();
         AudioManager.EnableAudioPlaybackControls();
-    }
-
-    private void Start()
-    {
-        Waveform.GenerateWaveformPoints();
-        TimeChanged?.Invoke();
-        Chart.InPlaceRefresh();
     }
 
     private void Update()

@@ -21,7 +21,7 @@ public class KeybinderManager : MonoBehaviour
     
     private void Awake()
     {
-        var spawnableInputActions = Chart.inputMap.Where(x => !excludedActionMaps.Contains(x.actionMap.name));
+        var spawnableInputActions = Chart.instance.inputMap.Where(x => !excludedActionMaps.Contains(x.actionMap.name));
 
         InputActionMap activeMap = null;
         foreach (var ia in spawnableInputActions)

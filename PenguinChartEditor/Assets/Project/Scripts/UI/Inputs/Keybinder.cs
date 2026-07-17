@@ -34,7 +34,7 @@ public class KeybindEditor : MonoBehaviour
     private void RebindSecondary() => Rebind(1, secondaryKeybindLabelText);
     private void Rebind(int index, TMP_Text buttonText)
     {
-        Chart.inputMap.Disable();
+        Chart.instance.inputMap.Disable();
 
         captureCompositeActions = true;
 
@@ -189,7 +189,7 @@ public class KeybindEditor : MonoBehaviour
         // because Unity didn't think to stop that for some reason. Womp
         for (int i = 0; i < KEYBIND_REBIND_FRAME_BUFFER; i++) yield return null;
 
-        Chart.inputMap.Enable();
+        Chart.instance.inputMap.Enable();
     }
     
     public void Initialize(InputAction assignedAction)

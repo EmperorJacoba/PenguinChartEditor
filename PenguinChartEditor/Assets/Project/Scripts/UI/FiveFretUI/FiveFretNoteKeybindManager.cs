@@ -12,48 +12,48 @@ public class FiveFretNoteKeybindManager : MonoBehaviour
     
     private void Awake()
     {
-        Chart.inputMap.FiveFret.SwitchOpenAndFrettedChartingMode.performed += ToggleChartingMode;
-        Chart.inputMap.FiveFret.ForceTap.performed += ChangeModifierTap;
-        Chart.inputMap.FiveFret.ForceStrum.performed += ChangeModifierStrum;
-        Chart.inputMap.FiveFret.ForceHopo.performed += ChangeModifierHopo;
-        Chart.inputMap.FiveFret.ForceDefault.performed += ChangeModifierDefault;
+        Chart.instance.inputMap.FiveFret.SwitchOpenAndFrettedChartingMode.performed += ToggleChartingMode;
+        Chart.instance.inputMap.FiveFret.ForceTap.performed += ChangeModifierTap;
+        Chart.instance.inputMap.FiveFret.ForceStrum.performed += ChangeModifierStrum;
+        Chart.instance.inputMap.FiveFret.ForceHopo.performed += ChangeModifierHopo;
+        Chart.instance.inputMap.FiveFret.ForceDefault.performed += ChangeModifierDefault;
 
-        Chart.inputMap.Sustains.SustainMax.performed += SetSustainMax;
-        Chart.inputMap.Sustains.SustainZero.performed += SetSustainZero;
-        Chart.inputMap.Sustains.SustainCustom.performed += SetSustainCustom;
+        Chart.instance.inputMap.Sustains.SustainMax.performed += SetSustainMax;
+        Chart.instance.inputMap.Sustains.SustainZero.performed += SetSustainZero;
+        Chart.instance.inputMap.Sustains.SustainCustom.performed += SetSustainCustom;
 
-        Chart.inputMap.Sustains.SustainExtended.performed += SetSustainExtended;
-        Chart.inputMap.FiveFret.SetLaneOpen.performed += SetLaneP;
-        Chart.inputMap.FiveFret.SetLaneGreen.performed += SetLaneG;
-        Chart.inputMap.FiveFret.SetLaneRed.performed += SetLaneR;
-        Chart.inputMap.FiveFret.SetLaneYellow.performed += SetLaneY;
-        Chart.inputMap.FiveFret.SetLaneBlue.performed += SetLaneB;
-        Chart.inputMap.FiveFret.SetLaneOrange.performed += SetLaneO;
+        Chart.instance.inputMap.Sustains.SustainExtended.performed += SetSustainExtended;
+        Chart.instance.inputMap.FiveFret.SetLaneOpen.performed += SetLaneP;
+        Chart.instance.inputMap.FiveFret.SetLaneGreen.performed += SetLaneG;
+        Chart.instance.inputMap.FiveFret.SetLaneRed.performed += SetLaneR;
+        Chart.instance.inputMap.FiveFret.SetLaneYellow.performed += SetLaneY;
+        Chart.instance.inputMap.FiveFret.SetLaneBlue.performed += SetLaneB;
+        Chart.instance.inputMap.FiveFret.SetLaneOrange.performed += SetLaneO;
         
-        Chart.inputMap.UIShortcuts.SetEqualSpacing.performed += SetEqualSpacing;
+        Chart.instance.inputMap.UIShortcuts.SetEqualSpacing.performed += SetEqualSpacing;
     }
 
     private void OnDestroy()
     {
-        Chart.inputMap.FiveFret.SwitchOpenAndFrettedChartingMode.performed -= ToggleChartingMode;
-        Chart.inputMap.FiveFret.ForceTap.performed -= ChangeModifierTap;
-        Chart.inputMap.FiveFret.ForceStrum.performed -= ChangeModifierStrum;
-        Chart.inputMap.FiveFret.ForceHopo.performed -= ChangeModifierHopo;
-        Chart.inputMap.FiveFret.ForceDefault.performed -= ChangeModifierDefault;
+        Chart.instance.inputMap.FiveFret.SwitchOpenAndFrettedChartingMode.performed -= ToggleChartingMode;
+        Chart.instance.inputMap.FiveFret.ForceTap.performed -= ChangeModifierTap;
+        Chart.instance.inputMap.FiveFret.ForceStrum.performed -= ChangeModifierStrum;
+        Chart.instance.inputMap.FiveFret.ForceHopo.performed -= ChangeModifierHopo;
+        Chart.instance.inputMap.FiveFret.ForceDefault.performed -= ChangeModifierDefault;
 
-        Chart.inputMap.Sustains.SustainMax.performed -= SetSustainMax;
-        Chart.inputMap.Sustains.SustainZero.performed -= SetSustainZero;
-        Chart.inputMap.Sustains.SustainCustom.performed -= SetSustainCustom;
+        Chart.instance.inputMap.Sustains.SustainMax.performed -= SetSustainMax;
+        Chart.instance.inputMap.Sustains.SustainZero.performed -= SetSustainZero;
+        Chart.instance.inputMap.Sustains.SustainCustom.performed -= SetSustainCustom;
 
-        Chart.inputMap.Sustains.SustainExtended.performed -= SetSustainExtended;
-        Chart.inputMap.FiveFret.SetLaneOpen.performed -= SetLaneP;
-        Chart.inputMap.FiveFret.SetLaneGreen.performed -= SetLaneG;
-        Chart.inputMap.FiveFret.SetLaneRed.performed -= SetLaneR;
-        Chart.inputMap.FiveFret.SetLaneYellow.performed -= SetLaneY;
-        Chart.inputMap.FiveFret.SetLaneBlue.performed -= SetLaneB;
-        Chart.inputMap.FiveFret.SetLaneOrange.performed -= SetLaneO;
+        Chart.instance.inputMap.Sustains.SustainExtended.performed -= SetSustainExtended;
+        Chart.instance.inputMap.FiveFret.SetLaneOpen.performed -= SetLaneP;
+        Chart.instance.inputMap.FiveFret.SetLaneGreen.performed -= SetLaneG;
+        Chart.instance.inputMap.FiveFret.SetLaneRed.performed -= SetLaneR;
+        Chart.instance.inputMap.FiveFret.SetLaneYellow.performed -= SetLaneY;
+        Chart.instance.inputMap.FiveFret.SetLaneBlue.performed -= SetLaneB;
+        Chart.instance.inputMap.FiveFret.SetLaneOrange.performed -= SetLaneO;
         
-        Chart.inputMap.UIShortcuts.SetEqualSpacing.performed -= SetEqualSpacing;
+        Chart.instance.inputMap.UIShortcuts.SetEqualSpacing.performed -= SetEqualSpacing;
     }
 
     public delegate void UpdatePreviewerDelegate();

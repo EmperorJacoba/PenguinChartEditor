@@ -162,12 +162,12 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected virtual void Awake()
     {
-        Chart.inputMap.StandardStaticEvents.PreviewMousePos.performed += UpdatePosition;
+        Chart.instance.inputMap.StandardStaticEvents.PreviewMousePos.performed += UpdatePosition;
     }
 
     private void OnDestroy()
     {
-        Chart.inputMap.StandardStaticEvents.PreviewMousePos.performed -= UpdatePosition;
+        Chart.instance.inputMap.StandardStaticEvents.PreviewMousePos.performed -= UpdatePosition;
     }
 
     protected void Update()

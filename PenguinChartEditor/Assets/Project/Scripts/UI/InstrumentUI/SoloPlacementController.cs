@@ -19,11 +19,11 @@ public class SoloPlacementController : MonoBehaviour
         toggle.onValueChanged.AddListener(x => Chart.settings.SoloPlacingAllowed = x);
         toggle.isOn = Chart.settings.SoloPlacingAllowed;
 
-        Chart.inputMap.UIShortcuts.ToggleSolos.performed += ToggleSolos;
+        Chart.instance.inputMap.UIShortcuts.ToggleSolos.performed += ToggleSolos;
     }
 
     private void OnDestroy()
     {
-        Chart.inputMap.UIShortcuts.ToggleSolos.performed -= ToggleSolos;
+        Chart.instance.inputMap.UIShortcuts.ToggleSolos.performed -= ToggleSolos;
     }
 }

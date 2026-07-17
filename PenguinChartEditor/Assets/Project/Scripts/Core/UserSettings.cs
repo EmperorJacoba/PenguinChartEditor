@@ -127,19 +127,20 @@ public class UserSettings
             Directory.CreateDirectory(SettingsDirectoryPath);
         }
         File.WriteAllText(SettingsFilePath, JsonUtility.ToJson(this));
-        File.WriteAllText(CustomKeybindsFilePath, Chart.inputMap.asset.ToJson());
+        File.WriteAllText(CustomKeybindsFilePath, Chart.instance.inputMap.asset.ToJson());
         var cosmetics = new UniversalCosmeticSettings();
         cosmetics.WriteToDisk(CosmeticSettingsFilePath);
     }
 
     public static UserSettings ReadFromDisk()
     {
+        /*
         if (File.Exists(CustomKeybindsFilePath))
         {
-            Chart.inputMap.Disable();
-            Chart.inputMap.asset.LoadFromJson(File.ReadAllText(CustomKeybindsFilePath));
-            Chart.inputMap.Enable();
-        }
+            Chart.instance.inputMap.Disable();
+            Chart.instance.inputMap.asset.LoadFromJson(File.ReadAllText(CustomKeybindsFilePath));
+            Chart.instance.inputMap.Enable();
+        } */
         
         if (File.Exists(SettingsFilePath))
         {

@@ -16,15 +16,15 @@ public class UndoStack : MonoBehaviour
         instance.undoStack = new FiniteStack<IUndoSnapshot>(Chart.settings.MaximumSavedUndoActions);
         instance.redoStack = new FiniteStack<IUndoSnapshot>(Chart.settings.MaximumSavedUndoActions);
 
-        Chart.inputMap.Enable();
-        Chart.inputMap.StandardCommands.Undo.performed += Undo;
-        Chart.inputMap.StandardCommands.Redo.performed += Redo;
+        Chart.instance.inputMap.Enable();
+        Chart.instance.inputMap.StandardCommands.Undo.performed += Undo;
+        Chart.instance.inputMap.StandardCommands.Redo.performed += Redo;
     }
 
     private void OnDestroy()
     {
-        Chart.inputMap.StandardCommands.Undo.performed -= Undo;
-        Chart.inputMap.StandardCommands.Redo.performed -= Redo;
+        Chart.instance.inputMap.StandardCommands.Undo.performed -= Undo;
+        Chart.instance.inputMap.StandardCommands.Redo.performed -= Redo;
     }
 
     public void PushAction(IUndoSnapshot undoSnapshot)

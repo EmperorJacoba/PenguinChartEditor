@@ -17,12 +17,12 @@ public class Clap : MonoBehaviour
     private InputMap inputMap;
     private void OnEnable()
     {
-        Chart.inputMap.UIShortcuts.Clap.performed += ToggleClap;
+        Chart.instance.inputMap.UIShortcuts.Clap.performed += ToggleClap;
     }
 
     private void OnDisable()
     {
-        Chart.inputMap.UIShortcuts.Clap.performed -= ToggleClap;
+        Chart.instance.inputMap.UIShortcuts.Clap.performed -= ToggleClap;
     }
 
     private void ToggleClap(InputAction.CallbackContext _) => ToggleClap();

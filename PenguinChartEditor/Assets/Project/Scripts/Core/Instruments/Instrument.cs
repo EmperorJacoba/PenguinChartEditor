@@ -455,12 +455,12 @@ public abstract class BaseInstrument<T> : IInstrument where T : IEventData
     
     public virtual void SetUpInputMap()
     { 
-        Chart.inputMap.StandardStaticEvents.XYDrag.performed += x => MoveSelection();
-        Chart.inputMap.StandardStaticEvents.LMB.canceled += x => CompleteMove();
-        Chart.inputMap.StandardCommands.Delete.performed += x => DeleteSelection();
-        Chart.inputMap.StandardStaticEvents.LMB.performed += x => CheckForSelectionClear();
-        Chart.inputMap.StandardCommands.SelectAll.performed += x => SelectAll();
-        Chart.inputMap.UIShortcuts.ClearSelection.performed += x => ClearAllSelections();
+        Chart.instance.inputMap.StandardStaticEvents.XYDrag.performed += x => MoveSelection();
+        Chart.instance.inputMap.StandardStaticEvents.LMB.canceled += x => CompleteMove();
+        Chart.instance.inputMap.StandardCommands.Delete.performed += x => DeleteSelection();
+        Chart.instance.inputMap.StandardStaticEvents.LMB.performed += x => CheckForSelectionClear();
+        Chart.instance.inputMap.StandardCommands.SelectAll.performed += x => SelectAll();
+        Chart.instance.inputMap.UIShortcuts.ClearSelection.performed += x => ClearAllSelections();
     }
     
     #endregion
@@ -583,8 +583,8 @@ public abstract class BaseSustainableInstrument<T> : BaseInstrument<T>, ISustain
     {
         base.SetUpInputMap();
         
-        Chart.inputMap.StandardStaticEvents.SustainDrag.performed += x => sustainer.SustainSelection();
-        Chart.inputMap.StandardStaticEvents.RMB.canceled += x => sustainer.ResetSustainChange();
+        Chart.instance.inputMap.StandardStaticEvents.SustainDrag.performed += x => sustainer.SustainSelection();
+        Chart.instance.inputMap.StandardStaticEvents.RMB.canceled += x => sustainer.ResetSustainChange();
     }
     
     // Remember to initialize in constructor.
