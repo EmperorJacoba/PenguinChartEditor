@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class UserSettings
 {
@@ -127,7 +129,7 @@ public class UserSettings
             Directory.CreateDirectory(SettingsDirectoryPath);
         }
         File.WriteAllText(SettingsFilePath, JsonUtility.ToJson(this));
-        File.WriteAllText(CustomKeybindsFilePath, Chart.instance.inputMap.asset.ToJson());
+        SaveCustomKeybinds();
         var cosmetics = new UniversalCosmeticSettings();
         cosmetics.WriteToDisk(CosmeticSettingsFilePath);
     }
@@ -142,6 +144,8 @@ public class UserSettings
             Chart.instance.inputMap.Enable();
         } */
         
+        LoadCustomKeybinds();
+        
         if (File.Exists(SettingsFilePath))
         {
             return (UserSettings)JsonUtility.FromJson(File.ReadAllText(SettingsFilePath), typeof(UserSettings));
@@ -154,8 +158,67 @@ public class UserSettings
     {
         UniversalCosmeticSettings.ApplySavedSettings(CosmeticSettingsFilePath);
     }
+
+    public static void SaveCustomKeybinds()
+    {
+        var keybindList = new CustomKeybindList();
+        
+        foreach (var action in KeybinderManager.GetEditableInputActions())
+        {
+            // detect regular/onemodifier/two modifiers
+            // create CustomKeybind struct from the info
+            // add to list
+        }
+
+       var json = JsonUtility.ToJson(keybindList);
+       File.WriteAllText(CustomKeybindsFilePath, json);
+    }
+
+    public static void LoadCustomKeybinds()
+    {
+        if (!File.Exists(CustomKeybindsFilePath)) return;
+
+        var json = (CustomKeybindList)JsonUtility.FromJson(File.ReadAllText(CustomKeybindsFilePath), typeof(CustomKeybindList));
+        foreach (var action in KeybinderManager.GetEditableInputActions())
+        {
+            for (var i = 0; i < action.bindings.Count; i++)
+            {
+                action.ChangeBinding(i).Erase();
+            }
+
+            // use keybinder.cs/ProcessRebindOperation() to model readding actions based on info in CustomKeybind
+        }
+    }
     
     #endregion
+}
+
+[System.Serializable]
+internal struct CustomKeybind
+{
+    public string actionName;
+    public KeybindLayout action1;
+    public KeybindLayout action2;
+}
+
+[System.Serializable]
+internal struct KeybindLayout
+{
+    public enum ModifierType
+    {
+        none,
+        OneModifier,
+        TwoModifiers
+    }
+
+    public ModifierType modifierType;
+    public List<string> paths;
+}
+
+[System.Serializable]
+public class CustomKeybindList
+{
+    private List<CustomKeybind> actions = new();
 }
 
 // Consider this a gathering mechanism - get everything in one place, then serialize it.

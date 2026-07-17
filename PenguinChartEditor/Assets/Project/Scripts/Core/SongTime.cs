@@ -84,12 +84,13 @@ public class SongTime : MonoBehaviour
     private void UpdateInitialMouseY(InputAction.CallbackContext _) => initialMouseY = Input.mousePosition.y;
     private void ResetInitialMouseY(InputAction.CallbackContext _) => initialMouseY = float.NaN;
 
+    /*
     private void OnDestroy()
     {
         Chart.instance.inputMap.StandardStaticEvents.ScrollTrack.performed -= ChangeTime;
         Chart.instance.inputMap.StandardStaticEvents.MiddleMouseClick.started -= UpdateInitialMouseY;
         Chart.instance.inputMap.StandardStaticEvents.MiddleMouseClick.canceled -= ResetInitialMouseY;
-    }
+    } */
 
     public static void StopPlaybackAndTimeEditActions()
     {

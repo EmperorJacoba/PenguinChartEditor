@@ -156,11 +156,6 @@ public class Chart : MonoBehaviour
         inputMap.StandardCommands.New.performed += _ => NewFile();
         inputMap.StandardCommands.Open.performed += _ => LoadFile();
     }
-    
-    private void OnDestroy()
-    {
-        inputMap?.Disable();
-    }
 
     private bool quitNextRound = false;
     /// <summary>

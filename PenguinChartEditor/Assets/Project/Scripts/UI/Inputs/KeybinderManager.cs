@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -19,12 +20,12 @@ public class KeybinderManager : MonoBehaviour
         "Player"                // default action map
     };
     
+    public static IEnumerable<InputAction> GetEditableInputActions() => Chart.instance.inputMap.Where(x => !excludedActionMaps.Contains(x.actionMap.name));
+    
     private void Awake()
     {
-        var spawnableInputActions = Chart.instance.inputMap.Where(x => !excludedActionMaps.Contains(x.actionMap.name));
-
         InputActionMap activeMap = null;
-        foreach (var ia in spawnableInputActions)
+        foreach (var ia in GetEditableInputActions())
         {
             if (ia.actionMap != activeMap)
             {
