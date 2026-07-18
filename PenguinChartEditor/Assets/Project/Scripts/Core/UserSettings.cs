@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Application = UnityEngine.Application;
 
 public class UserSettings
 {
@@ -136,14 +138,6 @@ public class UserSettings
 
     public static UserSettings ReadFromDisk()
     {
-        /*
-        if (File.Exists(CustomKeybindsFilePath))
-        {
-            Chart.instance.inputMap.Disable();
-            Chart.instance.inputMap.asset.LoadFromJson(File.ReadAllText(CustomKeybindsFilePath));
-            Chart.instance.inputMap.Enable();
-        } */
-        
         LoadCustomKeybinds();
         
         if (File.Exists(SettingsFilePath))
@@ -165,13 +159,36 @@ public class UserSettings
         
         foreach (var action in KeybinderManager.GetEditableInputActions())
         {
-            // detect regular/onemodifier/two modifiers
-            // create CustomKeybind struct from the info
-            // add to list
+            keybindList.actions.Add(new CustomKeybind(action));
         }
 
        var json = JsonUtility.ToJson(keybindList);
        File.WriteAllText(CustomKeybindsFilePath, json);
+    }
+
+    private static void ApplyKeybindFromLayout(InputAction action, KeybindLayout layout)
+    {
+        if (layout.paths.Count == 0) return;
+        switch (layout.modifierType)
+        {
+            case KeybindLayout.ModifierType.none:
+                action.AddBinding(layout.paths[0]);
+                return;
+            case KeybindLayout.ModifierType.OneModifier:
+                action.AddCompositeBinding("OneModifier").
+                    With("Modifier", layout.paths[0]).
+                    With("Binding", layout.paths[1]);
+                return;
+            case KeybindLayout.ModifierType.TwoModifiers:
+                MonoBehaviour.print($"{layout.paths[0]} {layout.paths[1]} {layout.paths[2]}");
+                action.AddCompositeBinding("TwoModifiers").
+                    With("Modifier1", layout.paths[0]).
+                    With("Modifier2", layout.paths[1]).
+                    With("Binding", layout.paths[2]);
+                return;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     public static void LoadCustomKeybinds()
@@ -179,14 +196,22 @@ public class UserSettings
         if (!File.Exists(CustomKeybindsFilePath)) return;
 
         var json = (CustomKeybindList)JsonUtility.FromJson(File.ReadAllText(CustomKeybindsFilePath), typeof(CustomKeybindList));
+        
+        Chart.instance.inputMap.Disable();
         foreach (var action in KeybinderManager.GetEditableInputActions())
         {
-            for (var i = 0; i < action.bindings.Count; i++)
+            // Bindings shift back as you erase them so you have to just wait until it's empty.
+            while (action.bindings.Count > 0)
             {
-                action.ChangeBinding(i).Erase();
+                action.ChangeBinding(0).Erase();
             }
 
-            // use keybinder.cs/ProcessRebindOperation() to model readding actions based on info in CustomKeybind
+            var jsonAction = json.actions.Find(x => x.actionGUID == action.id.ToString());
+
+            MonoBehaviour.print(action.name);
+            
+            if (jsonAction.action1 is not null) ApplyKeybindFromLayout(action, jsonAction.action1);
+            if (jsonAction.action2 is not null) ApplyKeybindFromLayout(action, jsonAction.action2);
         }
     }
     
@@ -194,15 +219,73 @@ public class UserSettings
 }
 
 [System.Serializable]
-internal struct CustomKeybind
+public class CustomKeybind
 {
-    public string actionName;
+    public string actionGUID;
     public KeybindLayout action1;
     public KeybindLayout action2;
+
+    internal CustomKeybind(InputAction action)
+    {
+        actionGUID = action.id.ToString();
+        var detectedKeybinds = DetectKeybinds(action);
+        action1 = detectedKeybinds[0];
+        action2 = detectedKeybinds[1];
+    }
+    
+    public List<KeybindLayout> DetectKeybinds(InputAction action)
+    {
+        var kl = new List<KeybindLayout> { null, null };
+        int klIndex = 0;
+        
+        for (int i = 0; i < action.bindings.Count; i++)
+        {
+            var layout = new KeybindLayout();
+            var identifier = action.bindings[i];
+
+            switch (identifier.path)
+            {
+                case KeybindEditor.ONE_MODIFIER:
+                    layout.modifierType = KeybindLayout.ModifierType.OneModifier;
+                    layout.paths = new List<string>
+                    {
+                        action.bindings[i + 1].effectivePath, 
+                        action.bindings[i + 2].effectivePath
+                    };
+                    
+                    i += 2; // modifier + control
+                    break;
+                case KeybindEditor.TWO_MODIFIERS:
+                    layout.modifierType = KeybindLayout.ModifierType.TwoModifiers;
+                    layout.paths = new List<string>
+                    {
+                        action.bindings[i + 1].effectivePath,
+                        action.bindings[i + 2].effectivePath, 
+                        action.bindings[i + 3].effectivePath
+                    };
+                    
+                    i += 3; // modifier + modifier + control
+                    break;
+                default:
+                    layout.modifierType = KeybindLayout.ModifierType.none;
+                    layout.paths = new List<string>
+                    {
+                        identifier.effectivePath
+                    };
+                    break;
+            }
+            
+            if (klIndex < 2) kl[klIndex] = layout;
+            else kl.Add(layout);
+            klIndex++;
+        }
+
+        return kl;
+    }
 }
 
 [System.Serializable]
-internal struct KeybindLayout
+public class KeybindLayout
 {
     public enum ModifierType
     {
@@ -218,7 +301,7 @@ internal struct KeybindLayout
 [System.Serializable]
 public class CustomKeybindList
 {
-    private List<CustomKeybind> actions = new();
+    public List<CustomKeybind> actions = new();
 }
 
 // Consider this a gathering mechanism - get everything in one place, then serialize it.

@@ -1200,17 +1200,6 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "4563ffa8-9f6e-4c2e-aaae-0a5e25eb2c16",
-                    "path": "<Keyboard>/numpadDivide",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SustainZero",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "One Modifier",
                     "id": "153c195a-f4b0-4d08-a644-d5567e4e86d5",
                     "path": "OneModifier",
@@ -1256,17 +1245,6 @@
                 },
                 {
                     "name": "",
-                    "id": "1fa1d8c6-d123-41f6-aa0e-3593734b03e0",
-                    "path": "<Keyboard>/numpadMultiply",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SustainMax",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "0d29bf7a-9528-48b6-b42d-0d2e3e47f40b",
                     "path": "<Keyboard>/c",
                     "interactions": "DisableModifiers",
@@ -1280,17 +1258,6 @@
                     "name": "",
                     "id": "b9d31157-7e73-42eb-964f-d4cf417efed1",
                     "path": "<Keyboard>/minus",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SustainCustom",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "d5a311f1-7412-4c0b-b0db-be4de2129234",
-                    "path": "<Keyboard>/numpadMinus",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

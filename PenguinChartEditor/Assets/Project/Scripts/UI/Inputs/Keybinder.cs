@@ -11,8 +11,8 @@ using UnityEngine.UI;
 
 public class KeybindEditor : MonoBehaviour
 {
-    private const string ONE_MODIFIER = "OneModifier";
-    private const string TWO_MODIFIERS = "TwoModifiers";
+    public const string ONE_MODIFIER = "OneModifier";
+    public const string TWO_MODIFIERS = "TwoModifiers";
     private const int KEYBIND_REBIND_FRAME_BUFFER = 10;
     [SerializeField] private TMP_Text label;
     [SerializeField] private Button primaryKeybindLabel;
@@ -65,7 +65,7 @@ public class KeybindEditor : MonoBehaviour
         
     private void UpdateKeybindButtonDisplayText()
     {
-        actionIndeces = DetectBindings();
+        actionIndeces = DetectBindings(assignedAction);
         
         primaryKeybindLabelText.text = ConvertBindingToDisplayString(0);
         secondaryKeybindLabelText.text = ConvertBindingToDisplayString(1);
@@ -142,7 +142,6 @@ public class KeybindEditor : MonoBehaviour
         int actionIndex
         )
     {
-        print(path);
         if (actionIndex < actionIndeces.Count)
         {
             // remove existing action to prep for new action
@@ -154,8 +153,8 @@ public class KeybindEditor : MonoBehaviour
             // Order matters here. With("Modifier").With("Binding") will appear differently from vice versa. 
             case >= 2:
                 assignedAction.AddCompositeBinding("TwoModifiers").
-                    With("Modifier", capturedComposites[0]).
-                    With("Modifier", capturedComposites[1]).
+                    With("Modifier1", capturedComposites[0]).
+                    With("Modifier2", capturedComposites[1]).
                     With("Binding", path);
                 break;
             case >= 1:
@@ -169,7 +168,8 @@ public class KeybindEditor : MonoBehaviour
         }
         
         operation.Dispose();
-        actionIndeces = DetectBindings();
+        
+        actionIndeces = DetectBindings(assignedAction);
         UpdateKeybindButtonDisplayText();
     }
 
@@ -178,7 +178,6 @@ public class KeybindEditor : MonoBehaviour
         operation.Dispose();
         captureCompositeActions = false;
         capturedComposites.Clear();
-        foreach (var b in assignedAction.bindings) print(b);
         
         StartCoroutine(EnableAfterKeysReleased());
     }
@@ -203,22 +202,22 @@ public class KeybindEditor : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    private List<int> DetectBindings()
+    private List<int> DetectBindings(InputAction action)
     {
         var foundActionIndeces = new List<int>();
-        for (int i = 0; i < assignedAction.bindings.Count; i++)
+        for (int i = 0; i < action.bindings.Count; i++)
         {
-            var identifier = assignedAction.bindings[i];
+            var identifier = action.bindings[i];
             foundActionIndeces.Add(i);
 
-            if (identifier.path == ONE_MODIFIER)
+            switch (identifier.path)
             {
-                i += 2; // modifier + control
-            }
-
-            if (identifier.path == TWO_MODIFIERS)
-            {
-                i += 3; // modifier + modifier + control
+                case ONE_MODIFIER:
+                    i += 2; // modifier + control
+                    break;
+                case TWO_MODIFIERS:
+                    i += 3; // modifier + modifier + control
+                    break;
             }
         }
 
