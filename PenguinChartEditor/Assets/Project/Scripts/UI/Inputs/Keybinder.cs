@@ -125,12 +125,12 @@ public class KeybindEditor : MonoBehaviour
 #if UNITY_STANDALONE_OSX
             if (Input.GetKeyDown(KeyCode.LeftCommand))
             {
-                if (!capturedComposites.Contains(LEFT_COMMAND_PATH)) capturedComposites.Add(LEFT_COMMAND_PATH)
+                if (!capturedComposites.Contains(LEFT_COMMAND_PATH)) capturedComposites.Add(LEFT_COMMAND_PATH);
             }
 
             if (Input.GetKeyDown(KeyCode.RightCommand))
             {
-                if (!capturedComposites.Contains(RIGHT_COMMAND_PATH)) capturedComposites.Add(RIGHT_COMMAND_PATH)
+                if (!capturedComposites.Contains(RIGHT_COMMAND_PATH)) capturedComposites.Add(RIGHT_COMMAND_PATH);
             }
 #endif
         }

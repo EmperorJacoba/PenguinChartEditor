@@ -162,8 +162,8 @@ public class UserSettings
             keybindList.actions.Add(new CustomKeybind(action));
         }
 
-       var json = JsonUtility.ToJson(keybindList);
-       File.WriteAllText(CustomKeybindsFilePath, json);
+        var json = JsonUtility.ToJson(keybindList);
+        File.WriteAllText(CustomKeybindsFilePath, json);
     }
 
     private static void ApplyKeybindFromLayout(InputAction action, KeybindLayout layout)
@@ -180,7 +180,6 @@ public class UserSettings
                     With("Binding", layout.paths[1]);
                 return;
             case KeybindLayout.ModifierType.TwoModifiers:
-                MonoBehaviour.print($"{layout.paths[0]} {layout.paths[1]} {layout.paths[2]}");
                 action.AddCompositeBinding("TwoModifiers").
                     With("Modifier1", layout.paths[0]).
                     With("Modifier2", layout.paths[1]).
@@ -207,8 +206,6 @@ public class UserSettings
             }
 
             var jsonAction = json.actions.Find(x => x.actionGUID == action.id.ToString());
-
-            MonoBehaviour.print(action.name);
             
             if (jsonAction.action1 is not null) ApplyKeybindFromLayout(action, jsonAction.action1);
             if (jsonAction.action2 is not null) ApplyKeybindFromLayout(action, jsonAction.action2);
@@ -216,6 +213,34 @@ public class UserSettings
     }
     
     #endregion
+}
+
+#region Keybind structs
+
+/*
+ * Unity's input system doesn't take too kindly to saving & loading keybinds through built-in methods for whatever reason
+ * so I have implemented a basic saving/loading system for editable keybinds. Any built-in methods I found either didn't work
+ * or saved keybinds but bricked Penguin after loading them. (FFS Unity, how do you screw it up this bad?? What really irks
+ * me is that there seems to be an excess of documentation about this system online but a lack of USEFUL documentation for common
+ * scenarios & edge cases. There is somehow swaths of documentation about but none of it actually says anything...)
+ *
+ * Custom solution is mainly designed for buttons, onemodifier, twomodifiers.
+ * 
+ * General structure: All keybinds are saved to a CustomKeybindList as CustomKeybind objects that store actions by
+ * GUID:<actions> pairs. KeybindLayout stores the action data via input system key paths in a list.
+ * 
+ * JsonUtility saves & loads CustomKeybindList and UserSettings packs/unpacks the data into CustomKeybindList.
+ * 
+ * This was all hodgepodged together out of pure frustration and rage over Unity's terrible input system so the
+ * architecture is kinda shit. It works though! Feel free to optimize if you want because it almost certainly needs
+ * it.
+ * - Emperor
+ */
+
+[System.Serializable]
+public class CustomKeybindList
+{
+    public List<CustomKeybind> actions = new();
 }
 
 [System.Serializable]
@@ -298,11 +323,7 @@ public class KeybindLayout
     public List<string> paths;
 }
 
-[System.Serializable]
-public class CustomKeybindList
-{
-    public List<CustomKeybind> actions = new();
-}
+#endregion
 
 // Consider this a gathering mechanism - get everything in one place, then serialize it.
 // Works well with unity objects via JsonUtility in case they are ever required (which is likely as cosmetic options

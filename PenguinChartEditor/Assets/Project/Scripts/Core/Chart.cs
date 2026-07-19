@@ -125,8 +125,6 @@ public class Chart : MonoBehaviour
         {
             Autosave();
             
-            // temporary measure to stop wantsToQuit from bugging out
-            saved = false;
             yield return new WaitForSeconds(5.0f);
         }
     }
@@ -190,6 +188,13 @@ public class Chart : MonoBehaviour
     }
     
     #endregion
+
+    /*
+    private void Update()
+    {
+        
+    } 
+    //*/
 
     #region Chart Data
 

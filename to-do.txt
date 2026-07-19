@@ -9,7 +9,8 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 - hotkey to jump X number of bars/beats
 
-- fix autosave
+- fix cosmetics saving/loading
+
 - metronome sfx does not play
 
 - calibration minigame
@@ -83,3 +84,4 @@ patch notes:
 - Remove extra closing parenthesis after charter name in exported folder name
 - Fix stem mixers from displaying "1" as volume on scene load even if the internal volume is not 1
 - Fix chart package export not actually overwriting existing directory
+- Fix autosave routine saving even when not necessary
