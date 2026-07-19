@@ -636,21 +636,23 @@ public class Chart : MonoBehaviour
         "flac",
         "wav"
     };
-    
+
+    public static string loadFileState = "File not loading";
     private static bool _InternalLoadFile(string filePath)
     {
         openWithFileError = false;
-        
+
+        loadFileState = "Setting up chart variables...";
         ChartPath = filePath;
         FolderPath = Path.GetDirectoryName(ChartPath);
-        
         ChartLoading = true;
 
         var fileType = Path.GetExtension(ChartPath);
         ChartFileInformation readData;
         
         var startTime = Time.realtimeSinceStartup;
-        
+
+        loadFileState = "Beginning parse...";
         // Diagnostics: file parsing is good chunk of load time for non-penguin files
         switch (fileType.ToLower())
         {
@@ -673,9 +675,11 @@ public class Chart : MonoBehaviour
         }
 
         print($"\nFile data successfully parsed. {(Time.realtimeSinceStartup - startTime)*1000}ms.");
-        
+
+        loadFileState = "Loading parsed data...";
         ApplyFileInformation(readData);
-        
+
+        loadFileState = "Finding stems...";
         if (Metadata.StemPaths.Count == 0)
         {
             // also need to parse chart stems
@@ -694,18 +698,22 @@ public class Chart : MonoBehaviour
                 }
             } 
         }
-        
+
+        loadFileState = "Creating audio hooks...";
         AudioManager.CreateAudioStreams();
         
+        loadFileState = "Reading volume data...";
         // Diagnostics: lots of load time here due to data that must be fetched
         Waveform.InitializeWaveformData();
 
         ChartLoading = false;
-        
+
+        loadFileState = "Updating subscribers of chart load...";
         ChartFileLoaded?.Invoke();
         
         // do this to avoid nasty errors with trying to load invalid data (which WILL happen if the active tab is not
         // reloaded). InPlaceRefresh() does not work here.
+        loadFileState = "Reloading loaded tab...";
         SceneTabSwitcher.FullRefreshLoadedTab();
         
         return true;
