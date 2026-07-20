@@ -6,8 +6,16 @@ using UnityEngine;
 
 public static class PenguinWriter
 {
-    // Version 1.0 = v0.1.0-alpha to current
-    private const float WRITER_VERSION = 1.0f;
+    // ---------------------
+    // -- VERSION HISTORY --
+    // ---------------------
+    // Version 1.0 = v0.1.0-alpha to v0.1.4-alpha   |
+    // 1.1 = v0.2.0-alpha to current                |   added stem volume/mute/solo saving to .penguin (forwards & backwards compatible w/ v1.0)
+    
+    private const decimal WRITER_VERSION = 1.1m;
+    
+    // ---------------------
+    
     public static void WritePenguin(
         string targetDirectory,
         Metadata metadata,

@@ -18,7 +18,7 @@ using UnityEngine.InputSystem;
 public class AudioManager : MonoBehaviour
 {
     private const double BUFFER_SIZE = 10.0;
-    
+
     // These two constants are inverses of each other. When changing these, please
     // update to match.
     public const double ARRAY_RESOLUTION = 0.001;
@@ -44,17 +44,18 @@ public class AudioManager : MonoBehaviour
                 SongLength = 0;
                 return;
             }
-            
+
             SongLength = _l.TimeLength;
 
             foreach (var stream in Streams.Values)
             {
                 stream.LinkTo(value);
             }
-        } 
+        }
     }
+
     private static BassStream _l;
-    
+
     /// <remarks>
     /// Don't use .Clear(). Assign to a new dict every time to make sure all the streams are freed first.
     /// </remarks>
@@ -67,36 +68,36 @@ public class AudioManager : MonoBehaviour
             _streams = value;
         }
     }
+
     private static Dictionary<StemType, BassStream> _streams = new();
     public static bool IsAudioLoaded() => Streams.Count > 0;
-    
+
     // Cached b/c stream link is not changed much. Just make sure to update this when stream link changes.
     public static double SongLength
     {
-        get
-        {
-            return _sL;
-        }
+        get { return _sL; }
         private set => _sL = value;
     }
 
     private static double _sL = 0;
 
     public delegate void PlayingDelegate(bool state);
+
     public static event PlayingDelegate PlaybackStateChanged;
-    
+
     public static bool AudioPlaying
     {
         get => _playing;
         private set
         {
             if (value == _playing) return;
-            
+
             _playing = value;
-            
+
             PlaybackStateChanged?.Invoke(_playing);
         }
     }
+
     private static bool _playing;
 
     public static double AudioPosition
@@ -112,13 +113,14 @@ public class AudioManager : MonoBehaviour
         {
             if (_ps <= 0) _ps = 0.01f;
             _ps = value;
-            
+
             foreach (var stream in Streams.Values)
             {
                 stream.PlaySpeed = _ps;
             }
         }
     }
+
     private static float _ps = 1;
 
     public static double MasterVolume
@@ -138,7 +140,7 @@ public class AudioManager : MonoBehaviour
     }
 
     private static double _mv = 1;
-    
+
     public static void Initialize()
     {
         if (!Bass.Init())
@@ -146,7 +148,7 @@ public class AudioManager : MonoBehaviour
             Debug.LogError($"Could not load BASS plugin. {Bass.LastError}");
             return;
         }
-        
+
         string pluginPath = $"{Application.dataPath}/Plugins/";
 
 #if UNITY_EDITOR_WIN && UNITY_EDITOR
@@ -155,7 +157,7 @@ public class AudioManager : MonoBehaviour
 
 #if UNITY_STANDALONE_WIN && !UNITY_EDITOR
         path += "x86_64";
-#endif 
+#endif
         // fix: these file paths are not valid in standalone builds
 #if (UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX)
         path += "Bass_macOS";
@@ -163,7 +165,7 @@ public class AudioManager : MonoBehaviour
 #if (UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX)
         path += "Bass_linux/x86_64";
 #endif
-        
+
         foreach (var file in Directory.EnumerateFiles(pluginPath))
         {
             if (file.Contains("meta")) continue;
@@ -175,27 +177,27 @@ public class AudioManager : MonoBehaviour
 
             Debug.LogWarning($"Plugin Load error for {file}. Bass Error: {Bass.LastError}");
         }
-        
+
         metronome = new BassStream($"{Application.streamingAssetsPath}/metronomeclick.opus");
         clap = new BassStream($"{Application.streamingAssetsPath}/clap.opus");
         placeholder = new BassStream($"{Application.streamingAssetsPath}/placeholder_silence.opus");
         StreamLink = placeholder;
     }
-    
+
     private void Start()
     {
         Chart.instance.inputMap.UIShortcuts.PlayPause.performed += ToggleAudioPlayback;
         SceneTabSwitcher.TabChanged += PauseAudio;
     }
-    
-    
+
+
     public static void DisableAudioPlaybackControls() => Chart.instance.inputMap.UIShortcuts.Disable();
     public static void EnableAudioPlaybackControls() => Chart.instance.inputMap.UIShortcuts.Enable();
 
     private void ToggleAudioPlayback(InputAction.CallbackContext _)
     {
         if (Chart.LoadedInstrument is null) return;
-        
+
         if (AudioPlaying) PauseAudio();
         else PlayAudio();
     }
@@ -227,37 +229,37 @@ public class AudioManager : MonoBehaviour
                            $"stem {stem} with file path: {Chart.Metadata.StemPaths[stem]}. {Bass.LastError}");
             return Array.Empty<float>();
         }
-        
+
         var songLengthBytes = Bass.ChannelGetLength(streamHandle);
         var sampleIntervalBytes = Bass.ChannelSeconds2Bytes(streamHandle, ARRAY_RESOLUTION) / sizeof(float);
         var arraySize = (int)Math.Floor((double)songLengthBytes / sampleIntervalBytes) / sizeof(float);
-        
+
         var waveformData = new float[arraySize];
-        
+
         var bytesUnread = songLengthBytes;
         var currentCumulativeSamplePos = 0L;
         var buffer = Bass.ChannelSeconds2Bytes(streamHandle, BUFFER_SIZE);
-        
+
         while (bytesUnread > 0)
         {
             var bytesThisPass = Math.Min(buffer, bytesUnread);
 
             var stereoSamples = new float[bytesThisPass / sizeof(float)];
             Bass.ChannelGetData(streamHandle, stereoSamples, (int)bytesThisPass);
-            
+
             int sample;
             for (
-                    sample = 0; 
-                    sample * sampleIntervalBytes + 1 < stereoSamples.Length && 
-                    currentCumulativeSamplePos + sample < waveformData.Length; 
-                    sample++
-                )
+                sample = 0;
+                sample * sampleIntervalBytes + 1 < stereoSamples.Length &&
+                currentCumulativeSamplePos + sample < waveformData.Length;
+                sample++
+            )
             {
-                var averagedMonoSample = 
-                    (stereoSamples[sample * sampleIntervalBytes] + 
-                     stereoSamples[sample * sampleIntervalBytes + 1]) 
+                var averagedMonoSample =
+                    (stereoSamples[sample * sampleIntervalBytes] +
+                     stereoSamples[sample * sampleIntervalBytes + 1])
                     / 2;
-                
+
                 // abs for symmetry
                 waveformData[currentCumulativeSamplePos + sample] = Math.Abs(averagedMonoSample);
             }
@@ -266,36 +268,45 @@ public class AudioManager : MonoBehaviour
             currentCumulativeSamplePos += sample;
             Bass.ChannelSetPosition(streamHandle, songLengthBytes - bytesUnread);
         }
-        
+
         Bass.StreamFree(streamHandle);
-        
+
         return waveformData;
     }
 
     private static int CreateDecodedStream(string filePath)
     {
         return Bass.CreateStream(
-            filePath, 
-            Flags: 
-                BassFlags.Float | 
-                BassFlags.Prescan | 
-                BassFlags.Decode
-            );
+            filePath,
+            Flags:
+            BassFlags.Float |
+            BassFlags.Prescan |
+            BassFlags.Decode
+        );
     }
-    
+
     public static void CreateAudioStreams()
     {
         Streams = new Dictionary<StemType, BassStream>();
 
+        // If there is a stem soloed, mutes of stems ultimately don't matter and considering them is weird territory. 
+        // Mutes are effectively controled by the soloing logic instead of the user.
+        var ignoreMutes = Chart.Metadata.loadedSoloStates?.Count(x => x.Value) > 0;
+
         foreach (var (stem, path) in new Dictionary<StemType, string>(Chart.Metadata.StemPaths))
         {
-            CreateAudioStream(stem, path);
+            CreateAudioStream(stem, path, ignoreMutes);
         }
-        
+
+        // Throw away the memory as we don't need it anymore - loading only happens once :)
+        Chart.Metadata.loadedAudioVols  = null;
+        Chart.Metadata.loadedMuteStates = null;
+        Chart.Metadata.loadedSoloStates = null;
+
         StreamLink = GetLongestStream();
     }
 
-    private static bool CreateAudioStream(StemType stemType, string stemPath)
+    private static bool CreateAudioStream(StemType stemType, string stemPath, bool ignoreMutes = false)
     {
         BassStream stream;
         try
@@ -313,6 +324,17 @@ public class AudioManager : MonoBehaviour
         Chart.Metadata.StemPaths[stemType] = stemPath;
 
         stream.PlaySpeed = AudioSpeed;
+        
+        if (Chart.Metadata.loadedAudioVols is not null)
+        {
+            stream.Volume = Chart.Metadata.loadedAudioVols[stemType];
+            
+            // Mutes only matter if soloing need not apply. Soloing logic overrides muting logic.
+            if (!ignoreMutes) 
+                stream.Muted = Chart.Metadata.loadedMuteStates[stemType];
+            else if (Chart.Metadata.loadedSoloStates[stemType]) 
+                SoloStem(stemType);
+        } 
 
         return true;
     }
@@ -320,13 +342,28 @@ public class AudioManager : MonoBehaviour
     public static bool UpdateAudioStream(StemType stemType, string stemPath)
     {
         if (!CreateAudioStream(stemType, stemPath)) return false;
-        
+
         Waveform.UpdateStemWaveformData(stemType);
         StreamLink = GetLongestStream();
-        
+
         return true;
     }
 
+    public static Dictionary<StemType, float> GetStemVolumes()
+    {
+        return Streams.ToDictionary(x => x.Key, x => x.Value.InternalVolume);
+    }
+
+    public static Dictionary<StemType, bool> GetStemMuteStates()
+    {
+        return Streams.ToDictionary(x => x.Key, x => x.Value.Muted);
+    }
+
+    public static Dictionary<StemType, bool> GetStemSoloedStates()
+    {
+        return Streams.ToDictionary(x => x.Key, x => soloedStems.Contains(x.Value.stem));
+    }
+    
     public static void SafeDeleteStream(StemType stem)
     {
         if (!Streams.TryGetValue(stem, out var stream)) return;
@@ -439,7 +476,7 @@ public class AudioManager : MonoBehaviour
     }
 
     public static void SetStemVolume(StemType stem, float volume) => Streams[stem].Volume = volume;
-    public static float GetStemVolume(StemType stem) => Streams[stem].Volume;
+    public static float GetStemDisplayedVolume(StemType stem) => Streams[stem].InternalVolume;
     
     private static void SetStreamPositions() => SetStreamPositions(SongTime.SongPositionSeconds + Chart.settings.Calibration);
     private static void SetStreamPositions(double position)

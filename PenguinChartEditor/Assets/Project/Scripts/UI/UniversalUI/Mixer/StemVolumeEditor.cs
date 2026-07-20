@@ -41,13 +41,16 @@ public class StemVolumeEditor : MonoBehaviour
     private void Start()
     {
         SoloedStemOccurred += UpdateMuteButton;
+        UpdateButtonState(muteButton, AudioManager.IsStemMuted(StemType) && !AudioManager.IsAnyStemSoloed() ? ButtonStates.muted : ButtonStates.normal);
+        UpdateButtonState(soloButton, AudioManager.IsStemSoloed(StemType) ? ButtonStates.soloed : ButtonStates.normal);
+        
         muteButton.onClick.AddListener(OnMuteButtonPress);
         soloButton.onClick.AddListener(OnSoloButtonPress);
 
         slider.onValueChanged.AddListener(SliderChange);
         entryBox.onEndEdit.AddListener(EntryBoxChange);
 
-        slider.value = AudioManager.GetStemVolume(StemType);
+        slider.value = AudioManager.GetStemDisplayedVolume(StemType);
     }
 
     /// <summary>

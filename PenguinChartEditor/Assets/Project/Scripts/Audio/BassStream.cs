@@ -26,6 +26,7 @@ public class BassStream
     }
     private bool _mute;
 
+    public float InternalVolume => _internalVolume;
 
     public float Volume
     {

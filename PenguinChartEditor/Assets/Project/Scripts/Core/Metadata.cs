@@ -184,7 +184,10 @@ public class Metadata
         song = 1,
         diff = 2,
         completion = 3,
-        paths = 4
+        paths = 4,
+        audioVol = 5,
+        muteStates = 6,
+        soloStates = 7
     }
 
     public Metadata(List<PenguinEventSection> penguinFormattedEvents)
@@ -220,6 +223,24 @@ public class Metadata
                 {
                     Func<string, StemType> conversionFunc = Enum.Parse<StemType>;
                     StemPaths = DeserializeDictionary<StemType, string>(section.lines, conversionFunc);
+                    break;
+                }
+                case MetadataSectionIDs.audioVol:
+                {
+                    Func<string, StemType> conversionFunc = Enum.Parse<StemType>;
+                    loadedAudioVols = DeserializeDictionary<StemType, float>(section.lines, conversionFunc);
+                    break;
+                }
+                case MetadataSectionIDs.muteStates:
+                {
+                    Func<string, StemType> conversionFunc = Enum.Parse<StemType>;
+                    loadedMuteStates = DeserializeDictionary<StemType, bool>(section.lines, conversionFunc);
+                    break;
+                }
+                case MetadataSectionIDs.soloStates:
+                {
+                    Func<string, StemType> conversionFunc = Enum.Parse<StemType>;
+                    loadedSoloStates = DeserializeDictionary<StemType, bool>(section.lines, conversionFunc);
                     break;
                 }
                 default:
@@ -372,9 +393,16 @@ public class Metadata
         list.AddRange(SerializeDictionary((int)MetadataSectionIDs.diff, Difficulties, 1));
         list.AddRange(SerializeDictionary((int)MetadataSectionIDs.completion, InstrumentCompletionStatuses, 1));
         list.AddRange(SerializeDictionary((int)MetadataSectionIDs.paths, StemPaths, 1));
+        list.AddRange(SerializeDictionary((int)MetadataSectionIDs.audioVol, AudioManager.GetStemVolumes(), 1));
+        list.AddRange(SerializeDictionary((int)MetadataSectionIDs.muteStates, AudioManager.GetStemMuteStates(), 1));
+        list.AddRange(SerializeDictionary((int)MetadataSectionIDs.soloStates, AudioManager.GetStemSoloedStates(), 1));
         list.Add("}");
         return list;
     }
+
+    public Dictionary<StemType, float> loadedAudioVols = null;
+    public Dictionary<StemType, bool> loadedMuteStates = null;
+    public Dictionary<StemType, bool> loadedSoloStates = null;
     
     public string GenerateFolderName()
     {

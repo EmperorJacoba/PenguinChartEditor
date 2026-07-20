@@ -9,22 +9,15 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 - hotkey to jump X number of bars/beats
 
-- fix cosmetics saving/loading
-
-- metronome sfx does not play
-
 - calibration minigame
 
 - disable keybinds when not needed
 
-=> inputs
-	- save inputs
-	- load inputs
+- add chart version
+- add chart export date 
 
-=> save waveform properties
-	=> save stem volumes to .penguin file
-	=> save user song position to .penguin file
-	=> save export settings to disk
+=> save user song position to .penguin file
+=> save export settings to disk
 
 => keybinds system/editor - settings
 
@@ -85,3 +78,4 @@ patch notes:
 - Fix stem mixers from displaying "1" as volume on scene load even if the internal volume is not 1
 - Fix chart package export not actually overwriting existing directory
 - Fix autosave routine saving even when not necessary
+- Added persistent saving of audio stem volumes, mute states, soloed states
