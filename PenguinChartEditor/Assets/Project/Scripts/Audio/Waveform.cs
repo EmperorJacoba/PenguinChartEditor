@@ -68,7 +68,6 @@ public class Waveform : MonoBehaviour
     {
         get
         {
-            // Relic from old 2D system. *5 was old 2D->3D conversion factor.
             return _amplitude;
         }
         set
@@ -204,7 +203,7 @@ public class Waveform : MonoBehaviour
             float xPosition = 0;
             if (waveformIndex >= 0 && waveformIndex < waveformData.Length)
             {
-                xPosition = waveformData[waveformIndex] * Amplitude * 5;
+                xPosition = waveformData[waveformIndex] * Amplitude;
             }
 
             lineRendererPositions[lineRendererIndex] =

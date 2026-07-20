@@ -177,43 +177,46 @@ public class Metadata
     private const string PREVIEW_START_TIME_IDENTIFIER = "PreviewStartTime";
     private const string BACKGROUND_PATH_IDENTIFIER = "BackgroundPath";
     private const string COVER_PATH_IDENTIFIER = "CoverPath";
-    
-    private const int BASE_ID = 0;
-    private const int SONG_ID = 1;
-    private const int DIFF_ID = 2;
-    private const int COMPLETION_ID = 3;
-    private const int PATHS_ID = 4;
+
+    private enum MetadataSectionIDs
+    {
+        @base = 0,
+        song = 1,
+        diff = 2,
+        completion = 3,
+        paths = 4
+    }
 
     public Metadata(List<PenguinEventSection> penguinFormattedEvents)
     {
         foreach (var section in penguinFormattedEvents)
         {
-            switch (section.id)
+            switch ((MetadataSectionIDs)section.id)
             {
-                case BASE_ID:
+                case MetadataSectionIDs.@base:
                 {
                     ParseBasicGroup(section);
                     break;
                 }
-                case SONG_ID:
+                case MetadataSectionIDs.song:
                 {
                     Func<string, MetadataType> conversionFunc = Enum.Parse<MetadataType>;
                     SongInfo = DeserializeDictionary<MetadataType, string>(section.lines, conversionFunc);
                     break;
                 }
-                case DIFF_ID:
+                case MetadataSectionIDs.diff:
                 {
                     Func<string, InstrumentDifficultyIdentifier> conversionFunc = Enum.Parse<InstrumentDifficultyIdentifier>;
                     Difficulties = DeserializeDictionary<InstrumentDifficultyIdentifier, int>(section.lines, conversionFunc);
                     break;
                 }
-                case COMPLETION_ID:
+                case MetadataSectionIDs.completion:
                 {
                     Func<string, HeaderType> conversionFunc = Enum.Parse<HeaderType>;
                     InstrumentCompletionStatuses = DeserializeDictionary<HeaderType, bool>(section.lines, conversionFunc);
                     break;
                 }
-                case PATHS_ID:
+                case MetadataSectionIDs.paths:
                 {
                     Func<string, StemType> conversionFunc = Enum.Parse<StemType>;
                     StemPaths = DeserializeDictionary<StemType, string>(section.lines, conversionFunc);
@@ -348,7 +351,7 @@ public class Metadata
             "{",
         };
         
-        list.Add($"\t{BASE_ID}");
+        list.Add($"\t{(int)MetadataSectionIDs.@base}");
         list.Add("\t{");
         list.Add($"\t\t{RESOLUTION_IDENTIFIER} = {Chart.Resolution}");
         list.Add($"\t\t{PREVIEW_START_TIME_IDENTIFIER} = {PreviewStartTime}");
@@ -365,10 +368,10 @@ public class Metadata
         
         list.Add("\t}");
         
-        list.AddRange(SerializeDictionary(SONG_ID, SongInfo, 1));
-        list.AddRange(SerializeDictionary(DIFF_ID, Difficulties, 1));
-        list.AddRange(SerializeDictionary(COMPLETION_ID, InstrumentCompletionStatuses, 1));
-        list.AddRange(SerializeDictionary(PATHS_ID, StemPaths, 1));
+        list.AddRange(SerializeDictionary((int)MetadataSectionIDs.song, SongInfo, 1));
+        list.AddRange(SerializeDictionary((int)MetadataSectionIDs.diff, Difficulties, 1));
+        list.AddRange(SerializeDictionary((int)MetadataSectionIDs.completion, InstrumentCompletionStatuses, 1));
+        list.AddRange(SerializeDictionary((int)MetadataSectionIDs.paths, StemPaths, 1));
         list.Add("}");
         return list;
     }

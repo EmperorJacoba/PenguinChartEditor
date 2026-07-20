@@ -116,6 +116,8 @@ public class Chart : MonoBehaviour
 
         Application.wantsToQuit += AskForDataSave;
         
+        // This happens here because things like resolution and sync track need to be set up before this can work
+        // properly
         UserSettings.LoadCosmeticSettings();
     }
 
