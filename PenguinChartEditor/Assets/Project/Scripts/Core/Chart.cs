@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Penguin.Debug;
 using Penguin.Dialogs;
 using UnityEngine.SceneManagement;
@@ -590,27 +591,13 @@ public class Chart : MonoBehaviour
 
     public static bool ChartLoading { get; private set; }
 
-    private static bool InternalLoadFile()
-    {
-        try
-        {
-            return _InternalLoadFile();
-        }
-        catch (Exception e)
-        {
-            Debug.Log($"Error when loading file.\n\t{e}");
-            ShowLoadError();
-            return false;
-        }
-    }
-
     private static void ShowLoadError()
     {
         var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
         dialog.Initialize("There was an error loading the file. Please check the log file.");
     }
 
-    private static bool _InternalLoadFile()
+    private static bool InternalLoadFile()
     {
         var pathCandidates = 
             StandaloneFileBrowser.OpenFilePanel
@@ -627,7 +614,17 @@ public class Chart : MonoBehaviour
             );
         if (pathCandidates.Length < 1) return false;
 
-        return _InternalLoadFile(pathCandidates[0]);
+        var dialog = DialogManager.SpawnDialog<LoadingDialog>();
+        dialog.Initialize(
+            "Loading file...", 
+            Task.Run(() => _InternalLoadFile(pathCandidates[0])), 
+            () =>
+            {
+                SceneManager.LoadScene("ContainerSceneV2");
+            }
+        );
+
+        return true;
     }
 
     private static readonly string[] supportedFileFormats =
@@ -641,17 +638,17 @@ public class Chart : MonoBehaviour
     
     private static bool _InternalLoadFile(string filePath)
     {
+        ChartLoading = true;
+        
         openWithFileError = false;
         
         ChartPath = filePath;
         FolderPath = Path.GetDirectoryName(ChartPath);
         
-        ChartLoading = true;
-
         var fileType = Path.GetExtension(ChartPath);
         ChartFileInformation readData;
-        
-        var startTime = Time.realtimeSinceStartup;
+
+        var startTime = DateTime.Now;
         
         // Diagnostics: file parsing is good chunk of load time for non-penguin files
         switch (fileType.ToLower())
@@ -674,7 +671,8 @@ public class Chart : MonoBehaviour
             }
         }
 
-        print($"\nFile data successfully parsed. {(Time.realtimeSinceStartup - startTime)*1000}ms.");
+        var parseTimer = DateTime.Now - startTime;
+        print($"\nFile data successfully parsed. {parseTimer.TotalMilliseconds}ms.");
         
         ApplyFileInformation(readData);
         
