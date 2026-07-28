@@ -255,17 +255,9 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3243167920233622715, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3310980522686117109, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
       propertyPath: m_Name
       value: DialogManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 5713962369698069465, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6512594887457154974, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -329,10 +321,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8123412993031976567, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8513265331877198517, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9004899803704270052, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
