@@ -7,13 +7,20 @@ namespace Penguin.Dialogs
 {
     public class LoadingDialog : MonoBehaviour
     {
+        public enum OperationType
+        {
+            @new,
+            load,
+            export
+        }
         [SerializeField] private TMP_Text titleText;
         [SerializeField] private TMP_Text descriptionText;
 
         private Task activeTask;
         private Action funcToRunWhenComplete;
+        private OperationType loadedOperation;
         
-        public void Initialize(string title, Task task, Action onSuccessfulCompletion, float width = 1660, float height = 860)
+        public void Initialize(string title, Task task, Action onSuccessfulCompletion, OperationType operationType, float width = 1660, float height = 860)
         {
             gameObject.SetActive(true);
 
@@ -33,7 +40,7 @@ namespace Penguin.Dialogs
             switch (activeTask.Status)
             {
                 case TaskStatus.Running:
-                    print("Running");
+                    descriptionText.text = Chart.loadFileState;
                     break;
                 case TaskStatus.RanToCompletion:
                     print("Completed");
@@ -42,10 +49,18 @@ namespace Penguin.Dialogs
                     break;
                 case TaskStatus.Canceled:
                 case TaskStatus.Faulted:
-                    print("Failed.");
-                    print(activeTask.Exception);
+                    gameObject.SetActive(false);
+                    print($"Exception occured during file operation. Exception: \n\t{activeTask.Exception}");
+                    SpawnErrorDialog();
+
                     break;
             }
+        }
+
+        private void SpawnErrorDialog()
+        {
+            var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
+            dialog.Initialize($"There was an error during the \"{loadedOperation}\" operation. Please check the log file for more details.");
         }
 
         public void UpdateLoadingState(string flavorText)

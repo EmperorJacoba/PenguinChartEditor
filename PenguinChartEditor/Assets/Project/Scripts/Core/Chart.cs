@@ -57,11 +57,6 @@ public class Chart : MonoBehaviour
         {
             SetLoadedInstrument(DebugLoadedInstrument);
         }
-
-        if (openWithFileError)
-        {
-            ShowLoadError();
-        }
     }
 
     private static bool openWithFileError = false;
@@ -591,12 +586,6 @@ public class Chart : MonoBehaviour
 
     public static bool ChartLoading { get; private set; }
 
-    private static void ShowLoadError()
-    {
-        var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
-        dialog.Initialize("There was an error loading the file. Please check the log file.");
-    }
-
     private static bool InternalLoadFile()
     {
         var pathCandidates = 
@@ -618,13 +607,13 @@ public class Chart : MonoBehaviour
         dialog.Initialize(
             "Loading file...", 
             Task.Run(() => _InternalLoadFile(pathCandidates[0])), 
-            () =>
-            {
-                SceneManager.LoadScene("ContainerSceneV2");
-            }
+            LoadContainerScene,
+            LoadingDialog.OperationType.load
         );
 
         return true;
+
+        void LoadContainerScene() => SceneManager.LoadScene("ContainerSceneV2");
     }
 
     private static readonly string[] supportedFileFormats =
@@ -636,7 +625,7 @@ public class Chart : MonoBehaviour
         "wav"
     };
 
-    public static string loadFileState = "File not loading";
+    public static string loadFileState = "";
     private static bool _InternalLoadFile(string filePath)
     {
         ChartLoading = true;
