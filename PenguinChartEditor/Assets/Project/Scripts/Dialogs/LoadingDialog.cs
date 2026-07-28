@@ -20,7 +20,13 @@ namespace Penguin.Dialogs
         private Action funcToRunWhenComplete;
         private OperationType loadedOperation;
         
-        public void Initialize(string title, Task task, Action onSuccessfulCompletion, OperationType operationType, float width = 1660, float height = 860)
+        public void Initialize(
+            string title, 
+            Task task,
+            Action onSuccessfulCompletion, 
+            OperationType operationType, 
+            float width = 1660, float height = 860
+            )
         {
             gameObject.SetActive(true);
 
@@ -40,7 +46,7 @@ namespace Penguin.Dialogs
             switch (activeTask.Status)
             {
                 case TaskStatus.Running:
-                    descriptionText.text = Chart.loadFileState;
+                    descriptionText.text = Chart.operationUpdateString;
                     break;
                 case TaskStatus.RanToCompletion:
                     print("Completed");
@@ -50,9 +56,8 @@ namespace Penguin.Dialogs
                 case TaskStatus.Canceled:
                 case TaskStatus.Faulted:
                     gameObject.SetActive(false);
-                    print($"Exception occured during file operation. Exception: \n\t{activeTask.Exception}");
+                    print($"Exception occured during file \"{loadedOperation}\" operation. Exception: \n\t{activeTask.Exception}");
                     SpawnErrorDialog();
-
                     break;
             }
         }

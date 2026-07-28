@@ -29,15 +29,15 @@ public static class ChartParser
     // note: chart resolution is set within FormatEventSections so that SyncTrack can use it via Chart.Resolution
     public static ChartFileInformation ParseChart(string filePath)
     {
-        Chart.loadFileState = "[DotChart]: Setting up structures..."; 
+        Chart.operationUpdateString = "[DotChart]: Setting up structures..."; 
         syncTrackInstrument = null;
         metadata = null;
         instruments = new ConcurrentBag<IInstrument>();
 
-        Chart.loadFileState = "[DotChart]: Reading file...";
+        Chart.operationUpdateString = "[DotChart]: Reading file...";
         string[] chartAsLines = File.ReadAllLines(filePath);
 
-        Chart.loadFileState = "[DotChart]: Dividing sections...";
+        Chart.operationUpdateString = "[DotChart]: Dividing sections...";
         var eventGroups = FormatEventSections(chartAsLines);
 
         if (!Chart.IsResolutionInitialized())
@@ -46,7 +46,7 @@ public static class ChartParser
                 "No resolution within chart file. Resolution is required to load a chart file.");
         }
 
-        Chart.loadFileState = "[DotChart]: Making instruments...";
+        Chart.operationUpdateString = "[DotChart]: Making instruments...";
         Parallel.ForEach(eventGroups, ProcessEventGroup);
 
         if (syncTrackInstrument is null)
@@ -55,10 +55,10 @@ public static class ChartParser
                                         "Chart file must contain sync track data to be valid.");
         }
 
-        Chart.loadFileState = "[DotChart]: Making starpower...";
+        Chart.operationUpdateString = "[DotChart]: Making starpower...";
         var starpower = new StarpowerInstrument(rawStarpowerEvents.ToList());
 
-        Chart.loadFileState = "[DotChart]: Returning to main (making chart pak)...";
+        Chart.operationUpdateString = "[DotChart]: Returning to main (making chart pak)...";
         return new ChartFileInformation(
             metadata,
             instruments.ToList(),

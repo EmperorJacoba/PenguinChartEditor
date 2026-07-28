@@ -10,6 +10,7 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 - hotkey to jump X number of bars/beats
 
 - calibration minigame
+- fix exporting from not main thread
 
 - disable keybinds when not needed
 

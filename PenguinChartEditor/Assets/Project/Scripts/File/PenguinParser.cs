@@ -11,12 +11,12 @@ public static class PenguinParser
     {
         var fileData = new ChartFileInformation();
 
-        Chart.loadFileState = "[DotPenguin]: Reading file data..."; 
+        Chart.operationUpdateString = "[DotPenguin]: Reading file data..."; 
         var fileAsLines = File.ReadAllLines(filePath);
-        Chart.loadFileState = "[DotPenguin]: Dividing sections...";
+        Chart.operationUpdateString = "[DotPenguin]: Dividing sections...";
         var baseSections = FormatEventSections(fileAsLines, indent: 0);
 
-        Chart.loadFileState = "[DotPenguin]: Dividing sections (part 2)...";
+        Chart.operationUpdateString = "[DotPenguin]: Dividing sections (part 2)...";
         Dictionary<int, List<PenguinEventSection>> sectionsLevel1 = new();
         foreach (var section in baseSections)
         {
@@ -24,10 +24,10 @@ public static class PenguinParser
             sectionsLevel1[section.id] = secondLevelSections;
         }
 
-        Chart.loadFileState = "[DotPenguin]: Making metadata...";
+        Chart.operationUpdateString = "[DotPenguin]: Making metadata...";
         fileData.metadata = new Metadata(sectionsLevel1[(int)HeaderType.Song]);
 
-        Chart.loadFileState = "[DotPenguin]: Creating instruments...";
+        Chart.operationUpdateString = "[DotPenguin]: Creating instruments...";
         ConcurrentBag<IInstrument> parsedInstruments = new();
         Parallel.ForEach
         (
@@ -54,7 +54,7 @@ public static class PenguinParser
             }
         );
 
-        Chart.loadFileState = "[DotPenguin]: Returning to main (returning chart pak)...";
+        Chart.operationUpdateString = "[DotPenguin]: Returning to main (returning chart pak)...";
         fileData.traditionalInstruments = parsedInstruments.ToList();
 
         return fileData;

@@ -606,7 +606,7 @@ public class Chart : MonoBehaviour
         var dialog = DialogManager.SpawnDialog<LoadingDialog>();
         dialog.Initialize(
             "Loading file...", 
-            Task.Run(() => _InternalLoadFile(pathCandidates[0])), 
+            Task.Run(() => _InternalLoadFile(pathCandidates[0])),
             LoadContainerScene,
             LoadingDialog.OperationType.load
         );
@@ -625,14 +625,14 @@ public class Chart : MonoBehaviour
         "wav"
     };
 
-    public static string loadFileState = "";
+    public static string operationUpdateString = "";
     private static bool _InternalLoadFile(string filePath)
     {
         ChartLoading = true;
         
         openWithFileError = false;
 
-        loadFileState = "Setting up chart variables...";
+        operationUpdateString = "Setting up chart variables...";
         ChartPath = filePath;
         FolderPath = Path.GetDirectoryName(ChartPath);
         
@@ -641,7 +641,7 @@ public class Chart : MonoBehaviour
 
         var startTime = DateTime.Now;
         
-        loadFileState = "Beginning parse...";
+        operationUpdateString = "Beginning parse...";
         // Diagnostics: file parsing is good chunk of load time for non-penguin files
         switch (fileType.ToLower())
         {
@@ -666,10 +666,10 @@ public class Chart : MonoBehaviour
         var parseTimer = DateTime.Now - startTime;
         print($"\nFile data successfully parsed. {parseTimer.TotalMilliseconds}ms.");
         
-        loadFileState = "Loading parsed data...";
+        operationUpdateString = "Loading parsed data...";
         ApplyFileInformation(readData);
 
-        loadFileState = "Finding stems...";
+        operationUpdateString = "Finding stems...";
         if (Metadata.StemPaths.Count == 0)
         {
             // also need to parse chart stems
@@ -689,21 +689,21 @@ public class Chart : MonoBehaviour
             } 
         }
 
-        loadFileState = "Creating audio hooks...";
+        operationUpdateString = "Creating audio hooks...";
         AudioManager.CreateAudioStreams();
         
-        loadFileState = "Reading volume data...";
+        operationUpdateString = "Reading volume data...";
         // Diagnostics: lots of load time here due to data that must be fetched
         Waveform.InitializeWaveformData();
 
         ChartLoading = false;
 
-        loadFileState = "Updating subscribers of chart load...";
+        operationUpdateString = "Updating subscribers of chart load...";
         ChartFileLoaded?.Invoke();
         
         // do this to avoid nasty errors with trying to load invalid data (which WILL happen if the active tab is not
         // reloaded). InPlaceRefresh() does not work here.
-        loadFileState = "Reloading loaded tab...";
+        operationUpdateString = "Reloading loaded tab...";
         SceneTabSwitcher.FullRefreshLoadedTab();
         
         return true;
@@ -731,18 +731,19 @@ public class Chart : MonoBehaviour
         fileLoaded = true;
     }
 
+    public string exportFileStatus = "";
     public static void ExportFile(string targetDirectory)
     {
-        try
-        {
-            _ExportFile(targetDirectory);
-        }
-        catch (Exception e)
-        {
-            Debug.Log($"Error when exporting file.\n\t{e}");
-            var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
-            dialog.Initialize("There was an error exporting the file. Please check the log file.");
-        }
+        var dialog = DialogManager.SpawnDialog<LoadingDialog>();
+        dialog.Initialize(
+            "Exporting file...",
+            Task.Run(() =>
+            {
+                _ExportFile(targetDirectory);
+            }), 
+            (() => {}), 
+            LoadingDialog.OperationType.export
+        );
     }
     
     // Currently written for .chart exclusively, rework for other formats later
@@ -756,8 +757,7 @@ public class Chart : MonoBehaviour
         
         if (exportSettingsManager is null)
         {
-            Debug.LogError($"No export settings to read from. Aborting export operation.");
-            return;
+            throw new ArgumentNullException("No export settings to read from. Aborting export operation.");
         }
 
 #if UNITY_STANDALONE_WIN
@@ -766,15 +766,18 @@ public class Chart : MonoBehaviour
         targetDirectory = Path.Combine(@"\\?\", targetDirectory); 
 #endif
 
+        operationUpdateString = "Clearing old directory...";
         if (Directory.Exists(targetDirectory))
         {
             Directory.Delete(targetDirectory, true);
         }
-        
+
+        operationUpdateString = "Making new target directory...";
         Directory.CreateDirectory(targetDirectory);
+
+        var ini = Task.Run(() => IniWriter.WriteIni(targetDirectory, Metadata));
         
-        IniWriter.WriteIni(targetDirectory, Metadata);
-        
+        var write = Task.Run(() =>
         ChartWriter.WriteChart(
             targetDirectory: targetDirectory,
             resolution: Resolution,
@@ -782,24 +785,52 @@ public class Chart : MonoBehaviour
             instruments: CompileAllInstruments(),
             includedTracks: exportSettingsManager.GetInstrumentTrackInclusionStatuses(),
             audioFormat: exportSettingsManager.GetExportAudioFormat()
-            );
+            )
+        );
         
+        var audio = Task.Run(() =>
         AudioManager.WriteAudioFiles(
             Metadata, 
             targetDirectory, 
             exportSettingsManager.GetExportAudioFormat(), 
             exportSettingsManager.GetAudioInclusionStatuses(), 
             exportSettingsManager.GetKBPS()
-            );
+            )
+        );
 
-        if (File.Exists(Metadata.BackgroundPath))
+        var bg = Task.Run(WriteBackground);
+        var cov = Task.Run(WriteCover);
+
+        var tasks = new List<Task> { ini, write, audio, bg, cov };
+        
+        while (tasks.Count(x => x.IsCompleted) < tasks.Count)
         {
-            File.Copy(Metadata.BackgroundPath, $"{targetDirectory}/background.jpg");
+            continue; 
         }
 
-        if (File.Exists(Metadata.CoverPath))
+        if (tasks.Count(x => x.IsFaulted) <= 0) return;
+        
+        foreach (var err in tasks.Where(x => x.IsFaulted))
         {
-            File.Copy(Metadata.CoverPath, $"{targetDirectory}/album.jpg");
+            print($"Exception in export: \n\t{err.Exception}\n");
+        }
+
+        return;
+
+        void WriteBackground()
+        {
+            if (File.Exists(Metadata.BackgroundPath))
+            {
+                File.Copy(Metadata.BackgroundPath, $"{targetDirectory}/background.jpg");
+            }
+        }
+
+        void WriteCover()
+        {
+            if (File.Exists(Metadata.CoverPath))
+            {
+                File.Copy(Metadata.CoverPath, $"{targetDirectory}/album.jpg");
+            }
         }
     }
     
