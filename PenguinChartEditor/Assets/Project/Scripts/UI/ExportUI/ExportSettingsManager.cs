@@ -2,7 +2,6 @@
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class ExportSettingsManager : MonoBehaviour
@@ -21,15 +20,15 @@ public class ExportSettingsManager : MonoBehaviour
         instance = this;
     }
 
-    public AudioFormats GetExportAudioFormat() =>
+    private AudioFormat GetExportAudioFormat() =>
         audioFormatToggleGroup.activeToggle.GetComponent<AudioFormatToggle>().format;
 
-    public ChartFormats GetExportChartFormat() =>
+    private ChartFormat GetExportChartFormat() =>
         chartFormatToggleGroup.activeToggle.GetComponent<ExportFormatToggle>().format;
 
-    public bool ExportAsZipEnabled() => zipPackageToggle.isOn;
+    private bool ExportAsZipEnabled() => zipPackageToggle.isOn;
 
-    public int GetKBPS()
+    private int GetKBPS()
     {
         if (int.TryParse(kbpsInput.text, out var kbps))
         {
@@ -37,10 +36,10 @@ public class ExportSettingsManager : MonoBehaviour
         }
 
         // Recommended opus is 80kbps. 320 for everything else. This is only if the input field is messed up for whatever reason
-        return GetExportAudioFormat() == AudioFormats.opus ? 80 : 320;
+        return GetExportAudioFormat() == AudioFormat.opus ? 80 : 320;
     }
 
-    public HashSet<StemType> GetAudioInclusionStatuses()
+    private HashSet<StemType> GetAudioInclusionStatuses()
     {
         return audioTrackInclusionManager.GetTrackInclusionStatuses().
             Where(x => x.Value).
@@ -48,7 +47,7 @@ public class ExportSettingsManager : MonoBehaviour
             ToHashSet();
     }
 
-    public HashSet<HeaderType> GetInstrumentTrackInclusionStatuses()
+    private HashSet<HeaderType> GetInstrumentTrackInclusionStatuses()
     {
         var includedIDs = new HashSet<HeaderType>();
         foreach (var (instrumentType, includedDifficulties) in instrumentInclusionManager.GetActiveInstrumentTracks())
@@ -61,4 +60,28 @@ public class ExportSettingsManager : MonoBehaviour
 
         return includedIDs;
     }
+
+    public ExportSettings GetCurrentExportSettings()
+    {
+        var exportSettings = new ExportSettings
+        {
+            audioTrackInclusion = GetAudioInclusionStatuses(),
+            instrumentInclusion = GetInstrumentTrackInclusionStatuses(),
+            audioQuality = GetKBPS(),
+            audioFormat = GetExportAudioFormat(),
+            chartFormat = GetExportChartFormat(),
+            zip = ExportAsZipEnabled()
+        };
+        return exportSettings;
+    }
+}
+
+public class ExportSettings
+{
+    public HashSet<StemType> audioTrackInclusion;
+    public HashSet<HeaderType> instrumentInclusion;
+    public int audioQuality;
+    public AudioFormat audioFormat;
+    public ChartFormat chartFormat;
+    public bool zip;
 }

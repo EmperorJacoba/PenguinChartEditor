@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Penguin.Debug;
 using Penguin.Dialogs;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -732,14 +733,14 @@ public class Chart : MonoBehaviour
     }
 
     public string exportFileStatus = "";
-    public static void ExportFile(string targetDirectory)
+    public static void ExportFile(string targetDirectory, ExportSettings exportSettings)
     {
         var dialog = DialogManager.SpawnDialog<LoadingDialog>();
         dialog.Initialize(
             "Exporting file...",
             Task.Run(() =>
             {
-                _ExportFile(targetDirectory);
+                _ExportFile(targetDirectory, exportSettings);
             }), 
             (() => {}), 
             LoadingDialog.OperationType.export
@@ -747,20 +748,13 @@ public class Chart : MonoBehaviour
     }
     
     // Currently written for .chart exclusively, rework for other formats later
-    private static void _ExportFile(string targetDirectory)
+    private static void _ExportFile(string targetDirectory, ExportSettings exportSettings)
     {
         // need to export chart, image, background, ini, audio
         // export everything to temp directory and then either copy the directory's contents to target,
         // or compress as zip and put to target
-
-        var exportSettingsManager = ExportSettingsManager.instance;
         
-        if (exportSettingsManager is null)
-        {
-            throw new ArgumentNullException("No export settings to read from. Aborting export operation.");
-        }
-
-#if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
         // weird preceding thing is to fix errors resulting from long file paths? apparently?
         // it works so i am not touching it
         targetDirectory = Path.Combine(@"\\?\", targetDirectory); 
@@ -775,6 +769,8 @@ public class Chart : MonoBehaviour
         operationUpdateString = "Making new target directory...";
         Directory.CreateDirectory(targetDirectory);
 
+        operationUpdateString = "Scheduling tasks...";
+        
         var ini = Task.Run(() => IniWriter.WriteIni(targetDirectory, Metadata));
         
         var write = Task.Run(() =>
@@ -783,8 +779,8 @@ public class Chart : MonoBehaviour
             resolution: Resolution,
             metadata: Metadata,
             instruments: CompileAllInstruments(),
-            includedTracks: exportSettingsManager.GetInstrumentTrackInclusionStatuses(),
-            audioFormat: exportSettingsManager.GetExportAudioFormat()
+            includedTracks: exportSettings.instrumentInclusion,
+            audioFormat: exportSettings.audioFormat
             )
         );
         
@@ -792,9 +788,9 @@ public class Chart : MonoBehaviour
         AudioManager.WriteAudioFiles(
             Metadata, 
             targetDirectory, 
-            exportSettingsManager.GetExportAudioFormat(), 
-            exportSettingsManager.GetAudioInclusionStatuses(), 
-            exportSettingsManager.GetKBPS()
+            exportSettings.audioFormat, 
+            exportSettings.audioTrackInclusion, 
+            exportSettings.audioQuality
             )
         );
 
@@ -802,21 +798,24 @@ public class Chart : MonoBehaviour
         var cov = Task.Run(WriteCover);
 
         var tasks = new List<Task> { ini, write, audio, bg, cov };
-        
-        while (tasks.Count(x => x.IsCompleted) < tasks.Count)
-        {
-            continue; 
-        }
 
+        var tasksDone = tasks.Count(x => x.IsCompleted);
+        while (tasksDone < tasks.Count)
+        {
+            tasksDone = tasks.Count(x => x.IsCompleted);
+            operationUpdateString = $"Running export tasks ({tasksDone} / {tasks.Count} completed)...";
+        }
+        operationUpdateString = $"Counting errors...";
+        
         if (tasks.Count(x => x.IsFaulted) <= 0) return;
         
         foreach (var err in tasks.Where(x => x.IsFaulted))
         {
             print($"Exception in export: \n\t{err.Exception}\n");
         }
-
-        return;
-
+        
+        throw new Exception("Part of exporting process failed.");
+        
         void WriteBackground()
         {
             if (File.Exists(Metadata.BackgroundPath))

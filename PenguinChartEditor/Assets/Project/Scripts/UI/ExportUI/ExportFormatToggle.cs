@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 public class ExportFormatToggle : MonoBehaviour
 {
-    [SerializeField] public ChartFormats format;
+    [FormerlySerializedAs("format")] [SerializeField] public ChartFormat format;
 }

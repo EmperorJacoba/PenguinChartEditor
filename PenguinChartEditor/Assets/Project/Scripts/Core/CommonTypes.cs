@@ -453,7 +453,7 @@ public enum SceneType
     starpower,
 }
 
-public enum ChartFormats
+public enum ChartFormat
 {
     chart,
     mid,
@@ -462,7 +462,7 @@ public enum ChartFormats
     RB3CON
 }
 
-public enum AudioFormats
+public enum AudioFormat
 {
     opus,
     ogg,

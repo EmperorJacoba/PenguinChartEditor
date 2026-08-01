@@ -41,6 +41,6 @@ public class ExportButton : MonoBehaviour
 
     private void ConfirmExport()
     {
-        Chart.ExportFile(lastDirName);
+        Chart.ExportFile(lastDirName, ExportSettingsManager.instance.GetCurrentExportSettings());
     }
 }

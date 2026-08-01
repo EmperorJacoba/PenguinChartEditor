@@ -16,7 +16,7 @@ public static class ChartWriter
         Metadata metadata,
         List<IInstrument> instruments, 
         HashSet<HeaderType> includedTracks,
-        AudioFormats audioFormat
+        AudioFormat audioFormat
         )
     {
         List<string> dotChartLines = new();
@@ -42,7 +42,7 @@ public static class ChartWriter
         File.WriteAllLines(filePath, dotChartLines);
     }
 
-    private static List<string> WriteSong(Metadata metadata, int resolution, AudioFormats audioFormat)
+    private static List<string> WriteSong(Metadata metadata, int resolution, AudioFormat audioFormat)
     {
         // Chart file format specifications ordering
         // https://docs.google.com/document/d/1v2v0U-9HQ5qHeccpExDOLJ5CMPZZ3QytPmAG5WF0Kzs

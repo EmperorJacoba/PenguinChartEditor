@@ -544,7 +544,7 @@ public class AudioManager : MonoBehaviour
     public static void WriteAudioFiles(
         Metadata metadata, 
         string targetDirectory, 
-        AudioFormats format, 
+        AudioFormat format, 
         HashSet<StemType> includedStems,
         int bitrate
     )
@@ -555,7 +555,7 @@ public class AudioManager : MonoBehaviour
             );
     }
 
-    private static void EncodeStream(StemType stem, string targetDirectory, AudioFormats format, int bitrate)
+    private static void EncodeStream(StemType stem, string targetDirectory, AudioFormat format, int bitrate)
     {
         // Basic way that BASS encoding works is by creating an encoder attached to a stream, and then "playing"
         // that stream to "record" the data in a new file. With a decoded stream, the encoder records data when generally
@@ -573,10 +573,10 @@ public class AudioManager : MonoBehaviour
 
         int encoderHandle = format switch
         {
-            AudioFormats.opus => BassEnc_Opus.Start(handle, $"--bitrate {bitrate}", EncodeFlags.AutoFree, targetFileName),
-            AudioFormats.ogg => BassEnc_Ogg.Start(handle, $"-b {bitrate}", EncodeFlags.AutoFree, targetFileName),
-            AudioFormats.mp3 => BassEnc_Mp3.Start(handle, $"-b {bitrate}", EncodeFlags.AutoFree, targetFileName),
-            AudioFormats.wav =>
+            AudioFormat.opus => BassEnc_Opus.Start(handle, $"--bitrate {bitrate}", EncodeFlags.AutoFree, targetFileName),
+            AudioFormat.ogg => BassEnc_Ogg.Start(handle, $"-b {bitrate}", EncodeFlags.AutoFree, targetFileName),
+            AudioFormat.mp3 => BassEnc_Mp3.Start(handle, $"-b {bitrate}", EncodeFlags.AutoFree, targetFileName),
+            AudioFormat.wav =>
                 // As far as I can tell, bitrates don't really exist in wav, since it's uncompressed.
                 // The bitrate can be whatever it wants to be. Also I hate wav files. Please don't use them.
                 BassEnc.EncodeStart(handle, targetFileName, EncodeFlags.AutoFree | EncodeFlags.PCM, null),
