@@ -263,6 +263,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: DialogManager
       objectReference: {fileID: 0}
+    - target: {fileID: 4021581986919603453, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 862.2994
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021581986919603453, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4991993840943732580, guid: 10714c19a8e7cc749a693cab2935abc3, type: 3}
       propertyPath: m_IsActive
       value: 0

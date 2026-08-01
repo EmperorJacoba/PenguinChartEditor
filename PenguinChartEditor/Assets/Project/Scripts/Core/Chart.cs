@@ -604,6 +604,8 @@ public class Chart : MonoBehaviour
             );
         if (pathCandidates.Length < 1) return false;
 
+        fileLoaded = false;
+
         var dialog = DialogManager.SpawnDialog<LoadingDialog>();
         dialog.Initialize(
             "Loading file...", 
@@ -700,12 +702,13 @@ public class Chart : MonoBehaviour
         ChartLoading = false;
 
         operationUpdateString = "Updating subscribers of chart load...";
-        ChartFileLoaded?.Invoke();
         
         // do this to avoid nasty errors with trying to load invalid data (which WILL happen if the active tab is not
         // reloaded). InPlaceRefresh() does not work here.
         operationUpdateString = "Reloading loaded tab...";
-        SceneTabSwitcher.FullRefreshLoadedTab();
+        //SceneTabSwitcher.FullRefreshLoadedTab();
+        
+        fileLoaded = true;
         
         return true;
     }
@@ -727,9 +730,7 @@ public class Chart : MonoBehaviour
         foreach (var instrument in Instruments)
         {
             instrument.SetUpInputMap();
-        }   
-        
-        fileLoaded = true;
+        }
     }
 
     public string exportFileStatus = "";
