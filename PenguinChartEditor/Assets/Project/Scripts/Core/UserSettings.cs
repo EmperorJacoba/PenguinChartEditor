@@ -123,6 +123,7 @@ public class UserSettings
     private static string SettingsFilePath => Path.Combine(SettingsDirectoryPath, "settings.json");
     private static string CosmeticSettingsFilePath => Path.Combine(SettingsDirectoryPath, "cosmetics.json");
     private static string CustomKeybindsFilePath => Path.Combine(SettingsDirectoryPath, "inputs.json");
+    private static string ExportSettingsFilePath => Path.Combine(SettingsDirectoryPath, "export.json");
     
     public void SaveSettingsToDisk()
     {
@@ -151,6 +152,16 @@ public class UserSettings
     public static void LoadCosmeticSettings()
     {
         UniversalCosmeticSettings.ApplySavedSettings(CosmeticSettingsFilePath);
+    }
+
+    public static void SaveExportSettings(ExportSettings settings)
+    {
+        File.WriteAllText(ExportSettingsFilePath, JsonUtility.ToJson(settings));
+    }
+    
+    public static ExportSettings ReadExportSettingsFromDisk()
+    {
+        return (ExportSettings)JsonUtility.FromJson(File.ReadAllText(ExportSettingsFilePath), typeof(ExportSettings));
     }
 
     public static void SaveCustomKeybinds()

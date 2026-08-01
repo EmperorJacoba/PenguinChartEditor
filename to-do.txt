@@ -10,7 +10,6 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 - hotkey to jump X number of bars/beats
 
 - calibration minigame
-- fix exporting from not main thread
 
 - disable keybinds when not needed
 
@@ -18,7 +17,6 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 - add chart export date 
 
 => save user song position to .penguin file
-=> save export settings to disk
 
 => keybinds system/editor - settings
 
@@ -26,8 +24,6 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 => unload/reload waveform across scene change
 => chunk waveform data processing
-
-=> progress bar for loading files
 
 => .penguin documentation
 

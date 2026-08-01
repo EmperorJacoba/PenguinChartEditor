@@ -545,7 +545,7 @@ public class AudioManager : MonoBehaviour
         Metadata metadata, 
         string targetDirectory, 
         AudioFormat format, 
-        HashSet<StemType> includedStems,
+        List<StemType> includedStems,
         int bitrate
     )
     {

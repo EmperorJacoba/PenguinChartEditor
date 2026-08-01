@@ -745,6 +745,7 @@ public class Chart : MonoBehaviour
             (() => {}), 
             LoadingDialog.OperationType.export
         );
+        UserSettings.SaveExportSettings(exportSettings);
     }
     
     // Currently written for .chart exclusively, rework for other formats later
@@ -813,7 +814,7 @@ public class Chart : MonoBehaviour
         var cov = Task.Run(WriteCover);
 
         var tasks = new List<Task> { ini, write, audio, bg, cov };
-
+        
         var tasksDone = tasks.Count(x => x.IsCompleted);
         while (tasksDone < tasks.Count)
         {

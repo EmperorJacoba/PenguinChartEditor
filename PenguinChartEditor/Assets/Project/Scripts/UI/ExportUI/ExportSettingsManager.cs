@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -15,8 +16,9 @@ public class ExportSettingsManager : MonoBehaviour
     [SerializeField] private AudioTrackToggleManager audioTrackInclusionManager;
     [SerializeField] private InstrumentInclusionManager instrumentInclusionManager;
     
-    private void Awake()
+    private void Start()
     {
+        LoadExportSettings(UserSettings.ReadExportSettingsFromDisk());
         instance = this;
     }
 
@@ -39,17 +41,17 @@ public class ExportSettingsManager : MonoBehaviour
         return GetExportAudioFormat() == AudioFormat.opus ? 80 : 320;
     }
 
-    private HashSet<StemType> GetAudioInclusionStatuses()
+    private List<StemType> GetAudioInclusionStatuses()
     {
         return audioTrackInclusionManager.GetTrackInclusionStatuses().
             Where(x => x.Value).
             Select(x => x.Key).
-            ToHashSet();
+            ToList();
     }
 
-    private HashSet<HeaderType> GetInstrumentTrackInclusionStatuses()
+    private List<HeaderType> GetInstrumentTrackInclusionStatuses()
     {
-        var includedIDs = new HashSet<HeaderType>();
+        var includedIDs = new List<HeaderType>();
         foreach (var (instrumentType, includedDifficulties) in instrumentInclusionManager.GetActiveInstrumentTracks())
         {
             foreach (var diff in includedDifficulties.Where(diff => diff.Value))
@@ -74,12 +76,36 @@ public class ExportSettingsManager : MonoBehaviour
         };
         return exportSettings;
     }
+
+    private void LoadExportSettings(ExportSettings exportSettings)
+    {
+        // Very lazy way to do this, sorry.
+        var formatToggle = audioFormatToggleGroup
+            .GetComponentsInChildren<AudioFormatToggle>().First(x => x.format == exportSettings.audioFormat);
+        var chartToggle = chartFormatToggleGroup.GetComponentsInChildren<ExportFormatToggle>()
+            .First(x => x.format == exportSettings.chartFormat);
+
+        formatToggle.gameObject.GetComponent<Toggle>().isOn = true;
+        chartToggle.gameObject.GetComponent<Toggle>().isOn = true;
+
+        kbpsInput.text = exportSettings.audioQuality.ToString();
+        zipPackageToggle.isOn = exportSettings.zip;
+
+        // Intentionally not loading audio track/instrument track inclusion statuses as of right now.
+    }
 }
 
+[Serializable]
 public class ExportSettings
 {
-    public HashSet<StemType> audioTrackInclusion;
-    public HashSet<HeaderType> instrumentInclusion;
+    // TODO: Read these two lists back on a file-basis, not on a program-basis. These are too volatile and will lead
+    // to user rage and confusion if these are saved on a program-basis:
+    // Example: user charts an expert track-only chart and then a full difficulty chart. Doesn't check settings. Will
+    // be very confused when only expert exports on the second chart and will fall down forum/reddit/discord hell
+    // trying to figure out why. Let's not do that.
+    public List<StemType> audioTrackInclusion;
+    public List<HeaderType> instrumentInclusion;
+    
     public int audioQuality;
     public AudioFormat audioFormat;
     public ChartFormat chartFormat;

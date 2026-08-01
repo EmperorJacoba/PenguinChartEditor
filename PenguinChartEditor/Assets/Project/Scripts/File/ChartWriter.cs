@@ -15,7 +15,7 @@ public static class ChartWriter
         int resolution,
         Metadata metadata,
         List<IInstrument> instruments, 
-        HashSet<HeaderType> includedTracks,
+        List<HeaderType> includedTracks,
         AudioFormat audioFormat
         )
     {
