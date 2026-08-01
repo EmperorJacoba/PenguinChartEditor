@@ -772,17 +772,32 @@ public class Chart : MonoBehaviour
         operationUpdateString = "Scheduling tasks...";
         
         var ini = Task.Run(() => IniWriter.WriteIni(targetDirectory, Metadata));
-        
-        var write = Task.Run(() =>
-        ChartWriter.WriteChart(
-            targetDirectory: targetDirectory,
-            resolution: Resolution,
-            metadata: Metadata,
-            instruments: CompileAllInstruments(),
-            includedTracks: exportSettings.instrumentInclusion,
-            audioFormat: exportSettings.audioFormat
-            )
-        );
+
+        Task write;
+        switch (exportSettings.chartFormat)
+        {
+            case ChartFormat.chart:
+                write = Task.Run(() =>
+                    ChartWriter.WriteChart(
+                        targetDirectory: targetDirectory,
+                        resolution: Resolution,
+                        metadata: Metadata,
+                        instruments: CompileAllInstruments(),
+                        includedTracks: exportSettings.instrumentInclusion,
+                        audioFormat: exportSettings.audioFormat
+                    )
+                );
+                break;
+            case ChartFormat.mid:
+            case ChartFormat.sng:
+            case ChartFormat.RB2CON:
+            case ChartFormat.RB3CON:
+                throw new NotImplementedException(
+                    $"No writer configured to export to the format {exportSettings.chartFormat}");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
         
         var audio = Task.Run(() =>
         AudioManager.WriteAudioFiles(
