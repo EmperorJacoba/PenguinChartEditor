@@ -76,3 +76,5 @@ patch notes:
 - Fix chart package export not actually overwriting existing directory
 - Fix autosave routine saving even when not necessary
 - Added persistent saving of audio stem volumes, mute states, soloed states
+- Added loading screen for loading new file, exporting file
+- Added persistent saving of export settings (does not include instrument inclusion/audio inclusion statuses)
