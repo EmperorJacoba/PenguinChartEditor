@@ -606,6 +606,12 @@ public class Chart : MonoBehaviour
 
         fileLoaded = false;
 
+        if (instance.isDebug)
+        {
+            _InternalLoadFile(pathCandidates[0]);
+            return true;
+        }
+        
         var dialog = DialogManager.SpawnDialog<LoadingDialog>();
         dialog.Initialize(
             "Loading file...", 
