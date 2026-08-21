@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
 public class Clap : MonoBehaviour
 {
-    public static bool clapActive = false;
+    private static bool clapActive;
     [SerializeField] private Button button;
 
     private void Awake()
@@ -13,6 +14,18 @@ public class Clap : MonoBehaviour
         button.onClick.AddListener(ToggleClap);
     }
 
+    private InputMap inputMap;
+    private void OnEnable()
+    {
+        Chart.instance.inputMap.UIShortcuts.Clap.performed += ToggleClap;
+    }
+
+    private void OnDisable()
+    {
+        Chart.instance.inputMap.UIShortcuts.Clap.performed -= ToggleClap;
+    }
+
+    private void ToggleClap(InputAction.CallbackContext _) => ToggleClap();
     private void ToggleClap()
     {
         clapActive = !clapActive;
@@ -34,7 +47,6 @@ public class Clap : MonoBehaviour
 
     private void CheckForClapHit()
     {
-        // might change in case metronome for ffw/rw buttons is a wanted feature
         if (!AudioManager.AudioPlaying || !clapActive)
         {
             firstLoop = true;
@@ -69,7 +81,7 @@ public class Clap : MonoBehaviour
             listIndex = ~listIndex;
         }
 
-        if (listIndex >= cachedTicks.Count - 1) return -1;
+        if (listIndex >= cachedTicks.Count) return -1;
         return cachedTicks[listIndex];
     }
 }

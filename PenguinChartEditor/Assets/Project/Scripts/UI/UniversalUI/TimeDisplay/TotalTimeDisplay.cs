@@ -12,6 +12,8 @@ public class TotalTimeDisplay : MonoBehaviour
 
     private void UpdateSongLengthText()
     {
-        SongLengthLabel.text = SongTime.ConvertSecondsToTimestamp(AudioManager.SongLength);
+        SongLengthLabel.text = !AudioManager.IsAudioLoaded() ? 
+            "N/A" : 
+            SongTime.ConvertSecondsToTimestamp(AudioManager.SongLength);
     }
 }

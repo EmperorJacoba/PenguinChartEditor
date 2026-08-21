@@ -64,7 +64,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
         LabelEntryBox.text = representedData.ToString();
         
         Chart.showPreviewers = false;
-        SongTime.DisableChartingInputMap();
+        SongTime.StopPlaybackAndTimeEditActions();
         
         Chart.InPlaceRefresh();
     }
@@ -101,7 +101,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
         _labelText.gameObject.SetActive(true);
         
         Chart.showPreviewers = true;
-        SongTime.EnableChartingInputMap();
+        SongTime.AllowPlaybackAndTimeEditActions();
     }
 
     #endregion

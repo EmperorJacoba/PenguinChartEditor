@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class SongTime : MonoBehaviour
 {
@@ -7,8 +8,6 @@ public class SongTime : MonoBehaviour
     private const float MINUTES_TO_SECONDS_CONVERSION = 60;
     private const float MILLISECONDS_TO_SECONDS_CONVERSION = 1000;
     
-    private static InputMap inputMap;
-
     // Needed for delta calculations when scrolling using MMB
     private float initialMouseY = float.NaN;
 
@@ -55,6 +54,7 @@ public class SongTime : MonoBehaviour
     /// <summary>
     /// The length of the song in tick time.
     /// </summary>
+    // FIXME/TODO: Cache this on chart load so that this expensive method isn't called so much
     public static int SongLengthTicks => Chart.SyncTrackInstrument.ConvertSecondsToTickTime(SongLength);
 
     public static float SongLength => (float)AudioManager.SongLength;
@@ -70,27 +70,38 @@ public class SongTime : MonoBehaviour
 
     #region Unity Functions
 
-    private void Awake()
-    {
-        inputMap = new InputMap();
-        inputMap.Enable();
-
-        inputMap.Charting.ScrollTrack.performed += scrollChange => ChangeTime(scrollChange.ReadValue<float>());
-
-        inputMap.Charting.MiddleMouseClick.started += x => initialMouseY = Input.mousePosition.y;
-        inputMap.Charting.MiddleMouseClick.canceled += x => initialMouseY = float.NaN;
-    }
-
-    private void OnDestroy()
-    {
-        inputMap.Disable();
-    }
-
     private void Start()
     {
+        Chart.instance.inputMap.StandardStaticEvents.ScrollTrack.performed += ChangeTime;
+        Chart.instance.inputMap.StandardStaticEvents.MiddleMouseClick.started += UpdateInitialMouseY;
+        Chart.instance.inputMap.StandardStaticEvents.MiddleMouseClick.canceled += ResetInitialMouseY;
+        
         Waveform.GenerateWaveformPoints();
         TimeChanged?.Invoke();
         Chart.InPlaceRefresh();
+    }
+
+    private void UpdateInitialMouseY(InputAction.CallbackContext _) => initialMouseY = Input.mousePosition.y;
+    private void ResetInitialMouseY(InputAction.CallbackContext _) => initialMouseY = float.NaN;
+
+    /*
+    private void OnDestroy()
+    {
+        Chart.instance.inputMap.StandardStaticEvents.ScrollTrack.performed -= ChangeTime;
+        Chart.instance.inputMap.StandardStaticEvents.MiddleMouseClick.started -= UpdateInitialMouseY;
+        Chart.instance.inputMap.StandardStaticEvents.MiddleMouseClick.canceled -= ResetInitialMouseY;
+    } */
+
+    public static void StopPlaybackAndTimeEditActions()
+    {
+        Chart.instance.inputMap.StandardStaticEvents.Disable();
+        AudioManager.DisableAudioPlaybackControls();
+    }
+
+    public static void AllowPlaybackAndTimeEditActions()
+    {
+        Chart.instance.inputMap.StandardStaticEvents.Enable();
+        AudioManager.EnableAudioPlaybackControls();
     }
 
     private void Update()
@@ -110,25 +121,11 @@ public class SongTime : MonoBehaviour
         }
     }
 
-    public static void ToggleChartingInputMap()
-    {
-        if (inputMap.Charting.enabled) inputMap.Charting.Disable();
-        else inputMap.Charting.Enable();
-    }
-
-    public static void DisableChartingInputMap()
-    {
-        inputMap.Charting.Disable();
-    }
-
-    public static void EnableChartingInputMap()
-    {
-        inputMap.Charting.Enable();
-    }
-
     #endregion
 
     #region Time Modification
+
+    private static void ChangeTime(InputAction.CallbackContext context) => ChangeTime(context.ReadValue<float>());
 
     /// <summary>
     /// Change the timestamp of the song from a specified scroll change.
@@ -137,7 +134,7 @@ public class SongTime : MonoBehaviour
     /// <param name="middleClick"></param>
     public static void ChangeTime(float scrollChange, bool middleClick = false)
     {
-        if (float.IsNaN(scrollChange) || scrollChange == 0) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
+        if (AudioManager.AudioPlaying || float.IsNaN(scrollChange) || scrollChange == 0) return; // for some reason when the input map is reenabled it passes NaN into this function so we will be having none of that thank you 
 
         // If it's a middle click, the delta value is wayyy too large so this is a solution FOR NOW
         var scrollSuppressant = 1;

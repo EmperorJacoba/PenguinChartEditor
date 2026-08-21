@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SFB;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Penguin.Dialogs;
 using UnityEngine.SceneManagement;
 
@@ -14,7 +15,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class Chart : MonoBehaviour
 {
-    private static Chart instance;
+    public static Chart instance;
     public static UserSettings settings;
 
     #region Instance Components
@@ -53,14 +54,12 @@ public class Chart : MonoBehaviour
         {
             SetLoadedInstrument(DebugLoadedInstrument);
         }
-
-        if (openWithFileError)
-        {
-            ShowLoadError();
-        }
     }
 
     private static bool openWithFileError = false;
+    
+    // Effectively the entry point into Penguin. Make sure any unity object functions that depend on Chart data run in
+    // Start(), not Awake(), to guarantee a call after Chart setup.
     private void Awake()
     {
         // Only ever one chart game object active, prioritize first loaded
@@ -73,11 +72,13 @@ public class Chart : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(instance);
         
+        SetUpInputMap();
+        
         settings = UserSettings.ReadFromDisk();
 
         Resolution = settings.DefaultResolution;
         AudioManager.Initialize();
-
+        
         if (isDebug)
         {
             if (!InternalLoadFile())
@@ -103,12 +104,14 @@ public class Chart : MonoBehaviour
 #endif
             // for stability reasons as most rendering depends on this
             SyncTrackInstrument = new SyncTrackInstrument();
-
-        SetUpInputMap();
-
+            
         StartCoroutine(AutosaveRoutine());
 
         Application.wantsToQuit += AskForDataSave;
+        
+        // This happens here because things like resolution and sync track need to be set up before this can work
+        // properly
+        UserSettings.LoadCosmeticSettings();
     }
 
     private IEnumerator AutosaveRoutine()
@@ -117,8 +120,6 @@ public class Chart : MonoBehaviour
         {
             Autosave();
             
-            // temporary measure to stop wantsToQuit from bugging out
-            saved = false;
             yield return new WaitForSeconds(5.0f);
         }
     }
@@ -130,24 +131,23 @@ public class Chart : MonoBehaviour
             InternalSaveFile(false, Application.persistentDataPath, $"autosave-{Hash128.Compute(ChartPath)}");
         }
     }
+    
+    // Input map lives here because rebinds don't apply statically. In previous builds the input map was recreated in
+    // every place where it was needed.
+    public InputMap inputMap;
 
-    private InputMap inputMap;
     private void SetUpInputMap()
     {
-        inputMap = new InputMap();
+        inputMap = new();
         inputMap.Enable();
-        inputMap.Charting.Copy.performed += _ => Clipboard.Copy();
-        inputMap.Charting.Paste.performed += _ => Clipboard.Paste();
-        inputMap.Charting.Cut.performed += _ => Clipboard.Cut();
-        inputMap.ExternalCharting.Save.performed += _ => SaveFile();
-        inputMap.ExternalCharting.SaveAs.performed += _ => SaveFileAs();
-        inputMap.ExternalCharting.New.performed += _ => NewFile();
-        inputMap.ExternalCharting.Open.performed += _ => LoadFile();
-    }
-    
-    private void OnDestroy()
-    {
-        inputMap?.Disable();
+        
+        inputMap.StandardCommands.Copy.performed += _ => Clipboard.Copy();
+        inputMap.StandardCommands.Paste.performed += _ => Clipboard.Paste();
+        inputMap.StandardCommands.Cut.performed += _ => Clipboard.Cut();
+        inputMap.StandardCommands.Save.performed += _ => SaveFile();
+        inputMap.StandardCommands.SaveAs.performed += _ => SaveFileAs();
+        inputMap.StandardCommands.New.performed += _ => NewFile();
+        inputMap.StandardCommands.Open.performed += _ => LoadFile();
     }
 
     private bool quitNextRound = false;
@@ -183,6 +183,13 @@ public class Chart : MonoBehaviour
     }
     
     #endregion
+
+    /*
+    private void Update()
+    {
+        
+    } 
+    //*/
 
     #region Chart Data
 
@@ -222,10 +229,7 @@ public class Chart : MonoBehaviour
     /// </summary>
     public static int Resolution
     {
-        get
-        {
-            return _chartRes == -1 ? throw new ArgumentException("Uninitialized resolution.") : _chartRes;
-        }
+        get => _chartRes == -1 ? throw new ArgumentException("Uninitialized resolution.") : _chartRes;
         set
         {
             if (value == 0) throw new ArgumentException("Resolution cannot be zero!");
@@ -237,13 +241,7 @@ public class Chart : MonoBehaviour
     }
     private static int _chartRes = -1;
 
-    public static int HopoCutoff
-    {
-        get
-        {
-            return _cachcut == -1 ? throw new ArgumentException("Uninitialized hopo cutoff.") : _cachcut;
-        }
-    }
+    public static int HopoCutoff => _cachcut == -1 ? throw new ArgumentException("Uninitialized hopo cutoff.") : _cachcut;
 
     private static int _cachcut = -1;
 
@@ -260,10 +258,7 @@ public class Chart : MonoBehaviour
             }
             return _chPath;
         }
-        private set
-        {
-            _chPath = value;
-        }
+        private set => _chPath = value;
     }
     private static string _chPath;
 
@@ -499,7 +494,6 @@ public class Chart : MonoBehaviour
         if (showSaved) RightHeaderText.instance?.ShowSaved();
 
         saved = true;
-        
         return true;
     }
 
@@ -538,6 +532,9 @@ public class Chart : MonoBehaviour
             new StarpowerInstrument(), 
             new SectionInstrument())
         );
+        
+        // also resets audio
+        AudioManager.CreateAudioStreams();
         
         ChartLoading = false;
         ChartFileLoaded?.Invoke();
@@ -588,26 +585,6 @@ public class Chart : MonoBehaviour
 
     private static bool InternalLoadFile()
     {
-        try
-        {
-            return _InternalLoadFile();
-        }
-        catch (Exception e)
-        {
-            Debug.Log($"Error when loading file.\n\t{e}");
-            ShowLoadError();
-            return false;
-        }
-    }
-
-    private static void ShowLoadError()
-    {
-        var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
-        dialog.Initialize("There was an error loading the file. Please check the log file.");
-    }
-
-    private static bool _InternalLoadFile()
-    {
         var pathCandidates = 
             StandaloneFileBrowser.OpenFilePanel
             (
@@ -623,7 +600,25 @@ public class Chart : MonoBehaviour
             );
         if (pathCandidates.Length < 1) return false;
 
-        return _InternalLoadFile(pathCandidates[0]);
+        fileLoaded = false;
+
+        if (instance.isDebug)
+        {
+            _InternalLoadFile(pathCandidates[0]);
+            return true;
+        }
+        
+        var dialog = DialogManager.SpawnDialog<LoadingDialog>();
+        dialog.Initialize(
+            "Loading file...", 
+            Task.Run(() => _InternalLoadFile(pathCandidates[0])),
+            LoadContainerScene,
+            LoadingDialog.OperationType.load
+        );
+
+        return true;
+
+        void LoadContainerScene() => SceneManager.LoadScene("ContainerSceneV2");
     }
 
     private static readonly string[] supportedFileFormats =
@@ -634,21 +629,25 @@ public class Chart : MonoBehaviour
         "flac",
         "wav"
     };
-    
+
+    public static string operationUpdateString = "";
     private static bool _InternalLoadFile(string filePath)
     {
-        openWithFileError = false;
+        ChartLoading = true;
         
+        openWithFileError = false;
+
+        operationUpdateString = "Setting up chart variables...";
         ChartPath = filePath;
         FolderPath = Path.GetDirectoryName(ChartPath);
         
-        ChartLoading = true;
-
         var fileType = Path.GetExtension(ChartPath);
         ChartFileInformation readData;
 
-        var startTime = Time.realtimeSinceStartup;
+        var startTime = DateTime.Now;
         
+        operationUpdateString = "Beginning parse...";
+        // Diagnostics: file parsing is good chunk of load time for non-penguin files
         switch (fileType.ToLower())
         {
             case ".chart":
@@ -668,11 +667,14 @@ public class Chart : MonoBehaviour
                 throw new ArgumentException($"No support for parsing file type {fileType}.");
             }
         }
-
-        print($"\nFile data successfully parsed. {(Time.realtimeSinceStartup - startTime)*1000}ms.");
-
-        ApplyFileInformation(readData);
         
+        var parseTimer = DateTime.Now - startTime;
+        print($"\nFile data successfully parsed. {parseTimer.TotalMilliseconds}ms.");
+        
+        operationUpdateString = "Loading parsed data...";
+        ApplyFileInformation(readData);
+
+        operationUpdateString = "Finding stems...";
         if (Metadata.StemPaths.Count == 0)
         {
             // also need to parse chart stems
@@ -691,17 +693,25 @@ public class Chart : MonoBehaviour
                 }
             } 
         }
+
+        operationUpdateString = "Creating audio hooks...";
+        AudioManager.CreateAudioStreams();
         
-        AudioManager.RefreshAudioStreams();
+        operationUpdateString = "Reading volume data...";
+        // Diagnostics: lots of load time here due to data that must be fetched
         Waveform.InitializeWaveformData();
 
         ChartLoading = false;
-        
-        ChartFileLoaded?.Invoke();
+
+        operationUpdateString = "Updating subscribers of chart load...";
         
         // do this to avoid nasty errors with trying to load invalid data (which WILL happen if the active tab is not
         // reloaded). InPlaceRefresh() does not work here.
-        SceneTabSwitcher.FullRefreshLoadedTab();
+        operationUpdateString = "Reloading loaded tab...";
+        //SceneTabSwitcher.FullRefreshLoadedTab();
+        
+        fileLoaded = true;
+        
         return true;
     }
     
@@ -722,73 +732,123 @@ public class Chart : MonoBehaviour
         foreach (var instrument in Instruments)
         {
             instrument.SetUpInputMap();
-        }   
-        
-        fileLoaded = true;
+        }
     }
 
-    public static void ExportFile(string targetDirectory)
+    public string exportFileStatus = "";
+    public static void ExportFile(string targetDirectory, ExportSettings exportSettings)
     {
-        try
-        {
-            _ExportFile(targetDirectory);
-        }
-        catch (Exception e)
-        {
-            Debug.Log($"Error when exporting file.\n\t{e}");
-            var dialog = DialogManager.SpawnDialog<ErrorNotificationDialog>();
-            dialog.Initialize("There was an error exporting the file. Please check the log file.");
-        }
+        var dialog = DialogManager.SpawnDialog<LoadingDialog>();
+        dialog.Initialize(
+            "Exporting file...",
+            Task.Run(() =>
+            {
+                _ExportFile(targetDirectory, exportSettings);
+            }), 
+            (() => {}), 
+            LoadingDialog.OperationType.export
+        );
+        UserSettings.SaveExportSettings(exportSettings);
     }
     
     // Currently written for .chart exclusively, rework for other formats later
-    private static void _ExportFile(string targetDirectory)
+    private static void _ExportFile(string targetDirectory, ExportSettings exportSettings)
     {
         // need to export chart, image, background, ini, audio
         // export everything to temp directory and then either copy the directory's contents to target,
         // or compress as zip and put to target
-
-        var exportSettingsManager = ExportSettingsManager.instance;
         
-        if (exportSettingsManager is null)
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+        // weird preceding thing is to fix errors resulting from long file paths? apparently?
+        // it works so i am not touching it
+        targetDirectory = Path.Combine(@"\\?\", targetDirectory); 
+#endif
+
+        operationUpdateString = "Clearing old directory...";
+        if (Directory.Exists(targetDirectory))
         {
-            Debug.LogError($"No export settings to read from. Aborting export operation.");
-            return;
+            Directory.Delete(targetDirectory, true);
+        }
+
+        operationUpdateString = "Making new target directory...";
+        Directory.CreateDirectory(targetDirectory);
+
+        operationUpdateString = "Scheduling tasks...";
+        
+        var ini = Task.Run(() => IniWriter.WriteIni(targetDirectory, Metadata));
+
+        Task write;
+        switch (exportSettings.chartFormat)
+        {
+            case ChartFormat.chart:
+                write = Task.Run(() =>
+                    ChartWriter.WriteChart(
+                        targetDirectory: targetDirectory,
+                        resolution: Resolution,
+                        metadata: Metadata,
+                        instruments: CompileAllInstruments(),
+                        includedTracks: exportSettings.instrumentInclusion,
+                        audioFormat: exportSettings.audioFormat
+                    )
+                );
+                break;
+            case ChartFormat.mid:
+            case ChartFormat.sng:
+            case ChartFormat.RB2CON:
+            case ChartFormat.RB3CON:
+                throw new NotImplementedException(
+                    $"No writer configured to export to the format {exportSettings.chartFormat}");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
         
-        Directory.CreateDirectory(
-            // weird preceding thing is to fix errors resulting from long file paths? apparently?
-            // it works so i am not touching it
-            Path.Combine(@"\\?\", targetDirectory) 
-            );
-        
-        IniWriter.WriteIni(targetDirectory, Metadata);
-        
-        ChartWriter.WriteChart(
-            targetDirectory: targetDirectory,
-            resolution: Resolution,
-            metadata: Metadata,
-            instruments: CompileAllInstruments(),
-            includedTracks: exportSettingsManager.GetInstrumentTrackInclusionStatuses(),
-            audioFormat: exportSettingsManager.GetExportAudioFormat()
-            );
-        
+        var audio = Task.Run(() =>
         AudioManager.WriteAudioFiles(
             Metadata, 
             targetDirectory, 
-            exportSettingsManager.GetExportAudioFormat(), 
-            exportSettingsManager.GetAudioInclusionStatuses(), 
-            exportSettingsManager.GetKBPS()
-            );
+            exportSettings.audioFormat, 
+            exportSettings.audioTrackInclusion, 
+            exportSettings.audioQuality
+            )
+        );
 
-        if (File.Exists(Metadata.BackgroundPath))
+        var bg = Task.Run(WriteBackground);
+        var cov = Task.Run(WriteCover);
+
+        var tasks = new List<Task> { ini, write, audio, bg, cov };
+        
+        var tasksDone = tasks.Count(x => x.IsCompleted);
+        while (tasksDone < tasks.Count)
         {
-            File.Copy(Metadata.BackgroundPath, $"{targetDirectory}/background.jpg");
+            tasksDone = tasks.Count(x => x.IsCompleted);
+            operationUpdateString = $"Running export tasks ({tasksDone} / {tasks.Count} completed)...";
+        }
+        operationUpdateString = $"Counting errors...";
+        
+        if (tasks.Count(x => x.IsFaulted) <= 0) return;
+        
+        foreach (var err in tasks.Where(x => x.IsFaulted))
+        {
+            print($"Exception in export: \n\t{err.Exception}\n");
+        }
+        
+        throw new Exception("Part of exporting process failed.");
+        
+        void WriteBackground()
+        {
+            if (File.Exists(Metadata.BackgroundPath))
+            {
+                File.Copy(Metadata.BackgroundPath, $"{targetDirectory}/background.jpg");
+            }
         }
 
-        if (File.Exists(Metadata.CoverPath))
+        void WriteCover()
         {
-            File.Copy(Metadata.CoverPath, $"{targetDirectory}/album.jpg");
+            if (File.Exists(Metadata.CoverPath))
+            {
+                File.Copy(Metadata.CoverPath, $"{targetDirectory}/album.jpg");
+            }
         }
     }
     

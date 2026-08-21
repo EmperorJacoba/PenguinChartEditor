@@ -1,5 +1,7 @@
+using System;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Metronome : MonoBehaviour
 {
@@ -40,7 +42,8 @@ public class Metronome : MonoBehaviour
         }
     }
 
-    public void ToggleMetronome()
+    private void ToggleMetronome(InputAction.CallbackContext _) => ToggleMetronome();
+    private void ToggleMetronome()
     {
         metronomeActive = !metronomeActive;
 
@@ -53,5 +56,19 @@ public class Metronome : MonoBehaviour
         {
             SongTime.TimeChanged -= CheckForMetronomeHit;    
         }
+    }
+
+    private InputMap inputMap;
+    private void OnEnable()
+    {
+        var b = GetComponent<Button>();
+        b.onClick.AddListener(ToggleMetronome);
+
+        Chart.instance.inputMap.UIShortcuts.Metronome.performed += ToggleMetronome;
+    }
+
+    private void OnDisable()
+    {
+        Chart.instance.inputMap.UIShortcuts.Metronome.performed -= ToggleMetronome;
     }
 }

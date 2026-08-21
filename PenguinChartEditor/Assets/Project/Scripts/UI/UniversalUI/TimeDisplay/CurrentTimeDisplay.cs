@@ -17,7 +17,9 @@ public class CurrentTimeDisplay : MonoBehaviour
     // Diagnostic: This function takes <0.05ms on average per frame during song playback.
     private void UpdateSongText()
     {
-        SongTimestampLabel.text = SongTime.ConvertSecondsToTimestamp(SongTime.SongPositionSeconds);
+        SongTimestampLabel.text = !AudioManager.IsAudioLoaded() ? 
+            "N/A" : 
+            SongTime.ConvertSecondsToTimestamp(SongTime.SongPositionSeconds);
     }
 
     /// <summary>
@@ -31,7 +33,7 @@ public class CurrentTimeDisplay : MonoBehaviour
 
         TimeInputField.ActivateInputField();
 
-        SongTime.ToggleChartingInputMap();
+        SongTime.StopPlaybackAndTimeEditActions();
     }
 
     private void PrepTimeEdit(string newTime)
@@ -39,6 +41,6 @@ public class CurrentTimeDisplay : MonoBehaviour
         SongTime.UpdateSongTimestampFromFormattedTimestamp(newTime);
         
         TimeInputField.gameObject.SetActive(false);
-        SongTime.ToggleChartingInputMap();
+        SongTime.AllowPlaybackAndTimeEditActions();
     }
 }

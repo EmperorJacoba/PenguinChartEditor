@@ -39,13 +39,12 @@ public class SliderBoxLinker : MonoBehaviour
         slider.minValue = minValue;
         slider.maxValue = maxValue;
 
-        EntryBoxChange($"{defaultStartingValue}");
+        EntryBoxChange(GetStartingValue().ToString());
 
-        slider.onValueChanged.AddListener(x => SliderChange(x));
-        entryBox.onEndEdit.AddListener(x => EntryBoxChange(x));
+        slider.onValueChanged.AddListener(SliderChange);
+        entryBox.onEndEdit.AddListener(EntryBoxChange);
 
         entryBox.text = slider.value.ToString();
-
     }
 
     /// <summary>
@@ -74,13 +73,6 @@ public class SliderBoxLinker : MonoBehaviour
             entryBox.text = Math.Round(entryBoxDisplay).ToString();
         }
 
-        // shrinkFactor is a decimal in the 0.001 to 0.01 range BUT that looks really ugly
-        // so display a whole number and divide it to work with the code
-        if (dataType == WaveformProperties.shrinkFactor)
-        {
-            newValue /= HYPERSPEED_TO_SHRINK_FACTOR_CONVERSION_FACTOR; 
-        }
-
         UpdateValue(newValue);
     }
 
@@ -106,14 +98,24 @@ public class SliderBoxLinker : MonoBehaviour
             slider.value = valueAsFloat;
         }
 
-        // shrinkFactor is a decimal in the 0.001 to 0.01 range BUT that looks really ugly
-        // so display a whole number and divide it to work with the code
-        if (dataType == WaveformProperties.shrinkFactor)
+        UpdateValue(valueAsFloat);
+    }
+
+    private float GetStartingValue()
+    {
+        switch(dataType)
         {
-            valueAsFloat /= HYPERSPEED_TO_SHRINK_FACTOR_CONVERSION_FACTOR; 
+            case WaveformProperties.shrinkFactor:
+                return Waveform.ShrinkFactor * HYPERSPEED_TO_SHRINK_FACTOR_CONVERSION_FACTOR;
+            case WaveformProperties.amplitude:
+                return Waveform.Amplitude;
+            case WaveformProperties.playSpeed:
+                return AudioManager.AudioSpeed;
+            case WaveformProperties.highwayLength:
+                return Highway.highwayLength;
         }
 
-        UpdateValue(valueAsFloat);
+        return defaultStartingValue;
     }
 
     private void UpdateValue(float newValue)
@@ -122,7 +124,9 @@ public class SliderBoxLinker : MonoBehaviour
         switch(dataType)
         {
             case WaveformProperties.shrinkFactor:
-                Waveform.ShrinkFactor = newValue;
+                // shrinkFactor is a decimal in the 0.001 to 0.01 range BUT that looks really ugly
+                // so display a whole number and divide it to work with the code
+                Waveform.ShrinkFactor = newValue / HYPERSPEED_TO_SHRINK_FACTOR_CONVERSION_FACTOR;
                 break;
             case WaveformProperties.amplitude:
                 Waveform.Amplitude = newValue;

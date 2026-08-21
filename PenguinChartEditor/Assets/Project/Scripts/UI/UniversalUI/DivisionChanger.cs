@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class DivisionChanger : MonoBehaviour
@@ -13,7 +14,6 @@ public class DivisionChanger : MonoBehaviour
     [SerializeField] private Button upButton;
     [SerializeField] private Button downButton;
 
-    private InputMap inputMap;
     public static int CurrentDivision { get; set; } = 16;
 
     private readonly int[] steps = { 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512, 768 };
@@ -24,22 +24,23 @@ public class DivisionChanger : MonoBehaviour
         downButton.onClick.AddListener(DecreaseDivision);
 
         entryBox.text = CurrentDivision.ToString();
-        entryBox.onValueChanged.AddListener(x => ManualDivisionChange(x));
+        entryBox.onValueChanged.AddListener(ManualDivisionChange);
 
-        inputMap = new InputMap();
-        inputMap.Enable();
-
-        inputMap.ExternalCharting.IncreaseStep.performed += _ => IncreaseDivision();
-        inputMap.ExternalCharting.DecreaseStep.performed += _ => DecreaseDivision();
-        inputMap.ExternalCharting.IncreaseStepByOne.performed += _ => IncreaseDivisionByOne();
-        inputMap.ExternalCharting.DecreaseStepByOne.performed += _ => DecreaseDivisionByOne();
+        Chart.instance.inputMap.UIShortcuts.IncreaseStep.performed += IncreaseDivision;
+        Chart.instance.inputMap.UIShortcuts.DecreaseStep.performed += DecreaseDivision;
+        Chart.instance.inputMap.UIShortcuts.IncreaseStepByOne.performed += IncreaseDivisionByOne;
+        Chart.instance.inputMap.UIShortcuts.DecreaseStepByOne.performed += DecreaseDivisionByOne;
     }
 
     private void OnDestroy()
     {
-        inputMap.Disable();
+        Chart.instance.inputMap.UIShortcuts.IncreaseStep.performed -= IncreaseDivision;
+        Chart.instance.inputMap.UIShortcuts.DecreaseStep.performed -= DecreaseDivision;
+        Chart.instance.inputMap.UIShortcuts.IncreaseStepByOne.performed -= IncreaseDivisionByOne;
+        Chart.instance.inputMap.UIShortcuts.DecreaseStepByOne.performed -= DecreaseDivisionByOne;
     }
 
+    private void IncreaseDivision(InputAction.CallbackContext _) => IncreaseDivision();
     public void IncreaseDivision()
     {
         if (CurrentDivision >= MAX_DIVISION) return;
@@ -55,6 +56,7 @@ public class DivisionChanger : MonoBehaviour
         entryBox.text = CurrentDivision.ToString();
     }
 
+    private void DecreaseDivision(InputAction.CallbackContext _) => DecreaseDivision();
     public void DecreaseDivision()
     {
         if (CurrentDivision <= MIN_DIVISION) return;
@@ -71,14 +73,14 @@ public class DivisionChanger : MonoBehaviour
         entryBox.text = CurrentDivision.ToString();
     }
 
-    public void DecreaseDivisionByOne()
+    public void DecreaseDivisionByOne(InputAction.CallbackContext _)
     {
         if (CurrentDivision <= MIN_DIVISION) return;
         CurrentDivision--;
         entryBox.text = CurrentDivision.ToString();
     }
 
-    public void IncreaseDivisionByOne()
+    public void IncreaseDivisionByOne(InputAction.CallbackContext _)
     {
         if (CurrentDivision >= MAX_DIVISION) return;
         CurrentDivision++;

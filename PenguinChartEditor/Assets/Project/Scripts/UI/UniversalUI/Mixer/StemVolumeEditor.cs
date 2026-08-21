@@ -11,10 +11,7 @@ public class StemVolumeEditor : MonoBehaviour
 {
     public StemType StemType
     {
-        get
-        {
-            return _type;
-        }
+        get => _type;
         set
         {
             // Automatically update the package's label when the stem type is set
@@ -34,7 +31,7 @@ public class StemVolumeEditor : MonoBehaviour
 
     private static event UnsoloDelegate SoloedStemOccurred;
 
-    private enum ButtonStates
+    public enum ButtonStates
     {
         normal,
         muted,
@@ -44,9 +41,16 @@ public class StemVolumeEditor : MonoBehaviour
     private void Start()
     {
         SoloedStemOccurred += UpdateMuteButton;
+        UpdateButtonState(muteButton, AudioManager.IsStemMuted(StemType) && !AudioManager.IsAnyStemSoloed() ? ButtonStates.muted : ButtonStates.normal);
+        UpdateButtonState(soloButton, AudioManager.IsStemSoloed(StemType) ? ButtonStates.soloed : ButtonStates.normal);
+        
+        muteButton.onClick.AddListener(OnMuteButtonPress);
+        soloButton.onClick.AddListener(OnSoloButtonPress);
 
-        slider.onValueChanged.AddListener(x => SliderChange(x));
-        entryBox.onEndEdit.AddListener(x => EntryBoxChange(x));
+        slider.onValueChanged.AddListener(SliderChange);
+        entryBox.onEndEdit.AddListener(EntryBoxChange);
+
+        slider.value = AudioManager.GetStemDisplayedVolume(StemType);
     }
 
     /// <summary>

@@ -57,6 +57,11 @@ public class Highway : MonoBehaviour, IPointerDownHandler
     public float LeftEndCoordinate => -(transform.localScale.x / 2);
     public float RightEndCoordinate => transform.localScale.x / 2;
 
+    private void Awake()
+    {
+        UpdateLength();
+    }
+
     public float GetCenterXCoordinateFromLane(int lane)
     {
         if (laneWidth <= 0) throw new System.NullReferenceException("Lane width cannot be less than or equal to zero. Please set the lane width of this scene in this scene's SceneDetails game object.");

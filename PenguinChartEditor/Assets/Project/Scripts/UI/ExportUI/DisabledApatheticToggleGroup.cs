@@ -16,6 +16,7 @@ public class DisabledApatheticToggleGroup : MonoBehaviour
 
     private void Update()
     {
+        // I don't remember why this works. Please add a better comment here.
         activeToggle = underlyingGroup.GetFirstActiveToggle();
     }
 }

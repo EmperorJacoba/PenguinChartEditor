@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 public class AudioFormatToggle : MonoBehaviour
 {
-    [SerializeField] public AudioFormats format;
+    [FormerlySerializedAs("format")] [SerializeField] public AudioFormat format;
 }

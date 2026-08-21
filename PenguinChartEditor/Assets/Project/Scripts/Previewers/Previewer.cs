@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public interface IPreviewer
 {
@@ -67,9 +68,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
         modeIsBars = !isTicks;
         defaultSustain = value;
     }
-
-    protected InputMap inputMap;
-
+    
     // Some Awakes run before other Awakes. That is why I have it set up like this. I am tired of null reference exceptions. So tired.
     protected IEvent previewerEventReference
     {
@@ -117,8 +116,8 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
     public virtual void Hide() => previewerEventReference.Visible = false;
 
     public virtual void Show() => previewerEventReference.Visible = true;
-    
 
+    private void UpdatePosition(InputAction.CallbackContext _) => UpdatePosition();
     /// <summary>
     /// Refresh the previewer, with checks to ensure the previewer is allowed to be active.
     /// </summary>
@@ -163,15 +162,12 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
 
     protected virtual void Awake()
     {
-        inputMap = new InputMap();
-        inputMap.Enable();
-
-        inputMap.Charting.PreviewMousePos.performed += position => UpdatePosition();
+        Chart.instance.inputMap.StandardStaticEvents.PreviewMousePos.performed += UpdatePosition;
     }
 
     private void OnDestroy()
     {
-        inputMap.Disable();
+        Chart.instance.inputMap.StandardStaticEvents.PreviewMousePos.performed -= UpdatePosition;
     }
 
     protected void Update()

@@ -23,6 +23,7 @@ namespace Penguin.Dialogs
             descriptionText.text = title;
             var rt = GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(width, height);
+            rt.anchoredPosition = Vector3.zero;
         }
 
         private void Okay()

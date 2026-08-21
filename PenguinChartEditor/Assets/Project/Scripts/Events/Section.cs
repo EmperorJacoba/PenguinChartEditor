@@ -71,7 +71,7 @@ public class Section : Event<SectionData>
         sectionNameModifierInputField.text = representedData.Name;
 
         Chart.showPreviewers = false;
-        SongTime.DisableChartingInputMap();
+        SongTime.StopPlaybackAndTimeEditActions();
         
         Chart.InPlaceRefresh();
     }
@@ -84,6 +84,6 @@ public class Section : Event<SectionData>
         displayedSectionName.gameObject.SetActive(true);
         
         Chart.showPreviewers = true;
-        SongTime.EnableChartingInputMap();
+        SongTime.AllowPlaybackAndTimeEditActions();
     }
 }

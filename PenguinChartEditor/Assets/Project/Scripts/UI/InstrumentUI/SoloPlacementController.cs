@@ -1,12 +1,17 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Toggle))]
 public class SoloPlacementController : MonoBehaviour
 {
     private Toggle toggle;
-    private InputMap inputMap;
+
+    private void ToggleSolos(InputAction.CallbackContext _)
+    {
+        toggle.isOn = !toggle.isOn;
+    }
 
     private void Awake()
     {
@@ -14,17 +19,11 @@ public class SoloPlacementController : MonoBehaviour
         toggle.onValueChanged.AddListener(x => Chart.settings.SoloPlacingAllowed = x);
         toggle.isOn = Chart.settings.SoloPlacingAllowed;
 
-        inputMap = new InputMap();
-        inputMap.Enable();
-
-        inputMap.Charting.ToggleSolos.performed += x =>
-        {
-            toggle.isOn = !toggle.isOn;
-        };
+        Chart.instance.inputMap.UIShortcuts.ToggleSolos.performed += ToggleSolos;
     }
 
     private void OnDestroy()
     {
-        inputMap.Disable();
+        Chart.instance.inputMap.UIShortcuts.ToggleSolos.performed -= ToggleSolos;
     }
 }

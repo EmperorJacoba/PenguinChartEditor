@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class UndoStack : MonoBehaviour
 {
@@ -9,22 +10,21 @@ public class UndoStack : MonoBehaviour
 
     public static UndoStack instance;
 
-    private InputMap inputMap;
     private void Start()
     {
         instance = this;
         instance.undoStack = new FiniteStack<IUndoSnapshot>(Chart.settings.MaximumSavedUndoActions);
         instance.redoStack = new FiniteStack<IUndoSnapshot>(Chart.settings.MaximumSavedUndoActions);
 
-        inputMap = new InputMap();
-        inputMap.Enable();
-        inputMap.ExternalCharting.Undo.performed += _ => Undo();
-        inputMap.ExternalCharting.Redo.performed += _ => Redo();
+        Chart.instance.inputMap.Enable();
+        Chart.instance.inputMap.StandardCommands.Undo.performed += Undo;
+        Chart.instance.inputMap.StandardCommands.Redo.performed += Redo;
     }
 
     private void OnDestroy()
     {
-        inputMap?.Disable();
+        Chart.instance.inputMap.StandardCommands.Undo.performed -= Undo;
+        Chart.instance.inputMap.StandardCommands.Redo.performed -= Redo;
     }
 
     public void PushAction(IUndoSnapshot undoSnapshot)
@@ -33,6 +33,7 @@ public class UndoStack : MonoBehaviour
         redoStack.Clear();
     }
 
+    private void Undo(InputAction.CallbackContext _) => Undo();
     public void Undo()
     {
         if (undoStack.Count == 0) return;
@@ -43,7 +44,8 @@ public class UndoStack : MonoBehaviour
         
         Chart.InPlaceRefresh();
     }
-    
+
+    private void Redo(InputAction.CallbackContext _) => Redo();
     public void Redo()
     {
         if (redoStack.Count == 0) return;

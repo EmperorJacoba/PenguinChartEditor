@@ -13,7 +13,11 @@ public class SceneTabSwitcher : BasicPenguinTab<SceneTabSwitcher>
     
     protected override void OnSwitchOff()
     {
-        SceneManager.UnloadSceneAsync(forceLoadedScene ?? controlledScene);
+        try
+        {
+            SceneManager.UnloadSceneAsync(forceLoadedScene ?? controlledScene);
+        }
+        catch {}
         forceLoadedScene = null;
     }
 
@@ -43,7 +47,9 @@ public class SceneTabSwitcher : BasicPenguinTab<SceneTabSwitcher>
 
         if (!tabsFound.Any())
             throw new NullReferenceException($"No tab controlling scene of name {sceneName}. Cannot force load scene.");
-        
-        tabsFound.First().SwitchOn();
+        if (tabsFound.First() != null)
+        {
+            tabsFound.First().SwitchOn();
+        }
     }
 }

@@ -21,11 +21,5 @@ public class NewLoadButtons : MonoBehaviour
         }
     }
 
-    private void OnLoad()
-    {
-        if (Chart.LoadFile())
-        {
-            SceneManager.LoadScene("ContainerSceneV2");
-        }
-    }
+    private void OnLoad() => Chart.LoadFile();
 }

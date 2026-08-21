@@ -10,10 +10,13 @@ public static class PenguinParser
     public static ChartFileInformation ParsePenguin(string filePath)
     {
         var fileData = new ChartFileInformation();
-        
+
+        Chart.operationUpdateString = "[DotPenguin]: Reading file data..."; 
         var fileAsLines = File.ReadAllLines(filePath);
+        Chart.operationUpdateString = "[DotPenguin]: Dividing sections...";
         var baseSections = FormatEventSections(fileAsLines, indent: 0);
 
+        Chart.operationUpdateString = "[DotPenguin]: Dividing sections (part 2)...";
         Dictionary<int, List<PenguinEventSection>> sectionsLevel1 = new();
         foreach (var section in baseSections)
         {
@@ -21,8 +24,10 @@ public static class PenguinParser
             sectionsLevel1[section.id] = secondLevelSections;
         }
 
+        Chart.operationUpdateString = "[DotPenguin]: Making metadata...";
         fileData.metadata = new Metadata(sectionsLevel1[(int)HeaderType.Song]);
 
+        Chart.operationUpdateString = "[DotPenguin]: Creating instruments...";
         ConcurrentBag<IInstrument> parsedInstruments = new();
         Parallel.ForEach
         (
@@ -49,6 +54,7 @@ public static class PenguinParser
             }
         );
 
+        Chart.operationUpdateString = "[DotPenguin]: Returning to main (returning chart pak)...";
         fileData.traditionalInstruments = parsedInstruments.ToList();
 
         return fileData;

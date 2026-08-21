@@ -27,12 +27,12 @@ public class ExportButton : MonoBehaviour
 
         if (paths.Length < 1) return;
 
-        lastDirName = $"{paths[0]}/{Chart.Metadata.GenerateFolderName()})";
+        lastDirName = $"{paths[0]}/{Chart.Metadata.GenerateFolderName()}";
 
         if (Directory.Exists(lastDirName))
         {
             var dialog = DialogManager.SpawnDialog<ConfirmationDialog>();
-            dialog.Initialize("File already exists. Overwrite?", ConfirmExport);
+            dialog.Initialize("Chart package already exists. Overwrite?", ConfirmExport);
             return;
         }
         
@@ -41,6 +41,6 @@ public class ExportButton : MonoBehaviour
 
     private void ConfirmExport()
     {
-        Chart.ExportFile(lastDirName);
+        Chart.ExportFile(lastDirName, ExportSettingsManager.instance.GetCurrentExportSettings());
     }
 }

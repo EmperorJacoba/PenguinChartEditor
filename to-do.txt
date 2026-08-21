@@ -9,23 +9,42 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 - hotkey to jump X number of bars/beats
 
-=> save waveform properties
-=> save user song position, export settings
-=> keybinds system/editor - settings
-=> change window header based on charting status 
-=> "saved" field needs to work properly, not just be hardcoded
-=> master volume
-=> sfx (metronome/clap) volume adjustment
-=> unload/reload waveform across scene change
-=> timestamp should say "No Audio Loaded" instead of being out of 1:30 when no audio
+- disable keybinds when not needed
 
-=> automatically poll GitHub for new releases
-=> progress bar for loading files
+- add chart version
+- add chart export date 
+
+=> save user song position to .penguin file
+
+=> keybinds system/editor - settings
+
+=> change window header based on charting status 
+
+=> unload/reload waveform across scene change
+=> chunk waveform data processing
+
+=> .penguin documentation
+
+=> drums
+	=> drum cymbal model
+	=> look at nathannator docs
+	=> look at c3 docs
+
+=> vocals
+	=> copy scene over, set up 2d view
+	=> extend highway to fit notes
+	=> vocal note model
+	=> spectrogram
+	=> look at specs
+	=> look at c3 docs
+
+=> export as .sng using tool in https://github.com/mdsitton/SngFileFormat/tree/main
 
 => parse .mid
 => placement tab for tempo map
 	=> allow edit TS/BPM values there
 	=> allow dynamic/exclusive placement mode changes
+	=> split five fret keybind manager into sustain keybind manager and five fret keybind manager
 
 SortedDictionary improvements
 - Create a new BinarySearchTree implementation for GetUniqueTickSet and the underlying SortedDictionary data structure
@@ -38,10 +57,25 @@ make previewers use InitializeProperties in Awake()
 pull ClearLaneSelection() up to IInstrument from SPInstrument
 
 patch notes:
-- Fixed bug where audio position would reset itself to incorrect position if no audio loaded
-- Fixed bug where the lack of an `[Events]` header (nonessential section) in a .chart file would cause load failure
-- Reordered dialog boxes in the opening scene so that error notifications are not blocked
-- Pause audio on tab change
-- Fix audio playback state change listener from being active in Setup, Export, and Settings tabs
-- Add log file markers to load file logic so that file load errors are easier to spot
-- Fix attempts to load unloaded/invalid/disposed data into a charting scene after an Open command
+- Changed SFX file formats to .opus for better space efficiency
+- Made SFX louder (will no longer get drowned in the mix)
+- Added Master Volume, Metronome Volume, and Clap Volume controllers into Mixer sub-tab
+- Optimize new chart creation by removing duplicate data production call (reduced load times from 22.9s -> 4.9s for a large test file)
+- Fixed a bug where audio tracks would not get reset upon making a new file
+- Track save status to avoid redundant autosaves
+- Add saving of in-editor (non-settings window) characteristics
+- Change placeholder audio timestamps from `0:00:000 / 01:30:000` to `N/A / N/A`
+- Add notification system to alert user of new releases on GitHub
+- Add keybinds for "Clap" and "Metronome" features
+- Allow support for ignoring unintended keybind calls on One/TwoModifier actions with custom input
+- Remove duplicate keybind calls due to multiple interaction handlers on keybinds
+- Remove extra closing parenthesis after charter name in exported folder name
+- Fix stem mixers from displaying "1" as volume on scene load even if the internal volume is not 1
+- Fix chart package export not actually overwriting existing directory
+- Fix autosave routine saving even when not necessary
+- Added persistent saving of audio stem volumes, mute states, soloed states
+- Added loading screen for loading new file, exporting file
+- Added persistent saving of export settings (does not include instrument inclusion/audio inclusion statuses)
+- Put calibration setting into own "calibration" settings subtab
+- Made calibration "game" to get calibration value through testing (note: only works well up to delays of <250ms)
+- Fixed calibration number being interpreted as seconds (now properly interpreted as milliseconds)
