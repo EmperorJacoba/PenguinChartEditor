@@ -50,19 +50,27 @@ public class CalibrationGame : MonoBehaviour
     private void CancelMinigame()
     {
         StopCoroutine(game);
+        statusText.gameObject.SetActive(false);
+        buttonText.text = "Start";
+        game = null;
+        minigameActive = false;
+        playerStarted = false;
+        deltas.Clear();
     }
 
     private void StopMinigame()
     {
-        buttonText.text = "Start";
+        if (deltas.Count == 0) return;
         
         Chart.settings.Calibration = (int)Mathf.Round(deltas.Average() * 1000);
         statusText.text = $"Calculated calibration (average): {Chart.settings.Calibration}ms";
         
+        buttonText.text = "Start";
         game = null;
         minigameActive = false;
         playerStarted = false;
         calibrationInput.ForceUpdate();
+        deltas.Clear();
     }
 
     IEnumerator Countdown()
