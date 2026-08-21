@@ -9,8 +9,6 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 - hotkey to jump X number of bars/beats
 
-- calibration minigame
-
 - disable keybinds when not needed
 
 - add chart version
@@ -79,5 +77,5 @@ patch notes:
 - Added loading screen for loading new file, exporting file
 - Added persistent saving of export settings (does not include instrument inclusion/audio inclusion statuses)
 - Put calibration setting into own "calibration" settings subtab
-- Made calibration "game" to get calibration value through testing (note: only works well up to delays of <250ms
+- Made calibration "game" to get calibration value through testing (note: only works well up to delays of <250ms)
 - Fixed calibration number being interpreted as seconds (now properly interpreted as milliseconds)
