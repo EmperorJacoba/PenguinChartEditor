@@ -5,12 +5,8 @@ using System.Collections.Generic;
 using SFB;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-using Penguin.Debug;
 using Penguin.Dialogs;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.SceneManagement;
 
 /// <summary>

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ManagedBass;
 using ManagedBass.Enc;
-using Penguin.Debug;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -156,14 +154,14 @@ public class AudioManager : MonoBehaviour
 #endif
 
 #if UNITY_STANDALONE_WIN && !UNITY_EDITOR
-        path += "x86_64";
+        pluginPath += "x86_64";
 #endif
         // fix: these file paths are not valid in standalone builds
 #if (UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX)
-        path += "Bass_macOS";
+        pluginPath += "Bass_macOS";
 #endif
 #if (UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX)
-        path += "Bass_linux/x86_64";
+        pluginPath += "Bass_linux/x86_64";
 #endif
 
         foreach (var file in Directory.EnumerateFiles(pluginPath))
