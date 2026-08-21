@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using TMPro;
 using UnityEngine;
 
@@ -10,8 +9,13 @@ public class SettingsInputFieldHandler : MonoBehaviour
 
     private void Start()
     {
-        input.text = Chart.settings.GetChartingSetting(property).ToString(CultureInfo.InvariantCulture);
+        ForceUpdate();
         input.onValueChanged.AddListener(HandleChange);
+    }
+
+    public void ForceUpdate()
+    {
+        input.text = Chart.settings.GetChartingSetting(property).ToString(CultureInfo.InvariantCulture);
     }
 
     private void HandleChange(string input)

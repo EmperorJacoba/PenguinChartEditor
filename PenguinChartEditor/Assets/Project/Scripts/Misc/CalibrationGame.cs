@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -10,10 +9,12 @@ using UnityEngine.UI;
 public class CalibrationGame : MonoBehaviour
 {
     private const int NUMBER_OF_PASSES = 30;
+    private const float TIME_BETWEEN_CLICKS = 0.5f;
     
     [SerializeField] private Button startButton;
     [SerializeField] private TMP_Text buttonText;
     [SerializeField] private TMP_Text statusText;
+    [SerializeField] private SettingsInputFieldHandler calibrationInput; 
 
     public bool minigameActive = false;
 
@@ -29,7 +30,7 @@ public class CalibrationGame : MonoBehaviour
     {
         if (game != null)
         {
-            StopMinigame();
+            CancelMinigame();
         }
         else StartMinigame();
     }
@@ -46,19 +47,22 @@ public class CalibrationGame : MonoBehaviour
         game = StartCoroutine(Countdown());
     }
 
+    private void CancelMinigame()
+    {
+        StopCoroutine(game);
+    }
+
     private void StopMinigame()
     {
         buttonText.text = "Start";
-
-        deltas.Sort();
         
-        Chart.settings.Calibration = (int)Mathf.Round(deltas[deltas.Count / 2] * 1000);
-        statusText.text = $"Calculated calibration (median value): {Chart.settings.Calibration}ms";
-        print(Chart.settings.Calibration);
+        Chart.settings.Calibration = (int)Mathf.Round(deltas.Average() * 1000);
+        statusText.text = $"Calculated calibration (average): {Chart.settings.Calibration}ms";
         
         game = null;
         minigameActive = false;
         playerStarted = false;
+        calibrationInput.ForceUpdate();
     }
 
     IEnumerator Countdown()
@@ -88,6 +92,12 @@ public class CalibrationGame : MonoBehaviour
         playerStarted = true;
         var p = Time.realtimeSinceStartup;
         var delta = p - lastGameTimestamp;
+
+        if (delta > TIME_BETWEEN_CLICKS / 2)
+        {
+            delta = (lastGameTimestamp - p) + TIME_BETWEEN_CLICKS;
+        }
+        
         statusText.text = $"Delta: {delta*1000}ms";
         deltas.Add(delta);
     }
@@ -100,7 +110,7 @@ public class CalibrationGame : MonoBehaviour
         {
             AudioManager.PlayClapSound();
             lastGameTimestamp = Time.realtimeSinceStartup;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(TIME_BETWEEN_CLICKS);
         }
         StopMinigame();
     }
