@@ -43,24 +43,17 @@ public class CalibrationGame : MonoBehaviour
         
         buttonText.text = "Stop";
         statusText.gameObject.SetActive(true);
-        playerTimestamps.Clear();
-        gameTimestamps.Clear();
         game = StartCoroutine(Countdown());
     }
 
     private void StopMinigame()
     {
         buttonText.text = "Start";
-        statusText.gameObject.SetActive(false);
 
-        List<float> deltas = new List<float>();
-        for (int i = 0; i < playerTimestamps.Count && i < gameTimestamps.Count; i++)
-        {
-            deltas.Add(gameTimestamps[i] - playerTimestamps[i]);
-        }
-
-        Chart.settings.Calibration = (int)Mathf.Round(deltas.Average() * 1000);
-        print($"{deltas.Average()}");
+        deltas.Sort();
+        
+        Chart.settings.Calibration = (int)Mathf.Round(deltas[deltas.Count / 2] * 1000);
+        statusText.text = $"Calculated calibration (median value): {Chart.settings.Calibration}ms";
         print(Chart.settings.Calibration);
         
         game = null;
@@ -83,36 +76,30 @@ public class CalibrationGame : MonoBehaviour
         game = StartCoroutine(Game());
     }
 
-    private List<float> playerTimestamps = new();
-    private List<float> gameTimestamps = new List<float>();
-
+    List<float> deltas = new List<float>();
+    
     private bool playerStarted = false;
 
     private void Update()
     {
-        if (minigameActive)
-        {
-            if (Keyboard.current.anyKey.wasPressedThisFrame)
-            {
-                playerStarted = true;
-                playerTimestamps.Add(Time.realtimeSinceStartup);
-                if (gameTimestamps.Count > 0)
-                {
-                    statusText.text = $"Delta: {(gameTimestamps.Last() - playerTimestamps.Last())*1000}ms";
-                }
-            }
-        }
+        if (!minigameActive) return;
+        if (!Keyboard.current.anyKey.wasPressedThisFrame) return;
+        
+        playerStarted = true;
+        var p = Time.realtimeSinceStartup;
+        var delta = p - lastGameTimestamp;
+        statusText.text = $"Delta: {delta*1000}ms";
+        deltas.Add(delta);
     }
+
+    private float lastGameTimestamp;
 
     IEnumerator Game()
     {
         for (int i = 0; i < NUMBER_OF_PASSES; i++)
         {
             AudioManager.PlayClapSound();
-            if (playerStarted)
-            {
-                gameTimestamps.Add(Time.realtimeSinceStartup);
-            }
+            lastGameTimestamp = Time.realtimeSinceStartup;
             yield return new WaitForSeconds(0.5f);
         }
         StopMinigame();
