@@ -102,7 +102,7 @@ public class AudioManager : MonoBehaviour
 
     public static double AudioPosition
     {
-        get => StreamLink.AudioPosition - Chart.settings.Calibration;
+        get => StreamLink.AudioPosition - (Chart.settings.Calibration / 1000.0f);
         set => SetStreamPositions(value);
     }
 
@@ -478,7 +478,7 @@ public class AudioManager : MonoBehaviour
     public static void SetStemVolume(StemType stem, float volume) => Streams[stem].Volume = volume;
     public static float GetStemDisplayedVolume(StemType stem) => Streams[stem].InternalVolume;
     
-    private static void SetStreamPositions() => SetStreamPositions(SongTime.SongPositionSeconds + Chart.settings.Calibration);
+    private static void SetStreamPositions() => SetStreamPositions(SongTime.SongPositionSeconds + (Chart.settings.Calibration / 1000.0f));
     private static void SetStreamPositions(double position)
     {
         // Happens when no audio loaded. StreamLink exists for stability reasons, but does not exist in Streams.Values

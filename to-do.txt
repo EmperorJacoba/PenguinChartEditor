@@ -78,3 +78,4 @@ patch notes:
 - Added persistent saving of audio stem volumes, mute states, soloed states
 - Added loading screen for loading new file, exporting file
 - Added persistent saving of export settings (does not include instrument inclusion/audio inclusion statuses)
+- Fixed calibration number being interpreted as seconds (now properly interpreted as milliseconds)
