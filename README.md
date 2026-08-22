@@ -9,8 +9,6 @@ This method of chart editing is inspired by Steinberg's Dorico, a program used f
 
 **To download and use Penguin, please see the releases tab in the right sidebar.**
 
-*Note: custom keybinds are not yet implemented. In the meantime, please [see built-in keybinds](https://github.com/EmperorJacoba/PenguinChartEditor/blob/main/Keybinds.md)*
-
 Penguin is currently in alpha, meaning that bugs should be expected and the current state/feature set/appearance
 of the program is not finalized. Penguin currently only has a working build for Windows. Linux/MacOS are in the works.
 
