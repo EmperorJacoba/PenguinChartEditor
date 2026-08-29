@@ -5,6 +5,14 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 ====================================================================================================================================================================================
 
+- drums
+	- drum cymbal model
+	- 
+
+- add automatic check for autosave - same line as moonscraper
+
+
+
 - general: keybinds for all placement and selection buttons
 
 - hotkey to jump X number of bars/beats
