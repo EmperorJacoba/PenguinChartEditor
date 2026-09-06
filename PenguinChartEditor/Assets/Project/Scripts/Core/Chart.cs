@@ -254,7 +254,7 @@ public class Chart : MonoBehaviour
             {
                 var name = Metadata.SongInfo[Metadata.MetadataType.name];
                 var artist = Metadata.SongInfo[Metadata.MetadataType.artist];
-                _chPath = FolderPath + $"\\{artist} - {name}.penguin";
+                _chPath = FolderPath + $"/{artist} - {name}.penguin";
             }
             return _chPath;
         }
