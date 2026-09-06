@@ -66,3 +66,5 @@ pull ClearLaneSelection() up to IInstrument from SPInstrument
 
 patch notes:
 - Fixed export settings trying to read invalid file path on first-time boot
+- Fixed custom keybinder allowing binding of multiple actions at a time (leading to "sticky" keybinding)
+
