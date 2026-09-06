@@ -75,7 +75,7 @@ public class KeybindEditor : MonoBehaviour
             WithControlsHavingToMatchPath("<Keyboard>").
             OnApplyBinding((x, y) => ProcessRebindOperation(x, y, index)).
             OnComplete(CompleteRebindingOperation).
-            OnCancel(CompleteRebindingOperation).
+            OnCancel(x => CompleteRebindingOperationViaCancel(x, index)).
             Start();
 
         activeBindingOperation = rebindingOperation;
@@ -155,7 +155,7 @@ public class KeybindEditor : MonoBehaviour
 #endif
         }
     }
-
+    
     private void ProcessRebindOperation(
         InputActionRebindingExtensions.RebindingOperation operation, 
         string path,
@@ -190,6 +190,17 @@ public class KeybindEditor : MonoBehaviour
         operation.Dispose();
         
         actionIndeces = DetectBindings(assignedAction);
+    }
+
+    private void CompleteRebindingOperationViaCancel(InputActionRebindingExtensions.RebindingOperation operation, int actionIndex)
+    {
+        if (actionIndex < actionIndeces.Count)
+        {
+            // remove existing action
+            assignedAction.ChangeBinding(actionIndeces[actionIndex]).Erase();
+        }
+        
+        CompleteRebindingOperation(operation);
     }
 
     private void CompleteRebindingOperation(InputActionRebindingExtensions.RebindingOperation operation)
