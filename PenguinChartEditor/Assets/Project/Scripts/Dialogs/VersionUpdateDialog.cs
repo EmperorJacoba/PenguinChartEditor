@@ -46,7 +46,7 @@ namespace Penguin.Dialogs
             // for the new source
             // yes this is very unstable but this is the simplest way to check it and the fallout is minimal if it goes wrong
             var expectedPageURL = "https://github.com/EmperorJacoba/PenguinChartEditor/releases/tag/" + currentVersion;
-        
+            
             // basically github.com/<user>/<repository>/releases/latest automatically redirects you to the latest version page
             // the URL physically changes, so you can just compare the directed to URL with the current version's URL and 
             // bring up a notification if it's different. You can just check for equality because if the current version

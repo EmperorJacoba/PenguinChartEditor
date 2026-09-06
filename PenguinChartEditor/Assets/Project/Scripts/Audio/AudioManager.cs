@@ -147,10 +147,10 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        string pluginPath = $"{Application.dataPath}/Plugins/Bass/";
+        string pluginPath = $"{Application.dataPath}/Plugins/";
 
 #if UNITY_EDITOR_WIN && UNITY_EDITOR
-        pluginPath += "Bass_win";
+        pluginPath += "Bass/Bass_win";
 #endif
 #if UNITY_STANDALONE_WIN && !UNITY_EDITOR
         pluginPath += "x86_64";
@@ -161,11 +161,12 @@ public class AudioManager : MonoBehaviour
 #endif
         
 #if UNITY_EDITOR_LINUX && UNITY_EDITOR
-        pluginPath += "Bass_linux/x86_64/";
+        pluginPath += "Bass/Bass_linux/x86_64/";
 #endif
         
 #if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
-        pluginPath += "FIXME";
+        // Plugins are "loose-leaf" for this build. No subdirectory needed.
+        pluginPath += "";
 #endif
         
         foreach (var file in Directory.EnumerateFiles(pluginPath))

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Windows.Forms.VisualStyles;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraHighwayScaler : MonoBehaviour
 {
