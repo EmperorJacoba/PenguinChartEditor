@@ -55,8 +55,6 @@ public class Chart : MonoBehaviour
             SetLoadedInstrument(DebugLoadedInstrument);
         }
     }
-
-    private static bool openWithFileError = false;
     
     // Effectively the entry point into Penguin. Make sure any unity object functions that depend on Chart data run in
     // Start(), not Awake(), to guarantee a call after Chart setup.
@@ -635,8 +633,6 @@ public class Chart : MonoBehaviour
     {
         ChartLoading = true;
         
-        openWithFileError = false;
-
         operationUpdateString = "Setting up chart variables...";
         ChartPath = filePath;
         FolderPath = Path.GetDirectoryName(ChartPath);
@@ -798,7 +794,6 @@ public class Chart : MonoBehaviour
             case ChartFormat.RB3CON:
                 throw new NotImplementedException(
                     $"No writer configured to export to the format {exportSettings.chartFormat}");
-                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
