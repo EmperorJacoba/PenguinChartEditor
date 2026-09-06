@@ -161,6 +161,8 @@ public class UserSettings
     
     public static ExportSettings ReadExportSettingsFromDisk()
     {
+        if (!File.Exists(ExportSettingsFilePath)) return null;
+        
         return (ExportSettings)JsonUtility.FromJson(File.ReadAllText(ExportSettingsFilePath), typeof(ExportSettings));
     }
 

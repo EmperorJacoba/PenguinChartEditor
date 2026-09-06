@@ -18,8 +18,13 @@ public class ExportSettingsManager : MonoBehaviour
     
     private void Start()
     {
-        LoadExportSettings(UserSettings.ReadExportSettingsFromDisk());
         instance = this;
+        
+        var exportSettings = UserSettings.ReadExportSettingsFromDisk();
+        if (exportSettings is not null)
+        {
+            LoadExportSettings(exportSettings);
+        }
     }
 
     private AudioFormat GetExportAudioFormat() =>
