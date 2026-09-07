@@ -72,3 +72,4 @@ patch notes:
 - Fix BASS audio drivers not being prioritized in standalone builds in some cases
 - Fix input field trigger on BPM/TS event double clicks on previewer events
 - Fix side scrubber boundary far extending past the visible boundary
+- Added official Linux support

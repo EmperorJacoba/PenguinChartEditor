@@ -596,8 +596,8 @@ public class Chart : MonoBehaviour
                 }, 
                 false
             );
-        if (pathCandidates.Length < 1) return false;
-
+        if (pathCandidates.Length < 1 || !File.Exists(pathCandidates[0])) return false;
+        
         fileLoaded = false;
 
         if (instance.isDebug)
