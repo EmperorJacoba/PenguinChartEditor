@@ -45,7 +45,7 @@ public abstract class Event<T> : MonoBehaviour, IEvent, IPoolable, IPointerDownH
 {
     #region Constants
 
-    protected const float PREVIEWER_Y_OFFSET = 0.00001f;
+    protected const float PREVIEWER_Y_OFFSET = 0.0001f;
     private const float doubleClickTime = 0.3f;
     private const int RMB_ID = 1;
     
