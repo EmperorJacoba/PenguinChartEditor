@@ -22,7 +22,9 @@ public class ExportButton : MonoBehaviour
         var paths = StandaloneFileBrowser.OpenFolderPanel(
             "Open export directory",
             Chart.FolderPath,
-            false
+            // Note: you must use true here. multiselect: false is broken on linux (segfaults)
+            // No effect on windows.
+            true 
         );
 
         if (paths.Length < 1) return;
