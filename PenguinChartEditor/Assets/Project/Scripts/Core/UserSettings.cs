@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Application = UnityEngine.Application;
@@ -119,6 +120,7 @@ public class UserSettings
     #region Disk
 
     private static string SettingsDirectoryPath => Path.Combine(Application.persistentDataPath, "settings");
+    private static string TemporaryInputsPath => Path.Combine(SettingsDirectoryPath, "fallback_inputs.json");
     private static string SettingsFilePath => Path.Combine(SettingsDirectoryPath, "settings.json");
     private static string CosmeticSettingsFilePath => Path.Combine(SettingsDirectoryPath, "cosmetics.json");
     private static string CustomKeybindsFilePath => Path.Combine(SettingsDirectoryPath, "inputs.json");
@@ -130,6 +132,7 @@ public class UserSettings
         {
             Directory.CreateDirectory(SettingsDirectoryPath);
         }
+        
         File.WriteAllText(SettingsFilePath, JsonUtility.ToJson(this));
         SaveCustomKeybinds();
         var cosmetics = new UniversalCosmeticSettings();
@@ -138,7 +141,22 @@ public class UserSettings
 
     public static UserSettings ReadFromDisk()
     {
-        LoadCustomKeybinds();
+        if (!Directory.Exists(SettingsDirectoryPath))
+        {
+            Directory.CreateDirectory(SettingsDirectoryPath);
+        }
+
+        // Loading keybinds has been known to brick Penguin in the past. I am adding layers and layers of armour to keep that from
+        // happening to future users. Even though inputs will be fucked up if the FileLoadException is caught. At least
+        // they'll be able to check and see the blank map for themselves!
+        try
+        {
+            LoadCustomKeybinds();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Error loading custom keybinds. Details below.\n\t{e}");
+        }
         
         if (File.Exists(SettingsFilePath))
         {
@@ -165,7 +183,8 @@ public class UserSettings
         return (ExportSettings)JsonUtility.FromJson(File.ReadAllText(ExportSettingsFilePath), typeof(ExportSettings));
     }
 
-    public static void SaveCustomKeybinds()
+    public static void SaveCustomKeybinds() => SaveCustomKeybinds(CustomKeybindsFilePath);
+    private static void SaveCustomKeybinds(string filePath)
     {
         var keybindList = new CustomKeybindList();
         
@@ -175,7 +194,7 @@ public class UserSettings
         }
 
         var json = JsonUtility.ToJson(keybindList);
-        File.WriteAllText(CustomKeybindsFilePath, json);
+        File.WriteAllText(filePath, json);
     }
 
     private static void ApplyKeybindFromLayout(InputAction action, KeybindLayout layout)
@@ -204,12 +223,21 @@ public class UserSettings
 
     public static void LoadCustomKeybinds()
     {
-        if (!File.Exists(CustomKeybindsFilePath)) return;
+        SaveCustomKeybinds(TemporaryInputsPath); // Here so that we can restore defaults if something is corrupted
+        LoadCustomKeybinds(CustomKeybindsFilePath);
+    }
 
-        var json = (CustomKeybindList)JsonUtility.FromJson(File.ReadAllText(CustomKeybindsFilePath), typeof(CustomKeybindList));
+    public static void LoadCustomKeybinds(string filePath)
+    {
+        if (!File.Exists(filePath)) return;
+        
+        var json = (CustomKeybindList)JsonUtility.FromJson(File.ReadAllText(filePath), typeof(CustomKeybindList));
         
         Chart.instance.inputMap.Disable();
-        foreach (var action in KeybinderManager.GetEditableInputActions())
+        var actions = KeybinderManager.GetEditableInputActions().ToList();
+        var corruptedActions = 0;
+        
+        foreach (var action in actions)
         {
             // Bindings shift back as you erase them so you have to just wait until it's empty.
             while (action.bindings.Count > 0)
@@ -219,8 +247,39 @@ public class UserSettings
 
             var jsonAction = json.actions.Find(x => x.actionGUID == action.id.ToString());
             
+            if (jsonAction is null)
+            {
+                corruptedActions++;
+                continue;
+            }
+            
             if (jsonAction.action1 is not null) ApplyKeybindFromLayout(action, jsonAction.action1);
             if (jsonAction.action2 is not null) ApplyKeybindFromLayout(action, jsonAction.action2);
+        }
+
+        // I ran into this inexplicable error when attempting to test a Windows build of Penguin. The input reading
+        // broke so hard that it completely bricked Penguin across multiple launches. The one trace it left was that
+        // the json.actions.Find() call above returned "null" despite the file looking fine and there being no reason
+        // to discredit it. When I added the null check, ALL actions read as null. I have no idea how to actually 
+        // fix this error as of yet. This is just to prevent an inexplicable bricking of Penguin.
+        //
+        // Why reapply default keybinds if a failure here is caught? Well, if corruptedActions == actions.Count,
+        // then no inputs will be listened for at all because the input map was wiped. Might as well restore the defaults.
+        // I blame the Unity Input System for even making me completely wipe the map in the first place to apply new
+        // bindings...
+        if (corruptedActions == actions.Count)
+        {
+            if (filePath != TemporaryInputsPath)
+            {
+                Debug.LogWarning("Saved user keybinds failed to read properly. Reapplying default keybinds.");
+                LoadCustomKeybinds(TemporaryInputsPath);
+            }
+            else
+            // If this happens in normal use I will be very surprised. But I want record of it!
+                throw new FileLoadException(
+                    "Critical error when loading custom keybinds. Both the custom keybinds file and fallback inputs file failed to load properly." +
+                    "Please delete the inputs.json file and try restarting Penguin."
+                    );
         }
     }
     
