@@ -10,7 +10,8 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 	- 
 
 - add automatic check for autosave - same line as moonscraper
-
+- fix section headers not working right when display resolutions change
+- change z-value of noteheads to get gray look when overwriting
 
 
 - general: keybinds for all placement and selection buttons
@@ -65,25 +66,10 @@ make previewers use InitializeProperties in Awake()
 pull ClearLaneSelection() up to IInstrument from SPInstrument
 
 patch notes:
-- Changed SFX file formats to .opus for better space efficiency
-- Made SFX louder (will no longer get drowned in the mix)
-- Added Master Volume, Metronome Volume, and Clap Volume controllers into Mixer sub-tab
-- Optimize new chart creation by removing duplicate data production call (reduced load times from 22.9s -> 4.9s for a large test file)
-- Fixed a bug where audio tracks would not get reset upon making a new file
-- Track save status to avoid redundant autosaves
-- Add saving of in-editor (non-settings window) characteristics
-- Change placeholder audio timestamps from `0:00:000 / 01:30:000` to `N/A / N/A`
-- Add notification system to alert user of new releases on GitHub
-- Add keybinds for "Clap" and "Metronome" features
-- Allow support for ignoring unintended keybind calls on One/TwoModifier actions with custom input
-- Remove duplicate keybind calls due to multiple interaction handlers on keybinds
-- Remove extra closing parenthesis after charter name in exported folder name
-- Fix stem mixers from displaying "1" as volume on scene load even if the internal volume is not 1
-- Fix chart package export not actually overwriting existing directory
-- Fix autosave routine saving even when not necessary
-- Added persistent saving of audio stem volumes, mute states, soloed states
-- Added loading screen for loading new file, exporting file
-- Added persistent saving of export settings (does not include instrument inclusion/audio inclusion statuses)
-- Put calibration setting into own "calibration" settings subtab
-- Made calibration "game" to get calibration value through testing (note: only works well up to delays of <250ms)
-- Fixed calibration number being interpreted as seconds (now properly interpreted as milliseconds)
+- Fixed export settings trying to read invalid file path on first-time boot
+- Fixed custom keybinder allowing binding of multiple actions at a time (leading to "sticky" keybinding)
+- Added ability to clear/escape keybinding operation with escape 
+- Fix BASS audio drivers not being prioritized in standalone builds in some cases
+- Fix input field trigger on BPM/TS event double clicks on previewer events
+- Fix side scrubber boundary far extending past the visible boundary
+- Added official Linux support

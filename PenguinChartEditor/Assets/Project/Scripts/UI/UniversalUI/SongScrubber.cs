@@ -15,7 +15,7 @@ public class SongScrubber : MonoBehaviour
     private void Start()
     {
         rectTransform = GetComponent<RectTransform>();
-        scrubber.onValueChanged.AddListener(x => UpdateSongTimeFromScrubber(x));
+        scrubber.onValueChanged.AddListener(UpdateSongTimeFromScrubber);
         
         SongTime.TimeChanged += UpdateSongScrubber;
         AudioManager.PlaybackStateChanged += SetScrubberInteractableState;
@@ -64,6 +64,7 @@ public class SongScrubber : MonoBehaviour
 
     private SortedDictionary<int, SectionData> representedData;
     
+    
     private void Update()
     {
         // FIXME: Make this method of checking for updates to the SectionInstrument more efficient
@@ -82,7 +83,6 @@ public class SongScrubber : MonoBehaviour
         
         foreach (var sectionKVP in representedData)
         {
-
             var songRatio = sectionKVP.Key / (float)SongTime.SongLengthTicks;
 
             // Use sliding area because the SongScrubber game object does not have the same bounds as the actual scrubber

@@ -55,8 +55,6 @@ public class Chart : MonoBehaviour
             SetLoadedInstrument(DebugLoadedInstrument);
         }
     }
-
-    private static bool openWithFileError = false;
     
     // Effectively the entry point into Penguin. Make sure any unity object functions that depend on Chart data run in
     // Start(), not Awake(), to guarantee a call after Chart setup.
@@ -97,7 +95,6 @@ public class Chart : MonoBehaviour
             catch (Exception e)
             {
                 Debug.Log($"Error when loading file with \"open with\".\n\t{e}");
-                openWithFileError = true;
             }
         }
         else
@@ -254,7 +251,7 @@ public class Chart : MonoBehaviour
             {
                 var name = Metadata.SongInfo[Metadata.MetadataType.name];
                 var artist = Metadata.SongInfo[Metadata.MetadataType.artist];
-                _chPath = FolderPath + $"\\{artist} - {name}.penguin";
+                _chPath = FolderPath + $"/{artist} - {name}.penguin";
             }
             return _chPath;
         }
@@ -596,10 +593,10 @@ public class Chart : MonoBehaviour
                         "Supported chart/save data formats", 
                         "chart", "penguin", "pce")
                 }, 
-                false
+                true
             );
-        if (pathCandidates.Length < 1) return false;
-
+        if (pathCandidates.Length < 1 || !File.Exists(pathCandidates[0])) return false;
+        
         fileLoaded = false;
 
         if (instance.isDebug)
@@ -635,8 +632,6 @@ public class Chart : MonoBehaviour
     {
         ChartLoading = true;
         
-        openWithFileError = false;
-
         operationUpdateString = "Setting up chart variables...";
         ChartPath = filePath;
         FolderPath = Path.GetDirectoryName(ChartPath);
@@ -798,7 +793,6 @@ public class Chart : MonoBehaviour
             case ChartFormat.RB3CON:
                 throw new NotImplementedException(
                     $"No writer configured to export to the format {exportSettings.chartFormat}");
-                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }

@@ -54,7 +54,6 @@ public class CalibrationGame : MonoBehaviour
         buttonText.text = "Start";
         game = null;
         minigameActive = false;
-        playerStarted = false;
         deltas.Clear();
     }
 
@@ -68,7 +67,6 @@ public class CalibrationGame : MonoBehaviour
         buttonText.text = "Start";
         game = null;
         minigameActive = false;
-        playerStarted = false;
         calibrationInput.ForceUpdate();
         deltas.Clear();
     }
@@ -90,14 +88,11 @@ public class CalibrationGame : MonoBehaviour
 
     List<float> deltas = new List<float>();
     
-    private bool playerStarted = false;
-
     private void Update()
     {
         if (!minigameActive) return;
         if (!Keyboard.current.anyKey.wasPressedThisFrame) return;
         
-        playerStarted = true;
         var p = Time.realtimeSinceStartup;
         var delta = p - lastGameTimestamp;
 

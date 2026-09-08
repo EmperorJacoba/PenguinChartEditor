@@ -1,11 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using TMPro;
-using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 /*
  * Two issues with the Unity Input System have led to common and extremely annoying events in Penguin.

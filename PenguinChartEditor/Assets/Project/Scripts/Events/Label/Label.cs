@@ -52,7 +52,7 @@ public abstract class Label<T> : Event<T>, ILabel, IPoolable where T : IEventDat
 
     private void ActivateManualInput()
     {
-        if (LabelEntryBox == null) return;
+        if (LabelEntryBox == null || IsPreviewEvent) return;
 
         if (!Visible || !LaneData.ContainsKey(Tick)) return;
         editTick = Tick;

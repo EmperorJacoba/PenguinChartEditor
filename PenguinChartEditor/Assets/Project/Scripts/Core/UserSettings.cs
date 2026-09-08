@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Application = UnityEngine.Application;
@@ -161,6 +160,8 @@ public class UserSettings
     
     public static ExportSettings ReadExportSettingsFromDisk()
     {
+        if (!File.Exists(ExportSettingsFilePath)) return null;
+        
         return (ExportSettings)JsonUtility.FromJson(File.ReadAllText(ExportSettingsFilePath), typeof(ExportSettings));
     }
 

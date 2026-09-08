@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -24,16 +21,37 @@ public class KeybindEditor : MonoBehaviour
     private InputAction assignedAction;
     private List<int> actionIndeces;
 
+    private delegate void KeybindActionStartedDelegate();
+
+    private static event KeybindActionStartedDelegate KeybindActionStarted;
+
     private void Awake()
     {
         primaryKeybindLabel.onClick.AddListener(RebindPrimary);
         secondaryKeybindLabel.onClick.AddListener(RebindSecondary);
+
+        KeybindActionStarted += CompleteRebindingOperation;
+    }
+
+    private void CompleteRebindingOperation()
+    {
+        if (activeBindingOperation is not null)
+        {
+            CompleteRebindingOperation(activeBindingOperation);
+        }   
+    }
+    private InputActionRebindingExtensions.RebindingOperation activeBindingOperation;
+
+    private void OnDestroy()
+    {
+        KeybindActionStarted -= CompleteRebindingOperation;
     }
 
     private void RebindPrimary() => Rebind(0, primaryKeybindLabelText);
     private void RebindSecondary() => Rebind(1, secondaryKeybindLabelText);
     private void Rebind(int index, TMP_Text buttonText)
     {
+        KeybindActionStarted?.Invoke();
         Chart.instance.inputMap.Disable();
 
         captureCompositeActions = true;
@@ -57,8 +75,10 @@ public class KeybindEditor : MonoBehaviour
             WithControlsHavingToMatchPath("<Keyboard>").
             OnApplyBinding((x, y) => ProcessRebindOperation(x, y, index)).
             OnComplete(CompleteRebindingOperation).
-            OnCancel(CompleteRebindingOperation).
+            OnCancel(x => CompleteRebindingOperationViaCancel(x, index)).
             Start();
+
+        activeBindingOperation = rebindingOperation;
 
         buttonText.text = "...";
     }
@@ -135,7 +155,7 @@ public class KeybindEditor : MonoBehaviour
 #endif
         }
     }
-
+    
     private void ProcessRebindOperation(
         InputActionRebindingExtensions.RebindingOperation operation, 
         string path,
@@ -170,7 +190,17 @@ public class KeybindEditor : MonoBehaviour
         operation.Dispose();
         
         actionIndeces = DetectBindings(assignedAction);
-        UpdateKeybindButtonDisplayText();
+    }
+
+    private void CompleteRebindingOperationViaCancel(InputActionRebindingExtensions.RebindingOperation operation, int actionIndex)
+    {
+        if (actionIndex < actionIndeces.Count)
+        {
+            // remove existing action
+            assignedAction.ChangeBinding(actionIndeces[actionIndex]).Erase();
+        }
+        
+        CompleteRebindingOperation(operation);
     }
 
     private void CompleteRebindingOperation(InputActionRebindingExtensions.RebindingOperation operation)
@@ -178,6 +208,8 @@ public class KeybindEditor : MonoBehaviour
         operation.Dispose();
         captureCompositeActions = false;
         capturedComposites.Clear();
+        
+        UpdateKeybindButtonDisplayText();
         
         StartCoroutine(EnableAfterKeysReleased());
     }
