@@ -594,7 +594,7 @@ public class Chart : MonoBehaviour
                         "Supported chart/save data formats", 
                         "chart", "penguin", "pce")
                 }, 
-                false
+                true
             );
         if (pathCandidates.Length < 1 || !File.Exists(pathCandidates[0])) return false;
         
