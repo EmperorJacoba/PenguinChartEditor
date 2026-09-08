@@ -95,7 +95,6 @@ public class Chart : MonoBehaviour
             catch (Exception e)
             {
                 Debug.Log($"Error when loading file with \"open with\".\n\t{e}");
-                openWithFileError = true;
             }
         }
         else
