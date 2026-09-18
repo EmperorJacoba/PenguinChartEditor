@@ -9,6 +9,14 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 	- drum cymbal model
 	- 
 
+URGENT:
+- add reset settings button
+- add link to log file in error message
+- fix solo errors
+	- make it update properly on time change event
+	- make soloend events deletable
+	- make their changes undoable
+
 - add automatic check for autosave - same line as moonscraper
 - fix section headers not working right when display resolutions change
 - change z-value of noteheads to get gray look when overwriting
