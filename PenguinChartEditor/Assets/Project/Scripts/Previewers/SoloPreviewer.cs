@@ -11,6 +11,7 @@ public class SoloPreviewer : Previewer
 
     protected override void Awake()
     {
+        base.Awake();
         ParentLane = GetComponentInParent<SoloSectionLane>();
         
         previewSoloPlate.ParentLane = ParentLane;

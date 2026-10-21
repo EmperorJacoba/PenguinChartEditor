@@ -178,6 +178,7 @@ public abstract class Previewer : MonoBehaviour, IPreviewer
             return;
         }
 
+        // LMB down is here to enable dragging to create events.
         if (Input.GetMouseButton(0) && IsPreviewerActive())
         {
             CreateEvent();
