@@ -84,6 +84,7 @@ public class SoloPlate : Event<SoloEventData>
             if (targetEvent.Count == 0) return;
 
             LaneData.Remove(targetEvent[0]);
+            Chart.InPlaceRefresh();
             return;
         }
 

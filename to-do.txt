@@ -11,7 +11,6 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 
 URGENT:
 - fix solo errors
-	- make it update properly on time change event
 	- make soloend events deletable
 	- make their changes undoable
 
@@ -78,4 +77,11 @@ patch notes:
 - Fix BASS audio drivers not being prioritized in standalone builds in some cases
 - Fix input field trigger on BPM/TS event double clicks on previewer events
 - Fix side scrubber boundary far extending past the visible boundary
+- Fixed solo previewer position not updating in response to mouse movement
+- Fixed solo events not refreshing in response to rclick + lclick delete
+- Added reset settings button
+- Added view log button to error dialog
 - Added official Linux support
+
+known issues:
+- Solos are currently unsupported for moving & undoing. This is due to an architectural issue that needs to be refactored and will be fixed in v0.3.0-alpha.
