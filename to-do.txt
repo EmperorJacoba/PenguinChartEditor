@@ -10,8 +10,6 @@ NOTE TO ANY EXTERNAL PARTIES VIEWING THIS TXT FILE
 	- 
 
 URGENT:
-- add reset settings button
-- add link to log file in error message
 - fix solo errors
 	- make it update properly on time change event
 	- make soloend events deletable

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Penguin.Dialogs;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Application = UnityEngine.Application;
@@ -125,6 +126,16 @@ public class UserSettings
     private static string CosmeticSettingsFilePath => Path.Combine(SettingsDirectoryPath, "cosmetics.json");
     private static string CustomKeybindsFilePath => Path.Combine(SettingsDirectoryPath, "inputs.json");
     private static string ExportSettingsFilePath => Path.Combine(SettingsDirectoryPath, "export.json");
+
+    public static void ResetSettings()
+    {
+        if (Directory.Exists(SettingsDirectoryPath))
+        {
+            Directory.Delete(SettingsDirectoryPath, true);
+        }
+        var dialog = DialogManager.SpawnDialog<NotificationDialog>();
+        dialog.Initialize("Settings reset will be applied after a restart.");
+    }
     
     public void SaveSettingsToDisk()
     {
